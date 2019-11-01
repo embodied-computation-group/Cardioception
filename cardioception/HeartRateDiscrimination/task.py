@@ -194,7 +194,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         elif condition == 'Less':
             alpha = -20
 
-    file = 'sounds/' + str(average_hr + alpha) + '.wav'
+    file = parameters['path'] + '/sounds/' + str(average_hr + alpha) + '.wav'
 
     print('HR: ' + str(average_hr))
     print('Alpha: ' + str(alpha))
