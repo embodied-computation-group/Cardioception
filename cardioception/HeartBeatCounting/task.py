@@ -20,14 +20,24 @@ def sequence(parameters, win=None):
         trial(condition, time, parameters, win, oxi)
 
 def trial(condition, time, parameters, win, oxi):
-    """Run one trial using the parameters provided in `row`.
+    """Run one trial.
 
     Parameters
     ----------
-    row : Pandas row
-        Trial description. Must contain a `Condition` and `Time` column.
+    condition : str
+        The trial condition, can be `Rest` or `Count`.
+    time : int
+        The lenght of the recording (in seconds).
     parameters : dict
         Task parameters.
+    win : psychopy window
+        Instance of Psychopy window.
+    oxi : Instance of Oximeter, default is `None`
+        Where recording devise.
+
+    Returns
+    -------
+
     """
     # Ask the participant to press 'Space' (default) to start the trial
     messageStart = visual.TextStim(parameters[win, units='height', height=0.1,
