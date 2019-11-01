@@ -84,7 +84,7 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
 
 def trial(parameters, condition, stairCase=None, win=None, oxi=None,
           confidenceRating=True, feedback=False):
-    """Run one trial using the parameters provided in `row`.
+    """Run one trial.
 
     Parameters
     ----------
