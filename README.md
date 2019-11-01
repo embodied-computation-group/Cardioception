@@ -1,7 +1,7 @@
 <img src= "images/LabLogov2.jpg" width="100">
 
 # Cardioception
-Cardioception Python Package - Measuring Interoception with Psychopy.
+Cardioception Python Package - Measuring Interoception with Psychopy. This package implements two measures of cardiac interoception (cardioception): 1) the classical 'heartbeat counting task' by developed by Rainer Schandry[^fn1][^fn2], and 2) a novel "Heartrate Discrimination Task" implementing an adaptive psychophysical measure for measuring cardioception. See *Tasks* below for more details of each individual method. Currently the toolbox natively supports the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). These devices are fairly cheap and readily availble, however in time the intention is to more generally support more sensors and modalities (e.g., ECG).  
 
 # Installation
 
@@ -42,3 +42,9 @@ Where `path` is the path to your install folder.
 
 
 The `Analyses` folder contains notebooks detailing analysis steps for each tasks.
+
+#References
+
+[^fn1]: Dale, A., & Anderson, D. (1978). Information Variables in Voluntary Control and Classical Conditioning of Heart Rate: Field Dependence and Heart-Rate Perception. Perceptual and Motor Skills, 47(1), 79–85. https://doi.org/10.2466/pms.1978.47.1.79
+
+[^fn2]: Schandry, R. (1981). Heart Beat Perception and Emotional Experience. Psychophysiology, 18(4), 483–488. https://doi.org/10.1111/j.1469-8986.1981.tb02486.x
