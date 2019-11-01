@@ -26,6 +26,7 @@ INSTALL_REQUIRES = [
 
 PACKAGES = [
     'cardioception',
+    'cardioception.HeartRateDiscrimination'
 ]
 
 try:
