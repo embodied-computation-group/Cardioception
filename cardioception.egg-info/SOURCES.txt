@@ -1,5 +1,8 @@
 README.md
 setup.py
+cardioception/__init__.py
+cardioception/detection.py
+cardioception/recording.py
 cardioception.egg-info/PKG-INFO
 cardioception.egg-info/SOURCES.txt
 cardioception.egg-info/dependency_links.txt

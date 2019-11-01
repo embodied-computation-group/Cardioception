@@ -24,6 +24,10 @@ INSTALL_REQUIRES = [
     'psychopy>=3.2.3'
 ]
 
+PACKAGES = [
+    'cardioception',
+]
+
 try:
     from setuptools import setup
     _has_setuptools = True
@@ -43,4 +47,5 @@ if __name__ == "__main__":
           version=VERSION,
           install_requires=INSTALL_REQUIRES,
           include_package_data=True,
+          packages=PACKAGES,
           )
