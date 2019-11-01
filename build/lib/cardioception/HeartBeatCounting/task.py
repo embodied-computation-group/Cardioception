@@ -79,7 +79,7 @@ def trial(condition, time, nTrial, parameters, win):
     oxi.triggers[-1] = 3
 
     # Record for a desired time length
-    oxi.read(duration=time)
+    oxi.read(nSeconds=time)
 
     # Sound signaling trial stop
     parameters['note'].play()
@@ -95,24 +95,7 @@ def trial(condition, time, nTrial, parameters, win):
             np.asarray(oxi.recording))
 
     # Record participant estimation
-    nCounts = ''
-    while True:
-        # Record new key
-        key = event.waitKeys()
-        if key[0] == 'backspace':
-            if nCounts:
-                nCounts = nCounts[:-1]
-        elif key[0] == 'return':
-            break
-        elif key[0][:3] == 'num':
-            nCounts += key[0][-1]
-
-        # Show the text on the screen
-        recordedText = visual.TextStim(win, units='height', height=0.1,
-                                       text=nCounts)
-        recordedText.draw()
-        win.flip()
-    nCounts = int(nCounts)
+    nCount = 1
 
     ##############
     # Rating scale
@@ -131,4 +114,4 @@ def trial(condition, time, nTrial, parameters, win):
         else:
             confidence, confidenceRT = None, None
 
-    return nCounts, confidence, confidenceRT
+    return nCount, confidence, confidenceRT

@@ -88,10 +88,9 @@ def getParameters(subject):
     parameters['Tutorial5'] = """This sequence will be repeated during the task. As you will improve your ability to discriminate between "FASTER" and "SLOWER" conditions, the difficulty will also adaptively improve, meaning that the difference between your True heart rate and the beats you hear will get smaller and smaller."""
 
     # Open window
-    parameters['win'] = visual.Window(
-                            monitor=parameters['monitor'],
-                            screen=parameters['screenNb'],
-                            fullscr=True, units='height')
+    parameters['win'] = visual.Window(monitor=parameters['monitor'],
+                                      screen=parameters['screenNb'],
+                                      fullscr=True, units='height')
 
     # Get frame rate
     parameters['fRate'] = round(parameters['win'].getMsPerFrame()[2], 1)
