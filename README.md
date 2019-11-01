@@ -1,5 +1,7 @@
+<img src= "images/LabLogov2.jpg" width="100">
+
 # Cardioception
-Cardioception Python Package - Measuring interoceptive performance with Psychopy
+Cardioception Python Package - Measuring Interoception with Psychopy.
 
 # Installation
 
@@ -29,11 +31,14 @@ To run the Heart Rate Discrimination Task, run:
 `pyton [path]/cardioception/HeartBeatCounting/run.py`
 Where `path` is the path to your install folder.
 
+This module implements the classic "heartbeat counting task" (HBT) originally developed by
+
 ## Heart Rate Discrimination
 To run the Heart Rate Discrimination Task, run:
 `pyton [path]/cardioception/HeartRateDiscrimination/run.py`
 Where `path` is the path to your install folder.
 
 # Analyses
+
 
 The `Analyses` folder contains notebooks detailing analysis steps for each tasks.
