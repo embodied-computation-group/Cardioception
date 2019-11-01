@@ -28,6 +28,7 @@ Where `COM4` refers to the USB port to open.
 By default, the results will be saved in the `Results` folder contained in each task folder. This can be modified by changing the value of the `path` entry of the parameters dictionary.
 
 ## Heart Beat Counting
+[//]: # (nicolas, maybe we can add a figure for each task?)
 To run the Heart Rate Discrimination Task, run:
 `pyton [path]/cardioception/HeartBeatCounting/run.py`
 Where `path` is the path to your install folder.
@@ -37,15 +38,23 @@ This module implements the classic "heartbeat counting task" (HCT)<sup>1,2</sup>
 
 <img src= "images/iACC.png">
 
-This yields an accuracy score bounded between 0-1. After each counting response, the participant is prompted to rate their subjective confidence (from 0 to 100), used to calculate "interoceptive awareness", i.e. the relationship of confidence and accuracy. Total task runtime using default settings is approximetely XX minutes. 
+This yields an accuracy score bounded between 0-1. After each counting response, the participant is prompted to rate their subjective confidence (from 0 to 100), used to calculate "interoceptive awareness", i.e. the relationship of confidence and accuracy. Total task runtime using default settings is approximetely XX minutes.
 
 ## Heart Rate Discrimination
+[//]: # (maybe we can add a figure for each task? - ma)
+[//]: # (can you add a brief description of the task and I can edit?- ma)
+[//]: # (I think we should add some brief description of the options in the parameters file, similar to a matlab inline function documentation- ma)
+
+This task implements an adaptive psychophysical procedure for estimating participant ability to discriminate their own heart-rate. On each trial, participants attend to their heartbeat sensations for five seconds and estimate their average heartrate. Immediately following this period, a cardiac feedback stimulus of 5 tones (xx hz) is played at a particular BPM frequency. The frequency is determined as their estimate average BPM plus or minus an absolute 'alpha' value. This value is the relative difference in frequency between their true heartrate and the feedback stimulus, and is estimated across trials using an adaptive procedure.
+
+Note that currently, the task implements a 1 up 2 down adaptive staircasing, using a logarithmic stepsize function. Using the parameters object, you can set various settings such as step criterion and size, trial numbers, and a boolean flag to collect confidence ratings or not. Future versions will implement a Bayesian Adaptive Procedure to more efficiently estimate psychometric parameters such as slope and threshold.
+
 To run the Heart Rate Discrimination Task, run:
 `python [path]/cardioception/HeartRateDiscrimination/run.py`
 Where `path` is the path to your install folder.
 
 # Analyses
-
+[//]: # (nicolas, maybe a short descripton of the analysis and an example figure?)
 The `Analyses` folder contains notebooks detailing analysis steps for each tasks.
 
 # References
