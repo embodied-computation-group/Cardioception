@@ -3,6 +3,7 @@
 from psychopy import visual, event
 import pandas as pd
 import numpy as np
+from cardioception.recording import Oximeter
 import matplotlib.pyplot as plt
 
 
@@ -12,14 +13,25 @@ def sequence(parameters, win=None):
     if win is None:
         win = parameters['win']
 
-    oxi = Oximeter(serial=parameters['serial'], sfreq=75)
-    oxi.setup()
-    oxi.read(duration=1)
+    for condition, time, nTrial in zip(
+            parameters['Conditions'], parameters['Times'],
+            range(0, len(parameters['Conditions']))):
 
-    for condition, time in zip(parameters['Conditions'], parameters['Times']):
-        trial(condition, time, parameters, win, oxi)
+        nCount, confidence, confidenceRT = trial(condition, time, nTrial,
+                                                 parameters, win)
 
-def trial(condition, time, parameters, win, oxi):
+        # Store results in a DataFrame
+        results_df = results_df.append(
+                    pd.DataFrame({'Reported': nCount,
+                                  'Confidence': confidence,
+                                  'DecisionTime': decisionTime},
+                                 index=[0]))
+
+    # Save results
+    results_df.to_csv(parameters['results'] + parameters['nsub'] + '.txt')
+
+
+def trial(condition, time, parameters, win):
     """Run one trial.
 
     Parameters
@@ -28,12 +40,12 @@ def trial(condition, time, parameters, win, oxi):
         The trial condition, can be `Rest` or `Count`.
     time : int
         The lenght of the recording (in seconds).
+    ntrial : int
+        Trial number.
     parameters : dict
         Task parameters.
     win : psychopy window
         Instance of Psychopy window.
-    oxi : Instance of Oximeter, default is `None`
-        Where recording devise.
 
     Returns
     -------
@@ -42,57 +54,52 @@ def trial(condition, time, parameters, win, oxi):
     # Ask the participant to press 'Space' (default) to start the trial
     messageStart = visual.TextStim(parameters[win, units='height', height=0.1,
                                    text='Press space to continue')
-    parameters['win'].flip()
-    event.waitKeys(keyList=parameters['startKey'])
-    messageStart.autoDraw = False  # Hide instructions
-    self.win.update()
+    win.flip()
+    event.waitKeys(keyList=parameters['startKey'], maxWait=8)
+    win.flip()
+
+    oxi = Oximeter(serial=parameters['serial'], sfreq=75)
+    oxi.setup()
+    oxi.read(duration=1)
 
     # Show instructions
-    text = self.parameters[row.Condition.loc[0]]
-    message = visual.TextStim(self.win, text=text, units='height',
+    message = visual.TextStim(win, text= parameters[condition], units='height',
                               height=0.1)
-    message.autoDraw = True  # Show instructions
-    self.win.flip()
-
-    # Setup recorder
-    oxi.setup()
+    win.flip()
 
     # Wait for a beat to start the task
     oxi.waitBeat()
 
     # Sound signaling trial start
-    self.note.play()
-    self.note.stop()
+    parameters['note'].play()
+    parameters['note'].stop()
+    oxi.readInWaiting()
+    oxi.triggers[-1] = 3
 
     # Record for a desired time length
-    oxi.read(nSeconds=row.Time.loc[0])
+    oxi.read(nSeconds=times)
 
     # Sound signaling trial stop
-    self.note.play()
-    self.note.stop()
+    parametetrs['note'].play()
+    parametetrs['note'].stop()
+    oxi.triggers[-1] = 3
 
     # Hide instructions
-    message.autoDraw = False
-    self.win.update()
+    win.flip()
 
     # Save recording as np array
-    np.save(self.path + '/Results/' + self.subID
-            + '_' + str(row['TrialNumber']),
+    np.save(parameters['path'] + '/Results/' + parameters['sub']
+            + '_' + str(nTrial),
             np.asarray(oxi.recording))
 
-    # Store recording into task object
-    self.recording.append(oxi.recording)
+    ##############
+    # Rating scale
+    ##############
+    if condition == 'Count':
+        if parameters['rating'] is True:
+            ratingScale = visual.RatingScale(win)
+            message = visual.TextStim(win, text=parameters['Confidence'])
 
-    # Analyse oxi data
-    oxi.find_peaks()
-    oxi_hb = len(oxi.peaks)
-
-    if row['Condition'] == 'Count':
-        if self.parameters.rating:
-            ratingScale = visual.RatingScale(self.win)
-            message = visual.TextStim(
-                            self.win,
-                            text=self.parameters['Confidence'])
             while ratingScale.noResponse:
                 message.draw()
                 ratingScale.draw()
@@ -104,18 +111,3 @@ def trial(condition, time, parameters, win, oxi):
 
         # Get subject heart count estimation
         subj_hb = oxi.peaks
-
-        # Store results in a DataFrame
-        self.results_df = self.results_df.append(
-            pd.DataFrame({'Reported_beats': subj_hb,
-                          'Actual_beats': oxi_hb,
-                          'Confidence': confidence,
-                          'DecisionTime': decisionTime},
-                         index=[0]))
-
-    # Save summary figure
-    if self.parameters['report']:
-        oxi.plot()
-        plt.savefig(self.path + '/Results/Trial-' +
-                    str(object=row['TrialNumber']) + '.png',
-                    dpi=300)
