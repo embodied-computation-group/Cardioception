@@ -1,5 +1,7 @@
+<img src= "images/LabLogov2.jpg" width="100">
+
 # Cardioception
-Cardioception Python Package - Measuring interoceptive performance with Psychopy
+Cardioception Python Package - Measuring Interoception with Psychopy.
 
 # Installation
 
@@ -11,8 +13,11 @@ By default, the results will be saved in the `Results` folder contained in each 
 
 ## Heart Beats Counting
 
+This module implements the classic "heartbeat counting task" (HBT) originally developed by
+
 ## Heart Rate Discrimination
 
 # Analyses
+
 
 The `Analyses` folder contains notebooks detailing analysis steps for each tasks.
