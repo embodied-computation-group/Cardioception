@@ -322,7 +322,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
             message.autoDraw = False
             win.flip()
 
-    return average_hr, condition, estimation, estimationRT, confidence,\
+    return average_hr, estimation, estimationRT, confidence,\
         confidenceRT, alpha, accuracy, missed
 
 
@@ -394,7 +394,7 @@ def tutorial(parameters, win, oxi=None):
         # Ramdom selection of condition
         condition = np.random.choice(['More', 'Less'])
 
-        average_hr, condition, estimation, estimationRT, confidence, \
+        average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed = trial(
                                 parameters, conditoin, win=win, oxi=oxi,
                                 confidenceRating=True)

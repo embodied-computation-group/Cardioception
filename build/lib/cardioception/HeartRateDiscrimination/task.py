@@ -322,7 +322,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
             message.autoDraw = False
             win.flip()
 
-    return average_hr, condition, estimation, estimationRT, confidence,\
+    return average_hr, estimation, estimationRT, confidence,\
         confidenceRT, alpha, accuracy, missed
 
 
@@ -371,10 +371,14 @@ def tutorial(parameters, win, oxi=None):
     oxi.setup()
     oxi.read(duration=2)
     for i in range(parameters['nFeedback']):
-        average_hr, condition, estimation, estimationRT, confidence, \
+
+        # Ramdom selection of condition
+        condition = np.random.choice(['More', 'Less'])
+
+        average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed = trial(
-                                parameters, win=win, oxi=oxi, feedback=True,
-                                confidenceRating=False)
+                                parameters, condition, win=win, oxi=oxi,
+                                feedback=True, confidenceRating=False)
 
     # Confidence rating
     confidence = visual.TextStim(win, units='height', height=0.03,
@@ -386,9 +390,13 @@ def tutorial(parameters, win, oxi=None):
 
     # Run 5 training trials with confidence rating
     for i in range(parameters['nConfidence']):
-        average_hr, condition, estimation, estimationRT, confidence, \
+
+        # Ramdom selection of condition
+        condition = np.random.choice(['More', 'Less'])
+
+        average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed = trial(
-                                parameters, win=win, oxi=oxi,
+                                parameters, conditoin, win=win, oxi=oxi,
                                 confidenceRating=True)
 
     # Task
