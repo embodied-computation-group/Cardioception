@@ -65,11 +65,11 @@ def getParameters(subject):
 
     # Set default path /Results/ 'Subject ID' /
     parameters['subject'] = subject
-    parameters['path'] = os.getcwd() + '/Results/'
+    parameters['path'] = os.getcwd()
+    parameters['results'] = parameters['path'] + '/' + subject
     # Create Results directory of not already exists
-    if not os.path.exists(parameters['path'] + subject):
-        os.makedirs(parameters['path'] + subject)
-    parameters['path'] += subject  # Set Subject Result path
+    if not os.path.exists(parameters['results']):
+        os.makedirs(parameters['results'])
 
     # Texts
     parameters['texts'] = {
