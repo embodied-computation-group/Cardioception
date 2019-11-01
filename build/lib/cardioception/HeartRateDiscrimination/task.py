@@ -196,6 +196,10 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
 
     file = parameters['path'] + '/sounds/' + str(average_hr + alpha) + '.wav'
 
+    print('HR: ' + str(average_hr))
+    print('Alpha: ' + str(alpha))
+    print('Condition: ' + condition)
+
     # Play HR frequency
     this_hr = sound.Sound(file)
     parameters['listenLogo'].draw()
@@ -257,6 +261,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
 
         # Read oximeter
         oxi.readInWaiting()
+        print(accuracy)
 
         # Feedback
         if feedback is True:

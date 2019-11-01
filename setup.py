@@ -21,7 +21,12 @@ INSTALL_REQUIRES = [
     'pandas>=0.24',
     'matplotlib>=3.0.2',
     'seaborn>=0.9.0',
-    'psychopy>=3.2.4'
+    'psychopy>=3.2.3'
+]
+
+PACKAGES = [
+    'cardioception',
+    'cardioception.HeartRateDiscrimination'
 ]
 
 try:
@@ -43,4 +48,5 @@ if __name__ == "__main__":
           version=VERSION,
           install_requires=INSTALL_REQUIRES,
           include_package_data=True,
+          packages=PACKAGES,
           )
