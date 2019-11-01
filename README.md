@@ -1,2 +1,6 @@
-# cardioception
-Cardioception Python Package - Behavioral battery to measure interoceptive individual performance
+# Cardioception
+Cardioception Python Package - Measuring interoceptive performance with Psychopy
+
+# Tasks
+
+# Analyses
