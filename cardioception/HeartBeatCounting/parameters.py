@@ -30,6 +30,15 @@ def getParameters(subjectID, subjectNumber):
     parameters['Confidence'] = 'How confident are you about your estimation?'
     parameters['nCount'] = 'How many heartbeats did you count?'
 
+    # Tutorial instructions
+    parameters['Tutorial1'] = "During this experiment, we will ask you to count your heartbeats for a certain amount of time."
+    parameters['Tutorial2'] = "You will encounter two kinds of condition: the first one will be signalled by this \"rest\" icon. Your task here will just be to rest quietly for a certain amount of time."
+    parameters['Tutorial3'] = "The second condition will be signalled by this \"heartbeat counting icon\". You will then have to try to count your heartbeat. "
+    parameters['Tutorial4'] = "The beginning and the end of the task will be signalled by two tones like the ones you hear: one prolonged tone at the beginning and two faster tones at the end."
+    parameters['Tutorial5'] = "After this period, you will be asked to estimate the exact number of heartbeat you counted during this period. Please enter your response using the number pad and press \"return\" when done. You can also correct your estimation using \"backspace\"."
+    parameters['Tutorial6'] = "Once your response has been provided, you will be asked to estimate your level of confidence with this estimation. A large number here means that you are confident with your estimation, a small number means that you are not confident. You should use the RIGHT and LEFT key to select your response and the DOWN key to confirm."
+    parameters['Tutorial7'] = "These two conditions will alternate during the task and the amount of time will vary."
+
     # Experimental design
     parameters['Conditions'] = ['Rest', 'Rest', 'Count', 'Rest',
                                 'Count', 'Rest', 'Count', 'Rest']

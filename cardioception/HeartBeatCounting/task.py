@@ -108,39 +108,38 @@ def trial(condition, duration, nTrial, parameters, win):
     ###############################
     # Record participant estimation
     ###############################
-
-    # Ask the participant to press 'Space' (default) to start the trial
-    messageCount = visual.TextStim(win, units='height', height=0.05,
-                                   color=(0.0, 0.0, 1.0),
-                                   pos=(0, 0.2), text=parameters['nCount'])
-    messageCount.draw()
-    win.flip()
-
-    nCounts = ''
-    while True:
-
-        # Record new key
-        key = event.waitKeys()
-        if key[0] == 'backspace':
-            if nCounts:
-                nCounts = nCounts[:-1]
-        elif key[0] == 'return':
-            break
-        elif key[0][:3] == 'num':
-            nCounts += key[0][-1]
-
-        # Show the text on the screen
-        recordedText = visual.TextStim(win, units='height', height=0.05,
-                                       text=nCounts)
-        recordedText.draw()
+    if condition == 'Count':
+        # Ask the participant to press 'Space' (default) to start the trial
+        messageCount = visual.TextStim(win, units='height', height=0.05,
+                                       color=(0.0, 0.0, 1.0),
+                                       pos=(0, 0.2), text=parameters['nCount'])
         messageCount.draw()
         win.flip()
-    nCounts = int(nCounts)
 
-    ##############
-    # Rating scale
-    ##############
-    if condition == 'Count':
+        nCounts = ''
+        while True:
+
+            # Record new key
+            key = event.waitKeys()
+            if key[0] == 'backspace':
+                if nCounts:
+                    nCounts = nCounts[:-1]
+            elif key[0] == 'return':
+                break
+            elif key[0][:3] == 'num':
+                nCounts += key[0][-1]
+
+            # Show the text on the screen
+            recordedText = visual.TextStim(win, units='height', height=0.05,
+                                           text=nCounts)
+            recordedText.draw()
+            messageCount.draw()
+            win.flip()
+        nCounts = int(nCounts)
+
+        ##############
+        # Rating scale
+        ##############
         if parameters['rating'] is True:
             ratingScale = visual.RatingScale(win)
             markerStart = np.random.choice(
@@ -154,7 +153,8 @@ def trial(condition, duration, nTrial, parameters, win):
                                              acceptKeys='down',
                                              markerStart=markerStart)
 
-            message = visual.TextStim(win, text=parameters['Confidence'])
+            message = visual.TextStim(win, text=parameters['Confidence'],
+                                      units='height', height=0.05)
 
             while ratingScale.noResponse:
                 message.draw()
@@ -162,7 +162,58 @@ def trial(condition, duration, nTrial, parameters, win):
                 win.flip()
                 confidence = ratingScale.getRating()
                 confidenceRT = ratingScale.getRT()
-        else:
-            confidence, confidenceRT = None, None
 
     return nCounts, confidence, confidenceRT
+
+
+def tutorial(parameters, win):
+    """Run tutorial for the Heart Beat Counting Task.
+
+    Parameters
+    ----------
+    parameters : dict
+        Task parameters.
+    win : psychopy window
+        Instance of Psychopy window.
+    """
+    messageStart = visual.TextStim(win, units='height', height=0.1,
+                                   text=parameters['Tutorial1'])
+    messageStart.draw()
+    win.flip()
+    event.waitKeys(keyList=parameters['startKey'])
+
+    messageStart = visual.TextStim(win, units='height', height=0.1,
+                                   text=parameters['Tutorial2'])
+    messageStart.draw()
+    win.flip()
+    event.waitKeys(keyList=parameters['startKey'])
+
+    messageStart = visual.TextStim(win, units='height', height=0.1,
+                                   text=parameters['Tutorial3'])
+    messageStart.draw()
+    win.flip()
+    event.waitKeys(keyList=parameters['startKey'])
+
+    messageStart = visual.TextStim(win, units='height', height=0.1,
+                                   text=parameters['Tutorial4'])
+    messageStart.draw()
+    win.flip()
+    event.waitKeys(keyList=parameters['startKey'])
+
+    messageStart = visual.TextStim(win, units='height', height=0.1,
+                                   text=parameters['Tutorial5'])
+    messageStart.draw()
+    win.flip()
+    event.waitKeys(keyList=parameters['startKey'])
+
+    messageStart = visual.TextStim(win, units='height', height=0.1,
+                                   text=parameters['Tutorial6'])
+    messageStart.draw()
+    win.flip()
+    event.waitKeys(keyList=parameters['startKey'])
+
+    messageStart = visual.TextStim(win, units='height', height=0.1,
+                                   text=parameters['Tutorial7'])
+    messageStart.draw()
+    win.flip()
+    event.waitKeys(keyList=parameters['startKey'])
