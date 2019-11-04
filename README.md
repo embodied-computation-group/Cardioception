@@ -62,3 +62,6 @@ The `Analyses` folder contains notebooks detailing analysis steps for each tasks
 1. Dale, A., & Anderson, D. (1978). Information Variables in Voluntary Control and Classical Conditioning of Heart Rate: Field Dependence and Heart-Rate Perception. Perceptual and Motor Skills, 47(1), 79–85. https://doi.org/10.2466/pms.1978.47.1.79
 
 2. Schandry, R. (1981). Heart Beat Perception and Emotional Experience. Psychophysiology, 18(4), 483–488. https://doi.org/10.1111/j.1469-8986.1981.tb02486.x
+
+# Credit
+Icons made by **Flaticon** [www.flaticon.com](www.flaticon.com)
