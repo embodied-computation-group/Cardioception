@@ -1,6 +1,6 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
-from cardioception.HeartBeatCounting.task import sequence
+from cardioception.HeartBeatCounting.task import sequence, tutorial
 from cardioception.HeartBeatCounting.parameters import getParameters
 from psychopy import gui
 
@@ -12,6 +12,9 @@ g.show()
 
 # Get parameters
 parameters = getParameters(g.data[0], g.data[1])
+
+# Run tutorial
+tutorial(parameters)
 
 # Run the entire sequence
 sequence(parameters)

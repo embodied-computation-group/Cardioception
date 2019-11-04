@@ -60,7 +60,7 @@ def trial(condition, duration, nTrial, parameters, win):
     """
 
     # Initialize default values
-    confidence, confidenceRT = None, None
+    confidence, confidenceRT, nCounts = None, None, None
 
     # Ask the participant to press 'Space' (default) to start the trial
     messageStart = visual.TextStim(win, units='height', height=0.1,
@@ -78,24 +78,30 @@ def trial(condition, duration, nTrial, parameters, win):
     message = visual.TextStim(win, text=parameters[condition], units='height',
                               height=0.05)
     message.draw()
+    if condition == 'Rest':
+        parameters['restLogo'].draw()
+    elif condition == 'Count':
+        parameters['heartLogo'].draw()
     win.flip()
 
     # Wait for a beat to start the task
     oxi.waitBeat()
 
     # Sound signaling trial start
-    parameters['note'].play()
-    parameters['note'].stop()
-    oxi.readInWaiting()
-    oxi.triggers[-1] = 3
+    if condition == 'Count':
+        parameters['note'].play()
+        parameters['note'].stop()
+        oxi.readInWaiting()
+        oxi.triggers[-1] = 3
 
     # Record for a desired time length
     oxi.read(duration=duration)
 
     # Sound signaling trial stop
-    parameters['note'].play()
-    parameters['note'].stop()
-    oxi.triggers[-1] = 3
+    if condition == 'Count':
+        parameters['note'].play()
+        parameters['note'].stop()
+        oxi.triggers[-1] = 3
 
     # Hide instructions
     win.flip()
@@ -166,7 +172,7 @@ def trial(condition, duration, nTrial, parameters, win):
     return nCounts, confidence, confidenceRT
 
 
-def tutorial(parameters, win):
+def tutorial(parameters, win=None):
     """Run tutorial for the Heart Beat Counting Task.
 
     Parameters
@@ -176,43 +182,50 @@ def tutorial(parameters, win):
     win : psychopy window
         Instance of Psychopy window.
     """
-    messageStart = visual.TextStim(win, units='height', height=0.1,
+    if win is None:
+        win = parameters['win']
+
+    messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['Tutorial1'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
-    messageStart = visual.TextStim(win, units='height', height=0.1,
+    messageStart = visual.TextStim(win, units='height', height=0.05,
+                                   pos=(0.0, 0.2),
                                    text=parameters['Tutorial2'])
     messageStart.draw()
+    parameters['restLogo'].draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
-    messageStart = visual.TextStim(win, units='height', height=0.1,
+    messageStart = visual.TextStim(win, units='height', height=0.05,
+                                   pos=(0.0, 0.2),
                                    text=parameters['Tutorial3'])
     messageStart.draw()
+    parameters['heartLogo'].draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
-    messageStart = visual.TextStim(win, units='height', height=0.1,
+    messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['Tutorial4'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
-    messageStart = visual.TextStim(win, units='height', height=0.1,
+    messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['Tutorial5'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
-    messageStart = visual.TextStim(win, units='height', height=0.1,
+    messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['Tutorial6'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
-    messageStart = visual.TextStim(win, units='height', height=0.1,
+    messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['Tutorial7'])
     messageStart.draw()
     win.flip()
