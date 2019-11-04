@@ -11,15 +11,12 @@ path = 'C:/Users/au646069/Google Drive/ECG_root/Code/PythonToolboxes/cardiocepti
 
 # Create a GUI and store subject ID
 g = gui.Dlg()
-g.addField("Subject Number:")
 g.addField("Subject ID:")
+g.addField("Subject Number:")
 g.show()
 
 # Get parameters
-parameters = getParameters()
-
-parameters['nSub'] = g.data[0]
-parameters['sub'] = g.data[1]
+parameters = getParameters(g.data[0], g.data[1])
 
 # Run the entire sequence
 sequence(parameters)

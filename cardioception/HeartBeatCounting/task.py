@@ -29,7 +29,7 @@ def sequence(parameters, win=None):
                                  index=[0]))
 
     # Save results
-    results_df.to_csv(parameters['results'] + parameters['nsub'] + '.txt')
+    results_df.to_csv(parameters['results'] + parameters['subjectID'] + '.txt')
 
 
 def trial(condition, time, nTrial, parameters, win):
@@ -90,11 +90,14 @@ def trial(condition, time, nTrial, parameters, win):
     win.flip()
 
     # Save recording as np array
-    np.save(parameters['path'] + '/Results/' + parameters['sub']
+    np.save(parameters['path'] + '/Results/' + parameters['subjectID']
             + '_' + str(nTrial),
             np.asarray(oxi.recording))
 
+    ###############################
     # Record participant estimation
+    ###############################
+
     nCounts = ''
     while True:
         # Record new key

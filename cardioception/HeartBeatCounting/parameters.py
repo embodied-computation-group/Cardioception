@@ -1,11 +1,19 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
+import os
 import serial
 from psychopy import visual, sound
 
 
-def getParameters():
+def getParameters(subjectID, subjectNumber):
     """Create task parameters.
+
+    Parameters
+    ----------
+    subjectID : str
+        Subject identifiant.
+    subjectNumber : int
+        Participant number.
     """
     parameters = {'screenNb': 2,
                   'report': True,  # Create reports for each trials
@@ -22,7 +30,17 @@ def getParameters():
     # Experimental design
     parameters['Conditions'] = ['Rest', 'Rest', 'Count', 'Rest',
                                 'Count', 'Rest', 'Count', 'Rest']
-    parameters['Times'] = [60, 25, 30, 35, 30, 45, 60]
+    parameters['Times'] = [5, 5, 5, 5, 5, 5, 5]  # [60, 25, 30, 35, 30, 45, 60]
+
+    # Set default path /Results/ 'Subject ID' /
+    parameters['subjectID'] = subjectID
+    parameters['subjectNumber'] = subjectNumber
+
+    parameters['path'] = os.getcwd()
+    parameters['results'] = parameters['path'] + '/' + subjectID
+    # Create Results directory of not already exists
+    if not os.path.exists(parameters['results']):
+        os.makedirs(parameters['results'])
 
     # Set note played at trial start
     parameters['note'] = sound.backend_sounddevice.SoundDeviceSound(secs=0.5)
