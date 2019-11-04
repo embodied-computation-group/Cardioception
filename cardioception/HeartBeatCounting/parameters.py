@@ -42,7 +42,7 @@ def getParameters(subjectID, subjectNumber):
     # Experimental design
     parameters['Conditions'] = ['Rest', 'Rest', 'Count', 'Rest',
                                 'Count', 'Rest', 'Count', 'Rest']
-    parameters['Times'] = [5, 5, 5, 5, 5, 5, 5]  # [60, 25, 30, 35, 30, 45, 60]
+    parameters['Times'] = [60, 25, 30, 35, 30, 45, 60]
 
     # Set default path /Results/ 'Subject ID' /
     parameters['subjectID'] = subjectID
