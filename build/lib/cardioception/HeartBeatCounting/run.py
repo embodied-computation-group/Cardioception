@@ -4,11 +4,6 @@ from cardioception.HeartBeatCounting.task import sequence
 from cardioception.HeartBeatCounting.parameters import getParameters
 from psychopy import gui
 
-path = 'C:/Users/au646069/Google Drive/ECG_root/Code/PythonToolboxes/cardioception/cardioception/HeartBeatCounting'
-
-# Wrapper function
-##################
-
 # Create a GUI and store subject ID
 g = gui.Dlg()
 g.addField("Subject ID:")

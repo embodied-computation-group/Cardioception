@@ -13,11 +13,11 @@ def sequence(parameters, win=None):
         win = parameters['win']
 
     results_df = pd.DataFrame([])
-    for condition, time, nTrial in zip(
+    for condition, duration, nTrial in zip(
             parameters['Conditions'], parameters['Times'],
             range(0, len(parameters['Conditions']))):
 
-        nCount, confidence, confidenceRT = trial(condition, time, nTrial,
+        nCount, confidence, confidenceRT = trial(condition, duration, nTrial,
                                                  parameters, win)
 
         # Store results in a DataFrame
@@ -32,14 +32,14 @@ def sequence(parameters, win=None):
     results_df.to_csv(parameters['results'] + parameters['subjectID'] + '.txt')
 
 
-def trial(condition, time, nTrial, parameters, win):
+def trial(condition, duration, nTrial, parameters, win):
     """Run one trial.
 
     Parameters
     ----------
     condition : str
         The trial condition, can be `Rest` or `Count`.
-    time : int
+    duration : int
         The lenght of the recording (in seconds).
     ntrial : int
         Trial number.
@@ -62,11 +62,12 @@ def trial(condition, time, nTrial, parameters, win):
 
     oxi = Oximeter(serial=parameters['serial'], sfreq=75)
     oxi.setup()
-    oxi.read(duration=1)
+    oxi.read(duration=2)
 
     # Show instructions
     message = visual.TextStim(win, text=parameters[condition], units='height',
-                              height=0.1)
+                              height=0.05)
+    message.draw()
     win.flip()
 
     # Wait for a beat to start the task
@@ -79,7 +80,7 @@ def trial(condition, time, nTrial, parameters, win):
     oxi.triggers[-1] = 3
 
     # Record for a desired time length
-    oxi.read(duration=time)
+    oxi.read(duration=duration)
 
     # Sound signaling trial stop
     parameters['note'].play()
@@ -98,8 +99,15 @@ def trial(condition, time, nTrial, parameters, win):
     # Record participant estimation
     ###############################
 
+    # Ask the participant to press 'Space' (default) to start the trial
+    messageCount = visual.TextStim(win, units='height', height=0.1, 
+                                   pos=(0.2, 0), text=parameters['nCount'])
+    messageCount.draw()
+    win.flip()
+    
     nCounts = ''
     while True:
+        
         # Record new key
         key = event.waitKeys()
         if key[0] == 'backspace':
@@ -114,6 +122,7 @@ def trial(condition, time, nTrial, parameters, win):
         recordedText = visual.TextStim(win, units='height', height=0.1,
                                        text=nCounts)
         recordedText.draw()
+        messageCount.draw()
         win.flip()
     nCounts = int(nCounts)
 

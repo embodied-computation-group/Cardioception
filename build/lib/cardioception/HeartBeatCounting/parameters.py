@@ -26,6 +26,7 @@ def getParameters(subjectID, subjectNumber):
     parameters['Count'] = """After the tone, try to count your heart beats
                            by concentrating on you body feelings"""
     parameters['Confidence'] = 'How confident are you about your estimation?'
+    parameters['nCount'] = 'How many heartbeats did you count?'
 
     # Experimental design
     parameters['Conditions'] = ['Rest', 'Rest', 'Count', 'Rest',
