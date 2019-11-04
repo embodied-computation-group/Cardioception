@@ -50,8 +50,18 @@ def trial(condition, duration, nTrial, parameters, win):
 
     Returns
     -------
-
+    nCount : int
+        The number of heartbeat estimated by the participant.
+    confidence : int
+        The confidence in the estimation of the heartbeat provided by the
+        participant.
+    confidenceRT : float
+        The response time to provide confidence rating.
     """
+
+    # Initialize default values
+    confidence, confidenceRT = None, None
+
     # Ask the participant to press 'Space' (default) to start the trial
     messageStart = visual.TextStim(win, units='height', height=0.1,
                                    text='Press space to continue')
@@ -100,14 +110,15 @@ def trial(condition, duration, nTrial, parameters, win):
     ###############################
 
     # Ask the participant to press 'Space' (default) to start the trial
-    messageCount = visual.TextStim(win, units='height', height=0.1, 
-                                   pos=(0.2, 0), text=parameters['nCount'])
+    messageCount = visual.TextStim(win, units='height', height=0.2,
+                                   color=(0.0, 0.0, 1.0),
+                                   pos=(0, 0.2), text=parameters['nCount'])
     messageCount.draw()
     win.flip()
-    
+
     nCounts = ''
     while True:
-        
+
         # Record new key
         key = event.waitKeys()
         if key[0] == 'backspace':

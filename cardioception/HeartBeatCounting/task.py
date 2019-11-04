@@ -101,7 +101,7 @@ def trial(condition, duration, nTrial, parameters, win):
     win.flip()
 
     # Save recording as np array
-    np.save(parameters['path'] + '/Results/' + parameters['subjectID']
+    np.save(parameters['results'] + parameters['subjectID']
             + '_' + str(nTrial),
             np.asarray(oxi.recording))
 
@@ -110,7 +110,7 @@ def trial(condition, duration, nTrial, parameters, win):
     ###############################
 
     # Ask the participant to press 'Space' (default) to start the trial
-    messageCount = visual.TextStim(win, units='height', height=0.2,
+    messageCount = visual.TextStim(win, units='height', height=0.05,
                                    color=(0.0, 0.0, 1.0),
                                    pos=(0, 0.2), text=parameters['nCount'])
     messageCount.draw()
@@ -130,7 +130,7 @@ def trial(condition, duration, nTrial, parameters, win):
             nCounts += key[0][-1]
 
         # Show the text on the screen
-        recordedText = visual.TextStim(win, units='height', height=0.1,
+        recordedText = visual.TextStim(win, units='height', height=0.05,
                                        text=nCounts)
         recordedText.draw()
         messageCount.draw()
@@ -143,6 +143,17 @@ def trial(condition, duration, nTrial, parameters, win):
     if condition == 'Count':
         if parameters['rating'] is True:
             ratingScale = visual.RatingScale(win)
+            markerStart = np.random.choice(
+                                np.arange(parameters['confScale'][0],
+                                          parameters['confScale'][1]))
+            ratingScale = visual.RatingScale(win,
+                                             low=parameters['confScale'][0],
+                                             high=parameters['confScale'][1],
+                                             noMouse=True,
+                                             labels=parameters['labelsRating'],
+                                             acceptKeys='down',
+                                             markerStart=markerStart)
+
             message = visual.TextStim(win, text=parameters['Confidence'])
 
             while ratingScale.noResponse:

@@ -19,7 +19,9 @@ def getParameters(subjectID, subjectNumber):
                   'report': True,  # Create reports for each trials
                   'randomize': True,
                   'startKey': 'space',
-                  'rating': True}
+                  'rating': True,
+                  'confScale': [1, 7],
+                  'labelsRating': ['Guess', 'Certain']}
 
     # Texts
     parameters['Rest'] = 'Please sit quitely unitil the next session'
@@ -38,7 +40,7 @@ def getParameters(subjectID, subjectNumber):
     parameters['subjectNumber'] = subjectNumber
 
     parameters['path'] = os.getcwd()
-    parameters['results'] = parameters['path'] + '/' + subjectID
+    parameters['results'] = parameters['path'] + '/Results/' + subjectID + '/'
     # Create Results directory of not already exists
     if not os.path.exists(parameters['results']):
         os.makedirs(parameters['results'])
