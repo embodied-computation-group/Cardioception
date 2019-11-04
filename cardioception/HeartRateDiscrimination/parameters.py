@@ -32,7 +32,7 @@ def getParameters(subject):
     """
     parameters = {'confScale': [1, 7],
                   'labelsRating': ['Guess', 'Certain'],
-                  'screenNb': 2,
+                  'screenNb': 0,
                   'nFeedback': 10,
                   'nConfidence': 5,
                   'minRatingTime': 1,

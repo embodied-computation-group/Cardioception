@@ -15,7 +15,7 @@ def getParameters(subjectID, subjectNumber):
     subjectNumber : int
         Participant number.
     """
-    parameters = {'screenNb': 2,
+    parameters = {'screenNb': 0,
                   'report': True,  # Create reports for each trials
                   'randomize': True,
                   'startKey': 'space',
