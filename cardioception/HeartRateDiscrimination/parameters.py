@@ -28,7 +28,6 @@ def getParameters(subject):
         length of the array is defined by `parameters['nTrials']`. If
         `parameters['nTrials']` is odd, will use `parameters['nTrials']` - 1
         to enseure an equal nuber of Higher and Lower conditions.
-
     """
     parameters = {'confScale': [1, 7],
                   'labelsRating': ['Guess', 'Certain'],
