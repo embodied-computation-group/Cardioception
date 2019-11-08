@@ -34,14 +34,15 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
     """
     if win is not None:
         win = win
-    if stairCase is None:
-        stairCase = parameters['stairCase']
 
     oxiTraining = Oximeter(serial=parameters['serial'], sfreq=75)
 
     # Show tutorial and training trials
     if runTutorial is True:
         tutorial(parameters, win, oxiTraining)
+
+    if stairCase is None:
+        stairCase = parameters['stairCase']
 
     oxiTask = Oximeter(serial=parameters['serial'], sfreq=75)
     oxiTask.setup()
@@ -179,15 +180,17 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     #######
 
     # Random selection of the condition (for training trials)
-    if condition == None:
+    if condition is None:
         condition = np.random.choice(['More', 'Less'])
 
     # Generate actual flicker frequency
     if stairCase is not None:
-        if condition == 'More':
+        if stairCase.intensities:
             alpha = int(stairCase.intensities[-1])
-        elif condition == 'Less':
-            alpha = - int(stairCase.intensities[-1])
+        else:
+            alpha = int(stairCase.startVal)
+        if condition == 'Less':
+            alpha = -alpha
     else:
         if condition == 'More':
             alpha = 20
