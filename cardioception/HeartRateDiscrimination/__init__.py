@@ -1,3 +1,3 @@
 from .parameters import *
-from .plotting import *
+from .reports import *
 from .task import *

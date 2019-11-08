@@ -95,11 +95,7 @@ def getParameters(subject):
                         stepType='lin', minVal=1, maxVal=100)
 
     # Open seral port for Oximeter
-    parameters['serial'] = serial.Serial('COM4',
-                                         baudrate=9600,
-                                         timeout=1/75,
-                                         stopbits=1,
-                                         parity=serial.PARITY_NONE)
+    parameters['serial'] = serial.Serial('COM4')
 
     # Set default path /Results/ 'Subject ID' /
     parameters['subject'] = subject
