@@ -63,11 +63,7 @@ def getParameters(subjectID, subjectNumber):
                                       units='height')
     # Serial port
     # Create the recording instance
-    parameters['serial'] = serial.Serial('COM4',
-                                         baudrate=9600,
-                                         timeout=1/75,
-                                         stopbits=1,
-                                         parity=serial.PARITY_NONE)
+    parameters['serial'] = serial.Serial('COM4')
 
     parameters['restLogo'] = visual.ImageStim(
                         win=parameters['win'],
