@@ -2,6 +2,7 @@
 
 import os
 import serial
+import numpy as np
 from psychopy import visual, sound
 
 
@@ -14,35 +15,61 @@ def getParameters(subjectID, subjectNumber):
         Subject identifiant.
     subjectNumber : int
         Participant number.
+
+    Attributes
+    ----------
+    screenNb : int
+        The screen number (Psychopy parameter). Default set to 0.
+    randomize : boolean
+        If `True` (default), will randomize the order of the conditions.
+    startKey : str
+        The key to press to start the task and go to next steps.
+    rating : boolean
+        If `True` (default), will add a rating scale after the evaluation.
+    confScale : list
+        The range of the confidence rating scale.
+    labelsRating : list
+        The labels of the confidence rating scale.
+    times : array of int
+        Length of trials, in seconds.
+    conditions : array of str
+        The conditions. Can be 'Rest', 'Training' or 'Count'.
+    subjectID : str
+        Subject identifiant.
+    subjectNumber : int
+        Subject reference number.
+    path : str
+        The task working directory.
+    results : str
+        The subject result directory.
+    note : psychopy sound instance
+        The sound played at trial start and trial end.
+    win : Psychopy window
+        The window where to run the task.
+    serial : PySerial instance
+        The serial port used to record the PPG activity.
+    restLogo : psychopy visual
+        Image presented during resting conditions.
+    heartLogo : psychopy visual
+        Image presented during resting conditions.
+    texts : dict
+        Dictionnary containing the texts to be presented.
     """
-    parameters = {'screenNb': 0,
-                  'report': True,  # Create reports for each trials
-                  'randomize': True,
-                  'startKey': 'space',
-                  'rating': True,
-                  'confScale': [1, 7],
-                  'labelsRating': ['Guess', 'Certain']}
-
-    # Texts
-    parameters['Rest'] = 'Please sit quitely unitil the next session'
-    parameters['Count'] = """After the tone, try to count your heart beats
-                           by concentrating on you body feelings"""
-    parameters['Confidence'] = 'How confident are you about your estimation?'
-    parameters['nCount'] = 'How many heartbeats did you count?'
-
-    # Tutorial instructions
-    parameters['Tutorial1'] = "During this experiment, we will ask you to count your heartbeats for a certain amount of time."
-    parameters['Tutorial2'] = "You will encounter two kinds of condition: the first one will be signalled by this \"rest\" icon. Your task here will just be to rest quietly for a certain amount of time."
-    parameters['Tutorial3'] = "The second condition will be signalled by this \"heartbeat icon\". You will then have to try to count your heartbeat. "
-    parameters['Tutorial4'] = "The beginning and the end of the task will be signalled by two tones like the ones you hear: one prolonged tone at the beginning and two faster tones at the end."
-    parameters['Tutorial5'] = "After this period, you will be asked to estimate the exact number of heartbeat you counted during this period. Please enter your response using the number pad and press \"return\" when done. You can also correct your estimation using \"backspace\"."
-    parameters['Tutorial6'] = "Once your response has been provided, you will be asked to estimate your level of confidence with this estimation. A large number here means that you are confident with your estimation, a small number means that you are not confident. You should use the RIGHT and LEFT key to select your response and the DOWN key to confirm."
-    parameters['Tutorial7'] = "These two conditions will alternate during the task and the amount of time will vary."
+    parameters = dict()
+    parameters['screenNb'] = 0
+    parameters['randomize'] = True,
+    parameters['startKey'] = 'space',
+    parameters['rating'] = True,
+    parameters['confScale'] = [1, 7],
+    parameters['labelsRating'] = ['Guess', 'Certain']
 
     # Experimental design
-    parameters['Conditions'] = ['Rest', 'Rest', 'Count', 'Rest',
-                                'Count', 'Rest', 'Count', 'Rest']
-    parameters['Times'] = [60, 25, 30, 35, 30, 45, 60]
+    parameters['times'] = np.array([25, 30, 35, 40, 45, 50])
+    if parameters['randomize'] is True:
+        np.random.shuffle(parameters['Times'])
+    parameters['times'] = np.insert(parameters['Times'], 0, 20)
+    parameters['conditions'] = ['Training', 'Count', 'Count', 'Count', 'Count',
+                                'Count', 'Count']
 
     # Set default path /Results/ 'Subject ID' /
     parameters['subjectID'] = subjectID
@@ -61,8 +88,8 @@ def getParameters(subjectID, subjectNumber):
     parameters['win'] = visual.Window(screen=parameters['screenNb'],
                                       fullscr=True,
                                       units='height')
-    # Serial port
-    # Create the recording instance
+
+    # Serial port - Create the recording instance
     parameters['serial'] = serial.Serial('COM4')
 
     parameters['restLogo'] = visual.ImageStim(
@@ -70,11 +97,56 @@ def getParameters(subjectID, subjectNumber):
                         image=parameters['path'] + '/Images/rest.png',
                         pos=(0.0, -0.2))
     parameters['restLogo'].size *= 0.15
-
     parameters['heartLogo'] = visual.ImageStim(
                             win=parameters['win'],
+                            size='height',
                             image=parameters['path'] + '/Images/heartbeat.png',
                             pos=(0.0, -0.2))
     parameters['heartLogo'].size *= 0.8
+
+    #######
+    # Texts
+    #######
+
+    # Task instructions
+    parameters['texts'] = dict()
+    parameters['texts']['rest'] = 'Please sit quitely unitil the next session'
+    parameters['texts']['count'] = (
+        "After the tone, try to count your heart beats"
+        " by concentrating on your body feelings")
+    parameters['texts']['nCount'] = "How many heartbeats did you count?"
+    parameters['texts']['confidence'] = (
+        "How confident are you about your estimation?")
+
+    # Tutorial instructions
+    parameters['texts']['Tutorial1'] = (
+                "During this experiment, we will ask you to"
+                " count your heartbeats for a certain amount of time.")
+    parameters['texts']['Tutorial2'] = (
+        "You will encounter two kinds of condition: the first one will be"
+        " signalled by this \"rest\" icon. Your task here will just be to rest"
+        " quietly for a certain amount of time.")
+    parameters['texts']['Tutorial3'] = (
+        "The second condition will be signalled by this"
+        " \"heartbeat\" icon. You will then have to try"
+        " to count your heartbeat.")
+    parameters['texts']['Tutorial4'] = (
+        "The beginning and the end of the task will be signalled by two tones"
+        " like the ones you hear: one prolonged tone at the beginning and two"
+        " faster tones at the end."
+    parameters['texts']['Tutorial5'] = (
+        "After this period, you will be asked to estimate the exact number of"
+        " heartbeat you counted during this period. Please enter your response"
+        " using the number pad and press return when done. You can also"
+        " correct your estimation using backspace."
+    parameters['texts']['Tutorial6'] = (
+        "Once your response has been provided, you will be asked to estimate"
+        " your level of confidence with this estimation. A large number here"
+        " means that you are confident with your estimation, a small number"
+        " means that you are not confident. You should use the RIGHT and LEFT"
+        " key to select your response and the DOWN key to confirm."
+    parameters['texts']['Tutorial7'] = (
+        "These two conditions will alternate during the task and the amount"
+        " of time will vary."
 
     return parameters
