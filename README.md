@@ -45,9 +45,9 @@ Where `path` is the path to your install folder.
 
 **Task Description**
 
-This module is an implementation of the classic 1978 "heartbeat counting task" (HCT)<sup>1,2</sup> (AKA the 'Schandry task') in which participants attend to and count their heartbeats in intervals of various length. Afterwards the participant indicates the number of counted heartbeats and an "interoceptive accuracy" (iACC) score is computed to represent their accuracy. In the original version<sup>1</sup>, the task begins with a resting period of 60 seconds and followed by three estimation session (25, 35 and 45 seconds) interleaved with resting periods of 30 seconds.
+This module implements a general version of the classic 1978 "heartbeat counting task" (HCT)<sup>1,2</sup> (AKA the 'Schandry task'), in which participants attend to and count their heartbeats in intervals of various length. Afterwards the participant indicates the number of counted heartbeats and an "interoceptive accuracy" (iACC) score is computed to represent their accuracy. In the original version<sup>1</sup>, the task begins with a resting period of 60 seconds and followed by three estimation session (25, 35 and 45 seconds) interleaved with resting periods of 30 seconds.
 
-This package implements both the classic task, and an alternative version used in recent publications<sup>3-5</sup> by the Garfinkel lab at Sussex University. In the alternate version, participants first complete a 30s training trial followed by 6 experimental trials of different time-windows (25, 30, 35,40, 45 and 50s) in a randomized order. Either version can be set as default parameters by the setting the 'task_version' flag to 'Schandry' or 'Garfinkel'. The trial length, the condition ('Rest', 'Count', 'Training') and the randomization can be fully customized in the parameters dictionary.
+This package by default implements both the classic task, and an alternative version used in recent publications<sup>3-5</sup> by the Garfinkel lab at Sussex University. In the alternate version, participants first complete a 30s training trial followed by 6 experimental trials of different time-windows (25, 30, 35, 40, 45 and 50s) in a randomized order, without resting periods. Either version can be set as default parameters by the setting the 'task_version' flag to 'Schandry' or 'Garfinkel'. The trial length, the condition ('Rest', 'Count', 'Training') and the randomization can be fully customized in the parameters dictionary.
 
 **The instructions are the following:**
 
@@ -70,7 +70,7 @@ To run the Heart Rate Discrimination Task, run:
 Where `path` is the path to your install folder.
 
 # Analyses
-The [Analyses](../cardioception/Analyses/Analyses.ipynd) folder contains notebooks detailing analysis steps for each tasks.
+The [Analyses](../cardioception/Analyses/Analyses.ipynd) folder contains notebooks detailing analysis steps for each tasks. These implement basic data quality checks, summary statistics, and the estimation and plotting of HRD psychometric functions.
 
 # References
 
@@ -79,6 +79,10 @@ The [Analyses](../cardioception/Analyses/Analyses.ipynd) folder contains noteboo
 2. Schandry, R. (1981). Heart Beat Perception and Emotional Experience. Psychophysiology, 18(4), 483–488. https://doi.org/10.1111/j.1469-8986.1981.tb02486.x
 
 3. Leganes-Fonteneau, M., Cheang, Y., Lam, Y., Garfinkel, S., & Duka, T. (2019). Interoceptive awareness is associated with acute alcohol-induced changes in subjective effects. Pharmacology Biochemistry and Behavior, 181, 69–76. https://doi.org/10.1016/j.pbb.2019.03.007
+
+4. Rae, C., Ahmad, A., Larsson, D., Silva, M., van Praag, C. G., Garfinkel, S., & Critchley, H. (2019). Impact of cardiac interoception cues on voluntary decisions to make or withhold action in an intentional inhibition task.
+
+5. Rae, C. L., Larsson, D. E., Garfinkel, S. N., & Critchley, H. D. (2019). Dimensions of interoception predict premonitory urges and tic severity in Tourette syndrome. Psychiatry research, 271, 469-475.
 
 # Credit
 Some icons used in the Figures or presented during the tasks were downloaded from **Flaticon** [www.flaticon.com](www.flaticon.com).
