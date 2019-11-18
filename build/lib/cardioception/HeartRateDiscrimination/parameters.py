@@ -21,26 +21,64 @@ def getParameters(subject):
     labelsRating : list
         The labels of the confidence rating scale.
     screenNb : int
-        The screen number. Default set to 0.
-
+        The screen number (Psychopy parameter). Default set to 0.
+    monitor : str
+        The monitor used to present the task (Psychopy parameter).
+    nFeedback : int
+        The number of trial with feedback during the tutorial phace (no
+        confidence rating).
+    nConfidence : int
+        The number of trial with feedback during the tutorial phace (no
+        feedback).
+    respMax : float
+        The maximum time for a confidence rating (in seconds).
+    minRatingTime : float
+        The minimum time before a rating can be provided during the confidence
+        rating (in seconds).
+    maxRatingTime : float
+        The maximum time for a confidence rating (in seconds).
+    startKey : str
+        The key to press to start the task and go to next steps.
+    allowedKeys : list of str
+        The possible response keys.
+    nTrials : int
+        The number of trial to run.
+    nBeatsLim : int
+        The number of beats to record at each trials.
     Condition : 1d-array
         Array of 0s and 1s encoding the conditions (1 : Higher, 0 : Lower). The
         length of the array is defined by `parameters['nTrials']`. If
         `parameters['nTrials']` is odd, will use `parameters['nTrials']` - 1
         to enseure an equal nuber of Higher and Lower conditions.
-
+    stairCase : instance of Psychopy StairHandler
+        The staircase object used to adjust the alpha value.
+    serial : PySerial instance
+        The serial port used to record the PPG activity.
+    subject : str
+        The subject ID.
+    path : str
+        The task working directory.
+    results : str
+        The subject result directory.
+    texts : dict
+        The text to present during the estimation and confidence.
+    Tutorial 1-5 : str
+        Texts presented during the tutorial.
+    win : Psychopy window
+        The window where to run the task.
+    listenLogo, heartLogo : Psychopy visual instance
+        Image used for the inference and recording phases, respectively.
     """
     parameters = {'confScale': [1, 7],
                   'labelsRating': ['Guess', 'Certain'],
-                  'screenNb': 2,
+                  'screenNb': 0,
+                  'monitor': 'testMonitor',
                   'nFeedback': 10,
                   'nConfidence': 5,
+                  'respMax': 8,
                   'minRatingTime': 1,
                   'maxRatingTime': 3,
                   'startKey': 'space',
-                  'respMax': 8,
-                  'monitor': 'testMonitor',
-                  'winSize': [800, 600],
                   'allowedKeys': ['up', 'down'],
                   'nTrials': 50,
                   'nBeatsLim': 5}
@@ -57,11 +95,7 @@ def getParameters(subject):
                         stepType='lin', minVal=1, maxVal=100)
 
     # Open seral port for Oximeter
-    parameters['serial'] = serial.Serial('COM4',
-                                         baudrate=9600,
-                                         timeout=1/75,
-                                         stopbits=1,
-                                         parity=serial.PARITY_NONE)
+    parameters['serial'] = serial.Serial('COM4')
 
     # Set default path /Results/ 'Subject ID' /
     parameters['subject'] = subject
@@ -92,17 +126,16 @@ def getParameters(subject):
                                       screen=parameters['screenNb'],
                                       fullscr=True, units='height')
 
-    # Get frame rate
-    parameters['fRate'] = round(parameters['win'].getMsPerFrame()[2], 1)
-
     # Image loading
-    parameters['listenLogo'] = visual.ImageStim(win=parameters['win'],
-                                                image=parameters['path'] + '/Images/listenResponse.png',
-                                                pos=(0.0, -0.2))
+    parameters['listenLogo'] = visual.ImageStim(
+        win=parameters['win'],
+        image=parameters['path'] + '/Images/listenResponse.png',
+        pos=(0.0, -0.2))
     parameters['listenLogo'].size *= 0.15
-    parameters['heartLogo'] = visual.ImageStim(win=parameters['win'],
-                                               image=parameters['path'] + '/Images/heartbeat.png',
-                                               pos=(0.0, -0.2))
+    parameters['heartLogo'] = visual.ImageStim(
+        win=parameters['win'],
+        image=parameters['path'] + '/Images/heartbeat.png',
+        pos=(0.0, -0.2))
     parameters['heartLogo'].size *= 0.15
 
     return parameters

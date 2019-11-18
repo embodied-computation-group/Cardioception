@@ -21,7 +21,8 @@ def getParameters(subjectID, subjectNumber):
     screenNb : int
         The screen number (Psychopy parameter). Default set to 0.
     randomize : boolean
-        If `True` (default), will randomize the order of the conditions.
+        If `True` (default), will randomize the order of the conditions. If
+        taskVersion is not None, will use the default task parameter instead.
     startKey : str
         The key to press to start the task and go to next steps.
     rating : boolean
@@ -30,6 +31,8 @@ def getParameters(subjectID, subjectNumber):
         The range of the confidence rating scale.
     labelsRating : list
         The labels of the confidence rating scale.
+    taskVersion : str | None
+        Task version to run. Can be 'Garfinkel', 'Shandry' or None.
     times : array of int
         Length of trials, in seconds.
     conditions : array of str
@@ -62,14 +65,20 @@ def getParameters(subjectID, subjectNumber):
     parameters['rating'] = True,
     parameters['confScale'] = [1, 7],
     parameters['labelsRating'] = ['Guess', 'Certain']
+    parameters['taskVersion'] = 'Garfinkel'
 
     # Experimental design
-    parameters['times'] = np.array([25, 30, 35, 40, 45, 50])
-    if parameters['randomize'] is True:
-        np.random.shuffle(parameters['Times'])
-    parameters['times'] = np.insert(parameters['Times'], 0, 20)
-    parameters['conditions'] = ['Training', 'Count', 'Count', 'Count', 'Count',
-                                'Count', 'Count']
+    if parameters['taskVersion'] == 'Garfinkel':
+        parameters['times'] = np.array([25, 30, 35, 40, 45, 50])
+        np.random.shuffle(parameters['times'])
+        parameters['times'] = np.insert(parameters['times'], 0, 20)
+        parameters['conditions'] = ['Training', 'Count', 'Count', 'Count',
+                                    'Count', 'Count', 'Count']
+
+    elif parameters['taskVersion'] == 'Shandry':
+        parameters['times'] = np.array([60, 25, 30, 35, 30, 45])
+        parameters['conditions'] = ['Rest', 'Count', 'Rest', 'Count', 'Rest',
+                                    'Count']
 
     # Set default path /Results/ 'Subject ID' /
     parameters['subjectID'] = subjectID
@@ -90,16 +99,17 @@ def getParameters(subjectID, subjectNumber):
                                       units='height')
 
     # Serial port - Create the recording instance
-    parameters['serial'] = serial.Serial('COM4')
+    parameters['serial'] = serial.Serial('COM8')
 
     parameters['restLogo'] = visual.ImageStim(
                         win=parameters['win'],
+                        units='height',
                         image=parameters['path'] + '/Images/rest.png',
                         pos=(0.0, -0.2))
     parameters['restLogo'].size *= 0.15
     parameters['heartLogo'] = visual.ImageStim(
                             win=parameters['win'],
-                            size='height',
+                            units='height',
                             image=parameters['path'] + '/Images/heartbeat.png',
                             pos=(0.0, -0.2))
     parameters['heartLogo'].size *= 0.8
@@ -110,8 +120,11 @@ def getParameters(subjectID, subjectNumber):
 
     # Task instructions
     parameters['texts'] = dict()
-    parameters['texts']['rest'] = 'Please sit quitely unitil the next session'
-    parameters['texts']['count'] = (
+    parameters['texts']['Rest'] = 'Please sit quitely unitil the next session'
+    parameters['texts']['Count'] = (
+        "After the tone, try to count your heart beats"
+        " by concentrating on your body feelings")
+    parameters['texts']['Training'] = (
         "After the tone, try to count your heart beats"
         " by concentrating on your body feelings")
     parameters['texts']['nCount'] = "How many heartbeats did you count?"
@@ -133,20 +146,20 @@ def getParameters(subjectID, subjectNumber):
     parameters['texts']['Tutorial4'] = (
         "The beginning and the end of the task will be signalled by two tones"
         " like the ones you hear: one prolonged tone at the beginning and two"
-        " faster tones at the end."
+        " faster tones at the end.")
     parameters['texts']['Tutorial5'] = (
         "After this period, you will be asked to estimate the exact number of"
         " heartbeat you counted during this period. Please enter your response"
         " using the number pad and press return when done. You can also"
-        " correct your estimation using backspace."
+        " correct your estimation using backspace.")
     parameters['texts']['Tutorial6'] = (
         "Once your response has been provided, you will be asked to estimate"
         " your level of confidence with this estimation. A large number here"
         " means that you are confident with your estimation, a small number"
         " means that you are not confident. You should use the RIGHT and LEFT"
-        " key to select your response and the DOWN key to confirm."
+        " key to select your response and the DOWN key to confirm.")
     parameters['texts']['Tutorial7'] = (
         "These two conditions will alternate during the task and the amount"
-        " of time will vary."
+        " of time will vary.")
 
     return parameters

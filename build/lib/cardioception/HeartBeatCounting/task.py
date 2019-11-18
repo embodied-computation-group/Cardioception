@@ -14,8 +14,8 @@ def sequence(parameters, win=None):
 
     results_df = pd.DataFrame([])
     for condition, duration, nTrial in zip(
-            parameters['Conditions'], parameters['Times'],
-            range(0, len(parameters['Conditions']))):
+            parameters['conditions'], parameters['times'],
+            range(0, len(parameters['conditions']))):
 
         nCount, confidence, confidenceRT = trial(condition, duration, nTrial,
                                                  parameters, win)
@@ -159,7 +159,7 @@ def trial(condition, duration, nTrial, parameters, win):
                                              acceptKeys='down',
                                              markerStart=markerStart)
 
-            message = visual.TextStim(win, text=parameters['Confidence'],
+            message = visual.TextStim(win, text=parameters['confidence'],
                                       units='height', height=0.05)
 
             while ratingScale.noResponse:
@@ -186,14 +186,14 @@ def tutorial(parameters, win=None):
         win = parameters['win']
 
     messageStart = visual.TextStim(win, units='height', height=0.05,
-                                   text=parameters['Tutorial1'])
+                                   text=parameters['texts']['Tutorial1'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
     messageStart = visual.TextStim(win, units='height', height=0.05,
                                    pos=(0.0, 0.2),
-                                   text=parameters['Tutorial2'])
+                                   text=parameters['texts']['Tutorial2'])
     messageStart.draw()
     parameters['restLogo'].draw()
     win.flip()
@@ -201,32 +201,32 @@ def tutorial(parameters, win=None):
 
     messageStart = visual.TextStim(win, units='height', height=0.05,
                                    pos=(0.0, 0.2),
-                                   text=parameters['Tutorial3'])
+                                   text=parameters['texts']['Tutorial3'])
     messageStart.draw()
     parameters['heartLogo'].draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
     messageStart = visual.TextStim(win, units='height', height=0.05,
-                                   text=parameters['Tutorial4'])
+                                   text=parameters['texts']['Tutorial4'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
     messageStart = visual.TextStim(win, units='height', height=0.05,
-                                   text=parameters['Tutorial5'])
+                                   text=parameters['texts']['Tutorial5'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
     messageStart = visual.TextStim(win, units='height', height=0.05,
-                                   text=parameters['Tutorial6'])
+                                   text=parameters['texts']['Tutorial6'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
     messageStart = visual.TextStim(win, units='height', height=0.05,
-                                   text=parameters['Tutorial7'])
+                                   text=parameters['texts']['Tutorial7'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
