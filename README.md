@@ -1,8 +1,14 @@
-<img src= "images/LabLogov2.jpg" width="100">
+<img src= "images/LabLogo.jpg" width="200">
 
 # Cardioception
 
-Cardioception Python Package - Measuring Interoception with Psychopy. This package implements two   measures of cardiac interoception (cardioception): 1) the classical 'heartbeat counting task' by developed by Rainer Schandry<sup>1,2</sup>, and 2) a novel "Heartrate Discrimination Task" implementing an adaptive psychophysical measure for measuring cardioception. See *Tasks* below for more details of each individual method. Currently the toolbox natively supports the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). These devices are fairly cheap and readily available, however in time the intention is to support more sensors and modalities (e.g., ECG).  
+The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):
+1. the classical *heartbeat counting task* developed by Rainer Schandry<sup>1,2</sup>
+2. a novel "Heartrate Discrimination Task" implementing an adaptive psychophysical measure for measuring cardioception.
+
+See *Tasks* below for more details of each individual method.
+
+Currently the toolbox natively supports the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). These devices are fairly cheap and readily available, however in time the intention is to support more sensors and modalities (e.g., ECG).  
 
 # Installation
 
@@ -28,22 +34,28 @@ Where `COM4` refers to the USB port to open.
 By default, the results will be saved in the `Results` folder contained in each task folder. This can be modified by changing the value of the `path` entry of the parameters dictionary.
 
 ## Heart Beat Counting
-[//]: # (nicolas, maybe we can add a figure for each task?)
+
+<img src= "images/HeartBeatCounting.png">
+
 To run the Heart Rate Discrimination Task, run:
 `pyton [path]/cardioception/HeartBeatCounting/run.py`
 Where `path` is the path to your install folder.
 
-This module implements the classic "heartbeat counting task" (HCT)<sup>1,2</sup> in which participants attend to their heartbeats in intervals of 30, 45, or 60 seconds. Each interval is repeated XX times, and afterwards the participant indicates the number of counted heartbeats. The accuracy score is calculated using Equation 1:
+This module is an implementation of the classic "heartbeat counting task" (HCT)<sup>1,2</sup> in which participants attend to their heartbeats in intervals of various length. Afterwards the participant indicates the number of counted heartbeats and a score is computed to represent their accuracy. In the original version<sup>1</sup>, the task started with a resting period of 60 seconds and consisted in three estimation session (25, 35 and 45 seconds) interleaved with resting periods of 30 seconds in the following order:
 
+By default, this task implement the version used in recent publications <sup>3</sup> in which a training trial of 20s is proposed, after which the 6 experimental trials of different time-windows (25, 30, 35,40, 45 and 50s) occurred in a randomized order. The trial length, the condition ('Rest', 'Count', 'Training') and the randomization can be controlled in the parameters dictionary.
 
-<img src= "images/iACC.png">
+**The instructions are the following:**
 
-This yields an accuracy score bounded between 0-1. After each counting response, the participant is prompted to rate their subjective confidence (from 0 to 100), used to calculate "interoceptive awareness", i.e. the relationship of confidence and accuracy. Total task runtime using default settings is approximetely XX minutes.
+>Without manually checking can you silently count each heartbeat you feel in your body from the time you hear the first tone to when you hear the second tone.
+
+**The accuracy score is calculated using the following equation:**
+
+<img src="http://latex.codecogs.com/gif.latex?Score=\frac{\left | N_{real} - N_{counted} \right |}{\frac{N_{real} + N_{reported}}{2}}" align="center"/>
+
+After each counting response, the participant is prompted to rate their subjective confidence (from 0 to 100), used to calculate "interoceptive awareness", i.e. the relationship of confidence and accuracy. Total task runtime using default settings is approximately **4 minutes**.
 
 ## Heart Rate Discrimination
-[//]: # (maybe we can add a figure for each task? - ma)
-[//]: # (can you add a brief description of the task and I can edit?- ma)
-[//]: # (I think we should add some brief description of the options in the parameters file, similar to a matlab inline function documentation- ma)
 
 This task implements an adaptive psychophysical procedure for estimating participant ability to discriminate their own heart-rate. On each trial, participants attend to their heartbeat sensations for five seconds and estimate their average heartrate. Immediately following this period, a cardiac feedback stimulus of 5 tones (xx hz) is played at a particular BPM frequency. The frequency is determined as their estimate average BPM plus or minus an absolute 'alpha' value. This value is the relative difference in frequency between their true heartrate and the feedback stimulus, and is estimated across trials using an adaptive procedure.
 
@@ -54,8 +66,7 @@ To run the Heart Rate Discrimination Task, run:
 Where `path` is the path to your install folder.
 
 # Analyses
-[//]: # (nicolas, maybe a short descripton of the analysis and an example figure?)
-The `Analyses` folder contains notebooks detailing analysis steps for each tasks.
+The [Analyses](../cardioception/Analyses/Analyses.ipynd) folder contains notebooks detailing analysis steps for each tasks.
 
 # References
 
@@ -63,5 +74,7 @@ The `Analyses` folder contains notebooks detailing analysis steps for each tasks
 
 2. Schandry, R. (1981). Heart Beat Perception and Emotional Experience. Psychophysiology, 18(4), 483–488. https://doi.org/10.1111/j.1469-8986.1981.tb02486.x
 
+3. Leganes-Fonteneau, M., Cheang, Y., Lam, Y., Garfinkel, S., & Duka, T. (2019). Interoceptive awareness is associated with acute alcohol-induced changes in subjective effects. Pharmacology Biochemistry and Behavior, 181, 69–76. https://doi.org/10.1016/j.pbb.2019.03.007
+
 # Credit
-Icons made by **Flaticon** [www.flaticon.com](www.flaticon.com)
+Some icons used in the Figures or presented during the tasks were downloaded from **Flaticon** [www.flaticon.com](www.flaticon.com).
