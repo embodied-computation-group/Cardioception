@@ -95,7 +95,7 @@ def getParameters(subject):
                         stepType='lin', minVal=1, maxVal=100)
 
     # Open seral port for Oximeter
-    parameters['serial'] = serial.Serial('COM4')
+    parameters['serial'] = serial.Serial('COM8')
 
     # Set default path /Results/ 'Subject ID' /
     parameters['subject'] = subject
@@ -124,18 +124,20 @@ def getParameters(subject):
     # Open window
     parameters['win'] = visual.Window(monitor=parameters['monitor'],
                                       screen=parameters['screenNb'],
-                                      fullscr=True, units='height')
+                                      fullscr=False, units='height')
 
     # Image loading
     parameters['listenLogo'] = visual.ImageStim(
         win=parameters['win'],
+        units='height',
         image=parameters['path'] + '/Images/listenResponse.png',
         pos=(0.0, -0.2))
-    parameters['listenLogo'].size *= 0.15
+    parameters['listenLogo'].size *= 0.1
     parameters['heartLogo'] = visual.ImageStim(
         win=parameters['win'],
+        units='height',
         image=parameters['path'] + '/Images/heartbeat.png',
         pos=(0.0, -0.2))
-    parameters['heartLogo'].size *= 0.15
+    parameters['heartLogo'].size *= 0.05
 
     return parameters

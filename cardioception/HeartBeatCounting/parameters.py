@@ -112,7 +112,7 @@ def getParameters(subjectID, subjectNumber):
                             units='height',
                             image=parameters['path'] + '/Images/heartbeat.png',
                             pos=(0.0, -0.2))
-    parameters['heartLogo'].size *= 0.8
+    parameters['heartLogo'].size *= 0.15
 
     #######
     # Texts

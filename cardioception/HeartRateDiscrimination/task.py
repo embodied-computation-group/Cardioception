@@ -147,6 +147,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     ###########
     messageRecord = visual.TextStim(win, units='height',
                                     height=0.03,
+                                    pos=(0.0, 0.2),
                                     text='Recording')
     messageRecord.draw()
 
