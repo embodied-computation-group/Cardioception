@@ -75,12 +75,17 @@ def trial(condition, duration, nTrial, parameters, win):
     oxi.read(duration=2)
 
     # Show instructions
-    message = visual.TextStim(win, text=parameters[condition], units='height',
-                              height=0.05)
-    message.draw()
     if condition == 'Rest':
+        message = visual.TextStim(win, text=parameters['texts']['Rest'],
+                                  units='height',
+                                  height=0.05)
+        message.draw()
         parameters['restLogo'].draw()
     elif (condition == 'Count') | (condition == 'Training'):
+        message = visual.TextStim(win, text=parameters['texts']['Count'],
+                                  units='height',
+                                  height=0.05)
+        message.draw()
         parameters['heartLogo'].draw()
     win.flip()
 
@@ -118,7 +123,8 @@ def trial(condition, duration, nTrial, parameters, win):
         # Ask the participant to press 'Space' (default) to start the trial
         messageCount = visual.TextStim(win, units='height', height=0.05,
                                        color=(0.0, 0.0, 1.0),
-                                       pos=(0, 0.2), text=parameters['nCount'])
+                                       pos=(0, 0.2),
+                                       text=parameters['texts']['nCount'])
         messageCount.draw()
         win.flip()
 
@@ -127,6 +133,8 @@ def trial(condition, duration, nTrial, parameters, win):
 
             # Record new key
             key = event.waitKeys()
+            print(nCounts)
+
             if key[0] == 'backspace':
                 if nCounts:
                     nCounts = nCounts[:-1]
@@ -136,7 +144,9 @@ def trial(condition, duration, nTrial, parameters, win):
                 nCounts += key[0][-1]
 
             # Show the text on the screen
-            recordedText = visual.TextStim(win, units='height', height=0.05,
+            recordedText = visual.TextStim(win,
+                                           units='height',
+                                           height=0.05,
                                            text=nCounts)
             recordedText.draw()
             messageCount.draw()
@@ -159,8 +169,10 @@ def trial(condition, duration, nTrial, parameters, win):
                                              acceptKeys='down',
                                              markerStart=markerStart)
 
-            message = visual.TextStim(win, text=parameters['confidence'],
-                                      units='height', height=0.05)
+            message = visual.TextStim(
+                        win,
+                        text=parameters['texts']['confidence'],
+                        units='height', height=0.05)
 
             while ratingScale.noResponse:
                 message.draw()

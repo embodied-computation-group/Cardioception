@@ -95,7 +95,7 @@ def getParameters(subjectID, subjectNumber):
 
     # Open window
     parameters['win'] = visual.Window(screen=parameters['screenNb'],
-                                      fullscr=True,
+                                      fullscr=False,
                                       units='height')
 
     # Serial port - Create the recording instance

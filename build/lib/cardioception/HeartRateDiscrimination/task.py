@@ -62,7 +62,7 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             messageStart.autoDraw = False  # Hide instructions
             win.update()
 
-        average_hr, estimation, estimationRT, confidence, \
+        stairCase, average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed = trial(
                               parameters, condition, stairCase,
                               win=win, oxi=oxiTask,
@@ -148,7 +148,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     messageRecord = visual.TextStim(win, units='height',
                                     height=0.03,
                                     pos=(0.0, 0.2),
-                                    text='Recording')
+                                    text='Listen to your Heart')
     messageRecord.draw()
 
     parameters['heartLogo'].draw()
@@ -198,7 +198,14 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         elif condition == 'Less':
             alpha = -20
 
-    file = parameters['path'] + '/sounds/' + str(average_hr + alpha) + '.wav'
+    # Check for extrem values
+    if (average_hr + alpha) < 15:
+        hr = '15'
+    elif (average_hr + alpha) > 199:
+        hr = '199'
+    else:
+        hr = str(average_hr + alpha)
+    file = parameters['path'] + '/sounds/' + hr + '.wav'
 
     # Play HR frequency
     this_hr = sound.Sound(file)
@@ -249,14 +256,17 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         if (estimation == 'up') & (condition == 'More'):
             if stairCase is not None:
                 stairCase.addResponse(1)
+                stairCase.next()
             accuracy = 1
         elif (estimation == 'down') & (condition == 'Less'):
             if stairCase is not None:
                 stairCase.addResponse(1)
+                stairCase.next()
             accuracy = 1
         else:
             if stairCase is not None:
                 stairCase.addResponse(0)
+                stairCase.next()
             accuracy = 0
 
         # Read oximeter
@@ -321,7 +331,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
             message.autoDraw = False
             win.flip()
 
-    return average_hr, estimation, estimationRT, confidence,\
+    return stairCase, average_hr, estimation, estimationRT, confidence,\
         confidenceRT, alpha, accuracy, missed
 
 
@@ -395,7 +405,7 @@ def tutorial(parameters, win, oxi=None):
 
         average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed = trial(
-                                parameters, conditoin, win=win, oxi=oxi,
+                                parameters, condition, win=win, oxi=oxi,
                                 confidenceRating=True)
 
     # Task

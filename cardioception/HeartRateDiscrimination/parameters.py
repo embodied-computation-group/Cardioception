@@ -92,7 +92,7 @@ def getParameters(subject):
     parameters['stairCase'] = data.StairHandler(
                         startVal=30, nTrials=parameters['nTrials'], nUp=1,
                         nDown=2, stepSizes=[20, 12, 7, 4, 3, 2, 1],
-                        stepType='lin', minVal=1, maxVal=100)
+                        stepType='lin', minVal=15, maxVal=100)
 
     # Open seral port for Oximeter
     parameters['serial'] = serial.Serial('COM8')
@@ -124,7 +124,7 @@ def getParameters(subject):
     # Open window
     parameters['win'] = visual.Window(monitor=parameters['monitor'],
                                       screen=parameters['screenNb'],
-                                      fullscr=False, units='height')
+                                      fullscr=True, units='height')
 
     # Image loading
     parameters['listenLogo'] = visual.ImageStim(
