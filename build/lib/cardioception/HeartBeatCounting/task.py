@@ -80,7 +80,7 @@ def trial(condition, duration, nTrial, parameters, win):
     message.draw()
     if condition == 'Rest':
         parameters['restLogo'].draw()
-    elif condition == 'Count':
+    elif (condition == 'Count') | (condition == 'Training'):
         parameters['heartLogo'].draw()
     win.flip()
 
@@ -88,7 +88,7 @@ def trial(condition, duration, nTrial, parameters, win):
     oxi.waitBeat()
 
     # Sound signaling trial start
-    if condition == 'Count':
+    if (condition == 'Count') | (condition == 'Training'):
         parameters['note'].play()
         parameters['note'].stop()
         oxi.readInWaiting()
@@ -98,7 +98,7 @@ def trial(condition, duration, nTrial, parameters, win):
     oxi.read(duration=duration)
 
     # Sound signaling trial stop
-    if condition == 'Count':
+    if (condition == 'Count') | (condition == 'Training'):
         parameters['note'].play()
         parameters['note'].stop()
         oxi.triggers[-1] = 3
@@ -114,7 +114,7 @@ def trial(condition, duration, nTrial, parameters, win):
     ###############################
     # Record participant estimation
     ###############################
-    if condition == 'Count':
+    if (condition == 'Count') | (condition == 'Training'):
         # Ask the participant to press 'Space' (default) to start the trial
         messageCount = visual.TextStim(win, units='height', height=0.05,
                                        color=(0.0, 0.0, 1.0),
