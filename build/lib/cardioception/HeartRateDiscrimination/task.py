@@ -62,15 +62,21 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             messageStart.autoDraw = False  # Hide instructions
             win.update()
 
-        stairCase, average_hr, estimation, estimationRT, confidence, \
+        # Select the staircase
+        stairCond = parameters['staircaseConditions'][i]
+        this_stair = parameters['stairCase'][int(stairCond)]
+
+        # Start trial
+        this_stair, average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed = trial(
-                              parameters, condition, stairCase,
+                              parameters, condition, this_stair,
                               win=win, oxi=oxiTask,
                               confidenceRating=confidenceRating)
 
         # Store results
         results_df = results_df.append([
                     pd.DataFrame({'Condition': [condition],
+                                  'StairCond': [stairCond],
                                   'Estimation': [estimation],
                                   'EstimationRT': [estimationRT],
                                   'Confidence': [confidence],

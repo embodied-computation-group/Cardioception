@@ -69,19 +69,21 @@ def getParameters(subject):
     listenLogo, heartLogo : Psychopy visual instance
         Image used for the inference and recording phases, respectively.
     """
-    parameters = {'confScale': [1, 7],
-                  'labelsRating': ['Guess', 'Certain'],
-                  'screenNb': 0,
-                  'monitor': 'testMonitor',
-                  'nFeedback': 10,
-                  'nConfidence': 5,
-                  'respMax': 8,
-                  'minRatingTime': 1,
-                  'maxRatingTime': 3,
-                  'startKey': 'space',
-                  'allowedKeys': ['up', 'down'],
-                  'nTrials': 50,
-                  'nBeatsLim': 5}
+    parameters = dict()
+    parameters['confScale'] = [1, 7]
+    parameters['labelsRating'] = ['Guess', 'Certain']
+    parameters['screenNb'] = 0
+    parameters['monitor'] = 'testMonitor'
+    parameters['nFeedback'] = 10
+    parameters['nConfidence'] = 5
+    parameters['respMax'] = 8
+    parameters['minRatingTime'] = 1
+    parameters['maxRatingTime'] = 3
+    parameters['startKey'] = 'space'
+    parameters['allowedKeys'] = ['up', 'down']
+    parameters['nTrials'] = 100
+    parameters['nBeatsLim'] = 5
+    parameters['nStaircase'] = 2
 
     # Create randomized condition vector
     parameters['Conditions'] = np.hstack(
@@ -89,18 +91,40 @@ def getParameters(subject):
              np.array(['Less'] * round(parameters['nTrials']/2))])
     np.random.shuffle(parameters['Conditions'])  # Shuffle vector
 
-    parameters['stairCase'] = data.StairHandler(
-                        startVal=30, nTrials=parameters['nTrials'], nUp=1,
-                        nDown=2, stepSizes=[20, 12, 7, 4, 3, 2, 1],
-                        stepType='lin', minVal=15, maxVal=100)
+    # Create staircase condition vector
+    parameters['staircaseConditions'] = np.array([])
+    for i in range(parameters['nStaircase']):
+        parameters['staircaseConditions'] = \
+            np.hstack([parameters['staircaseConditions'],
+                      np.array([i] * round(parameters['nTrials']/2))])
+    np.random.shuffle(parameters['staircaseConditions'])  # Shuffle vector
 
+    # Ensure same length
+    while len(parameters['staircaseConditions']) < parameters['nTrials']:
+        parameters['staircaseConditions'] = \
+            np.append(parameters['staircaseConditions'][0],
+                      parameters['staircaseConditions'])
+
+    parameters['stairCase'] = []
+    parameters['stairCase'].append(
+        data.StairHandler(
+                    startVal=40, nTrials=parameters['nTrials'], nUp=1,
+                    nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
+                    stepType='lin', minVal=1, maxVal=100))
+    if parameters['nStaircase'] == 2:
+        parameters['stairCase'].append(
+            data.StairHandler(
+                        startVal=5, nTrials=parameters['nTrials'], nUp=1,
+                        nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
+                        stepType='lin', minVal=1, maxVal=100))
     # Open seral port for Oximeter
     parameters['serial'] = serial.Serial('COM8')
 
     # Set default path /Results/ 'Subject ID' /
     parameters['subject'] = subject
     parameters['path'] = os.getcwd()
-    parameters['results'] = parameters['path'] + '/' + subject
+    parameters['results'] = parameters['path'] + '/Results/' + subject
+
     # Create Results directory of not already exists
     if not os.path.exists(parameters['results']):
         os.makedirs(parameters['results'])
@@ -111,15 +135,35 @@ def getParameters(subject):
         was higher or lower than your heart rate?""",
         'Confidence': 'How confident are you about your estimation?'}
 
-    parameters['Tutorial1'] = """During this experiment, we are going to record your heart rate and generate sounds reflecting your cardiac activity."""
+    parameters['Tutorial1'] = (
+        "During this experiment, we are going to record your heart rate and"
+        " generate sounds reflecting your cardiac activity.")
 
-    parameters['Tutorial2'] = """When this heart icon is presented, you will have to focus on your cardiac activity while it is recorded for 5 seconds."""
+    parameters['Tutorial2'] = (
+        "When this heart icon is presented, you will have to focus on your"
+        " cardiac activity while it is recorded for 5 seconds.")
 
-    parameters['Tutorial3'] = """After this procedure, you will be presented with the listening and response icons. You will then have to focus on the beats frequency and decide if it is faster than your heart rate as is was previously recorded (UP key) or slower (DOWN key). This beating frequency will ALWAYS be slower or faster than your heart rate as previously recorded."""
+    parameters['Tutorial3'] = (
+        "After this procedure, you will be presented with the listening and"
+        " response icons. You will then have to focus on the beats frequency"
+        " and decide if it is faster than your heart rate as is was previously"
+        " recorded (UP key) or slower (DOWN key). This beating frequency will"
+        " ALWAYS be slower or faster than your heart rate as previously"
+        " recorded.")
 
-    parameters['Tutorial4'] = """Once you have provided your estimation, you will also be asked to provide your level of confidence. A large number here means that you are confident with your estimation, a small number means that you are not confident. You should use the RIGHT and LEFT key to select your response and the DOWN key to confirm."""
+    parameters['Tutorial4'] = (
+        "Once you have provided your estimation, you will also be asked to"
+        " provide your level of confidence. A large number here means that"
+        " you are confident with your estimation, a small number means that"
+        " you are not confident. You should use the RIGHT and LEFT key to"
+        " select your response and the DOWN key to confirm.")
 
-    parameters['Tutorial5'] = """This sequence will be repeated during the task. As you will improve your ability to discriminate between "FASTER" and "SLOWER" conditions, the difficulty will also adaptively improve, meaning that the difference between your True heart rate and the beats you hear will get smaller and smaller."""
+    parameters['Tutorial5'] = (
+        "This sequence will be repeated during the task. As you will improve"
+        " your ability to discriminate between FASTER and SLOWER conditions,"
+        " the difficulty will also adaptively improve, meaning that the"
+        " difference between your True heart rate and the beats you hear will"
+        " get smaller and smaller.")
 
     # Open window
     parameters['win'] = visual.Window(monitor=parameters['monitor'],

@@ -17,5 +17,5 @@ parameters = getParameters(subject)
 results_df = run(parameters, win=parameters['win'], confidenceRating=True,
                  runTutorial=False)
 # Save results
-results_df.to_csv(parameters['results'] + subject + '.txt')
+results_df.to_csv(parameters['results'] + '/' + subject + '.txt')
 parameters['win'].close()

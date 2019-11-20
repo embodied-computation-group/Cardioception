@@ -1,6 +1,6 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
-from psychopy import visual, event
+from psychopy import visual, event, core
 import pandas as pd
 import numpy as np
 from cardioception.recording import Oximeter
@@ -29,7 +29,8 @@ def sequence(parameters, win=None):
                                  index=[0]))
 
     # Save results
-    results_df.to_csv(parameters['results'] + parameters['subjectID'] + '.txt')
+    results_df.to_csv(
+        parameters['results'] + '/' + parameters['subjectID'] + '.txt')
 
 
 def trial(condition, duration, nTrial, parameters, win):
@@ -78,12 +79,14 @@ def trial(condition, duration, nTrial, parameters, win):
     if condition == 'Rest':
         message = visual.TextStim(win, text=parameters['texts']['Rest'],
                                   units='height',
+                                  pos=(0.0, 0.2),
                                   height=0.05)
         message.draw()
         parameters['restLogo'].draw()
     elif (condition == 'Count') | (condition == 'Training'):
         message = visual.TextStim(win, text=parameters['texts']['Count'],
                                   units='height',
+                                  pos=(0.0, 0.2),
                                   height=0.05)
         message.draw()
         parameters['heartLogo'].draw()
@@ -133,13 +136,26 @@ def trial(condition, duration, nTrial, parameters, win):
 
             # Record new key
             key = event.waitKeys()
-            print(nCounts)
+            print(key)
 
             if key[0] == 'backspace':
                 if nCounts:
                     nCounts = nCounts[:-1]
             elif key[0] == 'return':
-                break
+                if all(char.isdigit() for char in nCounts):
+                    nCounts = int(nCounts)
+                    break
+                else:
+                    messageError = visual.TextStim(
+                        win, units='height', height=0.05,
+                        color=(0.0, 0.0, 1.0),
+                        pos=(0, 0.2),
+                        text="You should only provide numbers")
+                    messageError.draw()
+                    win.flip()
+                    core.wait(2)
+            elif len(key) == 1:
+                nCounts += key[0]
             elif key[0][:3] == 'num':
                 nCounts += key[0][-1]
 
@@ -151,7 +167,6 @@ def trial(condition, duration, nTrial, parameters, win):
             recordedText.draw()
             messageCount.draw()
             win.flip()
-        nCounts = int(nCounts)
 
         ##############
         # Rating scale
