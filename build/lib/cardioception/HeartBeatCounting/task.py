@@ -71,7 +71,7 @@ def trial(condition, duration, nTrial, parameters, win):
     event.waitKeys(keyList=parameters['startKey'], maxWait=8)
     win.flip()
 
-    oxi = Oximeter(serial=parameters['serial'], sfreq=75)
+    oxi = Oximeter(serial=parameters['serial'], sfreq=75, add_channels=1)
     oxi.setup()
     oxi.read(duration=2)
 
@@ -98,9 +98,11 @@ def trial(condition, duration, nTrial, parameters, win):
     # Sound signaling trial start
     if (condition == 'Count') | (condition == 'Training'):
         parameters['note'].play()
+        core.wait(0.5)
         parameters['note'].stop()
         oxi.readInWaiting()
-        oxi.triggers[-1] = 3
+        # Add event marker
+        oxi.channels['Channel_0'][-1] = 1
 
     # Record for a desired time length
     oxi.read(duration=duration)
@@ -108,8 +110,13 @@ def trial(condition, duration, nTrial, parameters, win):
     # Sound signaling trial stop
     if (condition == 'Count') | (condition == 'Training'):
         parameters['note'].play()
+        core.wait(1)
         parameters['note'].stop()
-        oxi.triggers[-1] = 3
+        parameters['note'].play()
+        core.wait(1)
+        parameters['note'].stop()
+        # Add event marker
+        oxi.channels['Channel_0'][-1] = 2
 
     # Hide instructions
     win.flip()
@@ -117,7 +124,7 @@ def trial(condition, duration, nTrial, parameters, win):
     # Save recording as np array
     np.save(parameters['results'] + parameters['subjectID']
             + '_' + str(nTrial),
-            np.asarray(oxi.recording))
+            np.asarray([oxi.recording, oxi.peaks, oxi.channels['Channel_0']]))
 
     ###############################
     # Record participant estimation
@@ -136,7 +143,6 @@ def trial(condition, duration, nTrial, parameters, win):
 
             # Record new key
             key = event.waitKeys()
-            print(key)
 
             if key[0] == 'backspace':
                 if nCounts:

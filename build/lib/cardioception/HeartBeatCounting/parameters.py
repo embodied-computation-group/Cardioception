@@ -6,7 +6,7 @@ import numpy as np
 from psychopy import visual, sound
 
 
-def getParameters(subjectID, subjectNumber):
+def getParameters(subjectID, subjectNumber, serialPort):
     """Create task parameters.
 
     Parameters
@@ -95,11 +95,11 @@ def getParameters(subjectID, subjectNumber):
 
     # Open window
     parameters['win'] = visual.Window(screen=parameters['screenNb'],
-                                      fullscr=False,
+                                      fullscr=True,
                                       units='height')
 
     # Serial port - Create the recording instance
-    parameters['serial'] = serial.Serial('COM8')
+    parameters['serial'] = serial.Serial(serialPort)
 
     parameters['restLogo'] = visual.ImageStim(
                         win=parameters['win'],
@@ -112,7 +112,7 @@ def getParameters(subjectID, subjectNumber):
                             units='height',
                             image=parameters['path'] + '/Images/heartbeat.png',
                             pos=(0.0, -0.2))
-    parameters['heartLogo'].size *= 0.1
+    parameters['heartLogo'].size *= 0.05
 
     #######
     # Texts

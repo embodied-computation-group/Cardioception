@@ -35,7 +35,8 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
     if win is not None:
         win = win
 
-    oxiTraining = Oximeter(serial=parameters['serial'], sfreq=75)
+    oxiTraining = Oximeter(serial=parameters['serial'], sfreq=75,
+                           add_channels=1)
 
     # Show tutorial and training trials
     if runTutorial is True:
@@ -44,7 +45,7 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
     if stairCase is None:
         stairCase = parameters['stairCase']
 
-    oxiTask = Oximeter(serial=parameters['serial'], sfreq=75)
+    oxiTask = Oximeter(serial=parameters['serial'], sfreq=75, add_channels=1)
     oxiTask.setup()
     oxiTask.read(duration=1)
 
@@ -160,8 +161,9 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     parameters['heartLogo'].draw()
     win.flip()
 
-    oxi.stim[-1] = 3  # Start trigger
+    oxi.channels['Channel_0'][-1] = 3  # Start trigger
 
+    # Recording
     oxi.read(duration=5.0)
 
     # Get actual heart Rate
@@ -223,7 +225,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
 
     # Start trigger
     oxi.readInWaiting()
-    oxi.stim[-1] = 2
+    oxi.channels['Channel_0'][-1] = 2  # Start trigger
 
     win.flip()
     this_hr.play()
@@ -241,7 +243,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
 
     # End trigger
     oxi.readInWaiting()
-    oxi.stim[-1] = 2
+    oxi.channels['Channel_0'][-1] = 2  # Start trigger
 
     # Check for response provided by the participant
     if not responseKey:

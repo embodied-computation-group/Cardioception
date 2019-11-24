@@ -8,10 +8,11 @@ from psychopy import gui
 g = gui.Dlg()
 g.addField("Subject ID:")
 g.addField("Subject Number:")
+g.addField("Serial Port:")
 g.show()
 
 # Get parameters
-parameters = getParameters(g.data[0], g.data[1])
+parameters = getParameters(g.data[0], g.data[1], g.data[2])
 
 # Run tutorial
 tutorial(parameters)

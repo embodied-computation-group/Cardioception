@@ -81,7 +81,7 @@ def getParameters(subject):
     parameters['maxRatingTime'] = 3
     parameters['startKey'] = 'space'
     parameters['allowedKeys'] = ['up', 'down']
-    parameters['nTrials'] = 100
+    parameters['nTrials'] = 50
     parameters['nBeatsLim'] = 5
     parameters['nStaircase'] = 2
 
