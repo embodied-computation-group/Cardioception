@@ -15,6 +15,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
         Subject identifiant.
     subjectNumber : int
         Participant number.
+    serialPort: str
+        The USB port where the pulse oximeter is plugged.
 
     Attributes
     ----------
