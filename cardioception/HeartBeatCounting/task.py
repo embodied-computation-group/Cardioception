@@ -102,7 +102,6 @@ def trial(condition, duration, nTrial, parameters, win):
         # Add event marker
         oxi.channels['Channel_0'][-1] = 1
         parameters['noteStart'].play()
-        core.wait(0.5)
 
     # Record for a desired time length
     oxi.read(duration=duration)
@@ -111,9 +110,6 @@ def trial(condition, duration, nTrial, parameters, win):
     if (condition == 'Count') | (condition == 'Training'):
         oxi.readInWaiting()
         oxi.channels['Channel_0'][-1] = 2
-        parameters['noteEnd'].play()
-        core.wait(0.4)
-        parameters['noteEnd'].stop()
         parameters['noteEnd'].play()
         core.wait(3)
         # Add event marker

@@ -94,9 +94,9 @@ def getParameters(subjectID, subjectNumber, serialPort):
 
     # Set note played at trial start
     parameters['noteStart'] = \
-        sound.backend_sounddevice.SoundDeviceSound(secs=0.5)
+        sound.Sound(parameters['path'] + '/Sounds/start.wav')
     parameters['noteEnd'] = \
-        sound.backend_sounddevice.SoundDeviceSound(secs=0.2)
+        sound.Sound(parameters['path'] + '/Sounds/stop.wav')
 
     # Open window
     parameters['win'] = visual.Window(screen=parameters['screenNb'],
