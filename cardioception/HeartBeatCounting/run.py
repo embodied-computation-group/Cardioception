@@ -1,6 +1,6 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
-from cardioception.HeartBeatCounting.task import sequence, tutorial
+from cardioception.HeartBeatCounting.task import sequence, tutorial, rest
 from cardioception.HeartBeatCounting.parameters import getParameters
 from psychopy import gui
 
@@ -16,6 +16,9 @@ parameters = getParameters(g.data[0], g.data[1], g.data[2])
 
 # Run tutorial
 tutorial(parameters)
+
+if parameters['restPeriod'] is True:
+    rest(parameters)
 
 # Run the entire sequence
 sequence(parameters)

@@ -102,21 +102,17 @@ def trial(condition, duration, nTrial, parameters, win):
         # Add event marker
         oxi.channels['Channel_0'][-1] = 1
         parameters['noteStart'].play()
-        core.wait(0.5)
 
     # Record for a desired time length
     oxi.read(duration=duration)
 
     # Sound signaling trial stop
     if (condition == 'Count') | (condition == 'Training'):
+        # Add event marker
         oxi.readInWaiting()
         oxi.channels['Channel_0'][-1] = 2
         parameters['noteEnd'].play()
-        core.wait(0.4)
-        parameters['noteEnd'].stop()
-        parameters['noteEnd'].play()
         core.wait(3)
-        # Add event marker
 
     # Hide instructions
     win.flip()
@@ -272,3 +268,35 @@ def tutorial(parameters, win=None):
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
+
+
+def rest(parameters, win=None):
+    """Run tutorial for the Heart Beat Counting Task.
+
+    Parameters
+    ----------
+    parameters : dict
+        Task parameters.
+    win : psychopy window
+        Instance of Psychopy window.
+    """
+    if win is None:
+        win = parameters['win']
+
+    # Show instructions
+    messageStart = visual.TextStim(win, units='height', height=0.05,
+                                   pos=(0.0, 0.2),
+                                   text=("Please rest quietly until the end"
+                                         " of the recodring."))
+    messageStart.draw()
+    parameters['restLogo'].draw()
+    win.flip()
+
+    # Record PPG signal
+    oxi = Oximeter(serial=parameters['serial'], sfreq=75, add_channels=1)
+    oxi.setup()
+    oxi.read(duration=parameters['restLength'])
+
+    # Save recording
+    np.save(parameters['results'] + parameters['subjectID'] + '_Rest',
+            np.asarray([oxi.recording, oxi.peaks, oxi.channels['Channel_0']]))

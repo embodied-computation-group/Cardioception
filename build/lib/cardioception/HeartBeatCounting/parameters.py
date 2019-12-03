@@ -20,6 +20,10 @@ def getParameters(subjectID, subjectNumber, serialPort):
 
     Attributes
     ----------
+    restPeriod : boolean
+        If `True`, a resting period will be proposed before the task.
+    restLength : int
+        The length of the resting period (seconds). Default is 300 seconds.
     screenNb : int
         The screen number (Psychopy parameter). Default set to 0.
     randomize : boolean
@@ -61,6 +65,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
         Dictionnary containing the texts to be presented.
     """
     parameters = dict()
+    parameters['restPeriod'] = True
+    parameters['restLength'] = 300
     parameters['screenNb'] = 0
     parameters['randomize'] = True,
     parameters['startKey'] = 'space',
