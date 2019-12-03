@@ -382,14 +382,15 @@ def tutorial(parameters, win, oxi=None):
     win.flip()
 
     # Listen and response
-    listenResponse = visual.TextStim(win, units='height',
-                                     height=0.03, pos=(0.0, 0.2),
-                                     text=parameters['Tutorial3'])
-    listenResponse.draw()
-    parameters['listenLogo'].draw()
-    win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
-    win.flip()
+    if parameters['taskVersion'] == 'Shandry':
+        listenResponse = visual.TextStim(win, units='height',
+                                         height=0.03, pos=(0.0, 0.2),
+                                         text=parameters['Tutorial3'])
+        listenResponse.draw()
+        parameters['listenLogo'].draw()
+        win.flip()
+        event.waitKeys(keyList=parameters['startKey'])
+        win.flip()
 
     # Run 10 training trials with feedback
     oxi.setup()

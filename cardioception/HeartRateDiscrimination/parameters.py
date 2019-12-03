@@ -178,6 +178,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['win'] = visual.Window(monitor=parameters['monitor'],
                                       screen=parameters['screenNb'],
                                       fullscr=True, units='height')
+    parameters['win'].mouseVisible = False
 
     # Image loading
     parameters['listenLogo'] = visual.ImageStim(

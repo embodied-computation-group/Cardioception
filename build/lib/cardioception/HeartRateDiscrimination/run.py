@@ -15,12 +15,6 @@ subject = g.data[0]
 # Set global task parameters here
 parameters = getParameters(g.data[0], g.data[1], g.data[2])
 
-# parameters['win'].close()
-# from cardioception.recording import Oximeter
-# oxiTask = Oximeter(serial=parameters['serial'], sfreq=75, add_channels=1)
-# oxiTask.setup()
-# oxiTask.read(duration=1)
-
 # Run task
 results_df = run(parameters, win=parameters['win'], confidenceRating=True,
                  runTutorial=False)

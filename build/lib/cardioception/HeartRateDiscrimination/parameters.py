@@ -49,6 +49,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
         The number of trial to run.
     nBeatsLim : int
         The number of beats to record at each trials.
+    nStaircase : int
+        Number of staircase used. Can be 1 or 2.
     Condition : 1d-array
         Array of 0s and 1s encoding the conditions (1 : Higher, 0 : Lower). The
         length of the array is defined by `parameters['nTrials']`. If
@@ -89,7 +91,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['allowedKeys'] = ['up', 'down']
     parameters['nTrials'] = 5
     parameters['nBeatsLim'] = 5
-    parameters['nStaircase'] = 2
+    parameters['nStaircase'] = 1
 
     # Create randomized condition vector
     parameters['Conditions'] = np.hstack(

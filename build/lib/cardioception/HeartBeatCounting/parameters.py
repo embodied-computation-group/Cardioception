@@ -138,17 +138,16 @@ def getParameters(subjectID, subjectNumber, serialPort):
                 "During this experiment, we will ask you to"
                 " count your heartbeats for a certain amount of time.")
     parameters['texts']['Tutorial2'] = (
-        "You will encounter two kinds of condition: the first one will be"
-        " signalled by this \"rest\" icon. Your task here will just be to rest"
-        " quietly for a certain amount of time.")
+        "When you will be presented with this \"heart\" icon, we will ask you"
+        " to count your heart beats by focusing on you body sensations.")
     parameters['texts']['Tutorial3'] = (
-        "The second condition will be signalled by this"
-        " \"heartbeat\" icon. You will then have to try"
-        " to count your heartbeat.")
+        "Sometime, you will also encounter this \"rest\" icon."
+        " In this case your task will just be to sit quietly until the next"
+        " session.")
     parameters['texts']['Tutorial4'] = (
         "The beginning and the end of the task will be signalled by two tones"
         " like the ones you hear: one prolonged tone at the beginning and two"
-        " faster tones at the end.")
+        " tones at the end.")
     parameters['texts']['Tutorial5'] = (
         "After this period, you will be asked to estimate the exact number of"
         " heartbeat you counted during this period. Please enter your response"
