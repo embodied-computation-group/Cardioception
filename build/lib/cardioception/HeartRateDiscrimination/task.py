@@ -164,17 +164,24 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     oxi.channels['Channel_0'][-1] = 3  # Start trigger
 
     # Recording
-    oxi.read(duration=5.0)
+    while True:
 
-    # Get actual heart Rate
-    average_hr = np.mean(oxi.instant_rr[-(5 * oxi.sfreq):])
-    average_hr = int(round(60000/average_hr))
+        # Read PPG
+        oxi.read(duration=5.0)
 
-    # Control for extrem values
-    if average_hr < 20:
-        average_hr = 20
-    elif average_hr > 200:
-        average_hr = 200
+        # Get actual heart Rate
+        average_hr = np.mean(oxi.instant_rr[-(5 * oxi.sfreq):])
+        average_hr = int(round(60000/average_hr))
+
+        # Control for extrem values
+        if (average_hr < 20) & (average_hr > 200):
+            break
+        else:
+            message = visual.TextStim(win, units='height', height=0.03,
+                                      text=('Please do not moove your hand'
+                                            'during the recordin'))
+            message.draw()
+            core.wait()
 
     # Fixation cross
     win.flip()
