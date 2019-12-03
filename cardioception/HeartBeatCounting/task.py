@@ -113,7 +113,7 @@ def trial(condition, duration, nTrial, parameters, win):
         oxi.channels['Channel_0'][-1] = 2
         parameters['noteEnd'].play()
         core.wait(0.4)
-        parameters['note'].stop()
+        parameters['noteEnd'].stop()
         parameters['noteEnd'].play()
         core.wait(3)
         # Add event marker
@@ -161,7 +161,7 @@ def trial(condition, duration, nTrial, parameters, win):
                     win.flip()
                     core.wait(2)
             else:
-                nCounts += [int(s) for s in key[0] if s.isdigit()][0]
+                nCounts += [s for s in key[0] if s.isdigit()][0]
 
             # Show the text on the screen
             recordedText = visual.TextStim(win,

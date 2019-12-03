@@ -93,12 +93,16 @@ def getParameters(subjectID, subjectNumber, serialPort):
         os.makedirs(parameters['results'])
 
     # Set note played at trial start
-    parameters['note'] = sound.backend_sounddevice.SoundDeviceSound(secs=0.5)
+    parameters['noteStart'] = \
+        sound.backend_sounddevice.SoundDeviceSound(secs=0.5)
+    parameters['noteEnd'] = \
+        sound.backend_sounddevice.SoundDeviceSound(secs=0.2)
 
     # Open window
     parameters['win'] = visual.Window(screen=parameters['screenNb'],
                                       fullscr=True,
                                       units='height')
+    parameters['win'].mouseVisible = False
 
     # Serial port - Create the recording instance
     parameters['serial'] = serial.Serial(serialPort)

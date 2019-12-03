@@ -135,36 +135,49 @@ def getParameters(subjectID, subjectNumber, serialPort):
         " by concentrating on your body feelings")
     parameters['texts']['nCount'] = "How many heartbeats did you count?"
     parameters['texts']['confidence'] = (
-        "How confident are you about your estimation?")
+        "How confident are you about your count?")
 
     # Tutorial instructions
     parameters['texts']['Tutorial1'] = (
-                "During this experiment, we will ask you to"
-                " count your heartbeats for a certain amount of time.")
+                "During this experiment, we will ask you to silently"
+                " count your heartbeats for different intervals of time.")
     parameters['texts']['Tutorial2'] = (
-        "When you will be presented with this \"heart\" icon, we will ask you"
-        " to count your heart beats by focusing on you body sensations.")
+         "When you see this \"heart\" icon, you will silently count your"
+         " heartbeats by focusing on your body sensations.")
     parameters['texts']['Tutorial3'] = (
         "Sometime, you will also encounter this \"rest\" icon."
         " In this case your task will just be to sit quietly until the next"
         " session.")
     parameters['texts']['Tutorial4'] = (
-        "The beginning and the end of the task will be signalled by two tones"
-        " like the ones you hear: one prolonged tone at the beginning and two"
-        " tones at the end.")
+        "The beginning and the end of the task will be signalled when you hear"
+        " the words 'start'' and 'stop'. While counting your heartbeats, you"
+        " may close your eyes if you find that helpful. Please keep your hand"
+        " still during the counting period, to avoid interfering with"
+        " the heartbeat recording.")
     parameters['texts']['Tutorial5'] = (
-        "After this period, you will be asked to estimate the exact number of"
-        " heartbeat you counted during this period. Please enter your response"
-        " using the number pad and press return when done. You can also"
-        " correct your estimation using backspace.")
+        "After the counting part of the task, you will be asked to report the"
+        " exact number of heartbeats you felt during the interval between"
+        " 'start' and 'stop'. Please do not try to estimate the number of"
+        " heartbeats, but instead only report the heartbeats you actually felt"
+        " during the interval. You will input your response using the number"
+        " pad and press return when done. You can also correct your response"
+        " using backspace.")
     parameters['texts']['Tutorial6'] = (
-        "Once your response has been provided, you will be asked to estimate"
-        " your level of confidence with this estimation. A large number here"
-        " means that you are confident with your estimation, a small number"
-        " means that you are not confident. You should use the RIGHT and LEFT"
+        "Once you have made your response, you will estimate your subjective"
+        " feeling of confidence in how accurate your count was"
+        " for that interval. A large number here means that you are totally"
+        " certain you counted the exact number of heartbeats that occured,"
+        " and a small number means that you are totally uncertain in the"
+        " number of heartbeats. You should use the RIGHT and LEFT"
         " key to select your response and the DOWN key to confirm.")
     parameters['texts']['Tutorial7'] = (
-        "These two conditions will alternate during the task and the amount"
-        " of time will vary.")
+        "Before the main task begins there is a short resting period of"
+        " five minutes, during which we will calibrate the heartbeat"
+        " recording. During this period, please sit quietly with your"
+        " hands still to avoid intefering with the calibration."
+        " Afterwards the counting task will begin, and will take about"
+        " 6 minutes in total. You will now complete a short practice task."
+        " Please ask the experimenter if you have any questions before"
+        " continuing to the main experiment.")
 
     return parameters
