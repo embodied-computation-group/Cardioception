@@ -174,7 +174,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         average_hr = int(round(60000/average_hr))
 
         # Control for extrem values
-        if (average_hr < 20) & (average_hr > 200):
+        if (average_hr > 40) & (average_hr < 120):
             break
         else:
             message = visual.TextStim(win, units='height', height=0.03,

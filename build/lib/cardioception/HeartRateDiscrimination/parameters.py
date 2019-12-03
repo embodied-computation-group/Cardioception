@@ -6,13 +6,17 @@ import numpy as np
 from psychopy import data, visual
 
 
-def getParameters(subject):
+def getParameters(subjectID, subjectNumber, serialPort):
     """Create task parameters.
 
     Parameters
     ----------
     subject : str
         Subject ID.
+    subjectNumber : int
+        Participant number.
+    serialPort: str
+        The USB port where the pulse oximeter is plugged.
 
     Attributes
     ----------
@@ -54,8 +58,10 @@ def getParameters(subject):
         The staircase object used to adjust the alpha value.
     serial : PySerial instance
         The serial port used to record the PPG activity.
-    subject : str
-        The subject ID.
+    subjectID : str
+        Subject identifiant.
+    subjectNumber : int
+        Subject reference number.
     path : str
         The task working directory.
     results : str
@@ -118,12 +124,13 @@ def getParameters(subject):
                         nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
                         stepType='lin', minVal=1, maxVal=100))
     # Open seral port for Oximeter
-    parameters['serial'] = serial.Serial('COM8')
+    parameters['serial'] = serial.Serial(serialPort)
 
     # Set default path /Results/ 'Subject ID' /
-    parameters['subject'] = subject
+    parameters['subject'] = subjectID
+    parameters['subjectNumber'] = subjectNumber
     parameters['path'] = os.getcwd()
-    parameters['results'] = parameters['path'] + '/Results/' + subject
+    parameters['results'] = parameters['path'] + '/Results/' + subjectID
 
     # Create Results directory of not already exists
     if not os.path.exists(parameters['results']):

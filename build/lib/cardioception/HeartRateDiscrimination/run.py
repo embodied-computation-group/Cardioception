@@ -7,11 +7,13 @@ from psychopy import gui
 # Create a GUI and store subject ID
 g = gui.Dlg()
 g.addField("Subject ID:")
+g.addField("Subject Number:")
+g.addField("Serial Port:")
 g.show()
 subject = g.data[0]
 
 # Set global task parameters here
-parameters = getParameters(subject)
+parameters = getParameters(g.data[0], g.data[1], g.data[2])
 
 # parameters['win'].close()
 # from cardioception.recording import Oximeter
