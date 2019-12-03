@@ -94,29 +94,29 @@ def trial(condition, duration, nTrial, parameters, win):
 
     # Wait for a beat to start the task
     oxi.waitBeat()
+    core.wait(3)
 
     # Sound signaling trial start
     if (condition == 'Count') | (condition == 'Training'):
-        parameters['note'].play()
-        core.wait(0.5)
-        parameters['note'].stop()
         oxi.readInWaiting()
         # Add event marker
         oxi.channels['Channel_0'][-1] = 1
+        parameters['noteStart'].play()
+        core.wait(0.5)
 
     # Record for a desired time length
     oxi.read(duration=duration)
 
     # Sound signaling trial stop
     if (condition == 'Count') | (condition == 'Training'):
-        parameters['note'].play()
-        core.wait(1)
-        parameters['note'].stop()
-        parameters['note'].play()
-        core.wait(1)
-        parameters['note'].stop()
-        # Add event marker
+        oxi.readInWaiting()
         oxi.channels['Channel_0'][-1] = 2
+        parameters['noteEnd'].play()
+        core.wait(0.4)
+        parameters['note'].stop()
+        parameters['noteEnd'].play()
+        core.wait(3)
+        # Add event marker
 
     # Hide instructions
     win.flip()
@@ -160,10 +160,8 @@ def trial(condition, duration, nTrial, parameters, win):
                     messageError.draw()
                     win.flip()
                     core.wait(2)
-            elif len(key) == 1:
-                nCounts += key[0]
-            elif key[0][:3] == 'num':
-                nCounts += key[0][-1]
+            else:
+                nCounts += [int(s) for s in key[0] if s.isdigit()][0]
 
             # Show the text on the screen
             recordedText = visual.TextStim(win,
@@ -218,46 +216,57 @@ def tutorial(parameters, win=None):
     if win is None:
         win = parameters['win']
 
+    # Tutorial 1
     messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['texts']['Tutorial1'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
+    # Tutorial 2
     messageStart = visual.TextStim(win, units='height', height=0.05,
                                    pos=(0.0, 0.2),
                                    text=parameters['texts']['Tutorial2'])
-    messageStart.draw()
-    parameters['restLogo'].draw()
-    win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
-
-    messageStart = visual.TextStim(win, units='height', height=0.05,
-                                   pos=(0.0, 0.2),
-                                   text=parameters['texts']['Tutorial3'])
     messageStart.draw()
     parameters['heartLogo'].draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
+    # Tutorial 3
+    if parameters['taskVersion'] == 'Shandry':
+
+        messageStart = visual.TextStim(win, units='height', height=0.05,
+                                       pos=(0.0, 0.2),
+                                       text=parameters['texts']['Tutorial3'])
+        messageStart.draw()
+        parameters['restLogo'].draw()
+        win.flip()
+        event.waitKeys(keyList=parameters['startKey'])
+
+    # Tutorial 4
     messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['texts']['Tutorial4'])
     messageStart.draw()
     win.flip()
+
+
     event.waitKeys(keyList=parameters['startKey'])
 
+    # Tutorial 5
     messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['texts']['Tutorial5'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
+    # Tutorial 6
     messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['texts']['Tutorial6'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
+    # Tutorial 7
     messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['texts']['Tutorial7'])
     messageStart.draw()
