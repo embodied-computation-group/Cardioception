@@ -113,6 +113,8 @@ def trial(condition, duration, nTrial, parameters, win):
         oxi.channels['Channel_0'][-1] = 2
         parameters['noteEnd'].play()
         core.wait(3)
+        oxi.readInWaiting()
+
 
     # Hide instructions
     win.flip()
