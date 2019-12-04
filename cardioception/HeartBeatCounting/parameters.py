@@ -79,8 +79,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
     if parameters['taskVersion'] == 'Garfinkel':
         parameters['times'] = np.array([25, 30, 35, 40, 45, 50])
         np.random.shuffle(parameters['times'])
-        parameters['times'] = np.insert(parameters['times'], 0, 20)
-        parameters['conditions'] = ['Training', 'Count', 'Count', 'Count',
+        parameters['conditions'] = ['Count', 'Count', 'Count',
                                     'Count', 'Count', 'Count']
 
     elif parameters['taskVersion'] == 'Shandry':

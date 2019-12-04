@@ -24,6 +24,8 @@ def sequence(parameters, win=None):
         results_df = results_df.append(
                     pd.DataFrame({'nTrial': nTrial,
                                   'Reported': nCount,
+                                  'Condition': condition,
+                                  'Duration': duration,
                                   'Confidence': confidence,
                                   'ConfidenceRT': confidenceRT},
                                  ignore_index=True))
@@ -114,7 +116,6 @@ def trial(condition, duration, nTrial, parameters, win):
         parameters['noteEnd'].play()
         core.wait(3)
         oxi.readInWaiting()
-
 
     # Hide instructions
     win.flip()

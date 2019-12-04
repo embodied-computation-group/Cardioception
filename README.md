@@ -53,8 +53,10 @@ By default, this task implement the version used in recent publications <sup>3</
 
 **The accuracy score is calculated using the following equation:**
 
+The interoceptive accuracy score is computed using the formula proposed by Hart et al.<sup>4</sup> as follow:
+
 <div class="MathJax_Display" style="text-align: center;">
-<img src="http://latex.codecogs.com/gif.latex?Score=\frac{\left | N_{real} - N_{counted} \right |}{\frac{N_{real} + N_{reported}}{2}}" align="center"/>
+<img src="http://latex.codecogs.com/gif.latex?Score=1-\frac{\left | N_{real} - N_{reported} \right |}{\frac{N_{real} + N_{reported}}{2}}" align="center"/>
 </div>
 
 After each counting response, the participant is prompted to rate their subjective confidence (from 0 to 100), used to calculate "interoceptive awareness", i.e. the relationship of confidence and accuracy. Total task runtime using default settings is approximately **4 minutes**.
@@ -79,6 +81,8 @@ The [Analyses](../cardioception/Analyses/Analyses.ipynd) folder contains noteboo
 2. Schandry, R. (1981). Heart Beat Perception and Emotional Experience. Psychophysiology, 18(4), 483–488. https://doi.org/10.1111/j.1469-8986.1981.tb02486.x
 
 3. Leganes-Fonteneau, M., Cheang, Y., Lam, Y., Garfinkel, S., & Duka, T. (2019). Interoceptive awareness is associated with acute alcohol-induced changes in subjective effects. Pharmacology Biochemistry and Behavior, 181, 69–76. https://doi.org/10.1016/j.pbb.2019.03.007
+
+4. Hart, N., McGowan, J., Minati, L., & Critchley, H. D. (2013). Emotional Regulation and Bodily Sensation: Interoceptive Awareness Is Intact in Borderline Personality Disorder. Journal of Personality Disorders, 27(4), 506–518. https://doi.org/10.1521/pedi_2012_26_049
 
 # Credit
 Some icons used in the Figures or presented during the tasks were downloaded from **Flaticon** [www.flaticon.com](www.flaticon.com).
