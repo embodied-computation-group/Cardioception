@@ -66,7 +66,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
     """
     parameters = dict()
     parameters['restPeriod'] = True
-    parameters['restLength'] = 300
+    parameters['restLength'] = 10
     parameters['screenNb'] = 0
     parameters['randomize'] = True,
     parameters['startKey'] = 'space',
@@ -134,10 +134,10 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['texts'] = dict()
     parameters['texts']['Rest'] = 'Please sit quitely unitil the next session'
     parameters['texts']['Count'] = (
-        "After the tone, try to count your heart beats"
+        "After you hear start, try to count your heartbeats"
         " by concentrating on your body feelings")
     parameters['texts']['Training'] = (
-        "After the tone, try to count your heart beats"
+        "After the tone, try to count your heartbeats"
         " by concentrating on your body feelings")
     parameters['texts']['nCount'] = "How many heartbeats did you count?"
     parameters['texts']['confidence'] = (

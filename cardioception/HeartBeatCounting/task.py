@@ -68,7 +68,7 @@ def trial(condition, duration, nTrial, parameters, win):
                                    text='Press space to continue')
     messageStart.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'], maxWait=8)
+    event.waitKeys(keyList=parameters['startKey'])
     win.flip()
 
     oxi = Oximeter(serial=parameters['serial'], sfreq=75, add_channels=1)
@@ -172,7 +172,6 @@ def trial(condition, duration, nTrial, parameters, win):
         # Rating scale
         ##############
         if parameters['rating'] is True:
-            ratingScale = visual.RatingScale(win)
             markerStart = np.random.choice(
                                 np.arange(parameters['confScale'][0],
                                           parameters['confScale'][1]))
@@ -183,12 +182,9 @@ def trial(condition, duration, nTrial, parameters, win):
                                              labels=parameters['labelsRating'],
                                              acceptKeys='down',
                                              markerStart=markerStart)
-
-            message = visual.TextStim(
-                        win,
-                        text=parameters['texts']['confidence'],
-                        units='height', height=0.05)
-
+            message = visual.TextStim(win,
+                                      text=parameters['texts']['confidence'],
+                                      units='height', height=0.05)
             while ratingScale.noResponse:
                 message.draw()
                 ratingScale.draw()
@@ -286,8 +282,8 @@ def rest(parameters, win=None):
     # Show instructions
     messageStart = visual.TextStim(win, units='height', height=0.05,
                                    pos=(0.0, 0.2),
-                                   text=("Please rest quietly until the end"
-                                         " of the recording."))
+                                   text=("Calibrating... Please sit quietly"
+                                         " until the end of the recording."))
     messageStart.draw()
     parameters['restLogo'].draw()
     win.flip()
