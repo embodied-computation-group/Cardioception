@@ -66,7 +66,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
     """
     parameters = dict()
     parameters['restPeriod'] = True
-    parameters['restLength'] = 10
+    parameters['restLength'] = 300
     parameters['screenNb'] = 0
     parameters['randomize'] = True
     parameters['startKey'] = 'space'
@@ -185,5 +185,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
         " 6 minutes in total. You will now complete a short practice task."
         " Please ask the experimenter if you have any questions before"
         " continuing to the main experiment.")
+    parameters['texts']['Tutorial8'] = (
+        "Good job! If you have any question, ask the experimenter now,"
+        " otherwise press SPACE to continue to the experiment.")
 
     return parameters

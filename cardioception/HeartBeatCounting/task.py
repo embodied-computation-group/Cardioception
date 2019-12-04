@@ -241,7 +241,6 @@ def tutorial(parameters, win=None):
     messageStart.draw()
     win.flip()
 
-
     event.waitKeys(keyList=parameters['startKey'])
 
     # Tutorial 5
@@ -261,6 +260,16 @@ def tutorial(parameters, win=None):
     # Tutorial 7
     messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['texts']['Tutorial7'])
+    messageStart.draw()
+    win.flip()
+    event.waitKeys(keyList=parameters['startKey'])
+
+    # Practice trial
+    nCount, confidence, confidenceRT = trial('Count', 15, 0,  parameters, win)
+
+    # Tutorial 8
+    messageStart = visual.TextStim(win, units='height', height=0.05,
+                                   text=parameters['texts']['Tutorial8'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
