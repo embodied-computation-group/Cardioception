@@ -93,7 +93,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['subjectNumber'] = subjectNumber
 
     parameters['path'] = os.getcwd()
-    parameters['results'] = parameters['path'] + '/Results/' + subjectID + '/'
+    parameters['results'] = (parameters['path'] + '/Results/' +
+                             subjectID + '_' + subjectNumber + '/')
     # Create Results directory of not already exists
     if not os.path.exists(parameters['results']):
         os.makedirs(parameters['results'])
@@ -146,7 +147,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
     # Tutorial instructions
     parameters['texts']['Tutorial1'] = (
                 "During this experiment, we will ask you to silently"
-                " count your heartbeats for different intervals of time.")
+                " count your heartbeats for different intervals of time."
+                " Press SPACE to continue.")
     parameters['texts']['Tutorial2'] = (
          "When you see this \"heart\" icon, you will silently count your"
          " heartbeats by focusing on your body sensations.")
@@ -173,19 +175,21 @@ def getParameters(subjectID, subjectNumber, serialPort):
         " feeling of confidence in how accurate your count was"
         " for that interval. A large number here means that you are totally"
         " certain you counted the exact number of heartbeats that occured,"
-        " and a small number means that you are totally uncertain in the"
+        " and a small number means that you are totally uncertain about the"
         " number of heartbeats. You should use the RIGHT and LEFT"
         " key to select your response and the DOWN key to confirm.")
     parameters['texts']['Tutorial7'] = (
         "Before the main task begins there is a short resting period of"
-        " five minutes, during which we will calibrate the heartbeat"
+        " several minutes, during which we will calibrate the heartbeat"
         " recording. During this period, please sit quietly with your"
-        " hands still to avoid intefering with the calibration."
-        " Afterwards the counting task will begin, and will take about"
-        " 6 minutes in total. You will now complete a short practice task."
+        " hands still to avoid interfering with the calibration."
+        " Afterwards, the counting task will begin, and will take about"
+        " 6 minutes in total."
+    parameters['texts']['Tutorial8'] = (
+        " You will now complete a short practice task."
         " Please ask the experimenter if you have any questions before"
         " continuing to the main experiment.")
-    parameters['texts']['Tutorial8'] = (
+    parameters['texts']['Tutorial9'] = (
         "Good job! If you have any question, ask the experimenter now,"
         " otherwise press SPACE to continue to the experiment.")
 
