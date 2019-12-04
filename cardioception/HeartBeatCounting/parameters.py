@@ -68,10 +68,10 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['restPeriod'] = True
     parameters['restLength'] = 10
     parameters['screenNb'] = 0
-    parameters['randomize'] = True,
-    parameters['startKey'] = 'space',
-    parameters['rating'] = True,
-    parameters['confScale'] = [1, 7],
+    parameters['randomize'] = True
+    parameters['startKey'] = 'space'
+    parameters['rating'] = True
+    parameters['confScale'] = [1, 7]
     parameters['labelsRating'] = ['Guess', 'Certain']
     parameters['taskVersion'] = 'Garfinkel'
 

@@ -189,8 +189,8 @@ def trial(condition, duration, nTrial, parameters, win):
                 message.draw()
                 ratingScale.draw()
                 win.flip()
-                confidence = ratingScale.getRating()
-                confidenceRT = ratingScale.getRT()
+            confidence = ratingScale.getRating()
+            confidenceRT = ratingScale.getRT()
 
     return nCounts, confidence, confidenceRT
 

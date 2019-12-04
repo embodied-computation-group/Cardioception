@@ -68,7 +68,7 @@ def trial(condition, duration, nTrial, parameters, win):
                                    text='Press space to continue')
     messageStart.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'], maxWait=8)
+    event.waitKeys(keyList=parameters['startKey'])
     win.flip()
 
     oxi = Oximeter(serial=parameters['serial'], sfreq=75, add_channels=1)
@@ -186,11 +186,12 @@ def trial(condition, duration, nTrial, parameters, win):
                                       text=parameters['texts']['confidence'],
                                       units='height', height=0.05)
             while ratingScale.noResponse:
+                print('rating')
                 message.draw()
                 ratingScale.draw()
                 win.flip()
-                confidence = ratingScale.getRating()
-                confidenceRT = ratingScale.getRT()
+            confidence = ratingScale.getRating()
+            confidenceRT = ratingScale.getRT()
 
     return nCounts, confidence, confidenceRT
 
