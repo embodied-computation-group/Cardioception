@@ -24,9 +24,11 @@ def sequence(parameters, win=None):
         results_df = results_df.append(
                     pd.DataFrame({'nTrial': nTrial,
                                   'Reported': nCount,
+                                  'Condition': condition,
+                                  'Duration': duration,
                                   'Confidence': confidence,
                                   'ConfidenceRT': confidenceRT},
-                                 index=[0]))
+                                 ignore_index=True))
 
     # Save results
     results_df.to_csv(
@@ -113,6 +115,7 @@ def trial(condition, duration, nTrial, parameters, win):
         oxi.channels['Channel_0'][-1] = 2
         parameters['noteEnd'].play()
         core.wait(3)
+        oxi.readInWaiting()
 
     # Hide instructions
     win.flip()
@@ -264,12 +267,19 @@ def tutorial(parameters, win=None):
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
-    # Practice trial
-    nCount, confidence, confidenceRT = trial('Count', 15, 0,  parameters, win)
-
     # Tutorial 8
     messageStart = visual.TextStim(win, units='height', height=0.05,
                                    text=parameters['texts']['Tutorial8'])
+    messageStart.draw()
+    win.flip()
+    event.waitKeys(keyList=parameters['startKey'])
+
+    # Practice trial
+    nCount, confidence, confidenceRT = trial('Count', 15, 0,  parameters, win)
+
+    # Tutorial 9
+    messageStart = visual.TextStim(win, units='height', height=0.05,
+                                   text=parameters['texts']['Tutorial9'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])

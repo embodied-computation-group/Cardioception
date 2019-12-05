@@ -82,16 +82,16 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['labelsRating'] = ['Guess', 'Certain']
     parameters['screenNb'] = 0
     parameters['monitor'] = 'testMonitor'
-    parameters['nFeedback'] = 10
+    parameters['nFeedback'] = 1
     parameters['nConfidence'] = 5
     parameters['respMax'] = 8
     parameters['minRatingTime'] = 1
     parameters['maxRatingTime'] = 3
     parameters['startKey'] = 'space'
     parameters['allowedKeys'] = ['up', 'down']
-    parameters['nTrials'] = 5
+    parameters['nTrials'] = 150
     parameters['nBeatsLim'] = 5
-    parameters['nStaircase'] = 1
+    parameters['nStaircase'] = 2
 
     # Create randomized condition vector
     parameters['Conditions'] = np.hstack(

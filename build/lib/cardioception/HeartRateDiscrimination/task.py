@@ -399,7 +399,7 @@ def tutorial(parameters, win, oxi=None):
         # Ramdom selection of condition
         condition = np.random.choice(['More', 'Less'])
 
-        average_hr, estimation, estimationRT, confidence, \
+        this_stair, average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed = trial(
                                 parameters, condition, win=win, oxi=oxi,
                                 feedback=True, confidenceRating=False)
@@ -412,13 +412,15 @@ def tutorial(parameters, win, oxi=None):
     event.waitKeys(keyList=parameters['startKey'])
     win.flip()
 
+    oxi.setup()
+    oxi.read(duration=2)
     # Run 5 training trials with confidence rating
     for i in range(parameters['nConfidence']):
 
         # Ramdom selection of condition
         condition = np.random.choice(['More', 'Less'])
 
-        average_hr, estimation, estimationRT, confidence, \
+        this_stair, average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed = trial(
                                 parameters, condition, win=win, oxi=oxi,
                                 confidenceRating=True)

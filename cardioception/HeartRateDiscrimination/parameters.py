@@ -82,16 +82,16 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['labelsRating'] = ['Guess', 'Certain']
     parameters['screenNb'] = 0
     parameters['monitor'] = 'testMonitor'
-    parameters['nFeedback'] = 10
+    parameters['nFeedback'] = 1
     parameters['nConfidence'] = 5
     parameters['respMax'] = 8
     parameters['minRatingTime'] = 1
     parameters['maxRatingTime'] = 3
     parameters['startKey'] = 'space'
     parameters['allowedKeys'] = ['up', 'down']
-    parameters['nTrials'] = 5
+    parameters['nTrials'] = 150
     parameters['nBeatsLim'] = 5
-    parameters['nStaircase'] = 1
+    parameters['nStaircase'] = 2
 
     # Create randomized condition vector
     parameters['Conditions'] = np.hstack(
@@ -164,7 +164,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
         "Once you have provided your estimation, you will also be asked to"
         " provide your level of confidence. A large number here means that"
         " you are confident with your estimation, a small number means that"
-        " you are not confident. You should use the RIGHT and LEFT key to"
+        " you are guessing. You should use the RIGHT and LEFT key to"
         " select your response and the DOWN key to confirm.")
 
     parameters['Tutorial5'] = (

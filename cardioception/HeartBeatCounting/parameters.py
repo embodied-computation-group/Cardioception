@@ -183,7 +183,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
         " recording. During this period, please sit quietly with your"
         " hands still to avoid interfering with the calibration."
         " Afterwards, the counting task will begin, and will take about"
-        " 6 minutes in total."
+        " 6 minutes in total.")
     parameters['texts']['Tutorial8'] = (
         " You will now complete a short practice task."
         " Please ask the experimenter if you have any questions before"
