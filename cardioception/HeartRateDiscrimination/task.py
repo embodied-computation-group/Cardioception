@@ -170,7 +170,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         oxi.read(duration=5.0)
 
         # Get actual heart Rate
-        average_hr = np.mean(oxi.instant_rr[-(5 * oxi.sfreq):])
+        average_hr = np.nanmean(np.unique(oxi.instant_rr[-(5 * oxi.sfreq):]))
         average_hr = int(round(60000/average_hr))
 
         # Control for extrem values

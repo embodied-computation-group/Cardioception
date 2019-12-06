@@ -82,7 +82,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['labelsRating'] = ['Guess', 'Certain']
     parameters['screenNb'] = 0
     parameters['monitor'] = 'testMonitor'
-    parameters['nFeedback'] = 1
+    parameters['nFeedback'] = 10
     parameters['nConfidence'] = 5
     parameters['respMax'] = 8
     parameters['minRatingTime'] = 1
@@ -146,14 +146,15 @@ def getParameters(subjectID, subjectNumber, serialPort):
 
     parameters['Tutorial1'] = (
         "During this experiment, we are going to record your heart rate and"
-        " generate sounds reflecting your cardiac activity.")
+        " generate sounds reflecting your cardiac activity."
+        " Please press SPACE to continue.")
 
     parameters['Tutorial2'] = (
         "When this heart icon is presented, you will have to focus on your"
         " cardiac activity while it is recorded for 5 seconds.")
 
     parameters['Tutorial3'] = (
-        "After this procedure, you will be presented with the listening and"
+        "After this procedure, you will see the listening and"
         " response icons. You will then have to focus on the beats frequency"
         " and decide if it is faster than your heart rate as is was previously"
         " recorded (UP key) or slower (DOWN key). This beating frequency will"
