@@ -2,8 +2,8 @@
 
 import numpy as np
 import time
-from systole.detection import oxi_peaks
-from systol.plotting import plot_oximeter, plot_events, plot_hr
+from cardioception.detection import oxi_peaks
+from cardioception.plotting import plot_oximeter, plot_events, plot_hr
 
 
 class Oximeter():
