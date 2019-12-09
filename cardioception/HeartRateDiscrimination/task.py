@@ -16,9 +16,10 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
         Task parameters.
     stairCase : Instance of staircase handler.
         If `None`, will use default values:
-            data.StairHandler(startVal=30, nTrials=100, nUp=1, nDown=2,
-                              stepSizes=[20, 12, 7, 4, 3, 2, 1],
-                              stepType='lin', minVal=1, maxVal=100)
+            data.StairHandler(
+                        startVal=40, nTrials=parameters['nTrials'], nUp=1,
+                        nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
+                        stepType='lin', minVal=1, maxVal=100))
     win : psychopy window
         Instance of Psychopy window.
     confidenceRating : boolean
