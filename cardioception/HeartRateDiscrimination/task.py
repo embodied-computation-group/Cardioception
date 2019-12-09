@@ -55,8 +55,8 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
 
         if i == 0:
             # Ask the participant to press 'Space' (default) to start
-            messageStart = visual.TextStim(win, units='height',
-                                           height=0.03,
+            messageStart = visual.TextStim(win,
+                                           height=parameters['textSize'],
                                            text='Press space to continue')
             messageStart.autoDraw = True  # Show instructions
             win.flip()
@@ -153,8 +153,8 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     ###########
     # Recording
     ###########
-    messageRecord = visual.TextStim(win, units='height',
-                                    height=0.03,
+    messageRecord = visual.TextStim(win,
+                                    height=parameters['textSize'],
                                     pos=(0.0, 0.2),
                                     text='Listen to your Heart')
     messageRecord.draw()
@@ -178,7 +178,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         if (average_hr > 40) & (average_hr < 120):
             break
         else:
-            message = visual.TextStim(win, units='height', height=0.03,
+            message = visual.TextStim(win, height=parameters['textSize'],
                                       text=('Please do not moove your hand'
                                             'during the recordin'))
             message.draw()
@@ -227,7 +227,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     this_hr = sound.Sound(file)
     parameters['listenLogo'].draw()
     # Record participant response (+/-)
-    message = visual.TextStim(win, units='height', height=0.03,
+    message = visual.TextStim(win, height=parameters['textSize'],
                               text=parameters['texts']['Estimation'])
     message.draw()
 
@@ -258,7 +258,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         missed = True
         estimation, estimationRT = None, None
         # Record participant response (+/-)
-        message = visual.TextStim(win, units='height', height=0.03,
+        message = visual.TextStim(win, height=parameters['textSize'],
                                   text='Too late')
         message.draw()
         win.flip()
@@ -291,15 +291,17 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         # Feedback
         if feedback is True:
             if accuracy == 0:
-                acc = visual.TextStim(win, units='height',
-                                      height=0.3, color=(1.0, 0.0, 0.0),
+                acc = visual.TextStim(win,
+                                      height=parameters['textSize'],
+                                      color=(1.0, 0.0, 0.0),
                                       text='False')
                 acc.draw()
                 win.flip()
                 core.wait(2)
             elif accuracy == 1:
-                acc = visual.TextStim(win, units='height',
-                                      height=0.3, color=(0.0, 1.0, 0.0),
+                acc = visual.TextStim(win,
+                                      height=parameters['textSize'],
+                                      color=(0.0, 1.0, 0.0),
                                       text='Correct')
                 acc.draw()
                 win.flip()
@@ -325,7 +327,8 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
                                  markerStart=markerStart)
 
                 message = visual.TextStim(
-                            win, units='height', height=0.03,
+                            win,
+                            height=parameters['textSize'],
                             text=parameters['texts']['Confidence'])
 
                 # Wait for response
@@ -364,8 +367,8 @@ def tutorial(parameters, win, oxi=None):
         Where recording devise.
     """
     # Introduction
-    intro = visual.TextStim(win, units='height',
-                            height=0.03,
+    intro = visual.TextStim(win,
+                            height=parameters['textSize'],
                             text=parameters['Tutorial1'])
     intro.draw()
     win.flip()
@@ -373,8 +376,9 @@ def tutorial(parameters, win, oxi=None):
     win.flip()
 
     # Heartrate recording
-    recording = visual.TextStim(win, units='height',
-                                height=0.03, pos=(0.0, 0.2),
+    recording = visual.TextStim(win,
+                                height=parameters['textSize'],
+                                pos=(0.0, 0.2),
                                 text=parameters['Tutorial2'])
     recording.draw()
     parameters['heartLogo'].draw()
@@ -383,8 +387,9 @@ def tutorial(parameters, win, oxi=None):
     win.flip()
 
     # Listen and response
-    listenResponse = visual.TextStim(win, units='height',
-                                     height=0.03, pos=(0.0, 0.2),
+    listenResponse = visual.TextStim(win,
+                                     height=parameters['textSize'],
+                                     pos=(0.0, 0.2),
                                      text=parameters['Tutorial3'])
     listenResponse.draw()
     parameters['listenLogo'].draw()
@@ -406,7 +411,8 @@ def tutorial(parameters, win, oxi=None):
                                 feedback=True, confidenceRating=False)
 
     # Confidence rating
-    confidence = visual.TextStim(win, units='height', height=0.03,
+    confidence = visual.TextStim(win,
+                                 height=parameters['textSize'],
                                  text=parameters['Tutorial4'])
     confidence.draw()
     win.flip()
@@ -427,7 +433,8 @@ def tutorial(parameters, win, oxi=None):
                                 confidenceRating=True)
 
     # Task
-    taskPresentation = visual.TextStim(win, units='height', height=0.03,
+    taskPresentation = visual.TextStim(win,
+                                       height=parameters['textSize'],
                                        text=parameters['Tutorial5'])
     taskPresentation.draw()
     win.flip()

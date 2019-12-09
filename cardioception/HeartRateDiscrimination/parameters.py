@@ -76,6 +76,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
         The window where to run the task.
     listenLogo, heartLogo : Psychopy visual instance
         Image used for the inference and recording phases, respectively.
+    textSize : float
+        Text size.
     """
     parameters = dict()
     parameters['confScale'] = [1, 7]
@@ -194,5 +196,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
         image=parameters['path'] + '/Images/heartbeat.png',
         pos=(0.0, -0.2))
     parameters['heartLogo'].size *= 0.05
+
+    parameters['textSize'] = 0.02
 
     return parameters

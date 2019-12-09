@@ -63,6 +63,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
         Image presented during resting conditions.
     texts : dict
         Dictionnary containing the texts to be presented.
+    textSize : float
+        Text size.
     """
     parameters = dict()
     parameters['restPeriod'] = True
@@ -191,5 +193,6 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['texts']['Tutorial9'] = (
         "Good job! If you have any question, ask the experimenter now,"
         " otherwise press SPACE to continue to the experiment.")
+    parameters['textSize'] = 0.02
 
     return parameters

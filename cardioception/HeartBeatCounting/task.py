@@ -66,7 +66,7 @@ def trial(condition, duration, nTrial, parameters, win):
     confidence, confidenceRT, nCounts = None, None, None
 
     # Ask the participant to press 'Space' (default) to start the trial
-    messageStart = visual.TextStim(win, units='height', height=0.1,
+    messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text='Press space to continue')
     messageStart.draw()
     win.flip()
@@ -80,16 +80,14 @@ def trial(condition, duration, nTrial, parameters, win):
     # Show instructions
     if condition == 'Rest':
         message = visual.TextStim(win, text=parameters['texts']['Rest'],
-                                  units='height',
                                   pos=(0.0, 0.2),
-                                  height=0.05)
+                                  height=parameters['textSize'])
         message.draw()
         parameters['restLogo'].draw()
     elif (condition == 'Count') | (condition == 'Training'):
         message = visual.TextStim(win, text=parameters['texts']['Count'],
-                                  units='height',
                                   pos=(0.0, 0.2),
-                                  height=0.05)
+                                  height=parameters['textSize'])
         message.draw()
         parameters['heartLogo'].draw()
     win.flip()
@@ -130,7 +128,7 @@ def trial(condition, duration, nTrial, parameters, win):
     ###############################
     if (condition == 'Count') | (condition == 'Training'):
         # Ask the participant to press 'Space' (default) to start the trial
-        messageCount = visual.TextStim(win, units='height', height=0.05,
+        messageCount = visual.TextStim(win, height=parameters['textSize'],
                                        color=(0.0, 0.0, 1.0),
                                        pos=(0, 0.2),
                                        text=parameters['texts']['nCount'])
@@ -152,7 +150,7 @@ def trial(condition, duration, nTrial, parameters, win):
                     break
                 else:
                     messageError = visual.TextStim(
-                        win, units='height', height=0.05,
+                        win, height=0.05,
                         color=(0.0, 0.0, 1.0),
                         pos=(0, 0.2),
                         text="You should only provide numbers")
@@ -164,8 +162,7 @@ def trial(condition, duration, nTrial, parameters, win):
 
             # Show the text on the screen
             recordedText = visual.TextStim(win,
-                                           units='height',
-                                           height=0.05,
+                                           height=parameters['textSize'],
                                            text=nCounts)
             recordedText.draw()
             messageCount.draw()
@@ -187,7 +184,7 @@ def trial(condition, duration, nTrial, parameters, win):
                                              markerStart=markerStart)
             message = visual.TextStim(win,
                                       text=parameters['texts']['confidence'],
-                                      units='height', height=0.05)
+                                      height=parameters['textSize'])
             while ratingScale.noResponse:
                 message.draw()
                 ratingScale.draw()
@@ -212,14 +209,14 @@ def tutorial(parameters, win=None):
         win = parameters['win']
 
     # Tutorial 1
-    messageStart = visual.TextStim(win, units='height', height=0.05,
+    messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial1'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
     # Tutorial 2
-    messageStart = visual.TextStim(win, units='height', height=0.05,
+    messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    pos=(0.0, 0.2),
                                    text=parameters['texts']['Tutorial2'])
     messageStart.draw()
@@ -230,7 +227,7 @@ def tutorial(parameters, win=None):
     # Tutorial 3
     if parameters['taskVersion'] == 'Shandry':
 
-        messageStart = visual.TextStim(win, units='height', height=0.05,
+        messageStart = visual.TextStim(win, height=parameters['textSize'],
                                        pos=(0.0, 0.2),
                                        text=parameters['texts']['Tutorial3'])
         messageStart.draw()
@@ -239,7 +236,7 @@ def tutorial(parameters, win=None):
         event.waitKeys(keyList=parameters['startKey'])
 
     # Tutorial 4
-    messageStart = visual.TextStim(win, units='height', height=0.05,
+    messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial4'])
     messageStart.draw()
     win.flip()
@@ -247,28 +244,28 @@ def tutorial(parameters, win=None):
     event.waitKeys(keyList=parameters['startKey'])
 
     # Tutorial 5
-    messageStart = visual.TextStim(win, units='height', height=0.05,
+    messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial5'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
     # Tutorial 6
-    messageStart = visual.TextStim(win, units='height', height=0.05,
+    messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial6'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
     # Tutorial 7
-    messageStart = visual.TextStim(win, units='height', height=0.05,
+    messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial7'])
     messageStart.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
     # Tutorial 8
-    messageStart = visual.TextStim(win, units='height', height=0.05,
+    messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial8'])
     messageStart.draw()
     win.flip()
@@ -278,7 +275,7 @@ def tutorial(parameters, win=None):
     nCount, confidence, confidenceRT = trial('Count', 15, 0,  parameters, win)
 
     # Tutorial 9
-    messageStart = visual.TextStim(win, units='height', height=0.05,
+    messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial9'])
     messageStart.draw()
     win.flip()
@@ -299,7 +296,7 @@ def rest(parameters, win=None):
         win = parameters['win']
 
     # Show instructions
-    messageStart = visual.TextStim(win, units='height', height=0.05,
+    messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    pos=(0.0, 0.2),
                                    text=("Calibrating... Please sit quietly"
                                          " until the end of the recording."))
