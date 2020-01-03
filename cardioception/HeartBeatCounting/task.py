@@ -27,8 +27,8 @@ def sequence(parameters, win=None):
                                   'Condition': condition,
                                   'Duration': duration,
                                   'Confidence': confidence,
-                                  'ConfidenceRT': confidenceRT},
-                                 ignore_index=True))
+                                  'ConfidenceRT': confidenceRT}),
+                    ignore_index=True)
 
     # Save results
     results_df.to_csv(
