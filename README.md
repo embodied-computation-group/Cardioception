@@ -13,7 +13,7 @@ See *Tasks* below for more details of each individual method.
 Currently the toolbox natively supports the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). These devices are fairly cheap and readily available, however in time the intention is to support more sensors and modalities (e.g., ECG).  
 
 # Installation
-This is a test.
+
 Download the repository as zip archive and extract the files.
 
 Using a terminal, go to the folder and run:
