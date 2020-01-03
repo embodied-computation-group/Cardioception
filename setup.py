@@ -18,10 +18,10 @@ VERSION = '0.0.1'
 INSTALL_REQUIRES = [
     'numpy>=1.15',
     'scipy>=1.3',
-    'pandas>=0.24',
     'matplotlib>=3.0.2',
-    'seaborn>=0.9.0',
-    'psychopy>=3.2.3'
+    'pingouin>=0.2.9',
+    'pyserial>=3.4',
+    'pyglet==1.3.2'
 ]
 
 PACKAGES = [
