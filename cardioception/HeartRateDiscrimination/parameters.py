@@ -124,7 +124,6 @@ def getParameters(subjectID, subjectNumber, serialPort):
             np.append(parameters['staircaseConditions'][0],
                       parameters['staircaseConditions'])
 
-
     # Default parameters for the basic staircase are set here. Please see
     # PsychoPy Staircase Handler Documentation for full options. By default,
     # the task implements a 2 down 1 up staircase with a logarythmic stepsize
@@ -161,7 +160,9 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['texts'] = {
         'Estimation': """Do you think the tone frequency
         was higher or lower than your heart rate?""",
-        'Confidence': 'How confident are you about your estimation?'}
+        'Confidence':
+            ('How confident are you about your estimation?'
+             'Use the RIGHT/LEFT keys to select and the DOWN key to confirm')}
 
     parameters['Tutorial1'] = (
         "During this experiment, we are going to record your heart rate and"
