@@ -197,6 +197,6 @@ def getParameters(subjectID, subjectNumber, serialPort):
         pos=(0.0, -0.2))
     parameters['heartLogo'].size *= 0.05
 
-    parameters['textSize'] = 0.02
+    parameters['textSize'] = 0.04
 
     return parameters
