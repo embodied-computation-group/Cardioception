@@ -149,7 +149,7 @@ def trial(condition, duration, nTrial, parameters, win):
                     break
                 else:
                     messageError = visual.TextStim(
-                        win, height=0.05,
+                        win, height=parameters['textSize'],
                         pos=(0, 0.2),
                         text="You should only provide numbers")
                     messageError.draw()
