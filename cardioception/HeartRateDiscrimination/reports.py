@@ -6,6 +6,7 @@ import seaborn as sns
 from pingouin import madmedianrule
 import matplotlib.pyplot as plt
 
+
 def plot_psychometrics(results_df, path):
     """Plot psychometric functions.
 
@@ -48,7 +49,8 @@ def plot_psychometrics(results_df, path):
     # Using actual heart rate
     plt.subplot(122)
     # True HR
-    plt.plot(results_df.HR, 'gray', linestyle='--', marker='o', alpha=0.5, label='True HR')
+    plt.plot(results_df.HR, 'gray', linestyle='--', marker='o',
+             alpha=0.5, label='True HR')
 
     # Estimated HR
     plt.plot(results_df.nTrials[results_df.Accuracy == 1],
