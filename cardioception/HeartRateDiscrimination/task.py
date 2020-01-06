@@ -119,9 +119,9 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         The condition of the trial. Can be 'More' (the beats are faster than
         the heart rate) or 'Less' (the beats are slower than the heart rate).
     estimation : str
-        The participant estimation. Can be 'up' (the participant consider the
-        beats to be faster than the recorded heart rate) or 'down' (the
-        participant consider the beats to be slower).
+        The participant estimation. Can be 'up' (the participant indicates the
+        beats are faster than the recorded heart rate) or 'down' (the
+        participant indicates the beats are slower than recorded heart rate).
     estimationRT : float
         The response time from sound start to choice.
     confidence : int
@@ -129,16 +129,16 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         range of the scale is defined in `parameters['confScale']`. Default is
         [1, 7].
     confidenceRT : float
-        The response time for the confidence rating scale.
+        The response time (RT) for the confidence rating scale.
     alpha : int
-        The difference between the true heart rate and the played sound. Alpha
-        is defined by the stairCase.intensities values and is updated at each
-        trials.
+        The difference between the true heart rate and the delivered tone BPM.
+        Alpha is defined by the stairCase.intensities values and is updated
+        on each trial.
     accuracy : 0, 1
         `0` for incorrect response, `1` for correct responses.
     missed : boolean
-        If `True`, the trial did not ended correctly (participant was too long
-        to provide the estimation or the confidence).
+        If `True`, the trial did not terminate correctly (e.g., participant was
+        too slow to provide the estimation or the confidence).
     """
     # Restart the trial until participant provide response on time
     confidence, confidenceRT, accuracy = None, None, None
@@ -174,7 +174,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         average_hr = np.nanmean(np.unique(oxi.instant_rr[-(5 * oxi.sfreq):]))
         average_hr = int(round(60000/average_hr))
 
-        # Prevend crash is NaN value
+        # Prevent crash if NaN value
         if np.isnan(average_hr):
             message = visual.TextStim(win, height=parameters['textSize'],
                                       text=('Please make sure the oximeter'
@@ -187,8 +187,8 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
             # Check for extreme heart rate values, if crosses theshold, hold
             # the task until resolved. Cutoff values determined in parameters
             # to correspond to biologically unlikely values.
-            if ((average_hr > parameters['cutOff'][0]) &
-               (average_hr < parameters['cutOff'][1])):
+            if ((average_hr > parameters['HRcutOff'][0]) &
+               (average_hr < parameters['HRcutOff'][1])):
                 break
             else:
                 message = visual.TextStim(win, height=parameters['textSize'],
@@ -214,7 +214,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     if condition is None:
         condition = np.random.choice(['More', 'Less'])
 
-    # Generate actual flicker frequency
+    # Generate actual stimulus frequency
     if stairCase is not None:
         if stairCase.intensities:
             alpha = int(stairCase.intensities[-1])
@@ -222,13 +222,16 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
             alpha = int(stairCase.startVal)
         if condition == 'Less':
             alpha = -alpha
+    # For training, no staircase exists so alpha is hardcoded to +/- 20 BPM.
     else:
         if condition == 'More':
             alpha = 20
         elif condition == 'Less':
             alpha = -20
 
-    # Check for extrem values
+    # Check for extreme alpha values, e.g. if alpha changes massively from trial
+    # to trial.
+
     if (average_hr + alpha) < 15:
         hr = '15'
     elif (average_hr + alpha) > 199:
@@ -237,7 +240,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         hr = str(average_hr + alpha)
     file = parameters['path'] + '/sounds/' + hr + '.wav'
 
-    # Play HR frequency
+    # Play selected BPM frequency
     this_hr = sound.Sound(file)
     parameters['listenLogo'].draw()
     # Record participant response (+/-)
@@ -384,7 +387,7 @@ def tutorial(parameters, win, oxi=None):
     win : instance of psychopy window
         Where to draw the task.
     oxi : Instance of Oximeter, default is `None`
-        Where recording devise.
+        Where recording device.
     """
     # Introduction
     intro = visual.TextStim(win,

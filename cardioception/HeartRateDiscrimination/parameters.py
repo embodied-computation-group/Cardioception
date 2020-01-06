@@ -8,6 +8,11 @@ from psychopy import data, visual
 
 def getParameters(subjectID, subjectNumber, serialPort):
     """Create task parameters.
+    Many task parameters, aesthetics, and options are controlled by the parameters
+    dictonary defined herein. These are intended to provide flexibility and modularity to
+    task. In many cases, unique versions of the task (e.g., with or without
+    confidence ratings or choice feedback) can be created simply by changing
+    these parameters, with no further interaction with the underlying task code.
 
     Parameters
     ----------
@@ -16,7 +21,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
     subjectNumber : int
         Participant number.
     serialPort: str
-        The USB port where the pulse oximeter is plugged.
+        The USB port where the pulse oximeter is plugged. Should be written as
+        a string e.g., 'Com3', 'Com4'
 
     Attributes
     ----------
@@ -29,10 +35,10 @@ def getParameters(subjectID, subjectNumber, serialPort):
     monitor : str
         The monitor used to present the task (Psychopy parameter).
     nFeedback : int
-        The number of trial with feedback during the tutorial phace (no
+        The number of trial with feedback during the tutorial phase (no
         confidence rating).
     nConfidence : int
-        The number of trial with feedback during the tutorial phace (no
+        The number of trial with feedback during the tutorial phase (no
         feedback).
     respMax : float
         The maximum time for a confidence rating (in seconds).
@@ -50,7 +56,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
     nBeatsLim : int
         The number of beats to record at each trials.
     nStaircase : int
-        Number of staircase used. Can be 1 or 2.
+        Number of staircase used. Can be 1 or 2. If 2, implements a randomized
+        interleved staircase procedure following Cornsweet, 1976.
     Condition : 1d-array
         Array of 0s and 1s encoding the conditions (1 : Higher, 0 : Lower). The
         length of the array is defined by `parameters['nTrials']`. If
@@ -61,7 +68,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
     serial : PySerial instance
         The serial port used to record the PPG activity.
     subjectID : str
-        Subject identifiant.
+        Subject identifier string.
     subjectNumber : int
         Subject reference number.
     path : str
@@ -78,7 +85,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
         Image used for the inference and recording phases, respectively.
     textSize : float
         Text size.
-    cutOff : list
+    HRcutOff : list
         Cut off for extreme heart rate values during recording.
     """
     parameters = dict()
@@ -97,7 +104,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['nBeatsLim'] = 5
     parameters['nStaircase'] = 2
 
-    # Create randomized condition vector
+    # Create condition randomized vector
     parameters['Conditions'] = np.hstack(
             [np.array(['More'] * round(parameters['nTrials']/2)),
              np.array(['Less'] * round(parameters['nTrials']/2))])
@@ -116,6 +123,14 @@ def getParameters(subjectID, subjectNumber, serialPort):
         parameters['staircaseConditions'] = \
             np.append(parameters['staircaseConditions'][0],
                       parameters['staircaseConditions'])
+
+
+    # Default parameters for the basic staircase are set here. Please see
+    # PsychoPy Staircase Handler Documentation for full options. By default,
+    # the task implements a 2 down 1 up staircase with a logarythmic stepsize
+    # function for alpha. If randomized, interleaved staircases are used (see
+    # options in parameters dictionary), one is initalized 'high' and the other
+    # 'low'.
 
     parameters['stairCase'] = []
     parameters['stairCase'].append(
@@ -138,13 +153,13 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['path'] = os.getcwd()
     parameters['results'] = parameters['path'] + '/Results/' + subjectID
 
-    # Create Results directory of not already exists
+    # Create Results directory if not already exists
     if not os.path.exists(parameters['results']):
         os.makedirs(parameters['results'])
 
     # Texts
     parameters['texts'] = {
-        'Estimation': """Do you think the flash frequency
+        'Estimation': """Do you think the tone frequency
         was higher or lower than your heart rate?""",
         'Confidence': 'How confident are you about your estimation?'}
 
@@ -158,25 +173,27 @@ def getParameters(subjectID, subjectNumber, serialPort):
 
     parameters['Tutorial3'] = (
         "After this procedure, you will see the listening and"
-        " response icons. You will then have to focus on the beats frequency"
-        " and decide if it is faster than your heart rate as is was previously"
-        " recorded (UP key) or slower (DOWN key). This beating frequency will"
-        " ALWAYS be slower or faster than your heart rate as previously"
-        " recorded.")
+        " response icons. You will then have to focus on the tone frequency"
+        " and decide if it is faster (UP key) or slower (DOWN key) than your"
+        " recorded heart rate in the listening interval. The tone"
+        " frequency will ALWAYS be slower or faster than your heart rate"
+        " as previously recorded. Please guess if you are unsure.")
 
     parameters['Tutorial4'] = (
-        "Once you have provided your estimation, you will also be asked to"
-        " provide your level of confidence. A large number here means that"
-        " you are confident with your estimation, a small number means that"
+        "Once you have provided your decision, you will also be asked to"
+        " provide your level of confidence. A high number here means that"
+        " you are totally certain in your choice, a small number means that"
         " you are guessing. You should use the RIGHT and LEFT key to"
         " select your response and the DOWN key to confirm.")
 
     parameters['Tutorial5'] = (
-        "This sequence will be repeated during the task. As you will improve"
-        " your ability to discriminate between FASTER and SLOWER conditions,"
-        " the difficulty will also adaptively improve, meaning that the"
-        " difference between your True heart rate and the beats you hear will"
-        " get smaller and smaller.")
+        "This sequence will be repeated during the task. At times the task may"
+        " be very difficult; the difference between your true heart rate and"
+        " the presented tones may be very small. This means that you"
+        " should try to use the entire length of the confidence scale to"
+        " to reflect your subjective uncertainty on each trial. As the task"
+        " difficulty will change over time, it is rare that will be totally"
+        " confident or totally uncertain")
 
     # Open window
     parameters['win'] = visual.Window(monitor=parameters['monitor'],
@@ -199,6 +216,6 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['heartLogo'].size *= 0.05
 
     parameters['textSize'] = 0.04
-    parameters['cutOff'] = [40, 120]
+    parameters['HRcutOff'] = [40, 120]
 
     return parameters

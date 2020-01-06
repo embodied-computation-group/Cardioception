@@ -1,5 +1,7 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 # Adapted from: https://stackoverflow.com/questions/33879523/python-how-can-i-generate-a-wav-file-with-beeps
+# This script generates the BPM stimulu (wav files) used by the task. Not called
+# by the actual task, but included for reproducibility. 
 
 import math
 import wave
