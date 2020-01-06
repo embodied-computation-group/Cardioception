@@ -148,8 +148,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
 
     parameters['Tutorial1'] = (
         "During this experiment, we are going to record your heart rate and"
-        " generate sounds reflecting your cardiac activity."
-        " Please press SPACE to continue.")
+        " generate sounds reflecting your cardiac activity.")
 
     parameters['Tutorial2'] = (
         "When this heart icon is presented, you will have to focus on your"
