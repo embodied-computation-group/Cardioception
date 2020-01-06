@@ -129,7 +129,6 @@ def trial(condition, duration, nTrial, parameters, win):
     if (condition == 'Count') | (condition == 'Training'):
         # Ask the participant to press 'Space' (default) to start the trial
         messageCount = visual.TextStim(win, height=parameters['textSize'],
-                                       color=(0.0, 0.0, 1.0),
                                        pos=(0, 0.2),
                                        text=parameters['texts']['nCount'])
         messageCount.draw()
@@ -151,7 +150,6 @@ def trial(condition, duration, nTrial, parameters, win):
                 else:
                     messageError = visual.TextStim(
                         win, height=0.05,
-                        color=(0.0, 0.0, 1.0),
                         pos=(0, 0.2),
                         text="You should only provide numbers")
                     messageError.draw()
