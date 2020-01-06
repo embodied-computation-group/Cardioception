@@ -238,6 +238,12 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
                               text=parameters['texts']['Estimation'])
     message.draw()
 
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Use DOWN key for lower, UP key for higher.',
+                            pos=(0.0, -0.4))
+    press.draw()
+
     # Start trigger
     oxi.readInWaiting()
     oxi.channels['Channel_0'][-1] = 2  # Start trigger
