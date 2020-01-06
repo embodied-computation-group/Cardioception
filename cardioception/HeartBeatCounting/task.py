@@ -27,8 +27,8 @@ def sequence(parameters, win=None):
                                   'Condition': condition,
                                   'Duration': duration,
                                   'Confidence': confidence,
-                                  'ConfidenceRT': confidenceRT},
-                                 ignore_index=True))
+                                  'ConfidenceRT': confidenceRT}),
+                    ignore_index=True)
 
     # Save results
     results_df.to_csv(
@@ -129,7 +129,6 @@ def trial(condition, duration, nTrial, parameters, win):
     if (condition == 'Count') | (condition == 'Training'):
         # Ask the participant to press 'Space' (default) to start the trial
         messageCount = visual.TextStim(win, height=parameters['textSize'],
-                                       color=(0.0, 0.0, 1.0),
                                        pos=(0, 0.2),
                                        text=parameters['texts']['nCount'])
         messageCount.draw()
@@ -150,8 +149,7 @@ def trial(condition, duration, nTrial, parameters, win):
                     break
                 else:
                     messageError = visual.TextStim(
-                        win, height=0.05,
-                        color=(0.0, 0.0, 1.0),
+                        win, height=parameters['textSize'],
                         pos=(0, 0.2),
                         text="You should only provide numbers")
                     messageError.draw()

@@ -174,15 +174,29 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         average_hr = np.nanmean(np.unique(oxi.instant_rr[-(5 * oxi.sfreq):]))
         average_hr = int(round(60000/average_hr))
 
-        # Control for extrem values
-        if (average_hr > 40) & (average_hr < 120):
-            break
-        else:
+        # Prevend crash is NaN value
+        if np.isnan(average_hr):
             message = visual.TextStim(win, height=parameters['textSize'],
-                                      text=('Please do not moove your hand'
-                                            'during the recordin'))
+                                      text=('Please make sure the oximeter'
+                                      'is correctly clipped to your finger.'))
             message.draw()
-            core.wait()
+            win.flip()
+            core.wait(2)
+
+        else:
+            # Check for extreme heart rate values, if crosses theshold, hold
+            # the task until resolved. Cutoff values determined in parameters
+            # to correspond to biologically unlikely values.
+            if ((average_hr > parameters['cutOff'][0]) &
+               (average_hr < parameters['cutOff'][1])):
+                break
+            else:
+                message = visual.TextStim(win, height=parameters['textSize'],
+                                          text=('Please do not move your hand'
+                                                'during the recording'))
+                message.draw()
+                win.flip()
+                core.wait(2)
 
     # Fixation cross
     win.flip()
@@ -230,6 +244,12 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     message = visual.TextStim(win, height=parameters['textSize'],
                               text=parameters['texts']['Estimation'])
     message.draw()
+
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Use DOWN key for lower, UP key for higher.',
+                            pos=(0.0, -0.4))
+    press.draw()
 
     # Start trigger
     oxi.readInWaiting()
@@ -371,6 +391,11 @@ def tutorial(parameters, win, oxi=None):
                             height=parameters['textSize'],
                             text=parameters['Tutorial1'])
     intro.draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
     win.flip()
@@ -382,6 +407,11 @@ def tutorial(parameters, win, oxi=None):
                                 text=parameters['Tutorial2'])
     recording.draw()
     parameters['heartLogo'].draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
     win.flip()
@@ -393,6 +423,11 @@ def tutorial(parameters, win, oxi=None):
                                      text=parameters['Tutorial3'])
     listenResponse.draw()
     parameters['listenLogo'].draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
     win.flip()
@@ -437,6 +472,11 @@ def tutorial(parameters, win, oxi=None):
                                        height=parameters['textSize'],
                                        text=parameters['Tutorial5'])
     taskPresentation.draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
     win.flip()

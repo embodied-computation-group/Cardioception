@@ -78,6 +78,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
         Image used for the inference and recording phases, respectively.
     textSize : float
         Text size.
+    cutOff : list
+        Cut off for extreme heart rate values during recording.
     """
     parameters = dict()
     parameters['confScale'] = [1, 7]
@@ -148,8 +150,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
 
     parameters['Tutorial1'] = (
         "During this experiment, we are going to record your heart rate and"
-        " generate sounds reflecting your cardiac activity."
-        " Please press SPACE to continue.")
+        " generate sounds reflecting your cardiac activity.")
 
     parameters['Tutorial2'] = (
         "When this heart icon is presented, you will have to focus on your"
@@ -197,6 +198,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
         pos=(0.0, -0.2))
     parameters['heartLogo'].size *= 0.05
 
-    parameters['textSize'] = 0.02
+    parameters['textSize'] = 0.04
+    parameters['cutOff'] = [40, 120]
 
     return parameters
