@@ -187,8 +187,8 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
             # Check for extreme heart rate values, if crosses theshold, hold
             # the task until resolved. Cutoff values determined in parameters
             # to correspond to biologically unlikely values.
-            if ((average_hr > parameters['cutOff'][0]) &
-               (average_hr < parameters['cutOff'][1])):
+            if ((average_hr > parameters['HRcutOff'][0]) &
+               (average_hr < parameters['HRcutOff'][1])):
                 break
             else:
                 message = visual.TextStim(win, height=parameters['textSize'],
