@@ -97,7 +97,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['nConfidence'] = 5
     parameters['respMax'] = 8
     parameters['minRatingTime'] = 1
-    parameters['maxRatingTime'] = 3
+    parameters['maxRatingTime'] = 4
     parameters['startKey'] = 'space'
     parameters['allowedKeys'] = ['up', 'down']
     parameters['nTrials'] = 150
