@@ -193,7 +193,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
             else:
                 message = visual.TextStim(win, height=parameters['textSize'],
                                           text=('Please do not move your hand'
-                                                'during the recording'))
+                                                ' during the recording'))
                 message.draw()
                 win.flip()
                 core.wait(2)
@@ -229,8 +229,8 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         elif condition == 'Less':
             alpha = -20
 
-    # Check for extreme alpha values, e.g. if alpha changes massively from trial
-    # to trial.
+    # Check for extreme alpha values, e.g. if alpha changes massively from
+    # trial to trial.
 
     if (average_hr + alpha) < 15:
         hr = '15'
@@ -453,6 +453,11 @@ def tutorial(parameters, win, oxi=None):
                                  height=parameters['textSize'],
                                  text=parameters['Tutorial4'])
     confidence.draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
     win.flip()
