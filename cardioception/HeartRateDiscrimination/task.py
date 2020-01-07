@@ -88,6 +88,11 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
                                   'Accuracy': [accuracy],
                                   'Missed': [missed],
                                   'nTrials': [i]})], ignore_index=True)
+
+        # Save the results at each iteration
+        results_df.to_csv(parameters['results'] + '/' +
+                          parameters['subject'] + '.txt')
+
     return results_df
 
 
