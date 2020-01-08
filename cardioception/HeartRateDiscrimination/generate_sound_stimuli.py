@@ -1,7 +1,7 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 # Adapted from: https://stackoverflow.com/questions/33879523/python-how-can-i-generate-a-wav-file-with-beeps
-# This script generates the BPM stimulu (wav files) used by the task. Not called
-# by the actual task, but included for reproducibility. 
+# This script generates the BPM stimulu (wav files) used by the task.
+# Not called by the actual task, but included for reproducibility.
 
 import math
 import wave
@@ -32,7 +32,7 @@ def append_silence(audio, duration_milliseconds=500):
     return audio
 
 
-def append_sinewave(audio, freq=440.0, duration_milliseconds=200, volume=1.0):
+def append_sinewave(audio, freq=440, duration_milliseconds=200, volume=1.0):
     """Add sinewave to the signal.
 
     Parameters
@@ -58,7 +58,6 @@ def append_sinewave(audio, freq=440.0, duration_milliseconds=200, volume=1.0):
             volume * math.sin(2 * math.pi * freq * (x / sample_rate)))
 
     return audio
-
 
 def save_wav(audio, file_name):
     """Save the audio signal as wav file.
