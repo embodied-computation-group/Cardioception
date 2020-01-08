@@ -8,6 +8,13 @@ from cardioception.recording import Oximeter
 
 def sequence(parameters, win=None):
     """Run the entire task sequence.
+
+    Parameters
+    ----------
+    parameters : dict
+        Task parameters.
+    win : `psychopy.visual.Window`
+        Window where to present stimuli.
     """
     if win is None:
         win = parameters['win']
@@ -22,12 +29,12 @@ def sequence(parameters, win=None):
 
         # Store results in a DataFrame
         results_df = results_df.append(
-                    pd.DataFrame({'nTrial': nTrial,
-                                  'Reported': nCount,
-                                  'Condition': condition,
-                                  'Duration': duration,
-                                  'Confidence': confidence,
-                                  'ConfidenceRT': confidenceRT}),
+                    pd.DataFrame({'nTrial': [nTrial],
+                                  'Reported': [nCount],
+                                  'Condition': [condition],
+                                  'Duration': [duration],
+                                  'Confidence': [confidence],
+                                  'ConfidenceRT': [confidenceRT]}),
                     ignore_index=True)
 
     # Save results
@@ -41,15 +48,15 @@ def trial(condition, duration, nTrial, parameters, win):
     Parameters
     ----------
     condition : str
-        The trial condition, can be `Rest` or `Count`.
+        The trial condition, can be *Rest* or *Count*.
     duration : int
         The lenght of the recording (in seconds).
     ntrial : int
         Trial number.
     parameters : dict
         Task parameters.
-    win : psychopy window
-        Instance of Psychopy window.
+    win : `psychopy.visual.Window`
+        Window where to present stimuli.
 
     Returns
     -------
@@ -200,8 +207,8 @@ def tutorial(parameters, win=None):
     ----------
     parameters : dict
         Task parameters.
-    win : psychopy window
-        Instance of Psychopy window.
+    win : `psychopy.visual.Window`
+        Window where to present stimuli.
     """
     if win is None:
         win = parameters['win']
@@ -210,6 +217,11 @@ def tutorial(parameters, win=None):
     messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial1'])
     messageStart.draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
@@ -219,6 +231,11 @@ def tutorial(parameters, win=None):
                                    text=parameters['texts']['Tutorial2'])
     messageStart.draw()
     parameters['heartLogo'].draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
@@ -230,6 +247,11 @@ def tutorial(parameters, win=None):
                                        text=parameters['texts']['Tutorial3'])
         messageStart.draw()
         parameters['restLogo'].draw()
+        press = visual.TextStim(win,
+                                height=parameters['textSize'],
+                                text='Please press SPACE to continue',
+                                pos=(0.0, -0.4))
+        press.draw()
         win.flip()
         event.waitKeys(keyList=parameters['startKey'])
 
@@ -237,6 +259,11 @@ def tutorial(parameters, win=None):
     messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial4'])
     messageStart.draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
 
     event.waitKeys(keyList=parameters['startKey'])
@@ -245,6 +272,11 @@ def tutorial(parameters, win=None):
     messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial5'])
     messageStart.draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
@@ -252,6 +284,11 @@ def tutorial(parameters, win=None):
     messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial6'])
     messageStart.draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
@@ -259,6 +296,11 @@ def tutorial(parameters, win=None):
     messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial7'])
     messageStart.draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
@@ -266,6 +308,11 @@ def tutorial(parameters, win=None):
     messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial8'])
     messageStart.draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
@@ -276,6 +323,11 @@ def tutorial(parameters, win=None):
     messageStart = visual.TextStim(win, height=parameters['textSize'],
                                    text=parameters['texts']['Tutorial9'])
     messageStart.draw()
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text='Please press SPACE to continue',
+                            pos=(0.0, -0.4))
+    press.draw()
     win.flip()
     event.waitKeys(keyList=parameters['startKey'])
 
@@ -287,8 +339,8 @@ def rest(parameters, win=None):
     ----------
     parameters : dict
         Task parameters.
-    win : psychopy window
-        Instance of Psychopy window.
+    win : `psychopy.visual.Window`
+        Window where to present stimuli.
     """
     if win is None:
         win = parameters['win']
