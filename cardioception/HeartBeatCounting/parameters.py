@@ -80,14 +80,17 @@ def getParameters(subjectID, subjectNumber, serialPort,
     parameters['labelsRating'] = ['Guess', 'Certain']
     parameters['taskVersion'] = taskVersion
 
-    # Experimental design
+    # Experimental design - can choose between a version based on recent
+    # papers from Sarah Garfinkel's group, or the classic Schandry approach.
+    # The primary difference ebtween the two is the order of trials and the
+    # use of resting periods between trials.
     if parameters['taskVersion'] == 'Garfinkel':
         parameters['times'] = np.array([25, 30, 35, 40, 45, 50])
         np.random.shuffle(parameters['times'])
         parameters['conditions'] = ['Count', 'Count', 'Count',
                                     'Count', 'Count', 'Count']
 
-    elif parameters['taskVersion'] == 'Shandry':
+    elif parameters['taskVersion'] == 'Schandry':
         parameters['times'] = np.array([60, 25, 30, 35, 30, 45])
         parameters['conditions'] = ['Rest', 'Count', 'Rest', 'Count', 'Rest',
                                     'Count']
@@ -143,10 +146,15 @@ def getParameters(subjectID, subjectNumber, serialPort,
 
     # Task instructions
     parameters['texts'] = dict()
-    parameters['texts']['Rest'] = 'Please sit quitely unitil the next session'
+    parameters['texts']['Rest'] = 'Please sit quietly until the next session'
     parameters['texts']['Count'] = (
-        "After you hear 'start', try to count your heartbeats"
-        " by concentrating on your body feelings")
+        "After you hear START, try to count your heartbeats"
+        " by concentrating on your body feelings."
+        " Stop counting when you hear STOP")
+    parameters['texts']['Training'] = (
+        "After you hear START, try to count your heartbeats"
+        " by concentrating on your body feelings"
+        " Stop counting when you hear STOP")
     parameters['texts']['nCount'] = (
         'How many heartbeats did you count?'
         ' Write a number and press ENTER to validate.')
@@ -167,14 +175,14 @@ def getParameters(subjectID, subjectNumber, serialPort,
         " session.")
     parameters['texts']['Tutorial4'] = (
         "The beginning and the end of the task will be signalled when you hear"
-        " the words 'start' and 'stop'. While counting your heartbeats, you"
+        " the words 'START'' and 'STOP'. While counting your heartbeats, you"
         " may close your eyes if you find that helpful. Please keep your hand"
         " still during the counting period, to avoid interfering with"
         " the heartbeat recording.")
     parameters['texts']['Tutorial5'] = (
         "After the counting part of the task, you will be asked to report the"
         " exact number of heartbeats you felt during the interval between"
-        " 'start' and 'stop'. Please do not try to estimate the number of"
+        " 'START' and 'STOP'. Please do not try to estimate the number of"
         " heartbeats, but instead only report the heartbeats you actually felt"
         " during the interval. You will input your response using the number"
         " pad and press return when done. You can also correct your response"
@@ -184,7 +192,8 @@ def getParameters(subjectID, subjectNumber, serialPort,
         " feeling of confidence in how accurate your count was"
         " for that interval. A large number here means that you are totally"
         " certain you counted the exact number of heartbeats that occured,"
-        " and a small number means that you are totally uncertain about the"
+        " and a small number means that you are totally uncertain or felt that"
+        " you were guessing about the"
         " number of heartbeats. You should use the RIGHT and LEFT"
         " key to select your response and the DOWN key to confirm.")
     parameters['texts']['Tutorial7'] = (
