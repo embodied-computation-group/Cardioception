@@ -1,8 +1,0 @@
-,nTrial,Reported,Confidence,ConfidenceRT
-0,0,89,,
-0,1,45,,
-0,2,67,,
-0,3,32,,
-0,4,23,,
-0,5,43,,
-0,6,23,,
