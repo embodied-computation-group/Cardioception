@@ -58,11 +58,10 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             messageStart = visual.TextStim(win,
                                            height=parameters['textSize'],
                                            text='Press space to continue')
-            messageStart.autoDraw = True  # Show instructions
+            messageStart.draw()  # Show instructions
             win.flip()
             event.waitKeys(keyList=parameters['startKey'])
-            messageStart.autoDraw = False  # Hide instructions
-            win.update()
+            win.flip()
 
         # Select the staircase
         stairCond = parameters['staircaseConditions'][i]
@@ -152,7 +151,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
                                   pos=[0, 0], sf=0, rgb=-1)
     fixation.draw()
-    win.update()
+    win.flip()
     core.wait(0.25)
 
     ###########
@@ -208,7 +207,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
                                   pos=[0, 0], sf=0, rgb=-1)
     fixation.draw()
-    win.update()
+    win.flip()
     core.wait(0.25)
 
     #######
@@ -370,13 +369,11 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
                     message.draw()
                     win.flip()
 
-                win.flip()
                 confidence = ratingScale.getRating()
                 confidenceRT = ratingScale.getRT()
 
-            # Hide instructions
-            message.autoDraw = False
-            win.flip()
+    # Hide instructions
+    win.flip()
 
     return stairCase, average_hr, estimation, estimationRT, confidence,\
         confidenceRT, alpha, accuracy, missed
