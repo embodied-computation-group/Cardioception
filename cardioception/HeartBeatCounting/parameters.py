@@ -6,7 +6,8 @@ import numpy as np
 from psychopy import visual, sound
 
 
-def getParameters(subjectID, subjectNumber, serialPort):
+def getParameters(subjectID, subjectNumber, serialPort,
+                  taskVersion='Garfinkel'):
     """Create task parameters.
 
     Parameters
@@ -17,31 +18,33 @@ def getParameters(subjectID, subjectNumber, serialPort):
         Participant number.
     serialPort: str
         The USB port where the pulse oximeter is plugged.
+    taskVersion : str or None
+        Task version to run. Can be 'Garfinkel', 'Shandry', 'test' or None.
 
     Attributes
     ----------
-    restPeriod : boolean
-        If `True`, a resting period will be proposed before the task.
+    restPeriod : bool
+        If *True*, a resting period will be proposed before the task.
     restLength : int
         The length of the resting period (seconds). Default is 300 seconds.
     screenNb : int
         The screen number (Psychopy parameter). Default set to 0.
-    randomize : boolean
+    randomize : bool
         If `True` (default), will randomize the order of the conditions. If
         taskVersion is not None, will use the default task parameter instead.
     startKey : str
         The key to press to start the task and go to next steps.
-    rating : boolean
+    rating : bool
         If `True` (default), will add a rating scale after the evaluation.
     confScale : list
         The range of the confidence rating scale.
     labelsRating : list
         The labels of the confidence rating scale.
-    taskVersion : str | None
+    taskVersion : str or None
         Task version to run. Can be 'Garfinkel', 'Shandry' or None.
-    times : array of int
+    times : 1d array-like of int
         Length of trials, in seconds.
-    conditions : array of str
+    conditions : 1d array-like of str
         The conditions. Can be 'Rest', 'Training' or 'Count'.
     subjectID : str
         Subject identifiant.
@@ -51,15 +54,15 @@ def getParameters(subjectID, subjectNumber, serialPort):
         The task working directory.
     results : str
         The subject result directory.
-    note : psychopy sound instance
+    note : `psychopy.sound`
         The sound played at trial start and trial end.
-    win : Psychopy window
-        The window where to run the task.
-    serial : PySerial instance
+    win : `psychopy.visual.Window`
+        Window where to present stimuli.
+    serial : `serial.Serial`
         The serial port used to record the PPG activity.
-    restLogo : psychopy visual
+    restLogo : `psychopy.visual.ImageStim`
         Image presented during resting conditions.
-    heartLogo : psychopy visual
+    heartLogo : `psychopy.visual.ImageStim`
         Image presented during resting conditions.
     texts : dict
         Dictionnary containing the texts to be presented.
@@ -75,7 +78,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['rating'] = True
     parameters['confScale'] = [1, 7]
     parameters['labelsRating'] = ['Guess', 'Certain']
-    parameters['taskVersion'] = 'Garfinkel'
+    parameters['taskVersion'] = taskVersion
 
     # Experimental design
     if parameters['taskVersion'] == 'Garfinkel':
@@ -88,6 +91,12 @@ def getParameters(subjectID, subjectNumber, serialPort):
         parameters['times'] = np.array([60, 25, 30, 35, 30, 45])
         parameters['conditions'] = ['Rest', 'Count', 'Rest', 'Count', 'Rest',
                                     'Count']
+
+    elif parameters['taskVersion'] == 'test':
+        parameters['times'] = np.array([5, 5])
+        parameters['conditions'] = ['Rest', 'Count']
+    else:
+        raise ValueError('Invalid task condition')
 
     # Set default path /Results/ 'Subject ID' /
     parameters['subjectID'] = subjectID
@@ -136,20 +145,19 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['texts'] = dict()
     parameters['texts']['Rest'] = 'Please sit quitely unitil the next session'
     parameters['texts']['Count'] = (
-        "After you hear start, try to count your heartbeats"
+        "After you hear 'start', try to count your heartbeats"
         " by concentrating on your body feelings")
-    parameters['texts']['Training'] = (
-        "After the tone, try to count your heartbeats"
-        " by concentrating on your body feelings")
-    parameters['texts']['nCount'] = "How many heartbeats did you count?"
+    parameters['texts']['nCount'] = (
+        'How many heartbeats did you count?'
+        ' Write a number and press ENTER to validate.')
     parameters['texts']['confidence'] = (
-        "How confident are you about your count?")
+        "How confident are you about your count?"
+        'Use the RIGHT/LEFT keys to select and the DOWN key to confirm')
 
     # Tutorial instructions
     parameters['texts']['Tutorial1'] = (
                 "During this experiment, we will ask you to silently"
-                " count your heartbeats for different intervals of time."
-                " Press SPACE to continue.")
+                " count your heartbeats for different intervals of time.")
     parameters['texts']['Tutorial2'] = (
          "When you see this \"heart\" icon, you will silently count your"
          " heartbeats by focusing on your body sensations.")
@@ -159,7 +167,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
         " session.")
     parameters['texts']['Tutorial4'] = (
         "The beginning and the end of the task will be signalled when you hear"
-        " the words 'start'' and 'stop'. While counting your heartbeats, you"
+        " the words 'start' and 'stop'. While counting your heartbeats, you"
         " may close your eyes if you find that helpful. Please keep your hand"
         " still during the counting period, to avoid interfering with"
         " the heartbeat recording.")
@@ -187,12 +195,12 @@ def getParameters(subjectID, subjectNumber, serialPort):
         " Afterwards, the counting task will begin, and will take about"
         " 6 minutes in total.")
     parameters['texts']['Tutorial8'] = (
-        " You will now complete a short practice task."
+        "You will now complete a short practice task."
         " Please ask the experimenter if you have any questions before"
         " continuing to the main experiment.")
     parameters['texts']['Tutorial9'] = (
         "Good job! If you have any question, ask the experimenter now,"
         " otherwise press SPACE to continue to the experiment.")
-    parameters['textSize'] = 0.02
+    parameters['textSize'] = 0.04
 
     return parameters
