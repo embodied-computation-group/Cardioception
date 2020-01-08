@@ -8,24 +8,24 @@ from cardioception.recording import Oximeter
 
 def run(parameters, stairCase=None, win=None, confidenceRating=True,
         runTutorial=False):
-    """Run the entire task based.
+    """Run the entire task.
 
     Parameters
     ----------
     parameters : dict
         Task parameters.
     stairCase : Instance of staircase handler.
-        If `None`, will use default values:
+        If *None*, will use default values:
             data.StairHandler(
                         startVal=40, nTrials=parameters['nTrials'], nUp=1,
                         nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
                         stepType='lin', minVal=1, maxVal=100))
     win : psychopy window
         Instance of Psychopy window.
-    confidenceRating : boolean
+    confidenceRating : bool
         Whether the trial show include a confidence rating scale.
-    tutorial : boolean
-        If `True`, will present a tutorial with 10 training trial with feedback
+    tutorial : bool
+        If *True*, will present a tutorial with 10 training trial with feedback
         and 5 trials with confidence rating.
 
     Returns
@@ -106,14 +106,14 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     stairCase : Instance of staircase handler.
         Staircase procedure used during the task. If `feedback=True`, stairCase
         should be None.
-    win : psychopy window, default is `None`
+    win : psychopy window, default is *None*
         Where to draw the task.
-    oxi : Instance of Oximeter, default is `None`
-        Where recording devise.
+    oxi : Instance of `cardioception.recording.Oximeter` or None
+        Recording device. Default is *None*.
     confidenceRating : boolean
-        If `False`, do not display confidence rating scale.
+        If *False*, do not display confidence rating scale.
     feedback : boolean
-        If `True`, will provide
+        If *True*, will provide feedback.
 
     Returns
     -------
@@ -129,7 +129,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     estimationRT : float
         The response time from sound start to choice.
     confidence : int
-        If `confidenceRating=True`, the confidence of the participant. The
+        If confidenceRating is *True*, the confidence of the participant. The
         range of the scale is defined in `parameters['confScale']`. Default is
         [1, 7].
     confidenceRT : float
@@ -138,10 +138,11 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         The difference between the true heart rate and the delivered tone BPM.
         Alpha is defined by the stairCase.intensities values and is updated
         on each trial.
-    accuracy : 0, 1
-        `0` for incorrect response, `1` for correct responses.
+    accuracy : int
+        .. ACCEPTS: [ 0 | 1 ]
+        *0* for incorrect response, *1* for correct responses.
     missed : boolean
-        If `True`, the trial did not terminate correctly (e.g., participant was
+        If *True*, the trial did not terminate correctly (e.g., participant was
         too slow to provide the estimation or the confidence).
     """
     # Restart the trial until participant provide response on time
@@ -235,7 +236,6 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
 
     # Check for extreme alpha values, e.g. if alpha changes massively from
     # trial to trial.
-
     if (average_hr + alpha) < 15:
         hr = '15'
     elif (average_hr + alpha) > 199:
@@ -386,10 +386,10 @@ def tutorial(parameters, win, oxi=None):
     ----------
     parameters : dict
         Task parameters.
-    win : instance of psychopy window
+    win : instance of `psychopy.visual.Window`
         Where to draw the task.
-    oxi : Instance of Oximeter, default is `None`
-        Where recording device.
+    oxi : instance of `cardioception.recording.Oximeter` or None
+        Recording device. Default is *None*.
     """
     # Introduction
     intro = visual.TextStim(win,
