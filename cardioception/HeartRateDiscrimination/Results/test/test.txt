@@ -1,0 +1,5 @@
+,Condition,StairCond,Estimation,EstimationRT,Confidence,ConfidenceRT,Alpha,HR,Accuracy,Missed,nTrials
+0,Less,0.0,down,0.7543001999874832,7,0.949,-40,76,1,False,0
+1,More,1.0,down,1.4974794000008842,5,0.938,5,73,0,False,1
+2,More,0.0,down,1.0194598999951268,5,1.105,20,71,0,False,2
+3,Less,0.0,down,1.5868668999901274,6,0.815,-32,93,1,False,3
