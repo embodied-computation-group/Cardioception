@@ -13,6 +13,7 @@ cardioception/HeartBeatCounting/__init__.py
 cardioception/HeartBeatCounting/parameters.py
 cardioception/HeartBeatCounting/run.py
 cardioception/HeartBeatCounting/task.py
+cardioception/HeartBeatCounting/test.py
 cardioception/HeartRateDiscrimination/__init__.py
 cardioception/HeartRateDiscrimination/generate_sound_stimuli.py
 cardioception/HeartRateDiscrimination/parameters.py
