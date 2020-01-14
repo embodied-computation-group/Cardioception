@@ -8,24 +8,24 @@ from cardioception.recording import Oximeter
 
 def run(parameters, stairCase=None, win=None, confidenceRating=True,
         runTutorial=False):
-    """Run the entire task based.
+    """Run the entire task.
 
     Parameters
     ----------
     parameters : dict
         Task parameters.
     stairCase : Instance of staircase handler.
-        If `None`, will use default values:
+        If *None*, will use default values:
             data.StairHandler(
                         startVal=40, nTrials=parameters['nTrials'], nUp=1,
                         nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
                         stepType='lin', minVal=1, maxVal=100))
     win : psychopy window
         Instance of Psychopy window.
-    confidenceRating : boolean
+    confidenceRating : bool
         Whether the trial show include a confidence rating scale.
-    tutorial : boolean
-        If `True`, will present a tutorial with 10 training trial with feedback
+    tutorial : bool
+        If *True*, will present a tutorial with 10 training trial with feedback
         and 5 trials with confidence rating.
 
     Returns
@@ -58,11 +58,10 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             messageStart = visual.TextStim(win,
                                            height=parameters['textSize'],
                                            text='Press space to continue')
-            messageStart.autoDraw = True  # Show instructions
+            messageStart.draw()  # Show instructions
             win.flip()
             event.waitKeys(keyList=parameters['startKey'])
-            messageStart.autoDraw = False  # Hide instructions
-            win.update()
+            win.flip()
 
         # Select the staircase
         stairCond = parameters['staircaseConditions'][i]
@@ -88,6 +87,11 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
                                   'Accuracy': [accuracy],
                                   'Missed': [missed],
                                   'nTrials': [i]})], ignore_index=True)
+
+        # Save the results at each iteration
+        results_df.to_csv(parameters['results'] + '/' +
+                          parameters['subject'] + '.txt')
+
     return results_df
 
 
@@ -102,14 +106,14 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     stairCase : Instance of staircase handler.
         Staircase procedure used during the task. If `feedback=True`, stairCase
         should be None.
-    win : psychopy window, default is `None`
+    win : psychopy window, default is *None*
         Where to draw the task.
-    oxi : Instance of Oximeter, default is `None`
-        Where recording devise.
+    oxi : Instance of `cardioception.recording.Oximeter` or None
+        Recording device. Default is *None*.
     confidenceRating : boolean
-        If `False`, do not display confidence rating scale.
+        If *False*, do not display confidence rating scale.
     feedback : boolean
-        If `True`, will provide
+        If *True*, will provide feedback.
 
     Returns
     -------
@@ -125,7 +129,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     estimationRT : float
         The response time from sound start to choice.
     confidence : int
-        If `confidenceRating=True`, the confidence of the participant. The
+        If confidenceRating is *True*, the confidence of the participant. The
         range of the scale is defined in `parameters['confScale']`. Default is
         [1, 7].
     confidenceRT : float
@@ -134,10 +138,11 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         The difference between the true heart rate and the delivered tone BPM.
         Alpha is defined by the stairCase.intensities values and is updated
         on each trial.
-    accuracy : 0, 1
-        `0` for incorrect response, `1` for correct responses.
+    accuracy : int
+        .. ACCEPTS: [ 0 | 1 ]
+        *0* for incorrect response, *1* for correct responses.
     missed : boolean
-        If `True`, the trial did not terminate correctly (e.g., participant was
+        If *True*, the trial did not terminate correctly (e.g., participant was
         too slow to provide the estimation or the confidence).
     """
     # Restart the trial until participant provide response on time
@@ -147,7 +152,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
                                   pos=[0, 0], sf=0, rgb=-1)
     fixation.draw()
-    win.update()
+    win.flip()
     core.wait(0.25)
 
     ###########
@@ -203,7 +208,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
                                   pos=[0, 0], sf=0, rgb=-1)
     fixation.draw()
-    win.update()
+    win.flip()
     core.wait(0.25)
 
     #######
@@ -231,7 +236,6 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
 
     # Check for extreme alpha values, e.g. if alpha changes massively from
     # trial to trial.
-
     if (average_hr + alpha) < 15:
         hr = '15'
     elif (average_hr + alpha) > 199:
@@ -365,13 +369,11 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
                     message.draw()
                     win.flip()
 
-                win.flip()
                 confidence = ratingScale.getRating()
                 confidenceRT = ratingScale.getRT()
 
-            # Hide instructions
-            message.autoDraw = False
-            win.flip()
+    # Hide instructions
+    win.flip()
 
     return stairCase, average_hr, estimation, estimationRT, confidence,\
         confidenceRT, alpha, accuracy, missed
@@ -384,10 +386,10 @@ def tutorial(parameters, win, oxi=None):
     ----------
     parameters : dict
         Task parameters.
-    win : instance of psychopy window
+    win : instance of `psychopy.visual.Window`
         Where to draw the task.
-    oxi : Instance of Oximeter, default is `None`
-        Where recording device.
+    oxi : instance of `cardioception.recording.Oximeter` or None
+        Recording device. Default is *None*.
     """
     # Introduction
     intro = visual.TextStim(win,

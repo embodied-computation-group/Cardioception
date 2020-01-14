@@ -21,7 +21,7 @@ def plot_hr(oximeter, ax=None):
         Figure.
     """
     if ax is None:
-        fig, ax = plt.subplots(figsize=(12, 6))
+        fig, ax = plt.subplots(figsize=(13, 5))
     ax.plot(oximeter.times, oximeter.instant_rr)
     ax.set_xlabel('Time (s)', size=20)
     ax.set_ylabel('R-R (ms)', size=20)
@@ -44,7 +44,7 @@ def plot_events(oximeter, ax=None):
         The axe instance of the Matplotlib figure.
     """
     if ax is None:
-        fig, ax = plt.subplots(figsize=(12, 6))
+        fig, ax = plt.subplots(figsize=(13, 5))
     events = oximeter.channels
     for i, ev in enumerate(events):
         events[ev] = np.asarray(events[ev]) == 1
@@ -72,7 +72,7 @@ def plot_oximeter(oximeter, ax=None):
         The figure and axe instances.
     """
     if ax is None:
-        fig, ax = plt.subplots(figsize=(12, 6))
+        fig, ax = plt.subplots(figsize=(13, 5))
     ax.plot(oximeter.times, oximeter.threshold, linestyle='--', color='gray',
             label='Threshold')
     ax.fill_between(x=oximeter.times,
@@ -111,7 +111,7 @@ def hrd_convergence(results_df, path=None):
     """
     # Plot convergence
     sns.set_context('talk')
-    fig, ax = plt.subplots(figsize=(12, 4))
+    fig, ax = plt.subplots(figsize=(13, 5))
     plt.subplot(121)
 
     # Convergence line
