@@ -184,11 +184,11 @@ def plot_confidence(confidence, accuracy, path=None):
     for conf in range(1, 8):
         # Correct trials
         p = sum((accuracy == 0) & (confidence == conf)) / sum(accuracy == 0)
-        plt.bar(conf-0.15, p, width=0.30, color='r', label = 'Error Trials')
+        plt.bar(conf-0.15, p, width=0.30, color='r', label='Error')
 
         # Incorrect trials
         p = sum((accuracy == 1) & (confidence == conf)) / sum(accuracy == 1)
-        plt.bar(conf+0.15, p, width=0.30, color='g', label = 'Correct Trials')
+        plt.bar(conf+0.15, p, width=0.30, color='g', label='Correct')
         plt.legend()
 
     plt.ylabel('P(Rating|Precision)')
