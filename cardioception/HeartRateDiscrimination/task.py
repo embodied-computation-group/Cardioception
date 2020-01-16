@@ -204,7 +204,6 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
                 core.wait(2)
 
     # Fixation cross
-    win.flip()
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
                                   pos=[0, 0], sf=0, rgb=-1)
     fixation.draw()
@@ -274,7 +273,6 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
                                  maxWait=parameters['respMax'],
                                  timeStamped=clock)
     this_hr.stop()
-    win.flip()
 
     # End trigger
     oxi.readInWaiting()
@@ -371,9 +369,6 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
 
                 confidence = ratingScale.getRating()
                 confidenceRT = ratingScale.getRT()
-
-    # Hide instructions
-    win.flip()
 
     return stairCase, average_hr, estimation, estimationRT, confidence,\
         confidenceRT, alpha, accuracy, missed
