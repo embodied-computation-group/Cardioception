@@ -14,13 +14,14 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
     ----------
     parameters : dict
         Task parameters.
-    stairCase : Instance of staircase handler.
+    stairCase : `psychopy.data.StairHandler` or
+    `psychopy.data.MultiStairHandler` or None
         If *None*, will use default values:
             data.StairHandler(
                         startVal=40, nTrials=parameters['nTrials'], nUp=1,
                         nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
                         stepType='lin', minVal=1, maxVal=100))
-    win : psychopy window
+    win : `psychopy.visual.window`
         Instance of Psychopy window.
     confidenceRating : bool
         Whether the trial show include a confidence rating scale.
@@ -33,9 +34,6 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
     results_df : Pandas DataFrame
         Dataframe containing behavioral results.
     """
-    if win is not None:
-        win = win
-
     oxiTraining = Oximeter(serial=parameters['serial'], sfreq=75,
                            add_channels=1)
 
@@ -61,7 +59,6 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             messageStart.draw()  # Show instructions
             win.flip()
             event.waitKeys(keyList=parameters['startKey'])
-            win.flip()
 
         # Select the staircase
         stairCond = parameters['staircaseConditions'][i]
@@ -92,6 +89,23 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
         results_df.to_csv(parameters['results'] + '/' +
                           parameters['subject'] + '.txt')
 
+        # Beaks
+        if i % parameters['nBreaking'] == 0:
+            message = visual.TextStim(
+                            win, height=parameters['textSize'],
+                            text=('Break. You can rest as long as'
+                                  ' you want. Just press SPACE we you want'
+                                  ' resume the task'))
+            message.draw()
+            win.flip()
+            oxiTask.save(parameters['results'] + '/' + parameters['subject'] +
+                         str(i))
+            event.waitKeys(keyList=parameters['startKey'])
+
+            # Reset recording when ready
+            oxiTask.setup()
+            oxiTask.read(duration=1)
+
     return results_df
 
 
@@ -106,7 +120,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     stairCase : Instance of staircase handler.
         Staircase procedure used during the task. If `feedback=True`, stairCase
         should be None.
-    win : psychopy window, default is *None*
+    win :`psychopy.visual.window` or *None*
         Where to draw the task.
     oxi : Instance of `cardioception.recording.Oximeter` or None
         Recording device. Default is *None*.
