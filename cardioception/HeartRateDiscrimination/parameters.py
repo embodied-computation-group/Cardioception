@@ -58,6 +58,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
     nStaircase : int
         Number of staircase used. Can be 1 or 2. If 2, implements a randomized
         interleved staircase procedure following Cornsweet, 1976.
+    nBreaking : int
+        Number of trials to run before the break.
     Condition : 1d-array
         Array of 0s and 1s encoding the conditions (1 : Higher, 0 : Lower). The
         length of the array is defined by `parameters['nTrials']`. If
@@ -103,6 +105,7 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['nTrials'] = 150
     parameters['nBeatsLim'] = 5
     parameters['nStaircase'] = 2
+    parameters['nBreaking'] = 50
 
     # Create condition randomized vector
     parameters['Conditions'] = np.hstack(
