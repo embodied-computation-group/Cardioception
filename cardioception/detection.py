@@ -1,6 +1,48 @@
 # QRS detection
 import numpy as np
+import pandas as pd
+from scipy.interpolate import interp1d
 from scipy.signal import find_peaks
+
+
+def interpolate_clipping(signal, threshold=255):
+    """Interoplate clipping segment.
+
+    Parameters
+    ----------
+    signal : 1d array-like
+        Noisy signal.
+    threshold : int
+        Threshold of clipping artefact.
+
+    Returns
+    -------
+    clean_signal : 1d array-like
+        Interpolated signal.
+
+    Notes
+    -----
+    Correct signal segment reaching recording threshold (default is 255)
+    using a cubic spline interpolation. Adapted from [#]_.
+
+    References
+    ----------
+    .. [#] https://python-heart-rate-analysis-toolkit.readthedocs.io/en/latest/
+    """
+    if isinstance(signal, list):
+        signal = np.array(signal)
+
+    time = np.arange(0, len(signal))
+
+    # Interpolate
+    f = interp1d(time[np.where(signal != 255)[0]],
+                 signal[np.where(signal != 255)[0]],
+                 kind='cubic')
+
+    # Use the peaks vector as time input
+    clean_signal = f(time)
+
+    return clean_signal
 
 
 def oxi_peaks(x, sfreq=75, win=1, new_sfreq=1000, clipping=True,
@@ -51,9 +93,8 @@ def oxi_peaks(x, sfreq=75, win=1, new_sfreq=1000, clipping=True,
         x = np.asarray(x)
 
     # Interpolate
-    f = interpolate.interp1d(np.arange(0, len(x)/sfreq, 1/sfreq),
-                             x,
-                             fill_value="extrapolate")
+    f = interp1d(np.arange(0, len(x)/sfreq, 1/sfreq), x,
+                 fill_value="extrapolate")
     time = np.arange(0, len(x)/sfreq, 1/new_sfreq)
     x = f(time)
 
