@@ -21,8 +21,8 @@ INSTALL_REQUIRES = [
     'matplotlib>=3.0.2',
     'pingouin>=0.2.9',
     'pyserial>=3.4',
+    'bayesfit==2.3',
     'pyglet==1.3.2',
-    'bayesfit==2.3'
 ]
 
 PACKAGES = [
