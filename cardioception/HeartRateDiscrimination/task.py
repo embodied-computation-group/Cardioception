@@ -1,9 +1,11 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
+import time
 from psychopy import visual, event, core, sound
 import pandas as pd
 import numpy as np
 from cardioception.recording import Oximeter
+from cardioception.detection import oxi_peaks
 
 
 def run(parameters, stairCase=None, win=None, confidenceRating=True,
@@ -14,13 +16,14 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
     ----------
     parameters : dict
         Task parameters.
-    stairCase : Instance of staircase handler.
+    stairCase : `psychopy.data.StairHandler` or
+    `psychopy.data.MultiStairHandler` or None
         If *None*, will use default values:
             data.StairHandler(
                         startVal=40, nTrials=parameters['nTrials'], nUp=1,
                         nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
                         stepType='lin', minVal=1, maxVal=100))
-    win : psychopy window
+    win : `psychopy.visual.window`
         Instance of Psychopy window.
     confidenceRating : bool
         Whether the trial show include a confidence rating scale.
@@ -33,9 +36,6 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
     results_df : Pandas DataFrame
         Dataframe containing behavioral results.
     """
-    if win is not None:
-        win = win
-
     oxiTraining = Oximeter(serial=parameters['serial'], sfreq=75,
                            add_channels=1)
 
@@ -61,18 +61,36 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             messageStart.draw()  # Show instructions
             win.flip()
             event.waitKeys(keyList=parameters['startKey'])
-            win.flip()
+
+        try:
+            thisTrial = parameters['stairCase'].next()
+        except StopIteration:  # we got a StopIteration error
+            print('End of the trial')
 
         # Select the staircase
-        stairCond = parameters['staircaseConditions'][i]
-        this_stair = parameters['stairCase'][int(stairCond)]
+        stairCond = thisTrial[1]['label']
+        intensity = thisTrial[0]
 
         # Start trial
-        this_stair, average_hr, estimation, estimationRT, confidence, \
-            confidenceRT, alpha, accuracy, missed = trial(
-                              parameters, condition, this_stair,
-                              win=win, oxi=oxiTask,
-                              confidenceRating=confidenceRating)
+        average_hr, estimation, estimationRT, confidence, \
+            confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
+            soundTrigger2, ratingTrigger, endTrigger = trial(
+                              parameters, condition, intensity, win=win,
+                              oxi=oxiTask, confidenceRating=confidenceRating)
+
+        # Is the answer Correct? Update the staircase model
+        if (estimation == 'up') & (condition == 'More'):
+            if stairCase is not None:
+                parameters['stairCase'].addResponse(1)
+            accuracy = 1
+        elif (estimation == 'down') & (condition == 'Less'):
+            if stairCase is not None:
+                parameters['stairCase'].addResponse(1)
+            accuracy = 1
+        else:
+            if stairCase is not None:
+                parameters['stairCase'].addResponse(0)
+            accuracy = 0
 
         # Store results
         results_df = results_df.append([
@@ -86,16 +104,51 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
                                   'HR': [average_hr],
                                   'Accuracy': [accuracy],
                                   'Missed': [missed],
-                                  'nTrials': [i]})], ignore_index=True)
+                                  'nTrials': [i],
+                                  'startTrigger': [startTrigger],
+                                  'soundTrigger': [soundTrigger],
+                                  'soundTrigger2': [soundTrigger2],
+                                  'ratingTrigger': [ratingTrigger],
+                                  'endTrigger': [endTrigger],
+                                  })], ignore_index=True)
 
         # Save the results at each iteration
         results_df.to_csv(parameters['results'] + '/' +
                           parameters['subject'] + '.txt')
 
+        # Beaks
+        if (i % parameters['nBreaking'] == 0) & (i != 0):
+            message = visual.TextStim(
+                            win, height=parameters['textSize'],
+                            text=('Break. You can rest as long as'
+                                  ' you want. Just press SPACE we you want'
+                                  ' to resume the task.'))
+            message.draw()
+            win.flip()
+            oxiTask.save(parameters['results'] + '/' + parameters['subject'] +
+                         str(i))
+            event.waitKeys(keyList=parameters['startKey'])
+
+            # Fixation cross
+            fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
+                                          pos=[0, 0], sf=0)
+            fixation.draw()
+            win.flip()
+
+            # Reset recording when ready
+            oxiTask.setup()
+            oxiTask.read(duration=1)
+
+    # save data as multiple formats
+    parameters['stairCase'].saveAsExcel(
+        parameters['results'] + '/' + parameters['subject'])
+    parameters['stairCase'].saveAsPickle(
+        parameters['results'] + '/' + parameters['subject'])
+
     return results_df
 
 
-def trial(parameters, condition, stairCase=None, win=None, oxi=None,
+def trial(parameters, condition, intensity, win=None, oxi=None,
           confidenceRating=True, feedback=False):
     """Run one trial.
 
@@ -103,10 +156,14 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     ----------
     parameter : dict
         Task parameters.
+    condition : str
+        Can be 'Higher' or 'Lower'.
+    intensity : float
+        The intensity of the stimulus, from the staircase procedure.
     stairCase : Instance of staircase handler.
         Staircase procedure used during the task. If `feedback=True`, stairCase
         should be None.
-    win : psychopy window, default is *None*
+    win :`psychopy.visual.window` or *None*
         Where to draw the task.
     oxi : Instance of `cardioception.recording.Oximeter` or None
         Recording device. Default is *None*.
@@ -146,11 +203,11 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         too slow to provide the estimation or the confidence).
     """
     # Restart the trial until participant provide response on time
-    confidence, confidenceRT, accuracy = None, None, None
+    confidence, confidenceRT, accuracy, ratingTrigger = None, None, None, None
 
     # Fixation cross
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
-                                  pos=[0, 0], sf=0, rgb=-1)
+                                  pos=[0, 0], sf=0)
     fixation.draw()
     win.flip()
     core.wait(0.25)
@@ -168,6 +225,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     win.flip()
 
     oxi.channels['Channel_0'][-1] = 3  # Start trigger
+    startTrigger = time.time()
 
     # Recording
     while True:
@@ -176,8 +234,8 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         oxi.read(duration=5.0)
 
         # Get actual heart Rate
-        average_hr = np.nanmean(np.unique(oxi.instant_rr[-(5 * oxi.sfreq):]))
-        average_hr = int(round(60000/average_hr))
+        signal, peaks = oxi_peaks(oxi.recording)
+        average_hr = int(60000/np.diff(np.where(peaks[-5000:])[0]).mean())
 
         # Prevent crash if NaN value
         if np.isnan(average_hr):
@@ -205,7 +263,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
 
     # Fixation cross
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
-                                  pos=[0, 0], sf=0, rgb=-1)
+                                  pos=[0, 0], sf=0)
     fixation.draw()
     win.flip()
     core.wait(0.25)
@@ -219,19 +277,9 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         condition = np.random.choice(['More', 'Less'])
 
     # Generate actual stimulus frequency
-    if stairCase is not None:
-        if stairCase.intensities:
-            alpha = int(stairCase.intensities[-1])
-        else:
-            alpha = int(stairCase.startVal)
-        if condition == 'Less':
-            alpha = -alpha
-    # For training, no staircase exists so alpha is hardcoded to +/- 20 BPM.
-    else:
-        if condition == 'More':
-            alpha = 20
-        elif condition == 'Less':
-            alpha = -20
+    alpha = int(intensity)
+    if condition == 'Less':
+        alpha = -alpha
 
     # Check for extreme alpha values, e.g. if alpha changes massively from
     # trial to trial.
@@ -257,9 +305,10 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
                             pos=(0.0, -0.4))
     press.draw()
 
-    # Start trigger
+    # Sound trigger
     oxi.readInWaiting()
-    oxi.channels['Channel_0'][-1] = 2  # Start trigger
+    oxi.channels['Channel_0'][-1] = 2
+    soundTrigger = time.time()
 
     win.flip()
     this_hr.play()
@@ -277,6 +326,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
     # End trigger
     oxi.readInWaiting()
     oxi.channels['Channel_0'][-1] = 2  # Start trigger
+    soundTrigger2 = time.time()
 
     # Check for response provided by the participant
     if not responseKey:
@@ -293,32 +343,22 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
         estimation = responseKey[0][0]
         estimationRT = responseKey[0][1]
 
-        # Is the answer Correct? Update the staircase model
-        if (estimation == 'up') & (condition == 'More'):
-            if stairCase is not None:
-                stairCase.addResponse(1)
-                stairCase.next()
-            accuracy = 1
-        elif (estimation == 'down') & (condition == 'Less'):
-            if stairCase is not None:
-                stairCase.addResponse(1)
-                stairCase.next()
-            accuracy = 1
-        else:
-            if stairCase is not None:
-                stairCase.addResponse(0)
-                stairCase.next()
-            accuracy = 0
-
         # Read oximeter
         oxi.readInWaiting()
 
         # Feedback
         if feedback is True:
+            # Is the answer Correct?
+            if (estimation == 'up') & (condition == 'More'):
+                accuracy = 1
+            elif (estimation == 'down') & (condition == 'Less'):
+                accuracy = 1
+            else:
+                accuracy = 0
             if accuracy == 0:
                 acc = visual.TextStim(win,
                                       height=parameters['textSize'],
-                                      color=(1.0, 0.0, 0.0),
+                                      color='red',
                                       text='False')
                 acc.draw()
                 win.flip()
@@ -326,7 +366,7 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
             elif accuracy == 1:
                 acc = visual.TextStim(win,
                                       height=parameters['textSize'],
-                                      color=(0.0, 1.0, 0.0),
+                                      color='green',
                                       text='Correct')
                 acc.draw()
                 win.flip()
@@ -339,6 +379,12 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
 
             # Record participant confidence
             if confidenceRating is True:
+
+                # Start trigger
+                oxi.readInWaiting()
+                oxi.channels['Channel_0'][-1] = 4  # Start trigger
+                ratingTrigger = time.time()
+
                 markerStart = np.random.choice(
                                 np.arange(parameters['confScale'][0],
                                           parameters['confScale'][1]))
@@ -370,8 +416,14 @@ def trial(parameters, condition, stairCase=None, win=None, oxi=None,
                 confidence = ratingScale.getRating()
                 confidenceRT = ratingScale.getRT()
 
-    return stairCase, average_hr, estimation, estimationRT, confidence,\
-        confidenceRT, alpha, accuracy, missed
+    # End trigger
+    oxi.readInWaiting()
+    oxi.channels['Channel_0'][-1] = 5  # Start trigger
+    endTrigger = time.time()
+
+    return average_hr, estimation, estimationRT, confidence,\
+        confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
+        soundTrigger2, ratingTrigger, endTrigger
 
 
 def tutorial(parameters, win, oxi=None):
@@ -439,11 +491,13 @@ def tutorial(parameters, win, oxi=None):
 
         # Ramdom selection of condition
         condition = np.random.choice(['More', 'Less'])
+        intensity = 20
 
-        this_stair, average_hr, estimation, estimationRT, confidence, \
-            confidenceRT, alpha, accuracy, missed = trial(
-                                parameters, condition, win=win, oxi=oxi,
-                                feedback=True, confidenceRating=False)
+        average_hr, estimation, estimationRT, confidence, \
+            confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
+            soundTrigger2, ratingTrigger, endTrigger = trial(
+                                parameters, condition, intensity, win=win,
+                                oxi=oxi, feedback=True, confidenceRating=False)
 
     # Confidence rating
     confidence = visual.TextStim(win,
@@ -466,11 +520,13 @@ def tutorial(parameters, win, oxi=None):
 
         # Ramdom selection of condition
         condition = np.random.choice(['More', 'Less'])
+        intensity = 20
 
-        this_stair, average_hr, estimation, estimationRT, confidence, \
-            confidenceRT, alpha, accuracy, missed = trial(
-                                parameters, condition, win=win, oxi=oxi,
-                                confidenceRating=True)
+        average_hr, estimation, estimationRT, confidence, \
+            confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
+            soundTrigger2, ratingTrigger, endTrigger = trial(
+                                parameters, condition, intensity, win=win,
+                                oxi=oxi, confidenceRating=True)
 
     # Task
     taskPresentation = visual.TextStim(win,

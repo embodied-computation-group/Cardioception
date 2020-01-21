@@ -18,7 +18,7 @@ def test_HRD():
     parameters['Conditions'] = parameters['Conditions'][:4]
     parameters['nFeedback'] = 1
     parameters['nConfidence'] = 1
-
+    parameters['nBreaking'] = 2
     # Run task
     results_df = run(parameters, win=parameters['win'],
                      confidenceRating=True, runTutorial=True)

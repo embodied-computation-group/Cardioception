@@ -2,8 +2,7 @@
 
 import numpy as np
 import time
-from cardioception.detection import oxi_peaks
-from cardioception.plotting import plot_oximeter, plot_events, plot_hr
+from systole.detection import oxi_peaks
 
 
 class Oximeter():
@@ -45,6 +44,9 @@ class Oximeter():
         defalut value.
     serial : PySerial instance
         PySerial object indexing the USB port to read.
+    rr : list or None
+        RR intervals time course. The time course will be generated if
+        self.find_peaks() is used.
 
     Examples
     --------
@@ -69,22 +71,25 @@ class Oximeter():
 
     2 methods are availlable to record PPG signal:
 
-        * The `read()` method will continuously record for certain amount of
-        time (specified by the `duration` parameter, in seconds). This is the
-        easiest and most robust method, but it is not possible to run
-        instructions in the meantime.
+    * The `read()` method.
 
-        >>> oximeter.read(duration=10)
+    Will continuously record for certain amount of time (specified by the
+    `duration` parameter, in seconds). This is the easiest and most robust
+    method, but it is not possible to run instructions in the meantime.
 
-        * The `readInWaiting()` method will read all the availlable bytes (up
-        to 10 seconds of recording). When inserted into a while loop, it allows
-        to record PPG signal together with other scripts.
+    >>> oximeter.read(duration=10)
 
-        >>> import time
-        >>> tstart = time.time()
-        >>> while time.time() - tstart < 10:
-        >>>     oximeter.readInWaiting()
-        >>>     # Insert code here
+    * The `readInWaiting()` method.
+
+    Will read all the availlable bytes (up to 10 seconds of recording). When
+    inserted into a while loop, it allows to record PPG signal together with
+    other scripts.
+
+    >>> import time
+    >>> tstart = time.time()
+    >>> while time.time() - tstart < 10:
+    >>>     oximeter.readInWaiting()
+    >>>     # Insert code here
 
     The recorded signal can latter be inspected using the `plot()` method.
 
@@ -197,60 +202,29 @@ class Oximeter():
 
         return check
 
-    def find_peaks(self):
+    def find_peaks(self, **kwargs):
         """Find peaks in recorded signal.
 
         Returns
         -------
         Oximeter instance. The peaks occurences are stored in the `peaks`
         attribute.
-        """
 
-        self.peaks = oxi_peaks(self.recording)
+        Other Parameters
+        ----------------
+        **kwargs : `~systole.detection.oxi_peaks` properties.
+        """
+        # Peak detection
+        resampled_signal, peaks = oxi_peaks(self.recording,
+                                            new_sfreq=75, **kwargs)
 
         # R-R intervals (in miliseconds)
-        self.rr = (np.diff(self.peaks)/self.sfreq) * 1000
+        self.rr = (np.diff(np.where(peaks)[0])/self.sfreq) * 1000
 
         # Beats per minutes
         self.bpm = 60000/self.rr
 
         return self
-
-    def plot_events(self, ax=None):
-        """Visualize the distribution of events stored in additional channels.
-
-        Return
-        ------
-        fig, ax : Matplotlib instances.
-            The figure and axe instances.
-        """
-        ax = plot_events(self, ax=ax)
-
-        return ax
-
-    def plot_hr(self, ax=None):
-        """Plot heartrate extracted from PPG recording.
-
-        Return
-        ------
-        fig, ax : Matplotlib instances.
-            The figure and axe instances.
-        """
-        ax = plot_hr(self, ax=ax)
-
-        return ax
-
-    def plot_recording(self, ax=None):
-        """Plot recorded signal.
-
-        Return
-        ------
-        fig, ax : Matplotlib instances.
-            The figure and axe instances.
-        """
-        ax = plot_oximeter(self, ax=ax)
-
-        return ax
 
     def read(self, duration):
         """Find start byte.
@@ -276,8 +250,8 @@ class Oximeter():
 
         Parameters
         ----------
-        stop : boolean, defalut to `False`
-            Whether the recording should continue if an error is detected.
+        stop : bool
+            Stop the recording when an error is detected. Default is *False*.
         """
         # Read oxi
         while self.serial.inWaiting() >= 5:
@@ -296,17 +270,49 @@ class Oximeter():
                         if self.check(paquet=paquet):
                             break
 
-    def setup(self, read_duration=1):
+    def save(self, fname):
+        """Save the recording instance.
+
+        Parameters
+        ----------
+        fname : str
+            The file name.
+        """
+        if len(self.peaks) != len(self.recording):
+            self.peak = np.zeros(len(self.recording))
+
+        if len(self.instant_rr) != len(self.recording):
+            self.instant_rr = np.zeros(len(self.recording))
+
+        if len(self.times) != len(self.recording):
+            self.times = np.zeros(len(self.recording))
+
+        if len(self.threshold) != len(self.recording):
+            self.threshold = np.zeros(len(self.recording))
+
+        recording = np.array([np.asarray(self.recording),
+                              np.asarray(self.peaks),
+                              np.asarray(self.instant_rr),
+                              np.asarray(self.times),
+                              np.asarray(self.threshold)])
+
+        np.save(fname, recording)
+
+    def setup(self, read_duration=1, clear_peaks=True):
         """Find start byte and read a portion of signal.
 
         Parameters
         ----------
         read_duration : int
             Length of signal to record after setup. Default is set to 1 second.
+        clear_peaks : bool
+            If *True*, will remove detected peaks.
 
         Notes
         -----
-        .. warning:: Will remove previously recorded data.
+        .. warning:: setup() clear the input buffer and will remove previously
+        recorded data from the Oximeter instance. Peaks detected during this
+        procedure are automatically removed.
         """
         # Reset recording instance
         self.__init__(serial=self.serial, add_channels=self.n_channels)
@@ -316,6 +322,11 @@ class Oximeter():
             if self.check(paquet=paquet):
                 break
         self.read(duration=read_duration)
+
+        # Remove peaks
+        if clear_peaks is True:
+            self.peaks = [0] * len(self.peaks)
+
         return self
 
     def waitBeat(self):

@@ -6,13 +6,15 @@ import numpy as np
 from psychopy import data, visual
 
 
-def getParameters(subjectID, subjectNumber, serialPort):
+def getParameters(subjectID, subjectNumber, serialPort, nStaircase=2):
     """Create task parameters.
-    Many task parameters, aesthetics, and options are controlled by the parameters
-    dictonary defined herein. These are intended to provide flexibility and modularity to
-    task. In many cases, unique versions of the task (e.g., with or without
-    confidence ratings or choice feedback) can be created simply by changing
-    these parameters, with no further interaction with the underlying task code.
+
+    Many task parameters, aesthetics, and options are controlled by the
+    parameters dictonary defined herein. These are intended to provide
+    flexibility and modularity to task. In many cases, unique versions of the
+    task (e.g., with or without confidence ratings or choice feedback) can be
+    created simply by changing these parameters, with no further interaction
+    with the underlying task code.
 
     Parameters
     ----------
@@ -58,6 +60,8 @@ def getParameters(subjectID, subjectNumber, serialPort):
     nStaircase : int
         Number of staircase used. Can be 1 or 2. If 2, implements a randomized
         interleved staircase procedure following Cornsweet, 1976.
+    nBreaking : int
+        Number of trials to run before the break.
     Condition : 1d-array
         Array of 0s and 1s encoding the conditions (1 : Higher, 0 : Lower). The
         length of the array is defined by `parameters['nTrials']`. If
@@ -102,27 +106,14 @@ def getParameters(subjectID, subjectNumber, serialPort):
     parameters['allowedKeys'] = ['up', 'down']
     parameters['nTrials'] = 150
     parameters['nBeatsLim'] = 5
-    parameters['nStaircase'] = 2
+    parameters['nStaircase'] = nStaircase
+    parameters['nBreaking'] = 25
 
     # Create condition randomized vector
     parameters['Conditions'] = np.hstack(
             [np.array(['More'] * round(parameters['nTrials']/2)),
              np.array(['Less'] * round(parameters['nTrials']/2))])
     np.random.shuffle(parameters['Conditions'])  # Shuffle vector
-
-    # Create staircase condition vector
-    parameters['staircaseConditions'] = np.array([])
-    for i in range(parameters['nStaircase']):
-        parameters['staircaseConditions'] = \
-            np.hstack([parameters['staircaseConditions'],
-                      np.array([i] * round(parameters['nTrials']/2))])
-    np.random.shuffle(parameters['staircaseConditions'])  # Shuffle vector
-
-    # Ensure same length
-    while len(parameters['staircaseConditions']) < parameters['nTrials']:
-        parameters['staircaseConditions'] = \
-            np.append(parameters['staircaseConditions'][0],
-                      parameters['staircaseConditions'])
 
     # Default parameters for the basic staircase are set here. Please see
     # PsychoPy Staircase Handler Documentation for full options. By default,
@@ -131,18 +122,27 @@ def getParameters(subjectID, subjectNumber, serialPort):
     # options in parameters dictionary), one is initalized 'high' and the other
     # 'low'.
 
-    parameters['stairCase'] = []
-    parameters['stairCase'].append(
-        data.StairHandler(
-                    startVal=40, nTrials=parameters['nTrials'], nUp=1,
-                    nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
-                    stepType='lin', minVal=1, maxVal=100))
-    if parameters['nStaircase'] == 2:
-        parameters['stairCase'].append(
-            data.StairHandler(
-                        startVal=5, nTrials=parameters['nTrials'], nUp=1,
-                        nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
-                        stepType='lin', minVal=1, maxVal=100))
+    if parameters['nStaircase'] == 1:
+        parameters['stairCase'] = data.StairHandler(
+                            startVal=40, nTrials=parameters['nTrials'], nUp=1,
+                            nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
+                            stepType='lin', minVal=1, maxVal=100)
+    elif parameters['nStaircase'] == 2:
+        conditions = [
+            {'label': 'low', 'startVal': 5, 'nUp': 1, 'nDown': 2,
+             'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1], 'stepType': 'lin',
+             'minVal': 1, 'maxVal': 100},
+            {'label': 'high', 'startVal': 40, 'nUp': 1, 'nDown': 2,
+             'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1], 'stepType': 'lin',
+             'minVal': 1, 'maxVal': 100},
+            ]
+        parameters['stairCase'] = data.MultiStairHandler(
+                                    conditions=conditions,
+                                    nTrials=parameters['nTrials'])
+
+    else:
+        raise ValueError('Invalid number of Staircase')
+
     # Open seral port for Oximeter
     parameters['serial'] = serial.Serial(serialPort)
 
