@@ -116,12 +116,12 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
         results_df.to_csv(parameters['results'] + '/' +
                           parameters['subject'] + '.txt')
 
-        # Beaks
+        # Breaks
         if (i % parameters['nBreaking'] == 0) & (i != 0):
             message = visual.TextStim(
                             win, height=parameters['textSize'],
                             text=('Break. You can rest as long as'
-                                  ' you want. Just press SPACE we you want'
+                                  ' you want. Just press SPACE when you want'
                                   ' to resume the task.'))
             message.draw()
             win.flip()
