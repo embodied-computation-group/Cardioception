@@ -1,9 +1,11 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
+import time
 from psychopy import visual, event, core, sound
 import pandas as pd
 import numpy as np
 from cardioception.recording import Oximeter
+from cardioception.detection import oxi_peaks
 
 
 def run(parameters, stairCase=None, win=None, confidenceRating=True,
@@ -71,7 +73,8 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
 
         # Start trial
         average_hr, estimation, estimationRT, confidence, \
-            confidenceRT, alpha, accuracy, missed = trial(
+            confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
+            soundTrigger2, ratingTrigger, endTrigger = trial(
                               parameters, condition, intensity, win=win,
                               oxi=oxiTask, confidenceRating=confidenceRating)
 
@@ -101,14 +104,20 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
                                   'HR': [average_hr],
                                   'Accuracy': [accuracy],
                                   'Missed': [missed],
-                                  'nTrials': [i]})], ignore_index=True)
+                                  'nTrials': [i],
+                                  'startTrigger': [startTrigger],
+                                  'soundTrigger': [soundTrigger],
+                                  'soundTrigger2': [soundTrigger2],
+                                  'ratingTrigger': [ratingTrigger],
+                                  'endTrigger': [endTrigger],
+                                  })], ignore_index=True)
 
         # Save the results at each iteration
         results_df.to_csv(parameters['results'] + '/' +
                           parameters['subject'] + '.txt')
 
         # Beaks
-        if i % parameters['nBreaking'] == 0:
+        if (i % parameters['nBreaking'] == 0) & (i != 0):
             message = visual.TextStim(
                             win, height=parameters['textSize'],
                             text=('Break. You can rest as long as'
@@ -194,7 +203,7 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
         too slow to provide the estimation or the confidence).
     """
     # Restart the trial until participant provide response on time
-    confidence, confidenceRT, accuracy = None, None, None
+    confidence, confidenceRT, accuracy, ratingTrigger = None, None, None, None
 
     # Fixation cross
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
@@ -216,6 +225,7 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
     win.flip()
 
     oxi.channels['Channel_0'][-1] = 3  # Start trigger
+    startTrigger = time.time()
 
     # Recording
     while True:
@@ -224,8 +234,8 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
         oxi.read(duration=5.0)
 
         # Get actual heart Rate
-        average_hr = np.nanmean(np.unique(oxi.instant_rr[-(5 * oxi.sfreq):]))
-        average_hr = int(round(60000/average_hr))
+        signal, peaks = oxi_peaks(oxi.recording)
+        average_hr = int(60000/np.diff(np.where(peaks[-5000:])[0]).mean())
 
         # Prevent crash if NaN value
         if np.isnan(average_hr):
@@ -271,13 +281,6 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
     if condition == 'Less':
         alpha = -alpha
 
-    # For training, no staircase exists so alpha is hardcoded to +/- 20 BPM.
-    else:
-        if condition == 'More':
-            alpha = 20
-        elif condition == 'Less':
-            alpha = -20
-
     # Check for extreme alpha values, e.g. if alpha changes massively from
     # trial to trial.
     if (average_hr + alpha) < 15:
@@ -302,9 +305,10 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
                             pos=(0.0, -0.4))
     press.draw()
 
-    # Start trigger
+    # Sound trigger
     oxi.readInWaiting()
-    oxi.channels['Channel_0'][-1] = 2  # Start trigger
+    oxi.channels['Channel_0'][-1] = 2
+    soundTrigger = time.time()
 
     win.flip()
     this_hr.play()
@@ -322,6 +326,7 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
     # End trigger
     oxi.readInWaiting()
     oxi.channels['Channel_0'][-1] = 2  # Start trigger
+    soundTrigger2 = time.time()
 
     # Check for response provided by the participant
     if not responseKey:
@@ -343,6 +348,13 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
 
         # Feedback
         if feedback is True:
+            # Is the answer Correct?
+            if (estimation == 'up') & (condition == 'More'):
+                accuracy = 1
+            elif (estimation == 'down') & (condition == 'Less'):
+                accuracy = 1
+            else:
+                accuracy = 0
             if accuracy == 0:
                 acc = visual.TextStim(win,
                                       height=parameters['textSize'],
@@ -367,6 +379,12 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
 
             # Record participant confidence
             if confidenceRating is True:
+
+                # Start trigger
+                oxi.readInWaiting()
+                oxi.channels['Channel_0'][-1] = 4  # Start trigger
+                ratingTrigger = time.time()
+
                 markerStart = np.random.choice(
                                 np.arange(parameters['confScale'][0],
                                           parameters['confScale'][1]))
@@ -398,8 +416,14 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
                 confidence = ratingScale.getRating()
                 confidenceRT = ratingScale.getRT()
 
+    # End trigger
+    oxi.readInWaiting()
+    oxi.channels['Channel_0'][-1] = 5  # Start trigger
+    endTrigger = time.time()
+
     return average_hr, estimation, estimationRT, confidence,\
-        confidenceRT, alpha, accuracy, missed
+        confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
+        soundTrigger2, ratingTrigger, endTrigger
 
 
 def tutorial(parameters, win, oxi=None):
@@ -470,7 +494,8 @@ def tutorial(parameters, win, oxi=None):
         intensity = 20
 
         average_hr, estimation, estimationRT, confidence, \
-            confidenceRT, alpha, accuracy, missed = trial(
+            confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
+            soundTrigger2, ratingTrigger, endTrigger = trial(
                                 parameters, condition, intensity, win=win,
                                 oxi=oxi, feedback=True, confidenceRating=False)
 
@@ -498,7 +523,8 @@ def tutorial(parameters, win, oxi=None):
         intensity = 20
 
         average_hr, estimation, estimationRT, confidence, \
-            confidenceRT, alpha, accuracy, missed = trial(
+            confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
+            soundTrigger2, ratingTrigger, endTrigger = trial(
                                 parameters, condition, intensity, win=win,
                                 oxi=oxi, confidenceRating=True)
 
