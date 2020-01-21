@@ -107,7 +107,7 @@ def getParameters(subjectID, subjectNumber, serialPort, nStaircase=2):
     parameters['nTrials'] = 150
     parameters['nBeatsLim'] = 5
     parameters['nStaircase'] = nStaircase
-    parameters['nBreaking'] = 50
+    parameters['nBreaking'] = 25
 
     # Create condition randomized vector
     parameters['Conditions'] = np.hstack(
