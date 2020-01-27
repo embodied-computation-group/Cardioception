@@ -2,7 +2,7 @@
 
 import numpy as np
 import time
-from systole.detection import oxi_peaks
+from detection import oxi_peaks
 
 
 class Oximeter():
@@ -212,7 +212,7 @@ class Oximeter():
 
         Other Parameters
         ----------------
-        **kwargs : `~systole.detection.oxi_peaks` properties.
+        **kwargs : `~detection.oxi_peaks` properties.
         """
         # Peak detection
         resampled_signal, peaks = oxi_peaks(self.recording,
