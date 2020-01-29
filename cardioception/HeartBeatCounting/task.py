@@ -125,10 +125,9 @@ def trial(condition, duration, nTrial, parameters, win):
     # Hide instructions
     win.flip()
 
-    # Save recording as np array
-    np.save(parameters['results'] + parameters['subjectID']
-            + '_' + str(nTrial),
-            np.asarray([oxi.recording, oxi.peaks, oxi.channels['Channel_0']]))
+    # Save recording
+    oxi.save(parameters['results'] +
+             parameters['subjectID'] + '_' + str(nTrial))
 
     ###############################
     # Record participant estimation
@@ -360,5 +359,4 @@ def rest(parameters, win=None):
     oxi.read(duration=parameters['restLength'])
 
     # Save recording
-    np.save(parameters['results'] + parameters['subjectID'] + '_Rest',
-            np.asarray([oxi.recording, oxi.peaks, oxi.channels['Channel_0']]))
+    oxi.save(parameters['results'] + parameters['subjectID'] + '_Rest')
