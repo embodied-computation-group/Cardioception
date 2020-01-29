@@ -71,7 +71,7 @@ def getParameters(subjectID, subjectNumber, serialPort,
     """
     parameters = dict()
     parameters['restPeriod'] = True
-    parameters['restLength'] = 300
+    parameters['restLength'] = 30
     parameters['screenNb'] = 0
     parameters['randomize'] = True
     parameters['startKey'] = 'space'
