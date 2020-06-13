@@ -25,12 +25,22 @@ def interpolate_clipping(signal, threshold=255):
     Correct signal segment reaching recording threshold (default is 255)
     using a cubic spline interpolation. Adapted from [#]_.
 
+    .. Warning:: If clipping artefact is found at the edge of the signal, this
+        function will decrement the first/last value to allow interpolation,
+        which can lead to incorrect estimation.
+
     References
     ----------
     .. [#] https://python-heart-rate-analysis-toolkit.readthedocs.io/en/latest/
     """
     if isinstance(signal, list):
         signal = np.array(signal)
+
+    # Security check for clipping at signal edge
+    if signal[0] == threshold:
+        signal[0] = threshold-1
+    if signal[-1] == threshold:
+        signal[-1] = threshold-1
 
     time = np.arange(0, len(signal))
 
