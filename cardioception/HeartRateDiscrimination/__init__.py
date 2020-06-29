@@ -1,3 +1,3 @@
-from .parameters import *
-from .reports import *
-from .task import *
+from .Bayesian import *
+from .fMRI import *
+from .Main import *

@@ -3,7 +3,7 @@
 from psychopy import visual, event, core
 import pandas as pd
 import numpy as np
-from cardioception.recording import Oximeter
+from systole.recording import Oximeter
 
 
 def sequence(parameters, win=None):
