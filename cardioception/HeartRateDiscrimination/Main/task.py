@@ -4,8 +4,8 @@ import time
 from psychopy import visual, event, core, sound
 import pandas as pd
 import numpy as np
-from cardioception.recording import Oximeter
-from cardioception.detection import oxi_peaks
+from systole.recording import Oximeter
+from systole.detection import oxi_peaks
 
 
 def run(parameters, stairCase=None, win=None, confidenceRating=True,
