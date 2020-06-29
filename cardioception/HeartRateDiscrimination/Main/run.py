@@ -1,7 +1,7 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
-from cardioception.HeartRateDiscrimination.parameters import getParameters
-from cardioception.HeartRateDiscrimination.task import run
+from cardioception.HeartRateDiscrimination.Main.parameters import getParameters
+from cardioception.HeartRateDiscrimination.Main.task import run
 from psychopy import gui
 
 # Create a GUI and store subject ID

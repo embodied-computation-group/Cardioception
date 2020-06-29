@@ -1,7 +1,7 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
-from cardioception.HeartRateDiscrimination.parameters import getParameters
-from cardioception.HeartRateDiscrimination.task import run
+from cardioception.HeartRateDiscrimination.Bayesian.parameters import getParameters
+from cardioception.HeartRateDiscrimination.Bayesian.task import run
 from psychopy import gui
 
 
