@@ -70,7 +70,7 @@ This task implements an adaptive psychophysical procedure for estimating partici
 Note that currently, the task implements a 1 up 2 down adaptive staircasing, using a logarithmic stepsize function. Using the parameters object, you can set various settings such as step criterion and size, trial numbers, and a boolean flag to collect confidence ratings or not. Future versions will implement a Bayesian Adaptive Procedure to more efficiently estimate psychometric parameters such as slope and threshold.
 
 To run the Heart Rate Discrimination Task, run:
-`python [path]/cardioception/HeartRateDiscrimination/run.py`
+`python [path]/cardioception/HeartRateDiscrimination/[your task]/run.py`
 Where `path` is the path to your install folder.
 
 # Analyses
