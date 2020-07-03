@@ -1,7 +1,10 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
+from psychopy import event
 from cardioception.HeartRateDiscrimination.fMRI.parameters import getParameters
 from cardioception.HeartRateDiscrimination.fMRI.task import run
+from psychopy.event import Mouse
+import numpy as np
 
 
 def test_HRD():
@@ -14,6 +17,10 @@ def test_HRD():
     parameters['nFeedback'] = 1
     parameters['nConfidence'] = 1
     parameters['nBreaking'] = 2
+    
+    # Wait for fMRI to start
+    #event.waitKeys(keyList='5')
+
     # Run task
     results_df = run(parameters, win=parameters['win'],
                      confidenceRating=True, runTutorial=True)

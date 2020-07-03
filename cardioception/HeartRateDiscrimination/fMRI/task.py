@@ -4,10 +4,16 @@ import time
 from psychopy import visual, event, core, sound
 import pandas as pd
 import numpy as np
-from systole.detection import ecg_peaks
+from systole.detection import oxi_peaks
 from systole.recording import BrainVisionExG
-from systole.utils import to_neighbour
 
+
+def waitMouseClic(parameters):
+    mouse = event.Mouse(win=parameters['win'])
+    while True:
+        bt = mouse.getPressed()
+        if bt == [1, 0, 0]: 
+            break
 
 def run(parameters, stairCase=None, win=None, confidenceRating=True,
         runTutorial=False):
@@ -51,13 +57,14 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
 
         # Wait for key press if this is the first trial
         if i == 0:
-            # Ask the participant to press 'Space' (default) to start
-            messageStart = visual.TextStim(win,
-                                           height=parameters['textSize'],
-                                           text='Press space to continue')
+            # Ask the participant to press LEFT button (default) to start
+            messageStart = visual.TextStim(
+                                    win,
+                                    height=parameters['textSize'],
+                                    text='Press LEFT button to continue')
             messageStart.draw()  # Show instructions
             win.flip()
-            event.waitKeys(keyList=parameters['startKey'])
+            waitMouseClic(parameters)
 
         # Is this an interoception or exteroception condition
         if modality == 'Intero':
@@ -136,12 +143,12 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
         if (i % parameters['nBreaking'] == 0) & (i != 0):
             message = visual.TextStim(
                             win, height=parameters['textSize'],
-                            text=('Break. You can rest as long as'
-                                  ' you want. Just press SPACE when you want'
+                            text=('Break. You can rest as long as you want.'
+                                  'Just press LEFT button when you want'
                                   ' to resume the task.'))
             message.draw()
             win.flip()
-            event.waitKeys(keyList=parameters['startKey'])
+            waitMouseClic(parameters)
 
             # Fixation cross
             fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
@@ -150,12 +157,12 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             win.flip()
 
     # save data as multiple formats
-    if parameters['stairType'] == 'UpDown':
+    if parameters['stairType'] == 'psi':
         parameters['stairCase'].saveAsExcel(
             parameters['results'] + '/' + parameters['subject'])
         parameters['stairCase'].saveAsPickle(
             parameters['results'] + '/' + parameters['subject'])
-    elif parameters['stairType'] == 'psi':
+    elif parameters['stairType'] == 'UpDown':
         parameters['stairCase']['low'].saveAsExcel(
             parameters['results'] + '/' + parameters['subject'])
         parameters['stairCase']['low'].saveAsPickle(
@@ -164,6 +171,7 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             parameters['results'] + '/' + parameters['subject'])
         parameters['stairCase']['high'].saveAsPickle(
             parameters['results'] + '/' + parameters['subject'])
+
     return results_df
 
 
@@ -252,15 +260,15 @@ def trial(parameters, condition, intensity, modality, win=None,
         while True:
 
             # Read ExG
-            recording = BrainVisionExG(ip=parameters['ExG_IP']).read(5)
-            segment = recording[parameters['ECG_channel']]
-            signal, peaks = ecg_peaks(segment, method='moving-average',
-                                      sfreq=5000)
-            peaks = to_neighbour(signal, peaks, size=100)
+            recording = BrainVisionExG(ip='10.60.88.162').read(5)
+            segment = np.array(recording['PLETH'])   
+            signal, peaks = oxi_peaks(segment, sfreq=parameters['sfreq'],
+                                      clipping=False)
 
             # Get actual heart Rate
             average_hr = int((60000/np.diff(np.where(peaks)[0])).mean())
-            print(average_hr)
+            #average_hr = 60
+            #print(average_hr)
 
             # Prevent crash if NaN value
             if np.isnan(average_hr):
@@ -374,16 +382,18 @@ def trial(parameters, condition, intensity, modality, win=None,
     ###########
 
     clock = core.Clock()
-    responseKey = event.waitKeys(keyList=parameters['allowedKeys'],
-                                 maxWait=parameters['respMax'],
-                                 timeStamped=clock)
+    mouse = event.Mouse(win=parameters['win'])
+    while clock.getTime() < parameters['respMax']:
+        bt, t = mouse.getPressed(getTime=True)
+        if (bt == [1, 0, 0]) or (bt == [0, 0, 1]): 
+            break
     this_hr.stop()
 
     # End trigger
     soundTrigger2 = time.time()
 
     # Check for response provided by the participant
-    if not responseKey:
+    if bt == [0, 0, 0]:
         missed = True
         estimation, estimationRT = None, None
         # Record participant response (+/-)
@@ -394,8 +404,11 @@ def trial(parameters, condition, intensity, modality, win=None,
         core.wait(1)
     else:
         missed = False
-        estimation = responseKey[0][0]
-        estimationRT = responseKey[0][1]
+        if bt == [1, 0, 0]:
+            estimation = 'Less'
+        elif bt == [0, 0, 1]:
+            estimation = 'More'
+        estimationRT = t
 
         # Feedback
         if feedback is True:
@@ -434,36 +447,27 @@ def trial(parameters, condition, intensity, modality, win=None,
                 # Start trigger
                 ratingTrigger = time.time()
 
-                markerStart = np.random.choice(
-                                np.arange(parameters['confScale'][0],
-                                          parameters['confScale'][1]))
-                ratingScale = visual.RatingScale(
-                                 win,
-                                 low=parameters['confScale'][0],
-                                 high=parameters['confScale'][1],
-                                 noMouse=True,
-                                 labels=parameters['labelsRating'],
-                                 acceptKeys='down',
-                                 markerStart=markerStart)
-
-                message = visual.TextStim(
-                            win,
-                            height=parameters['textSize'],
-                            text=parameters['texts']['Confidence'])
-
-                # Wait for response
-                clock = core.Clock()
-                while clock.getTime() < parameters['maxRatingTime']:
-                    if not ratingScale.noResponse:
-                        ratingScale.markerColor = (0, 0, 1)
-                        if clock.getTime() > parameters['minRatingTime']:
-                            break
-                    ratingScale.draw()
-                    message.draw()
-                    win.flip()
-
-                confidence = ratingScale.getRating()
-                confidenceRT = ratingScale.getRT()
+#                markerStart = np.random.choice(
+#                                np.arange(parameters['confScale'][0],
+#                                          parameters['confScale'][1]))
+                
+#                ratingScale = visual.Slider(
+#                        win, ticks=(1, 100),
+#                        labels=('Not at all confident', 'Extremely confident'),
+#                        granularity=1, color='white')
+#                
+#                while not ratingScale.rating:
+#                    ratingScale.draw()
+#                    win.flip()
+#
+#                message = visual.TextStim(
+#                            win,
+#                            height=parameters['textSize'],
+#                            text=parameters['texts']['Confidence'])
+#
+#                confidence = ratingScale.getRating()
+#                confidenceRT = ratingScale.getRT()
+                confidence, confidenceRT = 1, 2
 
     # End trigger
     endTrigger = time.time()
@@ -490,11 +494,11 @@ def tutorial(parameters, win):
     intro.draw()
     press = visual.TextStim(win,
                             height=parameters['textSize'],
-                            text='Please press SPACE to continue',
+                            text='Please press LEFT button to continue',
                             pos=(0.0, -0.4))
     press.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
+    waitMouseClic(parameters)
     win.flip()
 
     # Heartrate recording
@@ -506,11 +510,11 @@ def tutorial(parameters, win):
     parameters['heartLogo'].draw()
     press = visual.TextStim(win,
                             height=parameters['textSize'],
-                            text='Please press SPACE to continue',
+                            text='Please press LEFT button to continue',
                             pos=(0.0, -0.4))
     press.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
+    waitMouseClic(parameters)
     win.flip()
 
     # Listen and response
@@ -522,11 +526,11 @@ def tutorial(parameters, win):
     parameters['listenLogo'].draw()
     press = visual.TextStim(win,
                             height=parameters['textSize'],
-                            text='Please press SPACE to continue',
+                            text='Please press LEFT button to continue',
                             pos=(0.0, -0.4))
     press.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
+    waitMouseClic(parameters)
     win.flip()
 
     # Run 10 training trials with feedback
@@ -549,11 +553,11 @@ def tutorial(parameters, win):
     confidence.draw()
     press = visual.TextStim(win,
                             height=parameters['textSize'],
-                            text='Please press SPACE to continue',
+                            text='Please press LEFT button to continue',
                             pos=(0.0, -0.4))
     press.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
+    waitMouseClic(parameters)
     win.flip()
 
     # Run 5 training trials with confidence rating
@@ -566,7 +570,7 @@ def tutorial(parameters, win):
         average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
             soundTrigger2, ratingTrigger, endTrigger = trial(
-                        parameters, condition, intensity, 'intero', win=win,
+                        parameters, condition, intensity, 'Intero', win=win,
                         confidenceRating=True)
 
     # Task
@@ -576,9 +580,9 @@ def tutorial(parameters, win):
     taskPresentation.draw()
     press = visual.TextStim(win,
                             height=parameters['textSize'],
-                            text='Please press SPACE to continue',
+                            text='Please press LEFT button to continue',
                             pos=(0.0, -0.4))
     press.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
+    waitMouseClic(parameters)
     win.flip()
