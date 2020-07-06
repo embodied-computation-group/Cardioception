@@ -12,7 +12,7 @@ def waitMouseClic(parameters):
     mouse = event.Mouse(win=parameters['win'])
     while True:
         bt = mouse.getPressed()
-        if bt == [1, 0, 0]: 
+        if bt == [1, 0, 0]:
             break
 
 def run(parameters, stairCase=None, win=None, confidenceRating=True,
@@ -260,14 +260,14 @@ def trial(parameters, condition, intensity, modality, win=None,
         while True:
 
             # Read ExG
-            recording = BrainVisionExG(ip='10.60.88.162').read(5)
-            segment = np.array(recording['PLETH'])   
-            signal, peaks = oxi_peaks(segment, sfreq=parameters['sfreq'],
-                                      clipping=False)
-
-            # Get actual heart Rate
-            average_hr = int((60000/np.diff(np.where(peaks)[0])).mean())
-            #average_hr = 60
+            # recording = BrainVisionExG(ip='10.60.88.162').read(5)
+            # segment = np.array(recording['PLETH'])
+            # signal, peaks = oxi_peaks(segment, sfreq=parameters['sfreq'],
+            #                           clipping=False)
+            #
+            # # Get actual heart Rate
+            # average_hr = int((60000/np.diff(np.where(peaks)[0])).mean())
+            average_hr = 60
             #print(average_hr)
 
             # Prevent crash if NaN value
@@ -385,7 +385,7 @@ def trial(parameters, condition, intensity, modality, win=None,
     mouse = event.Mouse(win=parameters['win'])
     while clock.getTime() < parameters['respMax']:
         bt, t = mouse.getPressed(getTime=True)
-        if (bt == [1, 0, 0]) or (bt == [0, 0, 1]): 
+        if (bt == [1, 0, 0]) or (bt == [0, 0, 1]):
             break
     this_hr.stop()
 
@@ -447,27 +447,22 @@ def trial(parameters, condition, intensity, modality, win=None,
                 # Start trigger
                 ratingTrigger = time.time()
 
-#                markerStart = np.random.choice(
-#                                np.arange(parameters['confScale'][0],
-#                                          parameters['confScale'][1]))
-                
-#                ratingScale = visual.Slider(
-#                        win, ticks=(1, 100),
-#                        labels=('Not at all confident', 'Extremely confident'),
-#                        granularity=1, color='white')
-#                
-#                while not ratingScale.rating:
-#                    ratingScale.draw()
-#                    win.flip()
-#
-#                message = visual.TextStim(
-#                            win,
-#                            height=parameters['textSize'],
-#                            text=parameters['texts']['Confidence'])
-#
-#                confidence = ratingScale.getRating()
-#                confidenceRT = ratingScale.getRT()
-                confidence, confidenceRT = 1, 2
+                ratingScale = visual.Slider(
+                       win, ticks=(1, 100),
+                       labels=('Not at all confident', 'Extremely confident'),
+                       color='white')
+
+                while not ratingScale.rating:
+                    ratingScale.draw()
+                    win.flip()
+
+                message = visual.TextStim(
+                           win,
+                           height=parameters['textSize'],
+                           text=parameters['texts']['Confidence'])
+
+                confidence = ratingScale.getRating()
+                confidenceRT = ratingScale.getRT()
 
     # End trigger
     endTrigger = time.time()

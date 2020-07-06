@@ -22,7 +22,7 @@ INSTALL_REQUIRES = [
     'pingouin>=0.2.9',
     'pyserial>=3.4',
     'bayesfit==2.3',
-    'pyglet==1.3.2',
+    'pyglet>=1.3.2',
 ]
 
 PACKAGES = [

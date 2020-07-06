@@ -20,7 +20,7 @@ while time.time() - start < 60:
     recording = BrainVisionExG(ip='10.60.88.162').read(5)
     segment = np.array(recording['PLETH'])
     print(len(segment))
-    
+
     segment = segment[-5*sfreq:]
     signal, peaks = oxi_peaks(segment, sfreq=sfreq)
     #peaks = to_neighbour(signal, peaks, size=100)
@@ -28,7 +28,7 @@ while time.time() - start < 60:
     plt.plot(timeidx, signal)
     plt.plot(timeidx[peaks], signal[peaks], 'ro')
     plt.show()
-    
+
     final_data3.append(recording)
 
 
@@ -92,35 +92,17 @@ from psychopy import event
 from cardioception.HeartRateDiscrimination.fMRI.parameters import getParameters
 from cardioception.HeartRateDiscrimination.fMRI.task import run
 from psychopy.event import Mouse
+
+
 from psychopy import visual
-
-parameters = getParameters('test', 1)
+win = visual.Window(monitor='testMonitor',
+                    screen=0,
+                    fullscr=False, units=None)
+win.mouseVisible = False
 ratingScale = visual.Slider(
-        parameters['win'], ticks=(1, 100), units=None,
-        labels=('Not at all confident', 'Extremely confident'),
-        granularity=1, color='white')
-
+       win, ticks=(1, 100), 
+       labels=('Not at all confident', 'Extremely confident'))
 while not ratingScale.rating:
     ratingScale.draw()
     win.flip()
-
-kb = keyboard.Keyboard()
-
-# during your trial
-while True:
-    keys = kb.getKeys(waitRelease=True)
-    if keys:
-        break
-    
-    
-    
-if 'quit' in keys:
-    core.quit()
-for key in keys:
-    print(key.name, key.rt, key.duration)
-
-
-
-
-
-
+win.close()
