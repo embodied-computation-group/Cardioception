@@ -1,5 +1,5 @@
 <div class="MathJax_Display" style="text-align: center;">
-<img src= "images/LabLogo.jpg" width="200">
+<img src= "images/LabLogo.jpg" width="200" align="center>
 </div>
 
 # Cardioception
