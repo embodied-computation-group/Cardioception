@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2020.1.2),
-    on July 06, 2020, at 18:23
+    on July 08, 2020, at 15:31
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -46,7 +46,7 @@ expInfo['expName'] = expName
 expInfo['psychopyVersion'] = psychopyVersion
 
 # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
-filename = _thisDir + os.sep + u'data/%s_%s_%s' % (expInfo['participant'], expName, expInfo['date'])
+filename = _thisDir + os.sep + u'data/%s/%s_%s' % (expInfo['participant'], expName, expInfo['date'])
 
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
@@ -65,7 +65,7 @@ frameTolerance = 0.001  # how close to onset before 'same' frame
 
 # Setup the Window
 win = visual.Window(
-    size=[1440, 2560], fullscr=True, screen=0, 
+    size=[1280, 720], fullscr=False, screen=0, 
     winType='pyglet', allowGUI=True, allowStencil=False,
     monitor='testMonitor', color=[0,0,0], colorSpace='rgb',
     blendMode='avg', useFBO=True, 
@@ -100,19 +100,23 @@ fiCross1 = visual.ShapeStim(
     lineWidth=1, lineColor=[1,1,1], lineColorSpace='rgb',
     fillColor=[1,1,1], fillColorSpace='rgb',
     opacity=1, depth=0.0, interpolate=True)
+import pandas as pd
+
+signal_df = pd.DataFrame([])
+
 stairCaseIntero = data.PsiHandler(
-    nTrials=100,
-    intensRange=[1, 40], alphaRange=[1, 20],
-    betaRange=[0.1, 4], intensPrecision=1,
-    alphaPrecision=1, betaPrecision=0.01,
-    delta=0.1, stepType='lin', expectedMin=0.5)
+    nTrials=50,
+    intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],
+    betaRange=[0.1, 20], intensPrecision=1,
+    alphaPrecision=1, betaPrecision=0.1,
+    delta=0.05, stepType='lin', expectedMin=0)
 
 stairCaseExtero = data.PsiHandler(
-    nTrials=100,
-    intensRange=[1, 40], alphaRange=[1, 20],
-    betaRange=[0.1, 4], intensPrecision=1,
-    alphaPrecision=1, betaPrecision=0.01,
-    delta=0.1, stepType='lin', expectedMin=0.5)
+    nTrials=50,
+    intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],
+    betaRange=[0.1, 20], intensPrecision=1,
+    alphaPrecision=1, betaPrecision=0.1,
+    delta=0.05, stepType='lin', expectedMin=0)
 
 # Initialize components for Routine "Intero"
 InteroClock = core.Clock()
@@ -163,16 +167,6 @@ sound_2 = sound.Sound('A', secs=-1, stereo=True, hamming=True,
     name='sound_2')
 sound_2.setVolume(1)
 
-# Initialize components for Routine "fixCross2"
-fixCross2Clock = core.Clock()
-fiCross2 = visual.ShapeStim(
-    win=win, name='fiCross2', vertices='cross',
-    size=(0.1, 0.1),
-    ori=0, pos=(0, 0),
-    lineWidth=1, lineColor=[1,1,1], lineColorSpace='rgb',
-    fillColor=[1,1,1], fillColorSpace='rgb',
-    opacity=1, depth=0.0, interpolate=True)
-
 # Initialize components for Routine "Decision"
 DecisionClock = core.Clock()
 mouse = event.Mouse(win=win)
@@ -188,28 +182,20 @@ textDecision = visual.TextStim(win=win, name='textDecision',
     color='white', colorSpace='rgb', opacity=1, 
     languageStyle='LTR',
     depth=-2.0);
-image = visual.ImageStim(
-    win=win,
-    name='image', 
-    image='Images/listenResponse.png', mask=None,
-    ori=0, pos=(0, -0.2), size=(0.39609375, 0.16111111),
-    color=[1,1,1], colorSpace='rgb', opacity=1,
-    flipHoriz=False, flipVert=False,
-    texRes=128, interpolate=True, depth=-3.0)
 text_Less = visual.TextStim(win=win, name='text_Less',
     text='Less',
     font='Arial',
     pos=(-0.2, 0), height=0.1, wrapWidth=None, ori=0, 
     color='white', colorSpace='rgb', opacity=1, 
     languageStyle='LTR',
-    depth=-6.0);
+    depth=-5.0);
 text_More = visual.TextStim(win=win, name='text_More',
     text='More',
     font='Arial',
     pos=(0.2, 0), height=0.1, wrapWidth=None, ori=0, 
     color='white', colorSpace='rgb', opacity=1, 
     languageStyle='LTR',
-    depth=-7.0);
+    depth=-6.0);
 
 # Initialize components for Routine "RatingScale"
 RatingScaleClock = core.Clock()
@@ -336,7 +322,7 @@ thisExp.addData('text_2.stopped', text_2.tStopRefresh)
 routineTimer.reset()
 
 # set up handler to look after randomisation of conditions etc
-trials = data.TrialHandler(nReps=1, method='random', 
+trials = data.TrialHandler(nReps=1, method='sequential', 
     extraInfo=expInfo, originPath=-1,
     trialList=data.importConditions('Conditions.xlsx'),
     seed=None, name='trials')
@@ -356,8 +342,9 @@ for thisTrial in trials:
     
     # ------Prepare to start Routine "fixCross"-------
     continueRoutine = True
+    routineTimer.add(1.000000)
     # update component parameters for each repeat
-    jitter = np.arange(0, 2, .1)
+    jitter = np.arange(4, 6, .1)
     shuffle(jitter)
     
     if condition == 'Intero':
@@ -382,7 +369,7 @@ for thisTrial in trials:
     frameN = -1
     
     # -------Run Routine "fixCross"-------
-    while continueRoutine:
+    while continueRoutine and routineTimer.getTime() > 0:
         # get current time
         t = fixCrossClock.getTime()
         tThisFlip = win.getFutureFlipTime(clock=fixCrossClock)
@@ -400,7 +387,7 @@ for thisTrial in trials:
             fiCross1.setAutoDraw(True)
         if fiCross1.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > fiCross1.tStartRefresh + jitter[0]-frameTolerance:
+            if tThisFlipGlobal > fiCross1.tStartRefresh + 1-frameTolerance:
                 # keep track of stop time/frame for later
                 fiCross1.tStop = t  # not accounting for scr refresh
                 fiCross1.frameNStop = frameN  # exact frame index
@@ -430,8 +417,6 @@ for thisTrial in trials:
             thisComponent.setAutoDraw(False)
     trials.addData('fiCross1.started', fiCross1.tStartRefresh)
     trials.addData('fiCross1.stopped', fiCross1.tStopRefresh)
-    # the Routine "fixCross" was not non-slip safe, so reset the non-slip timer
-    routineTimer.reset()
     
     # set up handler to look after randomisation of conditions etc
     trials_2 = data.TrialHandler(nReps=nRepsIntero, method='random', 
@@ -454,7 +439,6 @@ for thisTrial in trials:
         
         # ------Prepare to start Routine "Intero"-------
         continueRoutine = True
-        routineTimer.add(5.000000)
         # update component parameters for each repeat
         # keep track of which components have finished
         InteroComponents = [Listen, textListen]
@@ -472,7 +456,7 @@ for thisTrial in trials:
         frameN = -1
         
         # -------Run Routine "Intero"-------
-        while continueRoutine and routineTimer.getTime() > 0:
+        while continueRoutine:
             # get current time
             t = InteroClock.getTime()
             tThisFlip = win.getFutureFlipTime(clock=InteroClock)
@@ -490,7 +474,7 @@ for thisTrial in trials:
                 Listen.setAutoDraw(True)
             if Listen.status == STARTED:
                 # is it time to stop? (based on global clock, using actual start)
-                if tThisFlipGlobal > Listen.tStartRefresh + 5.0-frameTolerance:
+                if tThisFlipGlobal > Listen.tStartRefresh + jitter[0]-frameTolerance:
                     # keep track of stop time/frame for later
                     Listen.tStop = t  # not accounting for scr refresh
                     Listen.frameNStop = frameN  # exact frame index
@@ -507,7 +491,7 @@ for thisTrial in trials:
                 textListen.setAutoDraw(True)
             if textListen.status == STARTED:
                 # is it time to stop? (based on global clock, using actual start)
-                if tThisFlipGlobal > textListen.tStartRefresh + 5.0-frameTolerance:
+                if tThisFlipGlobal > textListen.tStartRefresh + jitter[0]-frameTolerance:
                     # keep track of stop time/frame for later
                     textListen.tStop = t  # not accounting for scr refresh
                     textListen.frameNStop = frameN  # exact frame index
@@ -547,6 +531,11 @@ for thisTrial in trials:
         # Get actual heart Rate
         #average_hr = int((60000/np.diff(np.where(peaks)[0])).mean())
         
+        # Append signal to recording
+        signal = np.linspace(0, 1, 5000)
+        
+        print(trials.thisN)
+        
         average_hr = 60
         
         if average_hr < 30:
@@ -567,6 +556,15 @@ for thisTrial in trials:
             file = os.path.join(os.getcwd(), 'sounds', hr + '.wav')
         else:
             nRepsFeedbackBPM = 1
+            
+            print('WARNING: Noisy signal recording, cannnot estimate heart rate.')
+        
+            # Set default file is heart rate is not properly recorded
+            alpha = 40
+            file = os.path.join(os.getcwd(), 'sounds/60.wav')
+        
+        # the Routine "Intero" was not non-slip safe, so reset the non-slip timer
+        routineTimer.reset()
         
         # set up handler to look after randomisation of conditions etc
         trials_6 = data.TrialHandler(nReps=nRepsFeedbackBPM, method='random', 
@@ -685,7 +683,6 @@ for thisTrial in trials:
         
         # ------Prepare to start Routine "Extero"-------
         continueRoutine = True
-        routineTimer.add(5.000000)
         # update component parameters for each repeat
         alpha = stairCaseExtero.next()
         
@@ -694,7 +691,7 @@ for thisTrial in trials:
         hr = str(int(average_hr + alpha))
         
         file = os.path.join(os.getcwd(), 'sounds', hr + '.wav')
-        sound_2.setSound(file, secs=5.0, hamming=True)
+        sound_2.setSound(file, secs=jitter[0], hamming=True)
         sound_2.setVolume(1, log=False)
         # keep track of which components have finished
         ExteroComponents = [text_3, image_2, sound_2]
@@ -712,7 +709,7 @@ for thisTrial in trials:
         frameN = -1
         
         # -------Run Routine "Extero"-------
-        while continueRoutine and routineTimer.getTime() > 0:
+        while continueRoutine:
             # get current time
             t = ExteroClock.getTime()
             tThisFlip = win.getFutureFlipTime(clock=ExteroClock)
@@ -730,7 +727,7 @@ for thisTrial in trials:
                 text_3.setAutoDraw(True)
             if text_3.status == STARTED:
                 # is it time to stop? (based on global clock, using actual start)
-                if tThisFlipGlobal > text_3.tStartRefresh + 5.0-frameTolerance:
+                if tThisFlipGlobal > text_3.tStartRefresh + jitter[0]-frameTolerance:
                     # keep track of stop time/frame for later
                     text_3.tStop = t  # not accounting for scr refresh
                     text_3.frameNStop = frameN  # exact frame index
@@ -747,7 +744,7 @@ for thisTrial in trials:
                 image_2.setAutoDraw(True)
             if image_2.status == STARTED:
                 # is it time to stop? (based on global clock, using actual start)
-                if tThisFlipGlobal > image_2.tStartRefresh + 5.0-frameTolerance:
+                if tThisFlipGlobal > image_2.tStartRefresh + jitter[0]-frameTolerance:
                     # keep track of stop time/frame for later
                     image_2.tStop = t  # not accounting for scr refresh
                     image_2.frameNStop = frameN  # exact frame index
@@ -762,7 +759,7 @@ for thisTrial in trials:
                 sound_2.play(when=win)  # sync with win flip
             if sound_2.status == STARTED:
                 # is it time to stop? (based on global clock, using actual start)
-                if tThisFlipGlobal > sound_2.tStartRefresh + 5.0-frameTolerance:
+                if tThisFlipGlobal > sound_2.tStartRefresh + jitter[0]-frameTolerance:
                     # keep track of stop time/frame for later
                     sound_2.tStop = t  # not accounting for scr refresh
                     sound_2.frameNStop = frameN  # exact frame index
@@ -797,86 +794,15 @@ for thisTrial in trials:
         sound_2.stop()  # ensure sound has stopped at end of routine
         trials_3.addData('sound_2.started', sound_2.tStartRefresh)
         trials_3.addData('sound_2.stopped', sound_2.tStopRefresh)
+        # the Routine "Extero" was not non-slip safe, so reset the non-slip timer
+        routineTimer.reset()
         thisExp.nextEntry()
         
     # completed nRepsExtero repeats of 'trials_3'
     
     
-    # ------Prepare to start Routine "fixCross2"-------
-    continueRoutine = True
-    # update component parameters for each repeat
-    jitter = np.arange(0, 2, .1)
-    shuffle(jitter)
-    # keep track of which components have finished
-    fixCross2Components = [fiCross2]
-    for thisComponent in fixCross2Components:
-        thisComponent.tStart = None
-        thisComponent.tStop = None
-        thisComponent.tStartRefresh = None
-        thisComponent.tStopRefresh = None
-        if hasattr(thisComponent, 'status'):
-            thisComponent.status = NOT_STARTED
-    # reset timers
-    t = 0
-    _timeToFirstFrame = win.getFutureFlipTime(clock="now")
-    fixCross2Clock.reset(-_timeToFirstFrame)  # t0 is time of first possible flip
-    frameN = -1
-    
-    # -------Run Routine "fixCross2"-------
-    while continueRoutine:
-        # get current time
-        t = fixCross2Clock.getTime()
-        tThisFlip = win.getFutureFlipTime(clock=fixCross2Clock)
-        tThisFlipGlobal = win.getFutureFlipTime(clock=None)
-        frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-        # update/draw components on each frame
-        
-        # *fiCross2* updates
-        if fiCross2.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            fiCross2.frameNStart = frameN  # exact frame index
-            fiCross2.tStart = t  # local t and not account for scr refresh
-            fiCross2.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(fiCross2, 'tStartRefresh')  # time at next scr refresh
-            fiCross2.setAutoDraw(True)
-        if fiCross2.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > fiCross2.tStartRefresh + jitter[0]-frameTolerance:
-                # keep track of stop time/frame for later
-                fiCross2.tStop = t  # not accounting for scr refresh
-                fiCross2.frameNStop = frameN  # exact frame index
-                win.timeOnFlip(fiCross2, 'tStopRefresh')  # time at next scr refresh
-                fiCross2.setAutoDraw(False)
-        
-        # check for quit (typically the Esc key)
-        if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
-            core.quit()
-        
-        # check if all components have finished
-        if not continueRoutine:  # a component has requested a forced-end of Routine
-            break
-        continueRoutine = False  # will revert to True if at least one component still running
-        for thisComponent in fixCross2Components:
-            if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-                continueRoutine = True
-                break  # at least one component has not yet finished
-        
-        # refresh the screen
-        if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-            win.flip()
-    
-    # -------Ending Routine "fixCross2"-------
-    for thisComponent in fixCross2Components:
-        if hasattr(thisComponent, "setAutoDraw"):
-            thisComponent.setAutoDraw(False)
-    trials.addData('fiCross2.started', fiCross2.tStartRefresh)
-    trials.addData('fiCross2.stopped', fiCross2.tStopRefresh)
-    # the Routine "fixCross2" was not non-slip safe, so reset the non-slip timer
-    routineTimer.reset()
-    
     # ------Prepare to start Routine "Decision"-------
     continueRoutine = True
-    routineTimer.add(5.000000)
     # update component parameters for each repeat
     # setup some python lists for storing info about the mouse
     mouse.x = []
@@ -887,12 +813,12 @@ for thisTrial in trials:
     mouse.time = []
     gotValidClick = False  # until a click is received
     mouse.mouseClock.reset()
-    sound_1.setSound(file, secs=5.0, hamming=True)
+    sound_1.setSound(file, secs=jitter[0], hamming=True)
     sound_1.setVolume(1, log=False)
     colorLess, colorMore = 'white', 'white'
     estimation = None
     # keep track of which components have finished
-    DecisionComponents = [mouse, sound_1, textDecision, image, text_Less, text_More]
+    DecisionComponents = [mouse, sound_1, textDecision, text_Less, text_More]
     for thisComponent in DecisionComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -907,7 +833,7 @@ for thisTrial in trials:
     frameN = -1
     
     # -------Run Routine "Decision"-------
-    while continueRoutine and routineTimer.getTime() > 0:
+    while continueRoutine:
         # get current time
         t = DecisionClock.getTime()
         tThisFlip = win.getFutureFlipTime(clock=DecisionClock)
@@ -925,7 +851,7 @@ for thisTrial in trials:
             prevButtonState = mouse.getPressed()  # if button is down already this ISN'T a new click
         if mouse.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > mouse.tStartRefresh + 5.0-frameTolerance:
+            if tThisFlipGlobal > mouse.tStartRefresh + jitter[0]-frameTolerance:
                 # keep track of stop time/frame for later
                 mouse.tStop = t  # not accounting for scr refresh
                 mouse.frameNStop = frameN  # exact frame index
@@ -953,7 +879,7 @@ for thisTrial in trials:
             sound_1.play(when=win)  # sync with win flip
         if sound_1.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > sound_1.tStartRefresh + 5.0-frameTolerance:
+            if tThisFlipGlobal > sound_1.tStartRefresh + jitter[0]-frameTolerance:
                 # keep track of stop time/frame for later
                 sound_1.tStop = t  # not accounting for scr refresh
                 sound_1.frameNStop = frameN  # exact frame index
@@ -970,29 +896,12 @@ for thisTrial in trials:
             textDecision.setAutoDraw(True)
         if textDecision.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > textDecision.tStartRefresh + 5.0-frameTolerance:
+            if tThisFlipGlobal > textDecision.tStartRefresh + jitter[0]-frameTolerance:
                 # keep track of stop time/frame for later
                 textDecision.tStop = t  # not accounting for scr refresh
                 textDecision.frameNStop = frameN  # exact frame index
                 win.timeOnFlip(textDecision, 'tStopRefresh')  # time at next scr refresh
                 textDecision.setAutoDraw(False)
-        
-        # *image* updates
-        if image.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            image.frameNStart = frameN  # exact frame index
-            image.tStart = t  # local t and not account for scr refresh
-            image.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(image, 'tStartRefresh')  # time at next scr refresh
-            image.setAutoDraw(True)
-        if image.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > image.tStartRefresh + 5.0-frameTolerance:
-                # keep track of stop time/frame for later
-                image.tStop = t  # not accounting for scr refresh
-                image.frameNStop = frameN  # exact frame index
-                win.timeOnFlip(image, 'tStopRefresh')  # time at next scr refresh
-                image.setAutoDraw(False)
         
         # *text_Less* updates
         if text_Less.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
@@ -1004,7 +913,7 @@ for thisTrial in trials:
             text_Less.setAutoDraw(True)
         if text_Less.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > text_Less.tStartRefresh + 5.0-frameTolerance:
+            if tThisFlipGlobal > text_Less.tStartRefresh + jitter[0]-frameTolerance:
                 # keep track of stop time/frame for later
                 text_Less.tStop = t  # not accounting for scr refresh
                 text_Less.frameNStop = frameN  # exact frame index
@@ -1023,7 +932,7 @@ for thisTrial in trials:
             text_More.setAutoDraw(True)
         if text_More.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > text_More.tStartRefresh + 5.0-frameTolerance:
+            if tThisFlipGlobal > text_More.tStartRefresh + jitter[0]-frameTolerance:
                 # keep track of stop time/frame for later
                 text_More.tStop = t  # not accounting for scr refresh
                 text_More.frameNStop = frameN  # exact frame index
@@ -1073,8 +982,6 @@ for thisTrial in trials:
     trials.addData('sound_1.stopped', sound_1.tStopRefresh)
     trials.addData('textDecision.started', textDecision.tStartRefresh)
     trials.addData('textDecision.stopped', textDecision.tStopRefresh)
-    trials.addData('image.started', image.tStartRefresh)
-    trials.addData('image.stopped', image.tStopRefresh)
     # Is the answer Correct? Update the staircase model
     if estimation is not None:
         if (estimation == 'More') & (alpha > 0):
@@ -1098,6 +1005,8 @@ for thisTrial in trials:
     trials.addData('text_Less.stopped', text_Less.tStopRefresh)
     trials.addData('text_More.started', text_More.tStartRefresh)
     trials.addData('text_More.stopped', text_More.tStopRefresh)
+    # the Routine "Decision" was not non-slip safe, so reset the non-slip timer
+    routineTimer.reset()
     
     # set up handler to look after randomisation of conditions etc
     trials_5 = data.TrialHandler(nReps=nRepsRatingScale, method='random', 
@@ -1185,7 +1094,14 @@ for thisTrial in trials:
         trials_5.addData('rating.stopped', rating.tStop)
         thisExp.addData('accuracy', accuracy)
         thisExp.addData('AverageHR', average_hr)
+        thisExp.addData('jitter', jitter[0])
         
+        # Save physio signal
+        if condition == 'Intero':
+            this_df = pd.DataFrame({'signal': signal,
+                                     'nTrial': pd.Series([trials.thisN] * len(signal), dtype="category")})
+            signal_df = signal_df.append(this_df,
+                                         ignore_index=True)
         thisExp.nextEntry()
         
     # completed nRepsRatingScale repeats of 'trials_5'
@@ -1360,6 +1276,26 @@ stairCaseIntero.saveAsPickle(expInfo['participant'])
 
 stairCaseExtero.saveAsExcel(expInfo['participant'])
 stairCaseExtero.saveAsPickle(expInfo['participant'])
+# group by participant folder: data/JWP/memoryTask-2014_Feb_15_1648
+out_path = 'data/%s/%s-%s' %(expInfo['participant'], expName, expInfo['date'])
+
+signal_df.to_csv(out_path + 'signal.txt')
+
+try:
+    stairCaseIntero.savePosterior(out_path)
+    stairCaseIntero.saveAsPickle(out_path)
+    stairCaseIntero.saveAsJson(out_path)
+    stairCaseIntero.saveAsText(out_path)
+except:
+    print('No staircaseIntero provided')
+
+try:
+    stairCaseExtero.savePosterior(out_path)
+    stairCaseExtero.saveAsPickle(out_path)
+    stairCaseExtero.saveAsJson(out_path)
+    stairCaseExtero.saveAsText(out_path)
+except:
+    print('No staircaseExtero provided')
 
 # Flip one final time so any remaining win.callOnFlip() 
 # and win.timeOnFlip() tasks get executed before quitting

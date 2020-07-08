@@ -4,11 +4,11 @@
     <Param name="Audio latency priority" updates="None" val="use prefs" valType="str"/>
     <Param name="Audio lib" updates="None" val="use prefs" valType="str"/>
     <Param name="Completed URL" updates="None" val="" valType="str"/>
-    <Param name="Data filename" updates="None" val="u'data/%s_%s_%s' % (expInfo['participant'], expName, expInfo['date'])" valType="code"/>
+    <Param name="Data filename" updates="None" val="u'data/%s/%s_%s' % (expInfo['participant'], expName, expInfo['date'])" valType="code"/>
     <Param name="Enable Escape" updates="None" val="True" valType="bool"/>
     <Param name="Experiment info" updates="None" val="{'participant': '', 'session': '001'}" valType="code"/>
     <Param name="Force stereo" updates="None" val="True" valType="bool"/>
-    <Param name="Full-screen window" updates="None" val="True" valType="bool"/>
+    <Param name="Full-screen window" updates="None" val="False" valType="bool"/>
     <Param name="HTML path" updates="None" val="html" valType="str"/>
     <Param name="Incomplete URL" updates="None" val="" valType="str"/>
     <Param name="Monitor" updates="None" val="testMonitor" valType="str"/>
@@ -22,7 +22,7 @@
     <Param name="Show mouse" updates="None" val="False" valType="bool"/>
     <Param name="Units" updates="None" val="height" valType="str"/>
     <Param name="Use version" updates="None" val="" valType="str"/>
-    <Param name="Window size (pixels)" updates="None" val="[1440, 2560]" valType="code"/>
+    <Param name="Window size (pixels)" updates="None" val="[1280, 720]" valType="code"/>
     <Param name="blendMode" updates="None" val="avg" valType="str"/>
     <Param name="color" updates="None" val="$[0,0,0]" valType="str"/>
     <Param name="colorSpace" updates="None" val="rgb" valType="str"/>
@@ -35,7 +35,7 @@
       <MouseComponent name="mouse">
         <Param name="clickable" updates="constant" val="" valType="code"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
-        <Param name="durationEstim" updates="None" val="5" valType="code"/>
+        <Param name="durationEstim" updates="None" val="" valType="code"/>
         <Param name="forceEndRoutineOnPress" updates="constant" val="valid click" valType="str"/>
         <Param name="name" updates="None" val="mouse" valType="code"/>
         <Param name="newClicksOnly" updates="constant" val="True" valType="bool"/>
@@ -46,7 +46,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
+        <Param name="stopVal" updates="constant" val="$jitter[0]" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="False" valType="bool"/>
         <Param name="timeRelativeTo" updates="constant" val="routine" valType="str"/>
       </MouseComponent>
@@ -61,7 +61,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
+        <Param name="stopVal" updates="constant" val="$jitter[0]" valType="code"/>
         <Param name="syncScreenRefresh" updates="constant" val="True" valType="bool"/>
         <Param name="volume" updates="constant" val="1" valType="code"/>
       </SoundComponent>
@@ -69,7 +69,7 @@
         <Param name="color" updates="constant" val="white" valType="str"/>
         <Param name="colorSpace" updates="constant" val="rgb" valType="str"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
-        <Param name="durationEstim" updates="None" val="5.0" valType="code"/>
+        <Param name="durationEstim" updates="None" val="" valType="code"/>
         <Param name="flip" updates="constant" val="" valType="str"/>
         <Param name="font" updates="constant" val="Arial" valType="str"/>
         <Param name="languageStyle" updates="None" val="LTR" valType="str"/>
@@ -83,37 +83,12 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
+        <Param name="stopVal" updates="constant" val="$jitter[0]" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
         <Param name="text" updates="constant" val="Do you think the tone frequency was higher or lower than your heart rate?&amp;#10;&amp;#10;Lower (Left button) - Higher (Right button)" valType="str"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
         <Param name="wrapWidth" updates="constant" val="" valType="code"/>
       </TextComponent>
-      <ImageComponent name="image">
-        <Param name="color" updates="constant" val="$[1,1,1]" valType="str"/>
-        <Param name="colorSpace" updates="constant" val="rgb" valType="str"/>
-        <Param name="disabled" updates="None" val="False" valType="bool"/>
-        <Param name="durationEstim" updates="None" val="" valType="code"/>
-        <Param name="flipHoriz" updates="constant" val="False" valType="bool"/>
-        <Param name="flipVert" updates="constant" val="False" valType="bool"/>
-        <Param name="image" updates="constant" val="Images/listenResponse.png" valType="str"/>
-        <Param name="interpolate" updates="constant" val="linear" valType="str"/>
-        <Param name="mask" updates="constant" val="None" valType="str"/>
-        <Param name="name" updates="None" val="image" valType="code"/>
-        <Param name="opacity" updates="constant" val="1" valType="code"/>
-        <Param name="ori" updates="constant" val="0" valType="code"/>
-        <Param name="pos" updates="constant" val="(0, -0.2)" valType="code"/>
-        <Param name="saveStartStop" updates="None" val="True" valType="bool"/>
-        <Param name="size" updates="constant" val="(0.39609375, 0.16111111)" valType="code"/>
-        <Param name="startEstim" updates="None" val="" valType="code"/>
-        <Param name="startType" updates="None" val="time (s)" valType="str"/>
-        <Param name="startVal" updates="None" val="0.0" valType="code"/>
-        <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
-        <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
-        <Param name="texture resolution" updates="constant" val="128" valType="code"/>
-        <Param name="units" updates="None" val="from exp settings" valType="str"/>
-      </ImageComponent>
       <CodeComponent name="code_8">
         <Param name="Begin Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin JS Experiment" updates="constant" val="" valType="extendedCode"/>
@@ -162,7 +137,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
+        <Param name="stopVal" updates="constant" val="$jitter[0]" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
         <Param name="text" updates="constant" val="Less" valType="str"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
@@ -186,7 +161,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
+        <Param name="stopVal" updates="constant" val="$jitter[0]" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
         <Param name="text" updates="constant" val="More" valType="str"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
@@ -230,30 +205,15 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="$jitter[0]" valType="code"/>
+        <Param name="stopVal" updates="constant" val="1" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
       </PolygonComponent>
-      <CodeComponent name="code">
-        <Param name="Begin Experiment" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Begin JS Experiment" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Begin JS Routine" updates="constant" val="jitter = np.arange(0, 2, 0.1);&amp;#10;shuffle(jitter);&amp;#10;" valType="extendedCode"/>
-        <Param name="Begin Routine" updates="constant" val="jitter = np.arange(0, 2, .1)&amp;#10;shuffle(jitter)&amp;#10;&amp;#10;if condition == 'Intero':&amp;#10;    nRepsIntero = 5&amp;#10;    nRepsExtero = 0&amp;#10;elif condition == 'Extero':&amp;#10;    nRepsIntero = 0&amp;#10;    nRepsExtero = 1" valType="extendedCode"/>
-        <Param name="Code Type" updates="None" val="Py" valType="str"/>
-        <Param name="Each Frame" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="disabled" updates="None" val="False" valType="bool"/>
-        <Param name="name" updates="None" val="code" valType="code"/>
-      </CodeComponent>
       <CodeComponent name="code_5">
-        <Param name="Begin Experiment" updates="constant" val="stairCaseIntero = data.PsiHandler(&amp;#10;    nTrials=100,&amp;#10;    intensRange=[1, 40], alphaRange=[1, 20],&amp;#10;    betaRange=[0.1, 4], intensPrecision=1,&amp;#10;    alphaPrecision=1, betaPrecision=0.01,&amp;#10;    delta=0.1, stepType='lin', expectedMin=0.5)&amp;#10;&amp;#10;stairCaseExtero = data.PsiHandler(&amp;#10;    nTrials=100,&amp;#10;    intensRange=[1, 40], alphaRange=[1, 20],&amp;#10;    betaRange=[0.1, 4], intensPrecision=1,&amp;#10;    alphaPrecision=1, betaPrecision=0.01,&amp;#10;    delta=0.1, stepType='lin', expectedMin=0.5)" valType="extendedCode"/>
+        <Param name="Begin Experiment" updates="constant" val="import pandas as pd&amp;#10;&amp;#10;signal_df = pd.DataFrame([])&amp;#10;&amp;#10;stairCaseIntero = data.PsiHandler(&amp;#10;    nTrials=50,&amp;#10;    intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;    betaRange=[0.1, 20], intensPrecision=1,&amp;#10;    alphaPrecision=1, betaPrecision=0.1,&amp;#10;    delta=0.05, stepType='lin', expectedMin=0)&amp;#10;&amp;#10;stairCaseExtero = data.PsiHandler(&amp;#10;    nTrials=50,&amp;#10;    intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;    betaRange=[0.1, 20], intensPrecision=1,&amp;#10;    alphaPrecision=1, betaPrecision=0.1,&amp;#10;    delta=0.05, stepType='lin', expectedMin=0)" valType="extendedCode"/>
         <Param name="Begin JS Experiment" updates="constant" val="stairCaseIntero = new data.PsiHandler({&quot;nTrials&quot;: 100, &quot;intensRange&quot;: [1, 40], &quot;alphaRange&quot;: [1, 20], &quot;betaRange&quot;: [0.1, 4], &quot;intensPrecision&quot;: 1, &quot;alphaPrecision&quot;: 1, &quot;betaPrecision&quot;: 0.01, &quot;delta&quot;: 0.1, &quot;stepType&quot;: &quot;lin&quot;, &quot;expectedMin&quot;: 0.5});&amp;#10;" valType="extendedCode"/>
         <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Begin Routine" updates="constant" val="" valType="extendedCode"/>
+        <Param name="Begin Routine" updates="constant" val="jitter = np.arange(4, 6, .1)&amp;#10;shuffle(jitter)&amp;#10;&amp;#10;if condition == 'Intero':&amp;#10;    nRepsIntero = 5&amp;#10;    nRepsExtero = 0&amp;#10;elif condition == 'Extero':&amp;#10;    nRepsIntero = 0&amp;#10;    nRepsExtero = 1" valType="extendedCode"/>
         <Param name="Code Type" updates="None" val="Py" valType="str"/>
         <Param name="Each Frame" updates="constant" val="" valType="extendedCode"/>
         <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>
@@ -332,6 +292,21 @@
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
         <Param name="wrapWidth" updates="constant" val="" valType="code"/>
       </TextComponent>
+      <CodeComponent name="code_2">
+        <Param name="Begin Experiment" updates="constant" val="" valType="extendedCode"/>
+        <Param name="Begin JS Experiment" updates="constant" val="" valType="extendedCode"/>
+        <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
+        <Param name="Begin Routine" updates="constant" val="" valType="extendedCode"/>
+        <Param name="Code Type" updates="None" val="Py" valType="str"/>
+        <Param name="Each Frame" updates="constant" val="" valType="extendedCode"/>
+        <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>
+        <Param name="End Experiment" updates="constant" val="# group by participant folder: data/JWP/memoryTask-2014_Feb_15_1648&amp;#10;out_path = 'data/%s/%s-%s' %(expInfo['participant'], expName, expInfo['date'])&amp;#10;&amp;#10;signal_df.to_csv(out_path + 'signal.txt')&amp;#10;&amp;#10;try:&amp;#10;    stairCaseIntero.savePosterior(out_path)&amp;#10;    stairCaseIntero.saveAsPickle(out_path)&amp;#10;    stairCaseIntero.saveAsJson(out_path)&amp;#10;    stairCaseIntero.saveAsText(out_path)&amp;#10;except:&amp;#10;    print('No staircaseIntero provided')&amp;#10;&amp;#10;try:&amp;#10;    stairCaseExtero.savePosterior(out_path)&amp;#10;    stairCaseExtero.saveAsPickle(out_path)&amp;#10;    stairCaseExtero.saveAsJson(out_path)&amp;#10;    stairCaseExtero.saveAsText(out_path)&amp;#10;except:&amp;#10;    print('No staircaseExtero provided')" valType="extendedCode"/>
+        <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
+        <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="" valType="extendedCode"/>
+        <Param name="disabled" updates="None" val="False" valType="bool"/>
+        <Param name="name" updates="None" val="code_2" valType="code"/>
+      </CodeComponent>
     </Routine>
     <Routine name="getTrigger">
       <KeyboardComponent name="key_resp">
@@ -470,7 +445,7 @@
         <Param name="End Experiment" updates="constant" val="stairCaseIntero.saveAsExcel(expInfo['participant'])&amp;#10;stairCaseIntero.saveAsPickle(expInfo['participant'])&amp;#10;&amp;#10;stairCaseExtero.saveAsExcel(expInfo['participant'])&amp;#10;stairCaseExtero.saveAsPickle(expInfo['participant'])" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="thisExp.addData('accuracy', accuracy)&amp;#10;thisExp.addData('AverageHR', average_hr)&amp;#10;" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="thisExp.addData('accuracy', accuracy)&amp;#10;thisExp.addData('AverageHR', average_hr)&amp;#10;thisExp.addData('jitter', jitter[0])&amp;#10;&amp;#10;# Save physio signal&amp;#10;if condition == 'Intero':&amp;#10;    this_df = pd.DataFrame({'signal': signal,&amp;#10;                             'nTrial': pd.Series([trials.thisN] * len(signal), dtype=&quot;category&quot;)})&amp;#10;    signal_df = signal_df.append(this_df,&amp;#10;                                 ignore_index=True)" valType="extendedCode"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="code_9" valType="code"/>
       </CodeComponent>
@@ -496,7 +471,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
+        <Param name="stopVal" updates="constant" val="$jitter[0]" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
         <Param name="texture resolution" updates="constant" val="128" valType="code"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
@@ -519,7 +494,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
+        <Param name="stopVal" updates="constant" val="$jitter[0]" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
         <Param name="text" updates="constant" val="Listen to your Heart" valType="str"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
@@ -536,7 +511,7 @@
         <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="# Read ExG&amp;#10;#recording = BrainVisionExG(ip='10.60.88.162').read(5)&amp;#10;#segment = np.array(recording['PLETH'])&amp;#10;#signal, peaks = oxi_peaks(segment, sfreq=parameters['sfreq'],&amp;#10;#                          clipping=False)&amp;#10;# Get actual heart Rate&amp;#10;#average_hr = int((60000/np.diff(np.where(peaks)[0])).mean())&amp;#10;&amp;#10;average_hr = 60&amp;#10;&amp;#10;if average_hr &lt; 30:&amp;#10;    trials_2.finished = 1&amp;#10;    nRepsFeedbackBPM = 0&amp;#10;&amp;#10;    alpha = stairCaseIntero.next()&amp;#10;&amp;#10;    # Check for extreme HR values, e.g. if HR changes massively from&amp;#10;    # trial to trial.&amp;#10;    if (average_hr + alpha) &lt; 15:&amp;#10;        hr = '15'&amp;#10;    elif (average_hr + alpha) &gt; 199:&amp;#10;        hr = '199'&amp;#10;    else:&amp;#10;        hr = str(int(average_hr + alpha))&amp;#10;&amp;#10;    file = os.path.join(os.getcwd(), 'sounds', hr + '.wav')&amp;#10;else:&amp;#10;    nRepsFeedbackBPM = 1" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="# Read ExG&amp;#10;#recording = BrainVisionExG(ip='10.60.88.162').read(5)&amp;#10;#segment = np.array(recording['PLETH'])&amp;#10;#signal, peaks = oxi_peaks(segment, sfreq=parameters['sfreq'],&amp;#10;#                          clipping=False)&amp;#10;# Get actual heart Rate&amp;#10;#average_hr = int((60000/np.diff(np.where(peaks)[0])).mean())&amp;#10;&amp;#10;# Append signal to recording&amp;#10;signal = np.linspace(0, 1, 5000)&amp;#10;&amp;#10;print(trials.thisN)&amp;#10;&amp;#10;average_hr = 60&amp;#10;&amp;#10;if average_hr &lt; 30:&amp;#10;    trials_2.finished = 1&amp;#10;    nRepsFeedbackBPM = 0&amp;#10;&amp;#10;    alpha = stairCaseIntero.next()&amp;#10;&amp;#10;    # Check for extreme HR values, e.g. if HR changes massively from&amp;#10;    # trial to trial.&amp;#10;    if (average_hr + alpha) &lt; 15:&amp;#10;        hr = '15'&amp;#10;    elif (average_hr + alpha) &gt; 199:&amp;#10;        hr = '199'&amp;#10;    else:&amp;#10;        hr = str(int(average_hr + alpha))&amp;#10;&amp;#10;    file = os.path.join(os.getcwd(), 'sounds', hr + '.wav')&amp;#10;else:&amp;#10;    nRepsFeedbackBPM = 1&amp;#10;    &amp;#10;    print('WARNING: Noisy signal recording, cannnot estimate heart rate.')&amp;#10;&amp;#10;    # Set default file is heart rate is not properly recorded&amp;#10;    alpha = 40&amp;#10;    file = os.path.join(os.getcwd(), 'sounds/60.wav')&amp;#10;" valType="extendedCode"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="code_4" valType="code"/>
       </CodeComponent>
@@ -560,7 +535,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
+        <Param name="stopVal" updates="constant" val="$jitter[0]" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
         <Param name="text" updates="constant" val="Listen to the tones" valType="str"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
@@ -586,7 +561,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
+        <Param name="stopVal" updates="constant" val="$jitter[0]" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
         <Param name="texture resolution" updates="constant" val="128" valType="code"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
@@ -617,7 +592,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
+        <Param name="stopVal" updates="constant" val="$jitter[0]" valType="code"/>
         <Param name="syncScreenRefresh" updates="constant" val="True" valType="bool"/>
         <Param name="volume" updates="constant" val="1" valType="code"/>
       </SoundComponent>
@@ -731,11 +706,11 @@
     <Routine name="getTrigger"/>
     <LoopInitiator loopType="TrialHandler" name="trials">
       <Param name="Selected rows" updates="None" val="" valType="str"/>
-      <Param name="conditions" updates="None" val="[OrderedDict([('Condition', 'Intero')]), OrderedDict([('Condition', 'Extero')])]" valType="str"/>
+      <Param name="conditions" updates="None" val="[OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Extero')]), OrderedDict([('condtion', 'Intero')])]" valType="str"/>
       <Param name="conditionsFile" updates="None" val="Conditions.xlsx" valType="str"/>
       <Param name="endPoints" updates="None" val="[0, 1]" valType="num"/>
       <Param name="isTrials" updates="None" val="True" valType="bool"/>
-      <Param name="loopType" updates="None" val="random" valType="str"/>
+      <Param name="loopType" updates="None" val="sequential" valType="str"/>
       <Param name="nReps" updates="None" val="1" valType="code"/>
       <Param name="name" updates="None" val="trials" valType="code"/>
       <Param name="random seed" updates="None" val="" valType="code"/>
@@ -780,7 +755,6 @@
     </LoopInitiator>
     <Routine name="Extero"/>
     <LoopTerminator name="trials_3"/>
-    <Routine name="fixCross2"/>
     <Routine name="Decision"/>
     <LoopInitiator loopType="TrialHandler" name="trials_5">
       <Param name="Selected rows" updates="None" val="" valType="str"/>
