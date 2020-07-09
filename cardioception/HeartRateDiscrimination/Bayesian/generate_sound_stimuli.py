@@ -91,7 +91,7 @@ def save_wav(audio, file_name):
 
 
 # Generate wav files for frequencies between 15 and 200 beats per minutes
-for bpm in np.arange(15, 200):
+for bpm in np.arange(15, 200, .5):
 
     rr = (60000/bpm) - 200
     audio = []
