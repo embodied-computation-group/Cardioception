@@ -22,7 +22,7 @@
     <Param name="Show mouse" updates="None" val="False" valType="bool"/>
     <Param name="Units" updates="None" val="height" valType="str"/>
     <Param name="Use version" updates="None" val="" valType="str"/>
-    <Param name="Window size (pixels)" updates="None" val="[1920, 1080]" valType="code"/>
+    <Param name="Window size (pixels)" updates="None" val="[1280, 720]" valType="code"/>
     <Param name="blendMode" updates="None" val="avg" valType="str"/>
     <Param name="color" updates="None" val="$[0,0,0]" valType="str"/>
     <Param name="colorSpace" updates="None" val="rgb" valType="str"/>
@@ -56,7 +56,7 @@
         <Param name="hamming" updates="constant" val="True" valType="bool"/>
         <Param name="name" updates="None" val="sound_1" valType="code"/>
         <Param name="saveStartStop" updates="None" val="True" valType="bool"/>
-        <Param name="sound" updates="set every repeat" val="$file" valType="str"/>
+        <Param name="sound" updates="set every repeat" val="$responseFile" valType="str"/>
         <Param name="startEstim" updates="None" val="" valType="code"/>
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
@@ -100,7 +100,7 @@
         <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="# Is the answer Correct? Update the staircase model&amp;#10;if estimation is not None:&amp;#10;&amp;#10;    print(f'...answer is {estimation}')&amp;#10;    if (estimation == 'More') &amp; (alpha &gt; 0):&amp;#10;        accuracy = 1&amp;#10;    elif (estimation == 'Less') &amp; (alpha &lt; 0):&amp;#10;        accuracy = 1&amp;#10;    else:&amp;#10;        accuracy = 0&amp;#10;    nRatingScale = True&amp;#10;    NoResponseFeedback = False&amp;#10;    correct = ['True' if accuracy==1 else 'False']&amp;#10;    &amp;#10;    if expInfo['staircaseType'] == 'psi':&amp;#10;        if condition == 'Intero':&amp;#10;            stairCaseIntero.addResponse(accuracy)&amp;#10;        elif condition == 'Extero':&amp;#10;            stairCaseExtero.addResponse(accuracy)&amp;#10;&amp;#10;    print(f'...Initial BPM: {listenBPM} - Staircase value: {alpha} - Response: {estimation} ({correct})')&amp;#10;&amp;#10;else:&amp;#10;    accuracy = 0&amp;#10;    nRatingScale = False&amp;#10;    NoResponseFeedback = True&amp;#10;    print('...No response provided')" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="# Is the answer Correct? Update the staircase model&amp;#10;if estimation is not None:&amp;#10;&amp;#10;    print(f'...answer is {estimation}')&amp;#10;    &amp;#10;    if condition == 'Intero':&amp;#10;        if (estimation == 'More'):&amp;#10;            accuracy = 1&amp;#10;        elif (estimation == 'Less'):&amp;#10;            accuracy = 0&amp;#10;    elif condition == 'Extero':&amp;#10;        if (estimation == 'More') &amp; (alpha &gt; 0):&amp;#10;            accuracy = 1&amp;#10;        elif (estimation == 'Less') &amp; (alpha &lt; 0):&amp;#10;            accuracy = 1&amp;#10;        else:&amp;#10;            accuracy = 0&amp;#10;&amp;#10;    nRatingScale = True&amp;#10;    NoResponseFeedback = False&amp;#10;    correct = ['True' if accuracy==1 else 'False']&amp;#10;    &amp;#10;    if expInfo['staircaseType'] == 'psi':&amp;#10;        if condition == 'Intero':&amp;#10;            stairCaseIntero.addResponse(accuracy)&amp;#10;            lambdaIntero.append(stairCaseIntero._psi._probLambda[0, :, :, 0])&amp;#10;        elif condition == 'Extero':&amp;#10;            stairCaseExtero.addResponse(accuracy)&amp;#10;            lambdaExtero.append(stairCaseExtero._psi._probLambda[0, :, :, 0])&amp;#10;&amp;#10;    print(f'...Initial BPM: {listenBPM} - Staircase value: {alpha} - Response: {estimation} ({correct})')&amp;#10;&amp;#10;else:&amp;#10;    accuracy = 0&amp;#10;    nRatingScale = False&amp;#10;    NoResponseFeedback = True&amp;#10;    print('...No response provided')" valType="extendedCode"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="code_8" valType="code"/>
       </CodeComponent>
@@ -182,11 +182,11 @@
         <Param name="Begin Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Begin Routine" updates="constant" val="" valType="extendedCode"/>
+        <Param name="Begin Routine" updates="constant" val="# group by participant folder: data/JWP/memoryTask-2014_Feb_15_1648&amp;#10;out_path = 'data/%s/%s-%s' %(expInfo['participant'], expName, expInfo['date'])&amp;#10;&amp;#10;signal_df.to_csv(out_path + 'signal.txt')&amp;#10;&amp;#10;try:&amp;#10;    np.save(out_path + '_InteroPosteriorHistory', np.array(lambdaIntero))&amp;#10;except:&amp;#10;    print('Saving Intero posterior history failled')&amp;#10;try:&amp;#10;    stairCaseIntero.savePosterior(out_path + '_InteroPosterior')&amp;#10;except:&amp;#10;    print('Saving Intero posterior failled')&amp;#10;try:&amp;#10;    stairCaseIntero.saveAsPickle(out_path + '_InteroPickle')&amp;#10;except:&amp;#10;    print('Saving Intero pickle failled')&amp;#10;try:&amp;#10;    stairCaseIntero.saveAsJson(out_path + '_InteroJson')&amp;#10;except:&amp;#10;    print('Saving Intero JSON failled')&amp;#10;&amp;#10;try:&amp;#10;    np.save(out_path + '_ExteroPosteriorHistory', np.array(lambdaExtero))&amp;#10;except:&amp;#10;    print('Saving Extero posterior history failled')&amp;#10;try:&amp;#10;    stairCaseExtero.savePosterior(out_path + '_ExteroPosterior')&amp;#10;except:&amp;#10;    print('Saving Intero posterior failled')&amp;#10;try:&amp;#10;    stairCaseExtero.saveAsPickle(out_path + '_ExteroPickle')&amp;#10;except:&amp;#10;    print('Saving Intero pickle failled')&amp;#10;try:&amp;#10;    stairCaseExtero.saveAsJson(out_path + '_ExteroJson')&amp;#10;except:&amp;#10;    print('Saving Intero JSON failled')" valType="extendedCode"/>
         <Param name="Code Type" updates="None" val="Py" valType="str"/>
         <Param name="Each Frame" updates="constant" val="" valType="extendedCode"/>
         <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Experiment" updates="constant" val="# group by participant folder: data/JWP/memoryTask-2014_Feb_15_1648&amp;#10;out_path = 'data/%s/%s-%s' %(expInfo['participant'], expName, expInfo['date'])&amp;#10;&amp;#10;signal_df.to_csv(out_path + 'signal.txt')&amp;#10;&amp;#10;try:&amp;#10;    stairCaseIntero.savePosterior(out_path)&amp;#10;    stairCaseIntero.saveAsPickle(out_path)&amp;#10;    stairCaseIntero.saveAsJson(out_path)&amp;#10;    stairCaseIntero.saveAsText(out_path)&amp;#10;except:&amp;#10;    print('No staircaseIntero provided')&amp;#10;&amp;#10;try:&amp;#10;    stairCaseExtero.savePosterior(out_path)&amp;#10;    stairCaseExtero.saveAsPickle(out_path)&amp;#10;    stairCaseExtero.saveAsJson(out_path)&amp;#10;    stairCaseExtero.saveAsText(out_path)&amp;#10;except:&amp;#10;    print('No staircaseExtero provided')" valType="extendedCode"/>
+        <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
         <Param name="End Routine" updates="constant" val="" valType="extendedCode"/>
@@ -238,7 +238,7 @@
         <Param name="wrapWidth" updates="constant" val="" valType="code"/>
       </TextComponent>
       <CodeComponent name="code">
-        <Param name="Begin Experiment" updates="constant" val="import pandas as pd&amp;#10;import serial&amp;#10;from systole.detection import oxi_peaks&amp;#10;&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    from systole.recording import findOximeter, Oximeter&amp;#10;&amp;#10;    # PPG recording&amp;#10;    if expInfo['USBport']:&amp;#10;        portNb = expInfo['USBport']&amp;#10;    else:&amp;#10;        portNb = findOximeter()&amp;#10;        if portNb is None:&amp;#10;            print('Cannot find the Pulse Oximeter automatically, please enter port reference in the GUI')&amp;#10;            core.quit()&amp;#10;&amp;#10;    port = serial.Serial(portNb)&amp;#10;    oxiTask = Oximeter(serial=port, sfreq=75, add_channels=1)&amp;#10;    oxiTask.setup().read(duration=1)&amp;#10;elif expInfo['setup'] == 'fMRI':&amp;#10;    from systole.recording import BrainVisionExG&amp;#10;&amp;#10;signal_df = pd.DataFrame([])&amp;#10;&amp;#10;# Saircases&amp;#10;if expInfo['staircaseType'] == 'psi':&amp;#10;    stairCaseIntero = data.PsiHandler(&amp;#10;        nTrials=100,&amp;#10;        intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;        betaRange=[0.1, 20], intensPrecision=1,&amp;#10;        alphaPrecision=1, betaPrecision=0.1,&amp;#10;        delta=0.05, stepType='lin', expectedMin=0)&amp;#10;&amp;#10;    stairCaseExtero = data.PsiHandler(&amp;#10;        nTrials=100,&amp;#10;        intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;        betaRange=[0.1, 20], intensPrecision=1,&amp;#10;        alphaPrecision=1, betaPrecision=0.1,&amp;#10;        delta=0.05, stepType='lin', expectedMin=0)" valType="extendedCode"/>
+        <Param name="Begin Experiment" updates="constant" val="import pandas as pd&amp;#10;import serial&amp;#10;from systole.detection import oxi_peaks&amp;#10;&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    from systole.recording import findOximeter, Oximeter&amp;#10;&amp;#10;    # PPG recording&amp;#10;    if expInfo['USBport']:&amp;#10;        portNb = expInfo['USBport']&amp;#10;    else:&amp;#10;        portNb = findOximeter()&amp;#10;        if portNb is None:&amp;#10;            print('Cannot find the Pulse Oximeter automatically, please enter port reference in the GUI')&amp;#10;            core.quit()&amp;#10;&amp;#10;    port = serial.Serial(portNb)&amp;#10;    oxiTask = Oximeter(serial=port, sfreq=75, add_channels=1)&amp;#10;    oxiTask.setup().read(duration=1)&amp;#10;elif expInfo['setup'] == 'fMRI':&amp;#10;    from systole.recording import BrainVisionExG&amp;#10;&amp;#10;signal_df = pd.DataFrame([])&amp;#10;&amp;#10;# Saircases&amp;#10;if expInfo['staircaseType'] == 'psi':&amp;#10;&amp;#10;    stairCaseIntero = data.PsiHandler(&amp;#10;        nTrials=100,&amp;#10;        intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;        betaRange=[0.1, 20], intensPrecision=1,&amp;#10;        alphaPrecision=1, betaPrecision=0.1,&amp;#10;        delta=0.05, stepType='lin', expectedMin=0)&amp;#10;&amp;#10;    stairCaseExtero = data.PsiHandler(&amp;#10;        nTrials=100,&amp;#10;        intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;        betaRange=[0.1, 20], intensPrecision=1,&amp;#10;        alphaPrecision=1, betaPrecision=0.1,&amp;#10;        delta=0.05, stepType='lin', expectedMin=0)&amp;#10;&amp;#10;    # Save the history of lambda values&amp;#10;    lambdaIntero, lambdaExtero = [], []" valType="extendedCode"/>
         <Param name="Begin JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin Routine" updates="constant" val="" valType="extendedCode"/>
@@ -397,7 +397,7 @@
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
         <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
-        <Param name="text" updates="constant" val="Listen to your Heart" valType="str"/>
+        <Param name="text" updates="constant" val="Listen to your heart" valType="str"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
         <Param name="wrapWidth" updates="constant" val="" valType="code"/>
       </TextComponent>
@@ -412,7 +412,7 @@
         <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="# Get actual heart Rate&amp;#10;bpm = [15]&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    signal, peaks = oxi_peaks(oxiTask.recording[-75*6:])&amp;#10;&amp;#10;bpm = 60000/np.diff(np.where(peaks[-5000:])[0])&amp;#10;&amp;#10;print(f'...bpm: {[round(i) for i in bpm]}')&amp;#10;&amp;#10;if not (np.any(bpm&lt;30) or np.any(bpm&gt;140)):&amp;#10;    &amp;#10;    listenBPM = round(bpm.mean() * 2) /2  # Round to nearest .5&amp;#10;&amp;#10;    InteroLoop.finished = 1&amp;#10;    nRepsFeedbackBPM = False&amp;#10;&amp;#10;    alpha = stairCaseIntero.next()&amp;#10;&amp;#10;    # Check for extreme HR values, e.g. if HR changes massively from&amp;#10;    # trial to trial.&amp;#10;    if (listenBPM + alpha) &lt; 15:&amp;#10;        responseBPM = '15.0'&amp;#10;    elif (listenBPM + alpha) &gt; 199:&amp;#10;        responseBPM = '199.0'&amp;#10;    else:&amp;#10;        responseBPM = str(listenBPM + alpha)&amp;#10;&amp;#10;    file = os.path.join(os.getcwd(), 'sounds', responseBPM + '.wav')&amp;#10;    print(f'...loading file: {file}')&amp;#10;else:&amp;#10;    nRepsFeedbackBPM = True&amp;#10;    &amp;#10;    print('WARNING: Noisy signal recording, cannnot estimate heart rate.')&amp;#10;&amp;#10;    # Set default file is heart rate is not properly recorded&amp;#10;    alpha = 40&amp;#10;    file = os.path.join(os.getcwd(), 'sounds/60.wav')&amp;#10;" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="# Get actual heart Rate&amp;#10;bpm = [15]&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    signal, peaks = oxi_peaks(oxiTask.recording[-75*6:])&amp;#10;&amp;#10;bpm = 60000/np.diff(np.where(peaks[-5000:])[0])&amp;#10;&amp;#10;print(f'...bpm: {[round(i) for i in bpm]}')&amp;#10;&amp;#10;if not (np.any(bpm&lt;30) or np.any(bpm&gt;140)):&amp;#10;    &amp;#10;    listenBPM = round(bpm.mean() * 2) /2  # Round to nearest .5&amp;#10;&amp;#10;    InteroLoop.finished = 1&amp;#10;    nRepsFeedbackBPM = False&amp;#10;&amp;#10;    alpha = stairCaseIntero.next()&amp;#10;&amp;#10;    # Check for extreme HR values, e.g. if HR changes massively from&amp;#10;    # trial to trial.&amp;#10;    if (listenBPM + alpha) &lt; 15:&amp;#10;        responseBPM = '15.0'&amp;#10;    elif (listenBPM + alpha) &gt; 199:&amp;#10;        responseBPM = '199.0'&amp;#10;    else:&amp;#10;        responseBPM = str(listenBPM + alpha)&amp;#10;&amp;#10;    responseFile = os.path.join(os.getcwd(), 'sounds', str(responseBPM) + '.wav')&amp;#10;    print(f'...loading file: {responseFile}')&amp;#10;&amp;#10;else:&amp;#10;    nRepsFeedbackBPM = True&amp;#10;    &amp;#10;    print('WARNING: Noisy signal recording, cannnot estimate heart rate.')&amp;#10;&amp;#10;    # Set default file is heart rate is not properly recorded&amp;#10;    alpha = 40&amp;#10;    file = os.path.join(os.getcwd(), 'sounds/60.wav')&amp;#10;" valType="extendedCode"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="code_4" valType="code"/>
       </CodeComponent>
@@ -471,7 +471,7 @@
         <Param name="Begin Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Begin Routine" updates="constant" val="if condition == 'Intero':&amp;#10;    continueRoutine = False&amp;#10;&amp;#10;print('Starting Extero condition')&amp;#10;&amp;#10;if expInfo['staircaseType'] == 'psi':&amp;#10;    alpha = stairCaseExtero.next()&amp;#10;&amp;#10;# Random selection of HR frequency&amp;#10;listenBPM = np.random.choice(np.arange(40, 100, 0.5))&amp;#10;responseBPM = str(listenBPM + alpha)&amp;#10;&amp;#10;file = os.path.join(os.getcwd(), 'sounds', responseBPM + '.wav')&amp;#10;print(f'...loading file: {file}')" valType="extendedCode"/>
+        <Param name="Begin Routine" updates="constant" val="print('Starting Extero condition')&amp;#10;&amp;#10;if expInfo['staircaseType'] == 'psi':&amp;#10;    alpha = stairCaseExtero.next()&amp;#10;&amp;#10;# Random selection of HR frequency&amp;#10;listenBPM = np.random.choice(np.arange(40, 100, 0.5))&amp;#10;listenFile = os.path.join(os.getcwd(), 'sounds', str(listenBPM) + '.wav')&amp;#10;print(f'...loading file: {listenFile}')&amp;#10;&amp;#10;responseBPM = str(listenBPM + alpha)&amp;#10;&amp;#10;# Check for extreme values&amp;#10;if (listenBPM + alpha) &lt; 15:&amp;#10;    responseBPM = '15.0'&amp;#10;elif (listenBPM + alpha) &gt; 199:&amp;#10;    responseBPM = '199.0'&amp;#10;else:&amp;#10;    responseBPM = str(listenBPM + alpha)&amp;#10;&amp;#10;responseFile = os.path.join(os.getcwd(), 'sounds', responseBPM + '.wav')&amp;#10;print(f'...loading file: {responseFile}')" valType="extendedCode"/>
         <Param name="Code Type" updates="None" val="Py" valType="str"/>
         <Param name="Each Frame" updates="constant" val="if expInfo['setup'] == 'behavioral':&amp;#10;    oxiTask.readInWaiting()&amp;#10;" valType="extendedCode"/>
         <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>
@@ -488,10 +488,10 @@
         <Param name="hamming" updates="constant" val="True" valType="bool"/>
         <Param name="name" updates="None" val="sound_2" valType="code"/>
         <Param name="saveStartStop" updates="None" val="True" valType="bool"/>
-        <Param name="sound" updates="set every repeat" val="$file" valType="str"/>
+        <Param name="sound" updates="set every repeat" val="$listenFile" valType="str"/>
         <Param name="startEstim" updates="None" val="" valType="code"/>
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
-        <Param name="startVal" updates="None" val="0.0" valType="code"/>
+        <Param name="startVal" updates="None" val="0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
         <Param name="stopVal" updates="constant" val="5.0" valType="code"/>
         <Param name="syncScreenRefresh" updates="constant" val="True" valType="bool"/>
@@ -769,7 +769,7 @@
         <Param name="Begin Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin JS Experiment" updates="constant" val="stairCaseIntero = new data.PsiHandler({&quot;nTrials&quot;: 100, &quot;intensRange&quot;: [1, 40], &quot;alphaRange&quot;: [1, 20], &quot;betaRange&quot;: [0.1, 4], &quot;intensPrecision&quot;: 1, &quot;alphaPrecision&quot;: 1, &quot;betaPrecision&quot;: 0.01, &quot;delta&quot;: 0.1, &quot;stepType&quot;: &quot;lin&quot;, &quot;expectedMin&quot;: 0.5});&amp;#10;" valType="extendedCode"/>
         <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Begin Routine" updates="constant" val="jitter = np.arange(0, 2, .1)&amp;#10;shuffle(jitter)&amp;#10;&amp;#10;if condition == 'Intero':&amp;#10;    nRepsIntero = 5&amp;#10;    decisionText = &quot;&quot;&quot;Do you think the tone frequency is higher or lower than your heart rate?&amp;#10;&amp;#10;Lower (Left button) - Higher (Right button)&quot;&quot;&quot;&amp;#10;elif condition == 'Extero':&amp;#10;    nRepsIntero = 0&amp;#10;    decisionText = &quot;&quot;&quot;Do you think the tone frequency is higher or lower than the previous one?&amp;#10;&amp;#10;Lower (Left button) - Higher (Right button)&quot;&quot;&quot;&amp;#10;&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    oxiTask.readInWaiting()&amp;#10;    oxiTask.channels['Channel_0'][-1] = 10  # Start trigger" valType="extendedCode"/>
+        <Param name="Begin Routine" updates="constant" val="jitter = np.arange(0, 2, .1)&amp;#10;shuffle(jitter)&amp;#10;&amp;#10;if condition == 'Intero':&amp;#10;    nRepsIntero = 5&amp;#10;    nRepsExtero = 0&amp;#10;    decisionText = &quot;&quot;&quot;Do you think the tone frequency is higher or lower than your heart rate?&amp;#10;&amp;#10;Lower (Left button) - Higher (Right button)&quot;&quot;&quot;&amp;#10;elif condition == 'Extero':&amp;#10;    nRepsIntero = 0&amp;#10;    nRepsExtero = 1&amp;#10;    decisionText = &quot;&quot;&quot;Do you think the tone frequency is higher or lower than the previous one?&amp;#10;&amp;#10;Lower (Left button) - Higher (Right button)&quot;&quot;&quot;&amp;#10;&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    oxiTask.readInWaiting()&amp;#10;    oxiTask.channels['Channel_0'][-1] = 10  # Start trigger" valType="extendedCode"/>
         <Param name="Code Type" updates="None" val="Py" valType="str"/>
         <Param name="Each Frame" updates="constant" val="" valType="extendedCode"/>
         <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>
@@ -850,7 +850,7 @@
       <Param name="endPoints" updates="None" val="[0, 1]" valType="num"/>
       <Param name="isTrials" updates="None" val="True" valType="bool"/>
       <Param name="loopType" updates="None" val="random" valType="str"/>
-      <Param name="nReps" updates="None" val="30" valType="code"/>
+      <Param name="nReps" updates="None" val="2" valType="code"/>
       <Param name="name" updates="None" val="trials" valType="code"/>
       <Param name="random seed" updates="None" val="" valType="code"/>
     </LoopInitiator>
@@ -860,7 +860,7 @@
       <Param name="conditions" updates="None" val="None" valType="str"/>
       <Param name="conditionsFile" updates="None" val="" valType="str"/>
       <Param name="endPoints" updates="None" val="[0, 1]" valType="num"/>
-      <Param name="isTrials" updates="None" val="True" valType="bool"/>
+      <Param name="isTrials" updates="None" val="False" valType="bool"/>
       <Param name="loopType" updates="None" val="random" valType="str"/>
       <Param name="nReps" updates="None" val="nRepsIntero" valType="code"/>
       <Param name="name" updates="None" val="InteroLoop" valType="code"/>
@@ -869,7 +869,19 @@
     <Routine name="Intero"/>
     <Routine name="FeedbackIntero"/>
     <LoopTerminator name="InteroLoop"/>
+    <LoopInitiator loopType="TrialHandler" name="ExteroLoop">
+      <Param name="Selected rows" updates="None" val="" valType="str"/>
+      <Param name="conditions" updates="None" val="None" valType="str"/>
+      <Param name="conditionsFile" updates="None" val="" valType="str"/>
+      <Param name="endPoints" updates="None" val="[0, 1]" valType="num"/>
+      <Param name="isTrials" updates="None" val="False" valType="bool"/>
+      <Param name="loopType" updates="None" val="random" valType="str"/>
+      <Param name="nReps" updates="None" val="nRepsExtero" valType="code"/>
+      <Param name="name" updates="None" val="ExteroLoop" valType="code"/>
+      <Param name="random seed" updates="None" val="" valType="code"/>
+    </LoopInitiator>
     <Routine name="Extero"/>
+    <LoopTerminator name="ExteroLoop"/>
     <Routine name="fixCross2"/>
     <Routine name="Decision"/>
     <Routine name="feedbackDecision"/>
