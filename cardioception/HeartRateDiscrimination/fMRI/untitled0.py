@@ -10,7 +10,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from systole.detection import oxi_peaks
 from systole.recording import BrainVisionExG
-from systole.utils import to_neighbour
+
+# Read ExG
+recording = BrainVisionExG(ip='10.60.88.162', sfreq=1000).read(5)
+
+signal = np.array(recording['PLETH'])
+signal, peaks = oxi_peaks(signal, sfreq=1000,
+                          clipping=False)
 
 
 sfreq = 200
@@ -100,7 +106,7 @@ win = visual.Window(monitor='testMonitor',
                     fullscr=False, units=None)
 win.mouseVisible = False
 ratingScale = visual.Slider(
-       win, ticks=(1, 100), 
+       win, ticks=(1, 100),
        labels=('Not at all confident', 'Extremely confident'))
 while not ratingScale.rating:
     ratingScale.draw()

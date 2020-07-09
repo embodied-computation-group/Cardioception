@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2020.1.2),
-    on July 09, 2020, at 15:49
+    on juli 09, 2020, at 20:16
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -37,7 +37,7 @@ os.chdir(_thisDir)
 # Store info about the experiment session
 psychopyVersion = '2020.1.2'
 expName = 'HRD_fMRI'  # from the Builder filename that created this script
-expInfo = {'participant': '', 'session': '001', 'USBport': '', 'setup': 'behavioral', 'staircaseType': 'psi'}
+expInfo = {'participant': '', 'session': '001', 'USBport': '', 'setup': 'fMRI', 'staircaseType': 'psi', 'BrainVisionIP': '10.60.88.162'}
 dlg = gui.DlgFromDict(dictionary=expInfo, sortKeys=False, title=expName)
 if dlg.OK == False:
     core.quit()  # user pressed cancel
@@ -51,7 +51,7 @@ filename = _thisDir + os.sep + u'data/%s/%s_%s' % (expInfo['participant'], expNa
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
     extraInfo=expInfo, runtimeInfo=None,
-    originPath='C:\\Users\\au646069\\github\\Cardioception\\cardioception\\HeartRateDiscrimination\\Bayesian\\HRD_bayesian_lastrun.py',
+    originPath='C:\\Users\\stimuser\\github\\Cardioception\\cardioception\\HeartRateDiscrimination\\Bayesian\\HRD_bayesian_lastrun.py',
     savePickle=True, saveWideText=True,
     dataFileName=filename)
 # save a log file for detail verbose info
@@ -65,7 +65,7 @@ frameTolerance = 0.001  # how close to onset before 'same' frame
 
 # Setup the Window
 win = visual.Window(
-    size=[1280, 720], fullscr=True, screen=0, 
+    size=[1920, 1080], fullscr=True, screen=0, 
     winType='pyglet', allowGUI=True, allowStencil=False,
     monitor='testMonitor', color=[0,0,0], colorSpace='rgb',
     blendMode='avg', useFBO=True, 
@@ -92,10 +92,10 @@ text_2 = visual.TextStim(win=win, name='text_2',
     depth=-1.0);
 import pandas as pd
 import serial
+from systole.detection import oxi_peaks
 
 if expInfo['setup'] == 'behavioral':
     from systole.recording import findOximeter, Oximeter
-    from systole.detection import oxi_peaks
 
     # PPG recording
     if expInfo['USBport']:
@@ -109,6 +109,8 @@ if expInfo['setup'] == 'behavioral':
     port = serial.Serial(portNb)
     oxiTask = Oximeter(serial=port, sfreq=75, add_channels=1)
     oxiTask.setup().read(duration=1)
+elif expInfo['setup'] == 'fMRI':
+    from systole.recording import BrainVisionExG
 
 signal_df = pd.DataFrame([])
 
@@ -258,8 +260,8 @@ text_4 = visual.TextStim(win=win, name='text_4',
     languageStyle='LTR',
     depth=0.0);
 
-# Initialize components for Routine "break_2"
-break_2Clock = core.Clock()
+# Initialize components for Routine "Break"
+BreakClock = core.Clock()
 text_8 = visual.TextStim(win=win, name='text_8',
     text='Break\n\nYou can relax as long as you want\n\nPress any button to continue',
     font='Arial',
@@ -329,7 +331,7 @@ while continueRoutine:
         win.callOnFlip(key_resp.clock.reset)  # t=0 on next screen flip
         win.callOnFlip(key_resp.clearEvents, eventType='keyboard')  # clear events on next screen flip
     if key_resp.status == STARTED and not waitOnFlip:
-        theseKeys = key_resp.getKeys(keyList=['space'], waitRelease=False)
+        theseKeys = key_resp.getKeys(keyList=['space', '5'], waitRelease=False)
         _key_resp_allKeys.extend(theseKeys)
         if len(_key_resp_allKeys):
             key_resp.keys = _key_resp_allKeys[-1].name  # just the last key pressed
@@ -345,7 +347,8 @@ while continueRoutine:
         text_2.tStartRefresh = tThisFlipGlobal  # on global time
         win.timeOnFlip(text_2, 'tStartRefresh')  # time at next scr refresh
         text_2.setAutoDraw(True)
-    oxiTask.readInWaiting()
+    if expInfo['setup'] == 'behavioral':
+        oxiTask.readInWaiting()
     
     # check for quit (typically the Esc key)
     if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
@@ -383,7 +386,7 @@ thisExp.addData('text_2.stopped', text_2.tStopRefresh)
 routineTimer.reset()
 
 # set up handler to look after randomisation of conditions etc
-trials = data.TrialHandler(nReps=25, method='random', 
+trials = data.TrialHandler(nReps=30, method='random', 
     extraInfo=expInfo, originPath=-1,
     trialList=data.importConditions('Conditions.xlsx'),
     seed=None, name='trials')
@@ -575,6 +578,12 @@ for thisTrial in trials:
                     textListen.setAutoDraw(False)
             if expInfo['setup'] == 'behavioral':
                 oxiTask.readInWaiting()
+            elif expInfo['setup'] == 'fMRI':
+                if frameN >=1:
+                    # Read ExG
+                    recording = BrainVisionExG(ip=expInfo['BrainVisionIP'], sfreq=1000).read(5)
+                    signal, peaks = oxi_peaks(recording['PLETH'], sfreq=1000,
+                                               clipping=False)
             
             
             # check for quit (typically the Esc key)
@@ -603,7 +612,7 @@ for thisTrial in trials:
         InteroLoop.addData('textListen.started', textListen.tStartRefresh)
         InteroLoop.addData('textListen.stopped', textListen.tStopRefresh)
         # Get actual heart Rate
-        bpm = [0]
+        bpm = [15]
         if expInfo['setup'] == 'behavioral':
             signal, peaks = oxi_peaks(oxiTask.recording[-75*6:])
         
@@ -613,7 +622,7 @@ for thisTrial in trials:
         
         if not (np.any(bpm<30) or np.any(bpm>140)):
             
-            average_hr = int(bpm.mean())
+            listenBPM = round(bpm.mean() * 2) /2  # Round to nearest .5
         
             InteroLoop.finished = 1
             nRepsFeedbackBPM = False
@@ -622,14 +631,14 @@ for thisTrial in trials:
         
             # Check for extreme HR values, e.g. if HR changes massively from
             # trial to trial.
-            if (average_hr + alpha) < 15:
-                hr = '15.0'
-            elif (average_hr + alpha) > 199:
-                hr = '199.0'
+            if (listenBPM + alpha) < 15:
+                responseBPM = '15.0'
+            elif (listenBPM + alpha) > 199:
+                responseBPM = '199.0'
             else:
-                hr = str(average_hr + alpha)
+                responseBPM = str(listenBPM + alpha)
         
-            file = os.path.join(os.getcwd(), 'sounds', hr + '.wav')
+            file = os.path.join(os.getcwd(), 'sounds', responseBPM + '.wav')
             print(f'...loading file: {file}')
         else:
             nRepsFeedbackBPM = True
@@ -729,10 +738,10 @@ for thisTrial in trials:
         alpha = stairCaseExtero.next()
     
     # Random selection of HR frequency
-    average_hr = np.random.choice(np.arange(40, 100, 0.5))
-    hr = str(average_hr + alpha)
+    listenBPM = np.random.choice(np.arange(40, 100, 0.5))
+    responseBPM = str(listenBPM + alpha)
     
-    file = os.path.join(os.getcwd(), 'sounds', hr + '.wav')
+    file = os.path.join(os.getcwd(), 'sounds', responseBPM + '.wav')
     print(f'...loading file: {file}')
     sound_2.setSound(file, secs=5.0, hamming=True)
     sound_2.setVolume(1, log=False)
@@ -1130,9 +1139,10 @@ for thisTrial in trials:
             elif condition == 'Extero':
                 stairCaseExtero.addResponse(accuracy)
     
-        print(f'...Initial BPM: {average_hr} - Staircase value: {alpha} - Response: {estimation} ({correct}) - Condition: {condition}')
+        print(f'...Initial BPM: {listenBPM} - Staircase value: {alpha} - Response: {estimation} ({correct})')
     
     else:
+        accuracy = 0
         nRatingScale = False
         NoResponseFeedback = True
         print('...No response provided')
@@ -1312,7 +1322,8 @@ for thisTrial in trials:
     trials.addData('rating.started', rating.tStart)
     trials.addData('rating.stopped', rating.tStop)
     thisExp.addData('accuracy', accuracy)
-    thisExp.addData('AverageHR', average_hr)
+    thisExp.addData('ListenBPM', listenBPM)
+    thisExp.addData('ResponseBPM', responseBPM)
     thisExp.addData('alpha', alpha)
     
     if condition == 'Intero':
@@ -1396,7 +1407,7 @@ for thisTrial in trials:
     trials.addData('text_4.started', text_4.tStartRefresh)
     trials.addData('text_4.stopped', text_4.tStopRefresh)
     
-    # ------Prepare to start Routine "break_2"-------
+    # ------Prepare to start Routine "Break"-------
     continueRoutine = True
     # update component parameters for each repeat
     # setup some python lists for storing info about the mouse_2
@@ -1411,8 +1422,8 @@ for thisTrial in trials:
         continueRoutine = False
     
     # keep track of which components have finished
-    break_2Components = [text_8, mouse_2]
-    for thisComponent in break_2Components:
+    BreakComponents = [text_8, mouse_2]
+    for thisComponent in BreakComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
         thisComponent.tStartRefresh = None
@@ -1422,14 +1433,14 @@ for thisTrial in trials:
     # reset timers
     t = 0
     _timeToFirstFrame = win.getFutureFlipTime(clock="now")
-    break_2Clock.reset(-_timeToFirstFrame)  # t0 is time of first possible flip
+    BreakClock.reset(-_timeToFirstFrame)  # t0 is time of first possible flip
     frameN = -1
     
-    # -------Run Routine "break_2"-------
+    # -------Run Routine "Break"-------
     while continueRoutine:
         # get current time
-        t = break_2Clock.getTime()
-        tThisFlip = win.getFutureFlipTime(clock=break_2Clock)
+        t = BreakClock.getTime()
+        tThisFlip = win.getFutureFlipTime(clock=BreakClock)
         tThisFlipGlobal = win.getFutureFlipTime(clock=None)
         frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
         # update/draw components on each frame
@@ -1476,7 +1487,7 @@ for thisTrial in trials:
         if not continueRoutine:  # a component has requested a forced-end of Routine
             break
         continueRoutine = False  # will revert to True if at least one component still running
-        for thisComponent in break_2Components:
+        for thisComponent in BreakComponents:
             if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
                 continueRoutine = True
                 break  # at least one component has not yet finished
@@ -1485,8 +1496,8 @@ for thisTrial in trials:
         if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
             win.flip()
     
-    # -------Ending Routine "break_2"-------
-    for thisComponent in break_2Components:
+    # -------Ending Routine "Break"-------
+    for thisComponent in BreakComponents:
         if hasattr(thisComponent, "setAutoDraw"):
             thisComponent.setAutoDraw(False)
     trials.addData('text_8.started', text_8.tStartRefresh)
@@ -1503,11 +1514,11 @@ for thisTrial in trials:
     if expInfo['setup'] == 'behavioral':
         out_path = 'data/%s/%s-%s' %(expInfo['participant'], expName, expInfo['date'])
         oxiTask.save(out_path + '_' + str(trials.thisN) + '.npy')
-    # the Routine "break_2" was not non-slip safe, so reset the non-slip timer
+    # the Routine "Break" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
     thisExp.nextEntry()
     
-# completed 25 repeats of 'trials'
+# completed 30 repeats of 'trials'
 
 
 # ------Prepare to start Routine "endScreen"-------

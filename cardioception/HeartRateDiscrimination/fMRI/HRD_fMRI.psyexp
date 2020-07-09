@@ -11,6 +11,7 @@
     <Param name="Full-screen window" updates="None" val="False" valType="bool"/>
     <Param name="HTML path" updates="None" val="html" valType="str"/>
     <Param name="Incomplete URL" updates="None" val="" valType="str"/>
+    <Param name="JS libs" updates="None" val="packaged" valType="str"/>
     <Param name="Monitor" updates="None" val="testMonitor" valType="str"/>
     <Param name="Save csv file" updates="None" val="False" valType="bool"/>
     <Param name="Save excel file" updates="None" val="False" valType="bool"/>
@@ -210,7 +211,7 @@
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
       </PolygonComponent>
       <CodeComponent name="code_5">
-        <Param name="Begin Experiment" updates="constant" val="import pandas as pd&amp;#10;&amp;#10;signal_df = pd.DataFrame([])&amp;#10;&amp;#10;stairCaseIntero = data.PsiHandler(&amp;#10;    nTrials=50,&amp;#10;    intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;    betaRange=[0.1, 20], intensPrecision=1,&amp;#10;    alphaPrecision=1, betaPrecision=0.1,&amp;#10;    delta=0.05, stepType='lin', expectedMin=0)&amp;#10;&amp;#10;stairCaseExtero = data.PsiHandler(&amp;#10;    nTrials=50,&amp;#10;    intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;    betaRange=[0.1, 20], intensPrecision=1,&amp;#10;    alphaPrecision=1, betaPrecision=0.1,&amp;#10;    delta=0.05, stepType='lin', expectedMin=0)" valType="extendedCode"/>
+        <Param name="Begin Experiment" updates="constant" val="import pandas as pd&amp;#10;from systole.recording import BrainVisionExG&amp;#10;from systole.detection import oxi_peaks&amp;#10;&amp;#10;signal_df = pd.DataFrame([])&amp;#10;&amp;#10;stairCaseIntero = data.PsiHandler(&amp;#10;    nTrials=50,&amp;#10;    intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;    betaRange=[0.1, 20], intensPrecision=1,&amp;#10;    alphaPrecision=1, betaPrecision=0.1,&amp;#10;    delta=0.05, stepType='lin', expectedMin=0)&amp;#10;&amp;#10;stairCaseExtero = data.PsiHandler(&amp;#10;    nTrials=50,&amp;#10;    intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;    betaRange=[0.1, 20], intensPrecision=1,&amp;#10;    alphaPrecision=1, betaPrecision=0.1,&amp;#10;    delta=0.05, stepType='lin', expectedMin=0)" valType="extendedCode"/>
         <Param name="Begin JS Experiment" updates="constant" val="stairCaseIntero = new data.PsiHandler({&quot;nTrials&quot;: 100, &quot;intensRange&quot;: [1, 40], &quot;alphaRange&quot;: [1, 20], &quot;betaRange&quot;: [0.1, 4], &quot;intensPrecision&quot;: 1, &quot;alphaPrecision&quot;: 1, &quot;betaPrecision&quot;: 0.01, &quot;delta&quot;: 0.1, &quot;stepType&quot;: &quot;lin&quot;, &quot;expectedMin&quot;: 0.5});&amp;#10;" valType="extendedCode"/>
         <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin Routine" updates="constant" val="jitter = np.arange(4, 6, .1)&amp;#10;shuffle(jitter)&amp;#10;&amp;#10;if condition == 'Intero':&amp;#10;    nRepsIntero = 5&amp;#10;    nRepsExtero = 0&amp;#10;elif condition == 'Extero':&amp;#10;    nRepsIntero = 0&amp;#10;    nRepsExtero = 1" valType="extendedCode"/>
@@ -511,7 +512,7 @@
         <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="# Read ExG&amp;#10;#recording = BrainVisionExG(ip='10.60.88.162').read(5)&amp;#10;#segment = np.array(recording['PLETH'])&amp;#10;#signal, peaks = oxi_peaks(segment, sfreq=parameters['sfreq'],&amp;#10;#                          clipping=False)&amp;#10;# Get actual heart Rate&amp;#10;#average_hr = int((60000/np.diff(np.where(peaks)[0])).mean())&amp;#10;&amp;#10;# Append signal to recording&amp;#10;signal = np.linspace(0, 1, 5000)&amp;#10;&amp;#10;print(trials.thisN)&amp;#10;&amp;#10;average_hr = 60&amp;#10;&amp;#10;if average_hr &lt; 30:&amp;#10;    trials_2.finished = 1&amp;#10;    nRepsFeedbackBPM = 0&amp;#10;&amp;#10;    alpha = stairCaseIntero.next()&amp;#10;&amp;#10;    # Check for extreme HR values, e.g. if HR changes massively from&amp;#10;    # trial to trial.&amp;#10;    if (average_hr + alpha) &lt; 15:&amp;#10;        hr = '15'&amp;#10;    elif (average_hr + alpha) &gt; 199:&amp;#10;        hr = '199'&amp;#10;    else:&amp;#10;        hr = str(int(average_hr + alpha))&amp;#10;&amp;#10;    file = os.path.join(os.getcwd(), 'sounds', hr + '.wav')&amp;#10;else:&amp;#10;    nRepsFeedbackBPM = 1&amp;#10;    &amp;#10;    print('WARNING: Noisy signal recording, cannnot estimate heart rate.')&amp;#10;&amp;#10;    # Set default file is heart rate is not properly recorded&amp;#10;    alpha = 40&amp;#10;    file = os.path.join(os.getcwd(), 'sounds/60.wav')&amp;#10;" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="# Read ExG&amp;#10;recording = BrainVisionExG(ip='10.60.88.162', sfreq=1000).read(5)&amp;#10;&amp;#10;signal = np.array(recording['PLETH'])&amp;#10;signal, peaks = oxi_peaks(signal, sfreq=1000,&amp;#10;                          clipping=False)&amp;#10;&amp;#10;# Get actual heart Rate&amp;#10;bpm = (60000/np.diff(np.where(peaks)[0]))&amp;#10;&amp;#10;print(trials.thisN)&amp;#10;print(bpm)&amp;#10;&amp;#10;if not (np.any(bpm&lt;30) or np.any(bpm&gt;140)):&amp;#10;&amp;#10;    average_hr = int(bpm.mean())&amp;#10;&amp;#10;    trials_2.finished = 1&amp;#10;    nRepsFeedbackBPM = 0&amp;#10;&amp;#10;    alpha = stairCaseIntero.next()&amp;#10;&amp;#10;    # Check for extreme HR values, e.g. if HR changes massively from&amp;#10;    # trial to trial.&amp;#10;    if (average_hr + alpha) &lt; 15:&amp;#10;        hr = '15'&amp;#10;    elif (average_hr + alpha) &gt; 199:&amp;#10;        hr = '199'&amp;#10;    else:&amp;#10;        hr = str(int(average_hr + alpha))&amp;#10;&amp;#10;    file = os.path.join(os.getcwd(), 'sounds', hr + '.wav')&amp;#10;else:&amp;#10;    nRepsFeedbackBPM = 1&amp;#10;    &amp;#10;    print('WARNING: Noisy signal recording, cannnot estimate heart rate.')&amp;#10;&amp;#10;    # Set default file is heart rate is not properly recorded&amp;#10;    alpha = 40&amp;#10;    file = os.path.join(os.getcwd(), 'sounds/60.wav')&amp;#10;" valType="extendedCode"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="code_4" valType="code"/>
       </CodeComponent>
@@ -701,6 +702,7 @@
         <Param name="wrapWidth" updates="constant" val="" valType="code"/>
       </TextComponent>
     </Routine>
+    <Routine name="sendTrigger"/>
   </Routines>
   <Flow>
     <Routine name="getTrigger"/>
@@ -715,6 +717,7 @@
       <Param name="name" updates="None" val="trials" valType="code"/>
       <Param name="random seed" updates="None" val="" valType="code"/>
     </LoopInitiator>
+    <Routine name="sendTrigger"/>
     <Routine name="fixCross"/>
     <LoopInitiator loopType="TrialHandler" name="trials_2">
       <Param name="Selected rows" updates="None" val="" valType="str"/>

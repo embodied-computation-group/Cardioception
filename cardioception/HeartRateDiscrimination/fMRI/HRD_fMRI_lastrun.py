@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2020.1.2),
-    on July 08, 2020, at 15:31
+    on juli 08, 2020, at 17:16
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -51,7 +51,7 @@ filename = _thisDir + os.sep + u'data/%s/%s_%s' % (expInfo['participant'], expNa
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
     extraInfo=expInfo, runtimeInfo=None,
-    originPath='C:\\Users\\au646069\\github\\Cardioception\\cardioception\\HeartRateDiscrimination\\fMRI\\HRD_fMRI_lastrun.py',
+    originPath='C:\\Users\\stimuser\\github\\Cardioception\\cardioception\\HeartRateDiscrimination\\fMRI\\HRD_fMRI_lastrun.py',
     savePickle=True, saveWideText=True,
     dataFileName=filename)
 # save a log file for detail verbose info
@@ -91,6 +91,9 @@ text_2 = visual.TextStim(win=win, name='text_2',
     languageStyle='LTR',
     depth=-1.0);
 
+# Initialize components for Routine "sendTrigger"
+sendTriggerClock = core.Clock()
+
 # Initialize components for Routine "fixCross"
 fixCrossClock = core.Clock()
 fiCross1 = visual.ShapeStim(
@@ -101,6 +104,8 @@ fiCross1 = visual.ShapeStim(
     fillColor=[1,1,1], fillColorSpace='rgb',
     opacity=1, depth=0.0, interpolate=True)
 import pandas as pd
+from systole.recording import BrainVisionExG
+from systole.detection import oxi_peaks
 
 signal_df = pd.DataFrame([])
 
@@ -340,6 +345,57 @@ for thisTrial in trials:
         for paramName in thisTrial:
             exec('{} = thisTrial[paramName]'.format(paramName))
     
+    # ------Prepare to start Routine "sendTrigger"-------
+    continueRoutine = True
+    # update component parameters for each repeat
+    # keep track of which components have finished
+    sendTriggerComponents = []
+    for thisComponent in sendTriggerComponents:
+        thisComponent.tStart = None
+        thisComponent.tStop = None
+        thisComponent.tStartRefresh = None
+        thisComponent.tStopRefresh = None
+        if hasattr(thisComponent, 'status'):
+            thisComponent.status = NOT_STARTED
+    # reset timers
+    t = 0
+    _timeToFirstFrame = win.getFutureFlipTime(clock="now")
+    sendTriggerClock.reset(-_timeToFirstFrame)  # t0 is time of first possible flip
+    frameN = -1
+    
+    # -------Run Routine "sendTrigger"-------
+    while continueRoutine:
+        # get current time
+        t = sendTriggerClock.getTime()
+        tThisFlip = win.getFutureFlipTime(clock=sendTriggerClock)
+        tThisFlipGlobal = win.getFutureFlipTime(clock=None)
+        frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+        # update/draw components on each frame
+        
+        # check for quit (typically the Esc key)
+        if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
+            core.quit()
+        
+        # check if all components have finished
+        if not continueRoutine:  # a component has requested a forced-end of Routine
+            break
+        continueRoutine = False  # will revert to True if at least one component still running
+        for thisComponent in sendTriggerComponents:
+            if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+                continueRoutine = True
+                break  # at least one component has not yet finished
+        
+        # refresh the screen
+        if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+            win.flip()
+    
+    # -------Ending Routine "sendTrigger"-------
+    for thisComponent in sendTriggerComponents:
+        if hasattr(thisComponent, "setAutoDraw"):
+            thisComponent.setAutoDraw(False)
+    # the Routine "sendTrigger" was not non-slip safe, so reset the non-slip timer
+    routineTimer.reset()
+    
     # ------Prepare to start Routine "fixCross"-------
     continueRoutine = True
     routineTimer.add(1.000000)
@@ -524,21 +580,22 @@ for thisTrial in trials:
         trials_2.addData('textListen.started', textListen.tStartRefresh)
         trials_2.addData('textListen.stopped', textListen.tStopRefresh)
         # Read ExG
-        #recording = BrainVisionExG(ip='10.60.88.162').read(5)
-        #segment = np.array(recording['PLETH'])
-        #signal, peaks = oxi_peaks(segment, sfreq=parameters['sfreq'],
-        #                          clipping=False)
-        # Get actual heart Rate
-        #average_hr = int((60000/np.diff(np.where(peaks)[0])).mean())
+        recording = BrainVisionExG(ip='10.60.88.162', sfreq=1000).read(5)
         
-        # Append signal to recording
-        signal = np.linspace(0, 1, 5000)
+        signal = np.array(recording['PLETH'])
+        signal, peaks = oxi_peaks(signal, sfreq=1000,
+                                  clipping=False)
+        
+        # Get actual heart Rate
+        bpm = (60000/np.diff(np.where(peaks)[0]))
         
         print(trials.thisN)
+        print(bpm)
         
-        average_hr = 60
+        if not (np.any(bpm<30) or np.any(bpm>140)):
         
-        if average_hr < 30:
+            average_hr = int(bpm.mean())
+        
             trials_2.finished = 1
             nRepsFeedbackBPM = 0
         

@@ -6,7 +6,7 @@
     <Param name="Completed URL" updates="None" val="" valType="str"/>
     <Param name="Data filename" updates="None" val="u'data/%s/%s_%s' % (expInfo['participant'], expName, expInfo['date'])" valType="code"/>
     <Param name="Enable Escape" updates="None" val="True" valType="bool"/>
-    <Param name="Experiment info" updates="None" val="{'participant': '', 'session': '001', 'USBport': '', 'setup': 'behavioral', 'staircaseType': 'psi'}" valType="code"/>
+    <Param name="Experiment info" updates="None" val="{'participant': '', 'session': '001', 'USBport': '', 'setup': 'fMRI', 'staircaseType': 'psi', 'BrainVisionIP': '10.60.88.162'}" valType="code"/>
     <Param name="Force stereo" updates="None" val="True" valType="bool"/>
     <Param name="Full-screen window" updates="None" val="True" valType="bool"/>
     <Param name="HTML path" updates="None" val="html" valType="str"/>
@@ -22,7 +22,7 @@
     <Param name="Show mouse" updates="None" val="False" valType="bool"/>
     <Param name="Units" updates="None" val="height" valType="str"/>
     <Param name="Use version" updates="None" val="" valType="str"/>
-    <Param name="Window size (pixels)" updates="None" val="[1280, 720]" valType="code"/>
+    <Param name="Window size (pixels)" updates="None" val="[1920, 1080]" valType="code"/>
     <Param name="blendMode" updates="None" val="avg" valType="str"/>
     <Param name="color" updates="None" val="$[0,0,0]" valType="str"/>
     <Param name="colorSpace" updates="None" val="rgb" valType="str"/>
@@ -100,7 +100,7 @@
         <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="# Is the answer Correct? Update the staircase model&amp;#10;if estimation is not None:&amp;#10;&amp;#10;    print(f'...answer is {estimation}')&amp;#10;    if (estimation == 'More') &amp; (alpha &gt; 0):&amp;#10;        accuracy = 1&amp;#10;    elif (estimation == 'Less') &amp; (alpha &lt; 0):&amp;#10;        accuracy = 1&amp;#10;    else:&amp;#10;        accuracy = 0&amp;#10;    nRatingScale = True&amp;#10;    NoResponseFeedback = False&amp;#10;    correct = ['True' if accuracy==1 else 'False']&amp;#10;    &amp;#10;    if expInfo['staircaseType'] == 'psi':&amp;#10;        if condition == 'Intero':&amp;#10;            stairCaseIntero.addResponse(accuracy)&amp;#10;        elif condition == 'Extero':&amp;#10;            stairCaseExtero.addResponse(accuracy)&amp;#10;&amp;#10;    print(f'...Initial BPM: {listenBPM} - Staircase value: {alpha} - Response: {estimation} ({correct})')&amp;#10;&amp;#10;else:&amp;#10;    nRatingScale = False&amp;#10;    NoResponseFeedback = True&amp;#10;    print('...No response provided')" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="# Is the answer Correct? Update the staircase model&amp;#10;if estimation is not None:&amp;#10;&amp;#10;    print(f'...answer is {estimation}')&amp;#10;    if (estimation == 'More') &amp; (alpha &gt; 0):&amp;#10;        accuracy = 1&amp;#10;    elif (estimation == 'Less') &amp; (alpha &lt; 0):&amp;#10;        accuracy = 1&amp;#10;    else:&amp;#10;        accuracy = 0&amp;#10;    nRatingScale = True&amp;#10;    NoResponseFeedback = False&amp;#10;    correct = ['True' if accuracy==1 else 'False']&amp;#10;    &amp;#10;    if expInfo['staircaseType'] == 'psi':&amp;#10;        if condition == 'Intero':&amp;#10;            stairCaseIntero.addResponse(accuracy)&amp;#10;        elif condition == 'Extero':&amp;#10;            stairCaseExtero.addResponse(accuracy)&amp;#10;&amp;#10;    print(f'...Initial BPM: {listenBPM} - Staircase value: {alpha} - Response: {estimation} ({correct})')&amp;#10;&amp;#10;else:&amp;#10;    accuracy = 0&amp;#10;    nRatingScale = False&amp;#10;    NoResponseFeedback = True&amp;#10;    print('...No response provided')" valType="extendedCode"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="code_8" valType="code"/>
       </CodeComponent>
@@ -196,7 +196,7 @@
     </Routine>
     <Routine name="getTrigger">
       <KeyboardComponent name="key_resp">
-        <Param name="allowedKeys" updates="constant" val="'space'" valType="code"/>
+        <Param name="allowedKeys" updates="constant" val="'space', '5'" valType="code"/>
         <Param name="correctAns" updates="constant" val="" valType="str"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="discard previous" updates="constant" val="True" valType="bool"/>
@@ -238,12 +238,12 @@
         <Param name="wrapWidth" updates="constant" val="" valType="code"/>
       </TextComponent>
       <CodeComponent name="code">
-        <Param name="Begin Experiment" updates="constant" val="import pandas as pd&amp;#10;import serial&amp;#10;&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    from systole.recording import findOximeter, Oximeter&amp;#10;    from systole.detection import oxi_peaks&amp;#10;&amp;#10;    # PPG recording&amp;#10;    if expInfo['USBport']:&amp;#10;        portNb = expInfo['USBport']&amp;#10;    else:&amp;#10;        portNb = findOximeter()&amp;#10;        if portNb is None:&amp;#10;            print('Cannot find the Pulse Oximeter automatically, please enter port reference in the GUI')&amp;#10;            core.quit()&amp;#10;&amp;#10;    port = serial.Serial(portNb)&amp;#10;    oxiTask = Oximeter(serial=port, sfreq=75, add_channels=1)&amp;#10;    oxiTask.setup().read(duration=1)&amp;#10;&amp;#10;signal_df = pd.DataFrame([])&amp;#10;&amp;#10;# Saircases&amp;#10;if expInfo['staircaseType'] == 'psi':&amp;#10;    stairCaseIntero = data.PsiHandler(&amp;#10;        nTrials=100,&amp;#10;        intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;        betaRange=[0.1, 20], intensPrecision=1,&amp;#10;        alphaPrecision=1, betaPrecision=0.1,&amp;#10;        delta=0.05, stepType='lin', expectedMin=0)&amp;#10;&amp;#10;    stairCaseExtero = data.PsiHandler(&amp;#10;        nTrials=100,&amp;#10;        intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;        betaRange=[0.1, 20], intensPrecision=1,&amp;#10;        alphaPrecision=1, betaPrecision=0.1,&amp;#10;        delta=0.05, stepType='lin', expectedMin=0)" valType="extendedCode"/>
+        <Param name="Begin Experiment" updates="constant" val="import pandas as pd&amp;#10;import serial&amp;#10;from systole.detection import oxi_peaks&amp;#10;&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    from systole.recording import findOximeter, Oximeter&amp;#10;&amp;#10;    # PPG recording&amp;#10;    if expInfo['USBport']:&amp;#10;        portNb = expInfo['USBport']&amp;#10;    else:&amp;#10;        portNb = findOximeter()&amp;#10;        if portNb is None:&amp;#10;            print('Cannot find the Pulse Oximeter automatically, please enter port reference in the GUI')&amp;#10;            core.quit()&amp;#10;&amp;#10;    port = serial.Serial(portNb)&amp;#10;    oxiTask = Oximeter(serial=port, sfreq=75, add_channels=1)&amp;#10;    oxiTask.setup().read(duration=1)&amp;#10;elif expInfo['setup'] == 'fMRI':&amp;#10;    from systole.recording import BrainVisionExG&amp;#10;&amp;#10;signal_df = pd.DataFrame([])&amp;#10;&amp;#10;# Saircases&amp;#10;if expInfo['staircaseType'] == 'psi':&amp;#10;    stairCaseIntero = data.PsiHandler(&amp;#10;        nTrials=100,&amp;#10;        intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;        betaRange=[0.1, 20], intensPrecision=1,&amp;#10;        alphaPrecision=1, betaPrecision=0.1,&amp;#10;        delta=0.05, stepType='lin', expectedMin=0)&amp;#10;&amp;#10;    stairCaseExtero = data.PsiHandler(&amp;#10;        nTrials=100,&amp;#10;        intensRange=[-40.5, 40.5], alphaRange=[-40.5, 40.5],&amp;#10;        betaRange=[0.1, 20], intensPrecision=1,&amp;#10;        alphaPrecision=1, betaPrecision=0.1,&amp;#10;        delta=0.05, stepType='lin', expectedMin=0)" valType="extendedCode"/>
         <Param name="Begin JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin Routine" updates="constant" val="" valType="extendedCode"/>
         <Param name="Code Type" updates="None" val="Py" valType="str"/>
-        <Param name="Each Frame" updates="constant" val="oxiTask.readInWaiting()" valType="extendedCode"/>
+        <Param name="Each Frame" updates="constant" val="if expInfo['setup'] == 'behavioral':&amp;#10;    oxiTask.readInWaiting()" valType="extendedCode"/>
         <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>
         <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
@@ -407,12 +407,12 @@
         <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin Routine" updates="constant" val="print('Starting Intero condition')&amp;#10;&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    oxiTask.readInWaiting()&amp;#10;    oxiTask.channels['Channel_0'][-1] = 1  # Start trigger" valType="extendedCode"/>
         <Param name="Code Type" updates="None" val="Py" valType="str"/>
-        <Param name="Each Frame" updates="constant" val="if expInfo['setup'] == 'behavioral':&amp;#10;    oxiTask.readInWaiting()&amp;#10;" valType="extendedCode"/>
+        <Param name="Each Frame" updates="constant" val="if expInfo['setup'] == 'behavioral':&amp;#10;    oxiTask.readInWaiting()&amp;#10;elif expInfo['setup'] == 'fMRI':&amp;#10;    if frameN &gt;=1:&amp;#10;        # Read ExG&amp;#10;        recording = BrainVisionExG(ip=expInfo['BrainVisionIP'], sfreq=1000).read(5)&amp;#10;        signal, peaks = oxi_peaks(recording['PLETH'], sfreq=1000,&amp;#10;                                   clipping=False)&amp;#10;" valType="extendedCode"/>
         <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>
         <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="# Get actual heart Rate&amp;#10;bpm = [0]&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    signal, peaks = oxi_peaks(oxiTask.recording[-75*6:])&amp;#10;&amp;#10;bpm = 60000/np.diff(np.where(peaks[-5000:])[0])&amp;#10;&amp;#10;print(f'...bpm: {[round(i) for i in bpm]}')&amp;#10;&amp;#10;if not (np.any(bpm&lt;30) or np.any(bpm&gt;140)):&amp;#10;    &amp;#10;    listenBPM = int(bpm.mean())&amp;#10;&amp;#10;    InteroLoop.finished = 1&amp;#10;    nRepsFeedbackBPM = False&amp;#10;&amp;#10;    alpha = stairCaseIntero.next()&amp;#10;&amp;#10;    # Check for extreme HR values, e.g. if HR changes massively from&amp;#10;    # trial to trial.&amp;#10;    if (listenBPM + alpha) &lt; 15:&amp;#10;        responseBPM = '15.0'&amp;#10;    elif (listenBPM + alpha) &gt; 199:&amp;#10;        responseBPM = '199.0'&amp;#10;    else:&amp;#10;        responseBPM = str(listenBPM + alpha)&amp;#10;&amp;#10;    file = os.path.join(os.getcwd(), 'sounds', responseBPM + '.wav')&amp;#10;    print(f'...loading file: {file}')&amp;#10;else:&amp;#10;    nRepsFeedbackBPM = True&amp;#10;    &amp;#10;    print('WARNING: Noisy signal recording, cannnot estimate heart rate.')&amp;#10;&amp;#10;    # Set default file is heart rate is not properly recorded&amp;#10;    alpha = 40&amp;#10;    file = os.path.join(os.getcwd(), 'sounds/60.wav')&amp;#10;" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="# Get actual heart Rate&amp;#10;bpm = [15]&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    signal, peaks = oxi_peaks(oxiTask.recording[-75*6:])&amp;#10;&amp;#10;bpm = 60000/np.diff(np.where(peaks[-5000:])[0])&amp;#10;&amp;#10;print(f'...bpm: {[round(i) for i in bpm]}')&amp;#10;&amp;#10;if not (np.any(bpm&lt;30) or np.any(bpm&gt;140)):&amp;#10;    &amp;#10;    listenBPM = round(bpm.mean() * 2) /2  # Round to nearest .5&amp;#10;&amp;#10;    InteroLoop.finished = 1&amp;#10;    nRepsFeedbackBPM = False&amp;#10;&amp;#10;    alpha = stairCaseIntero.next()&amp;#10;&amp;#10;    # Check for extreme HR values, e.g. if HR changes massively from&amp;#10;    # trial to trial.&amp;#10;    if (listenBPM + alpha) &lt; 15:&amp;#10;        responseBPM = '15.0'&amp;#10;    elif (listenBPM + alpha) &gt; 199:&amp;#10;        responseBPM = '199.0'&amp;#10;    else:&amp;#10;        responseBPM = str(listenBPM + alpha)&amp;#10;&amp;#10;    file = os.path.join(os.getcwd(), 'sounds', responseBPM + '.wav')&amp;#10;    print(f'...loading file: {file}')&amp;#10;else:&amp;#10;    nRepsFeedbackBPM = True&amp;#10;    &amp;#10;    print('WARNING: Noisy signal recording, cannnot estimate heart rate.')&amp;#10;&amp;#10;    # Set default file is heart rate is not properly recorded&amp;#10;    alpha = 40&amp;#10;    file = os.path.join(os.getcwd(), 'sounds/60.wav')&amp;#10;" valType="extendedCode"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="code_4" valType="code"/>
       </CodeComponent>
@@ -590,65 +590,6 @@
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
         <Param name="wrapWidth" updates="constant" val="" valType="code"/>
       </TextComponent>
-    </Routine>
-    <Routine name="break_2">
-      <TextComponent name="text_8">
-        <Param name="color" updates="constant" val="white" valType="str"/>
-        <Param name="colorSpace" updates="constant" val="rgb" valType="str"/>
-        <Param name="disabled" updates="None" val="False" valType="bool"/>
-        <Param name="durationEstim" updates="None" val="" valType="code"/>
-        <Param name="flip" updates="constant" val="" valType="str"/>
-        <Param name="font" updates="constant" val="Arial" valType="str"/>
-        <Param name="languageStyle" updates="None" val="LTR" valType="str"/>
-        <Param name="letterHeight" updates="constant" val=".1" valType="code"/>
-        <Param name="name" updates="None" val="text_8" valType="code"/>
-        <Param name="opacity" updates="constant" val="1" valType="code"/>
-        <Param name="ori" updates="constant" val="0" valType="code"/>
-        <Param name="pos" updates="constant" val="(0, 0)" valType="code"/>
-        <Param name="saveStartStop" updates="None" val="True" valType="bool"/>
-        <Param name="startEstim" updates="None" val="" valType="code"/>
-        <Param name="startType" updates="None" val="time (s)" valType="str"/>
-        <Param name="startVal" updates="None" val="0.0" valType="code"/>
-        <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="" valType="code"/>
-        <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
-        <Param name="text" updates="constant" val="Break&amp;#10;&amp;#10;You can relax as long as you want&amp;#10;&amp;#10;Press any button to continue" valType="str"/>
-        <Param name="units" updates="None" val="from exp settings" valType="str"/>
-        <Param name="wrapWidth" updates="constant" val="" valType="code"/>
-      </TextComponent>
-      <MouseComponent name="mouse_2">
-        <Param name="clickable" updates="constant" val="" valType="code"/>
-        <Param name="disabled" updates="None" val="False" valType="bool"/>
-        <Param name="durationEstim" updates="None" val="" valType="code"/>
-        <Param name="forceEndRoutineOnPress" updates="constant" val="any click" valType="str"/>
-        <Param name="name" updates="None" val="mouse_2" valType="code"/>
-        <Param name="newClicksOnly" updates="constant" val="True" valType="bool"/>
-        <Param name="saveMouseState" updates="None" val="every frame" valType="str"/>
-        <Param name="saveParamsClickable" updates="constant" val="name," valType="code"/>
-        <Param name="saveStartStop" updates="None" val="True" valType="bool"/>
-        <Param name="startEstim" updates="None" val="" valType="code"/>
-        <Param name="startType" updates="None" val="time (s)" valType="str"/>
-        <Param name="startVal" updates="None" val="0.0" valType="code"/>
-        <Param name="stopType" updates="None" val="condition" valType="str"/>
-        <Param name="stopVal" updates="constant" val="" valType="code"/>
-        <Param name="syncScreenRefresh" updates="None" val="False" valType="bool"/>
-        <Param name="timeRelativeTo" updates="constant" val="mouse onset" valType="str"/>
-      </MouseComponent>
-      <CodeComponent name="code_3">
-        <Param name="Begin Experiment" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Begin JS Experiment" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Begin Routine" updates="constant" val="if not ((trials.thisN % 5 == 0) &amp; (trials.thisN != 0)):&amp;#10;    continueRoutine = False&amp;#10;" valType="extendedCode"/>
-        <Param name="Code Type" updates="None" val="Py" valType="str"/>
-        <Param name="Each Frame" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End JS Routine" updates="constant" val="/* Syntax Error: Fix Python code */" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="if expInfo['setup'] == 'behavioral':&amp;#10;    out_path = 'data/%s/%s-%s' %(expInfo['participant'], expName, expInfo['date'])&amp;#10;    oxiTask.save(out_path + '_' + str(trials.thisN) + '.npy')" valType="extendedCode"/>
-        <Param name="disabled" updates="None" val="False" valType="bool"/>
-        <Param name="name" updates="None" val="code_3" valType="code"/>
-      </CodeComponent>
     </Routine>
     <Routine name="feedbackDecision">
       <TextComponent name="text_Less_3">
@@ -840,6 +781,65 @@
         <Param name="name" updates="None" val="code_5" valType="code"/>
       </CodeComponent>
     </Routine>
+    <Routine name="Break">
+      <TextComponent name="text_8">
+        <Param name="color" updates="constant" val="white" valType="str"/>
+        <Param name="colorSpace" updates="constant" val="rgb" valType="str"/>
+        <Param name="disabled" updates="None" val="False" valType="bool"/>
+        <Param name="durationEstim" updates="None" val="" valType="code"/>
+        <Param name="flip" updates="constant" val="" valType="str"/>
+        <Param name="font" updates="constant" val="Arial" valType="str"/>
+        <Param name="languageStyle" updates="None" val="LTR" valType="str"/>
+        <Param name="letterHeight" updates="constant" val=".1" valType="code"/>
+        <Param name="name" updates="None" val="text_8" valType="code"/>
+        <Param name="opacity" updates="constant" val="1" valType="code"/>
+        <Param name="ori" updates="constant" val="0" valType="code"/>
+        <Param name="pos" updates="constant" val="(0, 0)" valType="code"/>
+        <Param name="saveStartStop" updates="None" val="True" valType="bool"/>
+        <Param name="startEstim" updates="None" val="" valType="code"/>
+        <Param name="startType" updates="None" val="time (s)" valType="str"/>
+        <Param name="startVal" updates="None" val="0.0" valType="code"/>
+        <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
+        <Param name="stopVal" updates="constant" val="" valType="code"/>
+        <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
+        <Param name="text" updates="constant" val="Break&amp;#10;&amp;#10;You can relax as long as you want&amp;#10;&amp;#10;Press any button to continue" valType="str"/>
+        <Param name="units" updates="None" val="from exp settings" valType="str"/>
+        <Param name="wrapWidth" updates="constant" val="" valType="code"/>
+      </TextComponent>
+      <MouseComponent name="mouse_2">
+        <Param name="clickable" updates="constant" val="" valType="code"/>
+        <Param name="disabled" updates="None" val="False" valType="bool"/>
+        <Param name="durationEstim" updates="None" val="" valType="code"/>
+        <Param name="forceEndRoutineOnPress" updates="constant" val="any click" valType="str"/>
+        <Param name="name" updates="None" val="mouse_2" valType="code"/>
+        <Param name="newClicksOnly" updates="constant" val="True" valType="bool"/>
+        <Param name="saveMouseState" updates="None" val="every frame" valType="str"/>
+        <Param name="saveParamsClickable" updates="constant" val="name," valType="code"/>
+        <Param name="saveStartStop" updates="None" val="True" valType="bool"/>
+        <Param name="startEstim" updates="None" val="" valType="code"/>
+        <Param name="startType" updates="None" val="time (s)" valType="str"/>
+        <Param name="startVal" updates="None" val="0.0" valType="code"/>
+        <Param name="stopType" updates="None" val="condition" valType="str"/>
+        <Param name="stopVal" updates="constant" val="" valType="code"/>
+        <Param name="syncScreenRefresh" updates="None" val="False" valType="bool"/>
+        <Param name="timeRelativeTo" updates="constant" val="mouse onset" valType="str"/>
+      </MouseComponent>
+      <CodeComponent name="code_3">
+        <Param name="Begin Experiment" updates="constant" val="" valType="extendedCode"/>
+        <Param name="Begin JS Experiment" updates="constant" val="" valType="extendedCode"/>
+        <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
+        <Param name="Begin Routine" updates="constant" val="if not ((trials.thisN % 5 == 0) &amp; (trials.thisN != 0)):&amp;#10;    continueRoutine = False&amp;#10;" valType="extendedCode"/>
+        <Param name="Code Type" updates="None" val="Py" valType="str"/>
+        <Param name="Each Frame" updates="constant" val="" valType="extendedCode"/>
+        <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>
+        <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
+        <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
+        <Param name="End JS Routine" updates="constant" val="/* Syntax Error: Fix Python code */" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="if expInfo['setup'] == 'behavioral':&amp;#10;    out_path = 'data/%s/%s-%s' %(expInfo['participant'], expName, expInfo['date'])&amp;#10;    oxiTask.save(out_path + '_' + str(trials.thisN) + '.npy')" valType="extendedCode"/>
+        <Param name="disabled" updates="None" val="False" valType="bool"/>
+        <Param name="name" updates="None" val="code_3" valType="code"/>
+      </CodeComponent>
+    </Routine>
   </Routines>
   <Flow>
     <Routine name="getTrigger"/>
@@ -850,7 +850,7 @@
       <Param name="endPoints" updates="None" val="[0, 1]" valType="num"/>
       <Param name="isTrials" updates="None" val="True" valType="bool"/>
       <Param name="loopType" updates="None" val="random" valType="str"/>
-      <Param name="nReps" updates="None" val="25" valType="code"/>
+      <Param name="nReps" updates="None" val="30" valType="code"/>
       <Param name="name" updates="None" val="trials" valType="code"/>
       <Param name="random seed" updates="None" val="" valType="code"/>
     </LoopInitiator>
@@ -875,7 +875,7 @@
     <Routine name="feedbackDecision"/>
     <Routine name="RatingScale"/>
     <Routine name="Feedback"/>
-    <Routine name="break_2"/>
+    <Routine name="Break"/>
     <LoopTerminator name="trials"/>
     <Routine name="endScreen"/>
   </Flow>
