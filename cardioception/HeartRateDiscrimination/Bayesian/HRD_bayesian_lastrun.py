@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2020.1.2),
-    on July 10, 2020, at 01:09
+    on July 10, 2020, at 12:19
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -155,7 +155,7 @@ Listen = visual.ImageStim(
     flipHoriz=False, flipVert=False,
     texRes=128, interpolate=True, depth=0.0)
 textListen = visual.TextStim(win=win, name='textListen',
-    text='Listen to your Heart',
+    text='Listen to your heart',
     font='Arial',
     pos=(0, .2), height=.1, wrapWidth=None, ori=0, 
     color='white', colorSpace='rgb', opacity=1, 
@@ -390,7 +390,7 @@ thisExp.addData('text_2.stopped', text_2.tStopRefresh)
 routineTimer.reset()
 
 # set up handler to look after randomisation of conditions etc
-trials = data.TrialHandler(nReps=2, method='random', 
+trials = data.TrialHandler(nReps=25, method='random', 
     extraInfo=expInfo, originPath=-1,
     trialList=data.importConditions('Conditions.xlsx'),
     seed=None, name='trials')
@@ -1158,18 +1158,10 @@ for thisTrial in trials:
     
         print(f'...answer is {estimation}')
         
-        if condition == 'Intero':
-            if (estimation == 'More'):
-                accuracy = 1
-            elif (estimation == 'Less'):
-                accuracy = 0
-        elif condition == 'Extero':
-            if (estimation == 'More') & (alpha > 0):
-                accuracy = 1
-            elif (estimation == 'Less') & (alpha < 0):
-                accuracy = 1
-            else:
-                accuracy = 0
+        if (estimation == 'More'):
+            accuracy = 1
+        elif (estimation == 'Less'):
+            accuracy = 0
     
         nRatingScale = True
         NoResponseFeedback = False
@@ -1365,10 +1357,18 @@ for thisTrial in trials:
     trials.addData('rating.history', rating.getHistory())
     trials.addData('rating.started', rating.tStart)
     trials.addData('rating.stopped', rating.tStop)
+    if condition == 'Intero':
+        (threshold, slope) = stairCaseIntero.estimateLambda()
+    elif condition == 'Extero':
+        (threshold, slope) = stairCaseExtero.estimateLambda()
+    
     thisExp.addData('accuracy', accuracy)
     thisExp.addData('ListenBPM', listenBPM)
     thisExp.addData('ResponseBPM', responseBPM)
     thisExp.addData('alpha', alpha)
+    thisExp.addData('slope', alpha)
+    thisExp.addData('threshold', alpha)
+    
     
     if condition == 'Intero':
     
@@ -1462,7 +1462,7 @@ for thisTrial in trials:
     mouse_2.rightButton = []
     mouse_2.time = []
     gotValidClick = False  # until a click is received
-    if not ((trials.thisN % 5 == 0) & (trials.thisN != 0)):
+    if not ((trials.thisN % 25 == 0) & (trials.thisN != 0)):
         continueRoutine = False
     
     # keep track of which components have finished
@@ -1558,11 +1558,12 @@ for thisTrial in trials:
     if expInfo['setup'] == 'behavioral':
         out_path = 'data/%s/%s-%s' %(expInfo['participant'], expName, expInfo['date'])
         oxiTask.save(out_path + '_' + str(trials.thisN) + '.npy')
+        oxiTask.setup()
     # the Routine "Break" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
     thisExp.nextEntry()
     
-# completed 2 repeats of 'trials'
+# completed 25 repeats of 'trials'
 
 
 # ------Prepare to start Routine "endScreen"-------

@@ -100,7 +100,7 @@
         <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="# Is the answer Correct? Update the staircase model&amp;#10;if estimation is not None:&amp;#10;&amp;#10;    print(f'...answer is {estimation}')&amp;#10;    &amp;#10;    if condition == 'Intero':&amp;#10;        if (estimation == 'More'):&amp;#10;            accuracy = 1&amp;#10;        elif (estimation == 'Less'):&amp;#10;            accuracy = 0&amp;#10;    elif condition == 'Extero':&amp;#10;        if (estimation == 'More') &amp; (alpha &gt; 0):&amp;#10;            accuracy = 1&amp;#10;        elif (estimation == 'Less') &amp; (alpha &lt; 0):&amp;#10;            accuracy = 1&amp;#10;        else:&amp;#10;            accuracy = 0&amp;#10;&amp;#10;    nRatingScale = True&amp;#10;    NoResponseFeedback = False&amp;#10;    correct = ['True' if accuracy==1 else 'False']&amp;#10;    &amp;#10;    if expInfo['staircaseType'] == 'psi':&amp;#10;        if condition == 'Intero':&amp;#10;            stairCaseIntero.addResponse(accuracy)&amp;#10;            lambdaIntero.append(stairCaseIntero._psi._probLambda[0, :, :, 0])&amp;#10;        elif condition == 'Extero':&amp;#10;            stairCaseExtero.addResponse(accuracy)&amp;#10;            lambdaExtero.append(stairCaseExtero._psi._probLambda[0, :, :, 0])&amp;#10;&amp;#10;    print(f'...Initial BPM: {listenBPM} - Staircase value: {alpha} - Response: {estimation} ({correct})')&amp;#10;&amp;#10;else:&amp;#10;    accuracy = 0&amp;#10;    nRatingScale = False&amp;#10;    NoResponseFeedback = True&amp;#10;    print('...No response provided')" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="# Is the answer Correct? Update the staircase model&amp;#10;if estimation is not None:&amp;#10;&amp;#10;    print(f'...answer is {estimation}')&amp;#10;    &amp;#10;    if (estimation == 'More'):&amp;#10;        accuracy = 1&amp;#10;    elif (estimation == 'Less'):&amp;#10;        accuracy = 0&amp;#10;&amp;#10;    nRatingScale = True&amp;#10;    NoResponseFeedback = False&amp;#10;    correct = ['True' if accuracy==1 else 'False']&amp;#10;    &amp;#10;    if expInfo['staircaseType'] == 'psi':&amp;#10;        if condition == 'Intero':&amp;#10;            stairCaseIntero.addResponse(accuracy)&amp;#10;            lambdaIntero.append(stairCaseIntero._psi._probLambda[0, :, :, 0])&amp;#10;        elif condition == 'Extero':&amp;#10;            stairCaseExtero.addResponse(accuracy)&amp;#10;            lambdaExtero.append(stairCaseExtero._psi._probLambda[0, :, :, 0])&amp;#10;&amp;#10;    print(f'...Initial BPM: {listenBPM} - Staircase value: {alpha} - Response: {estimation} ({correct})')&amp;#10;&amp;#10;else:&amp;#10;    accuracy = 0&amp;#10;    nRatingScale = False&amp;#10;    NoResponseFeedback = True&amp;#10;    print('...No response provided')" valType="extendedCode"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="code_8" valType="code"/>
       </CodeComponent>
@@ -346,7 +346,7 @@
         <Param name="End Experiment" updates="constant" val="stairCaseIntero.saveAsExcel(expInfo['participant'])&amp;#10;stairCaseIntero.saveAsPickle(expInfo['participant'])&amp;#10;&amp;#10;stairCaseExtero.saveAsExcel(expInfo['participant'])&amp;#10;stairCaseExtero.saveAsPickle(expInfo['participant'])" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="thisExp.addData('accuracy', accuracy)&amp;#10;thisExp.addData('ListenBPM', listenBPM)&amp;#10;thisExp.addData('ResponseBPM', responseBPM)&amp;#10;thisExp.addData('alpha', alpha)&amp;#10;&amp;#10;if condition == 'Intero':&amp;#10;&amp;#10;    # Save physio signal&amp;#10;    this_df = pd.DataFrame({'signal': signal,&amp;#10;                             'nTrial': pd.Series([trials.thisN] * len(signal), dtype=&quot;category&quot;)})&amp;#10;&amp;#10;    signal_df = signal_df.append(this_df,&amp;#10;                                 ignore_index=True)" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="if condition == 'Intero':&amp;#10;    (threshold, slope) = stairCaseIntero.estimateLambda()&amp;#10;elif condition == 'Extero':&amp;#10;    (threshold, slope) = stairCaseExtero.estimateLambda()&amp;#10;&amp;#10;thisExp.addData('accuracy', accuracy)&amp;#10;thisExp.addData('ListenBPM', listenBPM)&amp;#10;thisExp.addData('ResponseBPM', responseBPM)&amp;#10;thisExp.addData('alpha', alpha)&amp;#10;thisExp.addData('slope', alpha)&amp;#10;thisExp.addData('threshold', alpha)&amp;#10;&amp;#10;&amp;#10;if condition == 'Intero':&amp;#10;&amp;#10;    # Save physio signal&amp;#10;    this_df = pd.DataFrame({'signal': signal,&amp;#10;                             'nTrial': pd.Series([trials.thisN] * len(signal), dtype=&quot;category&quot;)})&amp;#10;&amp;#10;    signal_df = signal_df.append(this_df,&amp;#10;                                 ignore_index=True)" valType="extendedCode"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="code_9" valType="code"/>
       </CodeComponent>
@@ -828,14 +828,14 @@
         <Param name="Begin Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Begin Routine" updates="constant" val="if not ((trials.thisN % 5 == 0) &amp; (trials.thisN != 0)):&amp;#10;    continueRoutine = False&amp;#10;" valType="extendedCode"/>
+        <Param name="Begin Routine" updates="constant" val="if not ((trials.thisN % 25 == 0) &amp; (trials.thisN != 0)):&amp;#10;    continueRoutine = False&amp;#10;" valType="extendedCode"/>
         <Param name="Code Type" updates="None" val="Py" valType="str"/>
         <Param name="Each Frame" updates="constant" val="" valType="extendedCode"/>
         <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>
         <Param name="End Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="End JS Routine" updates="constant" val="/* Syntax Error: Fix Python code */" valType="extendedCode"/>
-        <Param name="End Routine" updates="constant" val="if expInfo['setup'] == 'behavioral':&amp;#10;    out_path = 'data/%s/%s-%s' %(expInfo['participant'], expName, expInfo['date'])&amp;#10;    oxiTask.save(out_path + '_' + str(trials.thisN) + '.npy')" valType="extendedCode"/>
+        <Param name="End Routine" updates="constant" val="if expInfo['setup'] == 'behavioral':&amp;#10;    out_path = 'data/%s/%s-%s' %(expInfo['participant'], expName, expInfo['date'])&amp;#10;    oxiTask.save(out_path + '_' + str(trials.thisN) + '.npy')&amp;#10;    oxiTask.setup()" valType="extendedCode"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="code_3" valType="code"/>
       </CodeComponent>
@@ -850,7 +850,7 @@
       <Param name="endPoints" updates="None" val="[0, 1]" valType="num"/>
       <Param name="isTrials" updates="None" val="True" valType="bool"/>
       <Param name="loopType" updates="None" val="random" valType="str"/>
-      <Param name="nReps" updates="None" val="2" valType="code"/>
+      <Param name="nReps" updates="None" val="25" valType="code"/>
       <Param name="name" updates="None" val="trials" valType="code"/>
       <Param name="random seed" updates="None" val="" valType="code"/>
     </LoopInitiator>
