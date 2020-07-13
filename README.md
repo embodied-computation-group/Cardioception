@@ -1,37 +1,29 @@
-![](images/LabLogo.png)
+![https://the-ecg.org/](images/LabLogo.png)
 
 # Cardioception
 
-The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):
-1. the classical *heartbeat counting task* developed by Rainer Schandry<sup>1,2</sup>
-2. a novel "Heartrate Discrimination Task" implementing an adaptive psychophysical measure for measuring cardioception.
-
-See *Tasks* below for more details of each individual method.
+The Cardioception Python Package - Measuring Interoception with Psychopy - implements three measures of cardiac interoception (cardioception):
+1. The *Heartbeat counting task* developed by Rainer Schandry<sup>1,2</sup>
+2. The *Heartbeat Discrimination task*
+3. a novel *Heart Rate Discrimination Task* implementing an adaptive psychophysical measure for measuring cardioception.
 
 Currently the toolbox natively supports the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). These devices are fairly cheap and readily available, however in time the intention is to support more sensors and modalities (e.g., ECG).  
 
 # Installation
 
+We recommend to use the last install of Anaconda for Python 3.5 or latest.
+
+The following packages should be installed:
+
+* [Psychopy](https://www.psychopy.org/) can be installed using `pip install psychopy` in the command line.
+
+* [Systole](https://systole-docs.github.io/) can be install with `pip install systole` in the command line.
+
 Download the repository as zip archive and extract the files.
 
-Using a terminal, go to the folder and run:
-`python setup.py install`
-
-The **Nonin pulse oximeter** will be automatically launched from the device port specified in the `parameters.py` file of each project. The following lines might be adapted depending on your local configuration.
-
-```python
-# Open seral port for Oximeter
-parameters['serial'] = serial.Serial('COM4',
-                                     baudrate=9600,
-                                     timeout=1/75,
-                                     stopbits=1,
-                                     parity=serial.PARITY_NONE)
-```
-Where `COM4` refers to the USB port to open.
+If you run the task in behavioral mode, the **Nonin pulse oximeter** will be automatically detected and launched. The Heart Rate Discrimination task also include an fMRI version that can access pulse oximetry for BrainVision amplifier through a TCP/IP connection. These components might be adapted depending on your local configuration.
 
 # Tasks
-
-By default, the results will be saved in the `Results` folder contained in each task folder. This can be modified by changing the value of the `path` entry of the parameters dictionary.
 
 ## Heart Beat Counting
 
@@ -59,6 +51,10 @@ The interoceptive accuracy score is computed using the formula proposed by Hart 
 
 After each counting response, the participant is prompted to rate their subjective confidence (from 0 to 100), used to calculate "interoceptive awareness", i.e. the relationship of confidence and accuracy. Total task runtime using default settings is approximately **4 minutes**.
 
+## Heartbeat Discrimination
+
+
+
 ## Heart Rate Discrimination
 
 <img src= "images/HeartRateDiscrimination.png">
@@ -72,7 +68,10 @@ To run the Heart Rate Discrimination Task, run:
 Where `path` is the path to your install folder.
 
 # Analyses
-The [Analyses](../cardioception/Analyses/Analyses.ipynd) folder contains notebooks detailing analysis steps for each tasks.
+
+By default, the results will be saved in the `data` folder contained in each task folder.
+
+Each folder also include an `Analyses.ipynb` file documenting the recommended analyses that can be used to generate reports.
 
 # References
 
