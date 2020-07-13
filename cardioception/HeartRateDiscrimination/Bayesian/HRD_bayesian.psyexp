@@ -22,7 +22,7 @@
     <Param name="Show mouse" updates="None" val="False" valType="bool"/>
     <Param name="Units" updates="None" val="height" valType="str"/>
     <Param name="Use version" updates="None" val="" valType="str"/>
-    <Param name="Window size (pixels)" updates="None" val="[1280, 720]" valType="code"/>
+    <Param name="Window size (pixels)" updates="None" val="[1920, 1080]" valType="code"/>
     <Param name="blendMode" updates="None" val="avg" valType="str"/>
     <Param name="color" updates="None" val="$[0,0,0]" valType="str"/>
     <Param name="colorSpace" updates="None" val="rgb" valType="str"/>
@@ -503,7 +503,7 @@
         <Param name="color" updates="constant" val="red" valType="str"/>
         <Param name="colorSpace" updates="constant" val="rgb" valType="str"/>
         <Param name="disabled" updates="None" val="False" valType="bool"/>
-        <Param name="durationEstim" updates="None" val="2.0" valType="code"/>
+        <Param name="durationEstim" updates="None" val="0.5" valType="code"/>
         <Param name="flip" updates="constant" val="" valType="str"/>
         <Param name="font" updates="constant" val="Arial" valType="str"/>
         <Param name="languageStyle" updates="None" val="LTR" valType="str"/>
@@ -517,7 +517,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="2.0" valType="code"/>
+        <Param name="stopVal" updates="constant" val="0.5" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
         <Param name="text" updates="constant" val="Too late" valType="str"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
@@ -610,7 +610,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="0.5" valType="code"/>
+        <Param name="stopVal" updates="constant" val="0.25" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
         <Param name="text" updates="constant" val="Less" valType="str"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
@@ -634,7 +634,7 @@
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
         <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="stopVal" updates="constant" val="0.5" valType="code"/>
+        <Param name="stopVal" updates="constant" val="0.25" valType="code"/>
         <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
         <Param name="text" updates="constant" val="More" valType="str"/>
         <Param name="units" updates="None" val="from exp settings" valType="str"/>
@@ -769,7 +769,7 @@
         <Param name="Begin Experiment" updates="constant" val="" valType="extendedCode"/>
         <Param name="Begin JS Experiment" updates="constant" val="stairCaseIntero = new data.PsiHandler({&quot;nTrials&quot;: 100, &quot;intensRange&quot;: [1, 40], &quot;alphaRange&quot;: [1, 20], &quot;betaRange&quot;: [0.1, 4], &quot;intensPrecision&quot;: 1, &quot;alphaPrecision&quot;: 1, &quot;betaPrecision&quot;: 0.01, &quot;delta&quot;: 0.1, &quot;stepType&quot;: &quot;lin&quot;, &quot;expectedMin&quot;: 0.5});&amp;#10;" valType="extendedCode"/>
         <Param name="Begin JS Routine" updates="constant" val="" valType="extendedCode"/>
-        <Param name="Begin Routine" updates="constant" val="jitter = np.arange(0, 2, .1)&amp;#10;shuffle(jitter)&amp;#10;&amp;#10;if condition == 'Intero':&amp;#10;    nRepsIntero = 5&amp;#10;    nRepsExtero = 0&amp;#10;    decisionText = &quot;&quot;&quot;Do you think the tone frequency is higher or lower than your heart rate?&amp;#10;&amp;#10;Lower (Left button) - Higher (Right button)&quot;&quot;&quot;&amp;#10;elif condition == 'Extero':&amp;#10;    nRepsIntero = 0&amp;#10;    nRepsExtero = 1&amp;#10;    decisionText = &quot;&quot;&quot;Do you think the tone frequency is higher or lower than the previous one?&amp;#10;&amp;#10;Lower (Left button) - Higher (Right button)&quot;&quot;&quot;&amp;#10;&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    oxiTask.readInWaiting()&amp;#10;    oxiTask.channels['Channel_0'][-1] = 10  # Start trigger" valType="extendedCode"/>
+        <Param name="Begin Routine" updates="constant" val="jitter = np.arange(1, 2, .1)&amp;#10;shuffle(jitter)&amp;#10;&amp;#10;if condition == 'Intero':&amp;#10;    nRepsIntero = 5&amp;#10;    nRepsExtero = 0&amp;#10;    decisionText = &quot;&quot;&quot;Do you think the tone frequency is higher or lower than your heart rate?&amp;#10;&amp;#10;Lower (Left button) - Higher (Right button)&quot;&quot;&quot;&amp;#10;elif condition == 'Extero':&amp;#10;    nRepsIntero = 0&amp;#10;    nRepsExtero = 1&amp;#10;    decisionText = &quot;&quot;&quot;Do you think the tone frequency is higher or lower than the previous one?&amp;#10;&amp;#10;Lower (Left button) - Higher (Right button)&quot;&quot;&quot;&amp;#10;&amp;#10;if expInfo['setup'] == 'behavioral':&amp;#10;    oxiTask.readInWaiting()&amp;#10;    oxiTask.channels['Channel_0'][-1] = 10  # Start trigger" valType="extendedCode"/>
         <Param name="Code Type" updates="None" val="Py" valType="str"/>
         <Param name="Each Frame" updates="constant" val="" valType="extendedCode"/>
         <Param name="Each JS Frame" updates="constant" val="" valType="extendedCode"/>

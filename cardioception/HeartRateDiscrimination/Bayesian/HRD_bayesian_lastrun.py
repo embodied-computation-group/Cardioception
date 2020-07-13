@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2020.1.2),
-    on July 10, 2020, at 12:19
+    on juli 12, 2020, at 12:43
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -51,7 +51,7 @@ filename = _thisDir + os.sep + u'data/%s/%s_%s' % (expInfo['participant'], expNa
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
     extraInfo=expInfo, runtimeInfo=None,
-    originPath='C:\\Users\\au646069\\github\\Cardioception\\cardioception\\HeartRateDiscrimination\\Bayesian\\HRD_bayesian_lastrun.py',
+    originPath='C:\\Users\\stimuser\\github\\Cardioception\\cardioception\\HeartRateDiscrimination\\Bayesian\\HRD_bayesian_lastrun.py',
     savePickle=True, saveWideText=True,
     dataFileName=filename)
 # save a log file for detail verbose info
@@ -65,7 +65,7 @@ frameTolerance = 0.001  # how close to onset before 'same' frame
 
 # Setup the Window
 win = visual.Window(
-    size=[1280, 720], fullscr=True, screen=0, 
+    size=[1920, 1080], fullscr=True, screen=0, 
     winType='pyglet', allowGUI=True, allowStencil=False,
     monitor='testMonitor', color=[0,0,0], colorSpace='rgb',
     blendMode='avg', useFBO=True, 
@@ -411,7 +411,7 @@ for thisTrial in trials:
     # ------Prepare to start Routine "ITI"-------
     continueRoutine = True
     # update component parameters for each repeat
-    jitter = np.arange(0, 2, .1)
+    jitter = np.arange(1, 2, .1)
     shuffle(jitter)
     
     if condition == 'Intero':
@@ -1189,7 +1189,7 @@ for thisTrial in trials:
     
     # ------Prepare to start Routine "feedbackDecision"-------
     continueRoutine = True
-    routineTimer.add(0.500000)
+    routineTimer.add(0.250000)
     # update component parameters for each repeat
     if nRatingScale is False:
         continueRoutine = False
@@ -1227,7 +1227,7 @@ for thisTrial in trials:
             text_Less_3.setAutoDraw(True)
         if text_Less_3.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > text_Less_3.tStartRefresh + 0.5-frameTolerance:
+            if tThisFlipGlobal > text_Less_3.tStartRefresh + 0.25-frameTolerance:
                 # keep track of stop time/frame for later
                 text_Less_3.tStop = t  # not accounting for scr refresh
                 text_Less_3.frameNStop = frameN  # exact frame index
@@ -1246,7 +1246,7 @@ for thisTrial in trials:
             text_More_3.setAutoDraw(True)
         if text_More_3.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > text_More_3.tStartRefresh + 0.5-frameTolerance:
+            if tThisFlipGlobal > text_More_3.tStartRefresh + 0.25-frameTolerance:
                 # keep track of stop time/frame for later
                 text_More_3.tStop = t  # not accounting for scr refresh
                 text_More_3.frameNStop = frameN  # exact frame index
@@ -1381,7 +1381,7 @@ for thisTrial in trials:
     
     # ------Prepare to start Routine "Feedback"-------
     continueRoutine = True
-    routineTimer.add(2.000000)
+    routineTimer.add(0.500000)
     # update component parameters for each repeat
     if NoResponseFeedback is False:
         continueRoutine = False
@@ -1420,7 +1420,7 @@ for thisTrial in trials:
             text_4.setAutoDraw(True)
         if text_4.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > text_4.tStartRefresh + 2.0-frameTolerance:
+            if tThisFlipGlobal > text_4.tStartRefresh + 0.5-frameTolerance:
                 # keep track of stop time/frame for later
                 text_4.tStop = t  # not accounting for scr refresh
                 text_4.frameNStop = frameN  # exact frame index
