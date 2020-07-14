@@ -11,7 +11,7 @@ from systole.detection import oxi_peaks
 
 def run(parameters, stairCase=None, win=None, confidenceRating=True,
         runTutorial=False):
-    """Run the entire task.
+    """Run the Heart Rate Discrimination task.
 
     Parameters
     ----------
@@ -44,16 +44,16 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
     if runTutorial is True:
         tutorial(parameters, win)
 
-    if stairCase is None:
-        stairCase = parameters['stairCase']
-
-    results_df, i = pd.DataFrame([]), 0  # Final DataFrame and trial count
+    nTrial = 0  # Final DataFrame and trial count
     for i, condition, modality in zip(np.arange(0, parameters['nTrials']),
                                       parameters['Conditions'],
                                       parameters['Modality']):
 
+        if stairCase is None:
+            print('No staircase provided')
+
         # Wait for key press if this is the first trial
-        if i == 0:
+        if nTrial == 0:
             # Ask the participant to press 'Space' (default) to start
             messageStart = visual.TextStim(win,
                                            height=parameters['textSize'],
@@ -63,52 +63,34 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             event.waitKeys(keyList=parameters['startKey'])
 
         # Is this an interoception or exteroception condition
-        if modality == 'Intero':
-            if parameters['stairType'] == 'UpDown':
-                thisTrial = parameters['stairCase'].next()
-                stairCond = thisTrial[1]['label']
-                intensity = thisTrial[0]
-            elif parameters['stairType'] == 'psi':
-                intensity = parameters['stairCase'][condition].next()
-                stairCond = condition
-        elif modality == 'Extero':
-            if parameters['stairType'] == 'UpDown':
-                thisTrial = parameters['exteroStairCase'].next()
-                stairCond = thisTrial[1]['label']
-                intensity = thisTrial[0]
-            elif parameters['stairType'] == 'psi':
-                intensity = parameters['exteroStairCase'][condition].next()
-                stairCond = condition
+        if parameters['stairType'] == 'UpDown':
+            thisTrial = parameters['stairCase'][modality].next()
+            stairCond = thisTrial[1]['label']
+            intensity = thisTrial[0]
+        elif parameters['stairType'] == 'psi':
+            intensity = parameters['stairCase'][modality].next()
+            stairCond = condition
 
         # Start trial
         listenBPM, responseBPM, estimation, estimationRT, confidence, \
-            confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
-            soundTrigger2, ratingTrigger, endTrigger = trial(
+            confidenceRT, alpha, accuracy, missedEstimation, missedRating, \
+            startTrigger, soundTrigger, soundTrigger2, ratingTrigger, \
+            endTrigger = trial(
                           parameters, condition, intensity, modality, win=win,
                           confidenceRating=confidenceRating)
 
-        # Is the answer Correct? Update the staircase model
-        if (estimation == 'up') & (condition == 'More'):
-            if stairCase is not None:
-                if parameters['stairType'] == 'UpDown':
-                    parameters['stairCase'].addResponse(1)
-                elif parameters['stairType'] == 'psi':
-                    parameters['stairCase'][condition].addResponse(1)
-            accuracy = 1
-        elif (estimation == 'down') & (condition == 'Less'):
-            if stairCase is not None:
-                if parameters['stairType'] == 'UpDown':
-                    parameters['stairCase'].addResponse(1)
-                elif parameters['stairType'] == 'psi':
-                    parameters['stairCase'][condition].addResponse(1)
-            accuracy = 1
-        else:
-            if stairCase is not None:
-                if parameters['stairType'] == 'UpDown':
-                    parameters['stairCase'].addResponse(0)
-                elif parameters['stairType'] == 'psi':
-                    parameters['stairCase'][condition].addResponse(0)
-            accuracy = 0
+        # Is the answer Correct? Update the staircase model if provided
+        if stairCase is not None:
+            if parameters['stairType'] == 'UpDown':
+                # Check if response if correct
+                accuracy = 1 if estimation == condition else 0
+                parameters['stairCase'][parameters['Modality']]\
+                    .addResponse(accuracy)
+            elif parameters['stairType'] == 'psi':
+                # Check if response is 'More'
+                accuracy = 1 if estimation == 'More' else 0
+                parameters['stairCase'][parameters['Modality']]\
+                    .addResponse(accuracy)
 
         # Store results
         parameters['results_df'] = parameters['results_df'].append([
@@ -123,7 +105,8 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
                                   'listenBPM': [listenBPM],
                                   'responseBPM': [responseBPM],
                                   'Accuracy': [accuracy],
-                                  'Missed': [missed],
+                                  'MissedEstimation': [missedEstimation],
+                                  'MissedRating': [missedRating],
                                   'nTrials': [i],
                                   'startTrigger': [startTrigger],
                                   'soundTrigger': [soundTrigger],
@@ -135,10 +118,11 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
         # Save the results at each iteration
         parameters['results_df'].to_csv(
                         parameters['results'] + '/' +
-                        parameters['subject'] + '.txt')
+                        parameters['participant'] +
+                        parameters['session'] + '.txt')
 
         # Breaks
-        if (i % parameters['nBreaking'] == 0) & (i != 0):
+        if (nTrial % parameters['nBreaking'] == 0) & (nTrial != 0):
             message = visual.TextStim(
                             win, height=parameters['textSize'],
                             text=('Break. You can rest as long as'
@@ -147,7 +131,8 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             message.draw()
             win.flip()
             parameters['oxiTask'].save(
-                parameters['results'] + '/' + parameters['subject'] + str(i))
+                parameters['results'] + '/' +
+                parameters['participant'] + str(nTrial))
             event.waitKeys(keyList=parameters['startKey'])
 
             # Fixation cross
@@ -164,35 +149,35 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
     if parameters['stairType'] == 'UpDown':
         try:
             parameters['stairCase'].saveAsExcel(
-                parameters['results'] + '/' + parameters['subject'])
+                parameters['results'] + '/' + parameters['participant'])
         except:
             print('Error while saving as Excel')
         try:
             parameters['stairCase'].saveAsPickle(
-                parameters['results'] + '/' + parameters['subject'])
+                parameters['results'] + '/' + parameters['participant'])
         except:
             print('Error while saving as Pickle')
     elif parameters['stairType'] == 'psi':
         try:
             parameters['stairCase'].saveAsExcel(
-                parameters['results'] + '/' + parameters['subject'])
+                parameters['results'] + '/' + parameters['participant'])
         except:
             print('Error while saving as Excel')
         try:
             parameters['stairCase'].saveAsPickle(
-                parameters['results'] + '/' + parameters['subject'])
+                parameters['results'] + '/' + parameters['participant'])
         except:
             print('Error while saving as Pickle')
 
     # Save the final results file
     parameters['results_df'].to_csv(
         parameters['results'] + '/' +
-        parameters['subject'] + '.txt')
+        parameters['participant'] + '.txt')
 
     # Save the final signals file
     parameters['signal_df'].to_csv(
         parameters['results'] + '/' +
-        parameters['subject'] + '_signal.txt')
+        parameters['participant'] + '_signal.txt')
 
     # Save the whole parameters dictionary
     with open('filename.pickle', 'wb') as handle:
@@ -258,7 +243,8 @@ def trial(parameters, condition, intensity, modality, win=None,
     print(f'...Intensity: {intensity} - Modality: {modality}')
 
     # Restart the trial until participant provide response on time
-    confidence, confidenceRT, accuracy, ratingTrigger = None, None, None, None
+    confidence, confidenceRT, accuracy, ratingTrigger, missedRating = \
+        None, None, None, None, None
 
     # Fixation cross
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
@@ -290,21 +276,21 @@ def trial(parameters, condition, intensity, modality, win=None,
             if parameters['setup'] == 'fMRI':
                 # Read ExG
                 signal = BrainVisionExG(
-                    ip=parameters['BrainVisionIP'], sfreq=1000).read(5)['PLETH']
+                    ip=parameters['BrainVisionIP'],
+                    sfreq=1000).read(5)['PLETH']
                 signal, peaks = oxi_peaks(signal, sfreq=1000,
                                           clipping=False)
             elif parameters['setup'] in ['behavioral', 'test']:
                 # Read PPG
-                parameters['oxiTask'].read(duration=5.0)
+                signal = parameters['oxiTask'].read(
+                    duration=5.0).recording[-75*6:]
+                signal, peaks = oxi_peaks(signal, sfreq=75)
 
             # Get actual heart Rate
             bpm = [15]
-            if parameters['setup'] in ['behavioral', 'test']:
-                signal, peaks = \
-                    oxi_peaks(parameters['oxiTask'].recording[-75*6:])
 
-            signal, peaks = oxi_peaks(parameters['oxiTask'].recording)
             bpm = 60000/np.diff(np.where(peaks[-5000:])[0])
+
             print(f'...bpm: {[round(i) for i in bpm]}')
 
             # Prevent crash if NaN value
@@ -363,6 +349,9 @@ def trial(parameters, condition, intensity, modality, win=None,
         this_hr.play()
         core.wait(this_hr.getDuration() + 0.5)
         this_hr.stop()
+
+    else:
+        raise ValueError('Invalid condition')
 
     # Fixation cross
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
@@ -519,11 +508,12 @@ def tutorial(parameters, win):
         condition = np.random.choice(['More', 'Less'])
         intensity = 20.0
 
-        average_hr, estimation, estimationRT, confidence, \
-            confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
-            soundTrigger2, ratingTrigger, endTrigger = trial(
-                        parameters, condition, intensity, 'Intero', win=win,
-                        feedback=True, confidenceRating=False)
+        listenBPM, responseBPM, estimation, estimationRT, confidence, \
+            confidenceRT, alpha, accuracy, missedEstimation, missedRating, \
+            startTrigger, soundTrigger, soundTrigger2, ratingTrigger, \
+            endTrigger = trial(
+                parameters, condition, intensity, 'Intero', win=win,
+                feedback=True, confidenceRating=False)
 
     # Confidence rating
     confidence = visual.TextStim(win,
@@ -547,11 +537,11 @@ def tutorial(parameters, win):
         condition = np.random.choice(['More', 'Less'])
         intensity = 20.0
 
-        average_hr, estimation, estimationRT, confidence, \
-            confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
-            soundTrigger2, ratingTrigger, endTrigger = trial(
-                        parameters, condition, intensity, 'intero', win=win,
-                        confidenceRating=True)
+        listenBPM, responseBPM, estimation, estimationRT, confidence, \
+            confidenceRT, alpha, accuracy, missedEstimation, missedRating, \
+            startTrigger, soundTrigger, soundTrigger2, ratingTrigger, \
+            endTrigger = trial(parameters, condition, intensity, 'Intero',
+                               win=win, confidenceRating=True)
 
     # Task
     taskPresentation = visual.TextStim(win,
@@ -584,6 +574,8 @@ def responseEstimation(this_hr, parameters, win, feedback, condition):
     condition : str
         The trial condition ['More' or 'Less'] used to check response accuracy.
     """
+    print('...starting estimation phase.')
+
     estimation, estimationRT = None, None
     responseTrigger = time.time()
 
@@ -659,7 +651,7 @@ def responseEstimation(this_hr, parameters, win, feedback, condition):
             elif buttons == [0, 0, 1]:
                 estimation, colorMore, respProvided = 'More', 'blue', True
                 break
-            elif trialdur > parameters['respMax']:  # if subject takes too long
+            elif trialdur > parameters['respMax']:  # if too long
                 respProvided = False
                 estimationRT = parameters['myMouse'].clickReset()
                 break
@@ -715,6 +707,11 @@ def responseEstimation(this_hr, parameters, win, feedback, condition):
 def confidenceRatingTask(parameters, win):
     """Confidence rating scale, using keyboard or mouse inputs.
     """
+    print('...starting confidence rating.')
+
+    # Initialise default values
+    confidence, confidenceRT = None, None
+
     if parameters['device'] == 'keyboard':
 
         markerStart = np.random.choice(
@@ -752,11 +749,12 @@ def confidenceRatingTask(parameters, win):
 
     elif parameters['device'] == 'mouse':
 
+        # Use the mouse position to update the slider position
         parameters['myMouse'].setPos((0, -.4))
         parameters['myMouse'].clickReset()
 
         slider = visual.Slider(
-            win=win, name='slider', size=(8.0, 0.5), pos=(0, -0.4),
+            win=win, name='slider', size=(1.0, 0.2), pos=(0, -0.4),
             labels=['low', 'high'], granularity=0.1, ticks=(1, 100),
             style=('rating',), color='LightGray', font='HelveticaBold',
             flip=False, labelHeight=.5)
@@ -764,7 +762,7 @@ def confidenceRatingTask(parameters, win):
         clock = core.Clock()
         parameters['myMouse'].clickReset()
         buttons, confidenceRT = parameters['myMouse'].getPressed(getTime=True)
-        while buttons == [0, 0, 0]:
+        while True:
             trialdur = clock.getTime()
             buttons, confidenceRT = \
                 parameters['myMouse'].getPressed(getTime=True)
@@ -774,11 +772,12 @@ def confidenceRatingTask(parameters, win):
             p = newPos[0]/5
             slider.markerPos = 50 + (p*50)
             slider.draw()
-            if buttons == [1, 0, 0]:
+            if (buttons == [1, 0, 0]) &\
+                    (trialdur > parameters['minRatingTime']):
                 confidence, confidenceRT, respProvided = \
                     p, clock.getTime(), True
                 break
-            elif trialdur > parameters['minRatingTime']:  # if too long
+            elif trialdur > parameters['maxRatingTime']:  # if too long
                 respProvided = False
                 confidenceRT = parameters['myMouse'].clickReset()
                 break
