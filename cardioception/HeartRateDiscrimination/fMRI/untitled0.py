@@ -5,110 +5,25 @@ Created on Thu Jul  2 14:17:46 2020
 @author: stimuser
 """
 
-import time
-import numpy as np
-import matplotlib.pyplot as plt
-from systole.detection import oxi_peaks
-from systole.recording import BrainVisionExG
+from psychopy import visual, event
 
-# Read ExG
-recording = BrainVisionExG(ip='10.60.88.162', sfreq=1000).read(5)
+win = visual.Window(monitor='testMonitor', fullscr=False)
+mouse = event.Mouse(visible=False, newPos=(0, 0), win=win)
+mouse.setPos((0, -.4))
+mouse.clickReset()
 
-signal = np.array(recording['PLETH'])
-signal, peaks = oxi_peaks(signal, sfreq=1000,
-                          clipping=False)
+slider = visual.Slider(
+    win=win, name='slider', size=(8.0, 0.5), pos=(0, -0.4),
+    labels=['low', 'high'], granularity=0.1, ticks=(1, 100),
+    style=('rating',), color='LightGray', font='HelveticaBold', flip=False,
+    labelHeight=.5)
 
-
-sfreq = 200
-start = time.time()
-final_data3 = []
-while time.time() - start < 60:
-    recording = BrainVisionExG(ip='10.60.88.162').read(5)
-    segment = np.array(recording['PLETH'])
-    print(len(segment))
-
-    segment = segment[-5*sfreq:]
-    signal, peaks = oxi_peaks(segment, sfreq=sfreq)
-    #peaks = to_neighbour(signal, peaks, size=100)
-    timeidx = np.arange(0, len(signal))/1000
-    plt.plot(timeidx, signal)
-    plt.plot(timeidx[peaks], signal[peaks], 'ro')
-    plt.show()
-
-    final_data3.append(recording)
-
-
-from psychopy.visual.window import Window
-from psychopy.visual.slider import Slider
-
-win = Window()
-vas = Slider(win,
-             ticks=(1, 100),
-             labels=('Not at all confident', 'Extremely confident'),
-             granularity=1,
-             color='white')
-
-while not vas.rating:
-    vas.draw()
+while not slider.rating:
+    # Mouse position
+    newPos = mouse.getPos()
+    p = newPos[0]/5
+    slider.markerPos = 50 + (p*50)
+    slider.draw()
     win.flip()
-
-
-
-
-
-ratingScale = visual.Slider(
-        win, ticks=(1, 100),
-        labels=('Not at all confident', 'Extremely confident'),
-        granularity=1, color='white')
-
-while not ratingScale.rating:
-    ratingScale.draw()
-    win.flip()
-
-
-00
-
-import json
-
-json = json.dumps(final_data)
-f = open("recording.json","w")
-f.write(json)
-f.close()
-
-
-# Get actual heart Rate
-average_hr = int((60000/np.diff(np.where(peaks)[0])).mean())
-print(average_hr)
-
-#from psychopy import event
-#
-#event.waitKeys()
-
-from psychopy.hardware import keyboard
-#from psychopy import core
-#
-#kb = keyboard.Keyboard(device=)
-#
-#while True:
-#    keys = kb.getKeys(['3', '4'], waitRelease=True)
-#    for key in keys:
-#        print(key.name, key.rt, key.duration)
-import numpy as np
-from psychopy import event
-from cardioception.HeartRateDiscrimination.fMRI.parameters import getParameters
-from cardioception.HeartRateDiscrimination.fMRI.task import run
-from psychopy.event import Mouse
-
-
-from psychopy import visual
-win = visual.Window(monitor='testMonitor',
-                    screen=0,
-                    fullscr=False, units=None)
-win.mouseVisible = False
-ratingScale = visual.Slider(
-       win, ticks=(1, 100),
-       labels=('Not at all confident', 'Extremely confident'))
-while not ratingScale.rating:
-    ratingScale.draw()
-    win.flip()
+print(slider.getRating(), slider.getRT())
 win.close()
