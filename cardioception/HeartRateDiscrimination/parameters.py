@@ -30,7 +30,8 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     serialPort: str
         The USB port where the pulse oximeter is plugged. Should be written as
         a string e.g., 'COM3', 'COM4'. If set to *None*, the pulse oximeter
-        will be automatically detected.
+        will be automatically detected. using the
+        :py:func:`systole.recording.findOximeter()` function.
     setup : str
         Context of oximeter recording. Behavioral will record through a Nonin
         pulse oximeter, *fMRI* will record through BrainVision amplifier
@@ -144,7 +145,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     parameters['nConfidence'] = 5
     parameters['respMax'] = 8
     parameters['minRatingTime'] = 1
-    parameters['maxRatingTime'] = 4
+    parameters['maxRatingTime'] = 14
     parameters['startKey'] = 'space'
     parameters['allowedKeys'] = ['up', 'down']
     parameters['nTrials'] = nTrials
@@ -168,12 +169,17 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     if not os.path.exists(parameters['results']):
         os.makedirs(parameters['results'])
 
-    # Create condition randomized vector
-    parameters['Conditions'] = np.hstack(
-            [np.array(['More'] * round(parameters['nTrials']/2)),
-             np.array(['Less'] * round(parameters['nTrials']/2))])
-
+    if stairType == 'UpDown':
+        # Create condition randomized vector
+        parameters['Conditions'] = np.hstack(
+                [np.array(['More'] * round(parameters['nTrials']/2)),
+                 np.array(['Less'] * round(parameters['nTrials']/2))])
+    elif stairType == 'psi':
+        parameters['Conditions'] = np.array(['psi'] * parameters['nTrials'])
+    parameters['staircaisePosteriors'] = {}
+    parameters['staircaisePosteriors']['Intero'] = []
     if exteroception is True:
+        parameters['staircaisePosteriors']['Extero'] = []
         parameters['Conditions'] = np.tile(parameters['Conditions'], 2)
         # Create condition randomized vector
         parameters['Modality'] = np.hstack(
@@ -274,11 +280,11 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     # Texts
     #######
     parameters['texts'] = {
-        'Estimation': """Do you think the tone frequency
-        was higher or lower than your heart rate?""",
-        'Confidence':
-            ('How confident are you about your estimation?'
-             'Use the RIGHT/LEFT keys to select and the DOWN key to confirm')}
+            'Estimation': {'Intero': """Do you think the tone frequency was higher or lower than your heart rate?""",
+                           'Extero': """Do you think the tone frequency was higher or lower than the previous one?"""},
+            'Confidence': """How confident are you about your estimation?
+
+        Use the RIGHT/LEFT keys to select and the DOWN key to confirm"""}
 
     parameters['Tutorial1'] = (
         "During this experiment, we are going to record your heart rate and generate sounds reflecting your cardiac activity.")
@@ -286,10 +292,12 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     parameters['Tutorial2'] = (
         "When this heart icon is presented, you will have to focus on your cardiac activity while it is recorded for 5 seconds.")
 
+    moreResp = 'UP key' if parameters['device'] == 'keyboard' else 'RIGHT button'
+    lessResp = 'DOWN key' if parameters['device'] == 'keyboard' else 'LEFT button'
     parameters['Tutorial3'] = (
-        """After this procedure, you will see the listening and response icons.
+        f"""After this procedure, you will see the listening and response icons.
 
-        You will then have to focus on the tone frequency and decide if it is faster (UP key) or slower (DOWN key) than your recorded heart rate in the listening interval.
+        You will then have to focus on the tone frequency and decide if it is faster ({moreResp}) or slower ({lessResp}) than your recorded heart rate in the listening interval.
 
         The tone frequency will ALWAYS be slower or faster than your heart rate as previously recorded. Please guess if you are unsure.""")
 
@@ -325,26 +333,26 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     parameters['listenResponse'] = visual.ImageStim(
         win=parameters['win'],
         units='height',
-        image=parameters['path'] + '/Images/listenResponse.png',
+        image=os.path.dirname(__file__) + '/Images/listenResponse.png',
         pos=(0.0, -0.2))
-    parameters['listenLogo'].size *= 0.1
+    parameters['listenResponse'].size *= 0.1
 
     parameters['listenLogo'] = visual.ImageStim(
         win=parameters['win'],
         units='height',
-        image=parameters['path'] + '/Images/listen.png',
+        image=os.path.dirname(__file__) + '/Images/listen.png',
         pos=(0.0, -0.2))
     parameters['listenLogo'].size *= 0.1
 
     parameters['heartLogo'] = visual.ImageStim(
         win=parameters['win'],
         units='height',
-        image=parameters['path'] + '/Images/heartbeat.png',
-        pos=(0.0, -0.2))
-    parameters['heartLogo'].size *= 0.05
+        image=os.path.dirname(__file__) + '/Images/heartbeat.png',
+        pos=(0.0, 0.0))
+    parameters['heartLogo'].size *= 0.04
     parameters['textSize'] = 0.04
     parameters['HRcutOff'] = [40, 120]
-    parameters["BrainVisionIP"] = '10.60.88.162'
+    parameters["BrainVisionIP"] = BrainVisionIP
     if parameters['device'] == 'mouse':
         parameters['confScale'] = [1, 100]
         parameters['myMouse'] = event.Mouse()
