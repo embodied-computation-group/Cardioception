@@ -35,10 +35,19 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
 
     if parameters['setup'] in ['behavioral', 'test']:
         parameters['oxiTask'].setup().read(duration=1)
+    elif parameters['setup'] == 'fMRI':
+        messageWaitTrigger = visual.TextStim(
+            win, height=parameters['textSize'],
+            text=parameters['texts']['textWaitTrgger'])
+        messageWaitTrigger.draw()  # Show instructions
+        win.flip()
+        event.waitKeys(keyList=parameters['fMRItrigger'])
+        fMRIStart = time.time()
+        parameters['results_df'] = pd.DataFrame({'fMRITrigger': [fMRIStart]})
 
     # Show tutorial and training trials
     if runTutorial is True:
-        tutorial(parameters, win)
+        tutorial(parameters)
 
     for nTrial, condition, modality in zip(np.arange(0, parameters['nTrials']),
                                            parameters['Conditions'],
@@ -46,13 +55,23 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
 
         # Wait for key press if this is the first trial
         if nTrial == 0:
-            # Ask the participant to press 'Space' (default) to start
-            messageStart = visual.TextStim(win,
-                                           height=parameters['textSize'],
-                                           text='Press space to continue')
+
+            # Ask the participant to press default button to start
+            messageStart = visual.TextStim(
+                win, height=parameters['textSize'],
+                text=parameters['texts']['textTaskStart'])
             messageStart.draw()  # Show instructions
             win.flip()
-            event.waitKeys(keyList=parameters['startKey'])
+
+            # Wait for participant input before continue
+            if parameters['device'] == 'keyboard':
+                event.waitKeys(keyList=parameters['startKey'])
+            elif parameters['device'] == 'mouse':
+                parameters['myMouse'].clickReset()
+                while True:
+                    buttons = parameters['myMouse'].getPressed()
+                    if buttons != [0, 0, 0]:
+                        break
 
         # Is this an interoception or exteroception condition
         if parameters['stairType'] == 'UpDown':
@@ -61,11 +80,11 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
             alpha = thisTrial[0]
         elif parameters['stairType'] == 'psi':
             alpha = parameters['stairCase'][modality].next()
-            stairCond = condition
+            stairCond = None
 
         # Start trial
         listenBPM, responseBPM, estimation, estimationRT, confidence,\
-            confidenceRT, alpha, accuracy, respProvided, ratingProvided, \
+            confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
             startTrigger, soundTrigger, responseMadeTrigger,\
             ratingStartTrigger, ratingEndTrigger, endTrigger = trial(
                   parameters, condition, alpha, modality, win=win,
@@ -73,35 +92,28 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
 
         # Update the staircase
         if parameters['stairType'] == 'UpDown':
-            # Check if response if correct
-            accuracy = 1 if estimation == condition else 0
-            parameters['stairCase'][parameters['Modality']]\
-                .addResponse(accuracy)
+            # Check if response is correct or not
+            parameters['stairCase'][modality].addResponse(isCorrect)
         elif parameters['stairType'] == 'psi':
-            # Check if response is 'More'
-            accuracy = 1 if estimation == 'More' else 0
-            parameters['stairCase'][parameters['Modality']]\
-                .addResponse(accuracy)
+            # Check if response is 'More' or 'Less'
+            isMore = 1 if estimation == 'More' else 0
+            parameters['stairCase'][modality].addResponse(isMore)
 
-            # Store posteriors in list
-            parameters[
-                'staircaisePosteriors'][parameters[
-                    'Modality']].append(
-                        parameters['stairCase'][parameters['Modality']]
-                        ._psi._probLambda[0, :, :, 0])
+            # Store posteriors in list for each trials
+            parameters['staircaisePosteriors'][modality].append(
+                parameters['stairCase'][modality]._psi._probLambda[0, :, :, 0])
 
-            # Save estimated threshold and slope
+            # Save estimated threshold and slope for each trials
             estimatedThreshold, estimatedSlope = \
-                parameters[
-                    'stairCase'][parameters['Modality']].estimateLambda()
+                parameters['stairCase'][modality].estimateLambda()
 
         print(f'...Initial BPM: {listenBPM} - Staircase value: {alpha} '
-              '- Response: {estimation} ({accuracy})')
+              '- Response: {estimation} ({isCorrect})')
 
         # Store results
         parameters['results_df'] = parameters['results_df'].append([
                     pd.DataFrame({'Condition': [condition],
-                                  'Modallity': [modality],
+                                  'Modality': [modality],
                                   'StairCond': [stairCond],
                                   'Estimation': [estimation],
                                   'EstimationRT': [estimationRT],
@@ -110,9 +122,9 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
                                   'Alpha': [alpha],
                                   'listenBPM': [listenBPM],
                                   'responseBPM': [responseBPM],
-                                  'Accuracy': [accuracy],
+                                  'ResponseCorrect': [isCorrect],
                                   'EstimationProvided': [respProvided],
-                                  'MissedRating': [ratingProvided],
+                                  'RatingProvided': [ratingProvided],
                                   'nTrials': [nTrial],
                                   'EstimatedThreshold': [estimatedThreshold],
                                   'EstimatedSlope': [estimatedSlope],
@@ -142,7 +154,16 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
             parameters['oxiTask'].save(
                 parameters['results'] + '/' +
                 parameters['participant'] + str(nTrial))
-            event.waitKeys(keyList=parameters['startKey'])
+
+            # Wait for participant input before continue
+            if parameters['device'] == 'keyboard':
+                event.waitKeys(keyList=parameters['startKey'])
+            elif parameters['device'] == 'mouse':
+                parameters['myMouse'].clickReset()
+                while True:
+                    buttons = parameters['myMouse'].getPressed()
+                    if buttons != [0, 0, 0]:
+                        break
 
             # Fixation cross
             fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
@@ -155,28 +176,15 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
             parameters['oxiTask'].read(duration=1)
 
     # save data as multiple formats
-    if parameters['stairType'] == 'UpDown':
-        try:
-            parameters['stairCase'].saveAsExcel(
-                parameters['results'] + '/' + parameters['participant'])
-        except:
-            print('Error while saving as Excel')
-        try:
-            parameters['stairCase'].saveAsPickle(
-                parameters['results'] + '/' + parameters['participant'])
-        except:
-            print('Error while saving as Pickle')
-    elif parameters['stairType'] == 'psi':
-        try:
-            parameters['stairCase'].saveAsExcel(
-                parameters['results'] + '/' + parameters['participant'])
-        except:
-            print('Error while saving as Excel')
-        try:
-            parameters['stairCase'].saveAsPickle(
-                parameters['results'] + '/' + parameters['participant'])
-        except:
-            print('Error while saving as Pickle')
+    try:
+        parameters['stairCase']['Intero'].saveAsPickle(
+            parameters['results'] + '/' +
+            parameters['participant'] + '_Intero')
+        parameters['stairCase']['Extero'].saveAsPickle(
+            parameters['results'] + '/' +
+            parameters['participant'] + '_Extero')
+    except:
+        print('Error while saving as Pickle')
 
     # Save the final results
     print('Saving final results in .txt file...')
@@ -214,7 +222,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
 
 def trial(parameters, condition, alpha, modality, win=None,
           confidenceRating=True, feedback=False, nTrial=0):
-    """Run one trial.
+    """Run one trial of the Heart Rate Discrimination task.
 
     Parameters
     ----------
@@ -260,19 +268,23 @@ def trial(parameters, condition, alpha, modality, win=None,
         The difference between the true heart rate and the delivered tone BPM.
         Alpha is defined by the stairCase.intensities values and is updated
         on each trial.
-    accuracy : int
-        .. ACCEPTS: [ 0 | 1 ]
-        *0* for incorrect response, *1* for correct responses.
+    isCorrect : int
+        *0* for incorrect response, *1* for correct responses. Note that this
+        value is not feeded to the staircase when using the (Yes/No) version
+        of the task, but instead will check if the response is 'More' or not.
     missed : boolean
         If *True*, the trial did not terminate correctly (e.g., participant was
         too slow to provide the estimation or the confidence).
     """
-    print(f'Starting trial - Condition {condition}')
-    print(f'...Intensity: {alpha} - Modality: {modality}')
+    # Print infos at each trial start
+    print(f'Starting trial - Condition {condition}',
+          f'...Intensity: {alpha} - Modality: {modality}')
+
+    win.mouseVisible = False
 
     # Restart the trial until participant provide response on time
-    confidence, confidenceRT, accuracy, ratingProvided = \
-        None, None, None, None
+    confidence, confidenceRT, isCorrect, ratingProvided = \
+        None, None, None, False
 
     # Fixation cross
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
@@ -324,7 +336,7 @@ def trial(parameters, condition, alpha, modality, win=None,
             if np.isnan(bpm).any() or (bpm is None):
                 message = visual.TextStim(
                               win, height=parameters['textSize'],
-                              text=('Please make sure the oximeter'
+                              text=('Please make sure the oximeter',
                                     'is correctly clipped to your finger.'),
                               color='red')
                 message.draw()
@@ -394,16 +406,14 @@ def trial(parameters, condition, alpha, modality, win=None,
     # Sound
     #######
 
-    # Random selection of the condition (for training trials)
-    if condition is None:
-        condition = np.random.choice(['More', 'Less'])
-
     # Generate actual stimulus frequency
     # When using the psi method, the stimulus intensity is encoded in real
     # value and should not be modified
     if parameters['stairType'] == 'UpDown':
         if condition == 'Less':
             alpha = -alpha
+    if parameters['stairType'] == 'psi':
+        condition = 'Less' if alpha < 0 else 'More'
 
     # Check for extreme alpha values, e.g. if alpha changes massively from
     # trial to trial.
@@ -446,7 +456,7 @@ def trial(parameters, condition, alpha, modality, win=None,
     # Esimation Responses
     #####################
     responseMadeTrigger, responseTrigger, respProvided, estimation,\
-        estimationRT, accuracy = responseEstimation(
+        estimationRT, isCorrect = responseEstimation(
             responseSound, parameters, feedback, condition)
     press.autoDraw = False
     message.autoDraw = False
@@ -489,12 +499,12 @@ def trial(parameters, condition, alpha, modality, win=None,
             this_df, ignore_index=True)
 
     return listenBPM, responseBPM, estimation, estimationRT, confidence,\
-        confidenceRT, alpha, accuracy, respProvided, ratingProvided, \
+        confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
         startTrigger, soundTrigger, responseMadeTrigger, ratingStartTrigger, \
         ratingEndTrigger, endTrigger
 
 
-def tutorial(parameters, win):
+def tutorial(parameters, win=None):
     """Run tutorial before task run.
 
     Parameters
@@ -504,51 +514,77 @@ def tutorial(parameters, win):
     win : instance of `psychopy.visual.Window`
         Where to draw the task.
     """
+    if win is None:
+        win = parameters['win']
+
     # Introduction
-    intro = visual.TextStim(win,
-                            height=parameters['textSize'],
+    intro = visual.TextStim(win, height=parameters['textSize'],
                             text=parameters['Tutorial1'])
+    press = visual.TextStim(win, height=parameters['textSize'],
+                            pos=(0.0, -0.4),
+                            text=parameters['texts']['textNext'])
     intro.draw()
-    press = visual.TextStim(win,
-                            height=parameters['textSize'],
-                            text='Please press SPACE to continue',
-                            pos=(0.0, -0.4))
     press.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
-    win.flip()
+    core.wait(1)
+
+    # Wait for participant input before continue
+    if parameters['device'] == 'keyboard':
+        event.waitKeys(keyList=parameters['startKey'])
+    elif parameters['device'] == 'mouse':
+        parameters['myMouse'].clickReset()
+        while True:
+            buttons = parameters['myMouse'].getPressed()
+            if buttons != [0, 0, 0]:
+                break
 
     # Heartrate recording
     recording = visual.TextStim(win,
                                 height=parameters['textSize'],
                                 pos=(0.0, 0.2),
                                 text=parameters['Tutorial2'])
+    press = visual.TextStim(win,
+                            height=parameters['textSize'],
+                            text=parameters['texts']['textNext'],
+                            pos=(0.0, -0.4))
     recording.draw()
     parameters['heartLogo'].draw()
-    press = visual.TextStim(win,
-                            height=parameters['textSize'],
-                            text='Please press SPACE to continue',
-                            pos=(0.0, -0.4))
     press.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
-    win.flip()
+    core.wait(1)
+
+    # Wait for participant input before continue
+    if parameters['device'] == 'keyboard':
+        event.waitKeys(keyList=parameters['startKey'])
+    elif parameters['device'] == 'mouse':
+        parameters['myMouse'].clickReset()
+        while True:
+            buttons = parameters['myMouse'].getPressed()
+            if buttons != [0, 0, 0]:
+                break
 
     # Listen and response
-    listenResponse = visual.TextStim(win,
-                                     height=parameters['textSize'],
+    listenResponse = visual.TextStim(win, height=parameters['textSize'],
                                      pos=(0.0, 0.2),
                                      text=parameters['Tutorial3'])
+    press = visual.TextStim(win, height=parameters['textSize'],
+                            text=parameters['texts']['textNext'],
+                            pos=(0.0, -0.4))
     listenResponse.draw()
     parameters['listenLogo'].draw()
-    press = visual.TextStim(win,
-                            height=parameters['textSize'],
-                            text='Please press SPACE to continue',
-                            pos=(0.0, -0.4))
     press.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
-    win.flip()
+    core.wait(1)
+
+    # Wait for participant input before continue
+    if parameters['device'] == 'keyboard':
+        event.waitKeys(keyList=parameters['startKey'])
+    else:
+        parameters['myMouse'].clickReset()
+        while True:
+            buttons = parameters['myMouse'].getPressed()
+            if buttons != [0, 0, 0]:
+                break
 
     # Run 10 training trials with feedback
     parameters['oxiTask'].setup().read(duration=2)
@@ -559,7 +595,7 @@ def tutorial(parameters, win):
         alpha = -20.0 if condition == 'Less' else 20.0
 
         listenBPM, responseBPM, estimation, estimationRT, confidence,\
-            confidenceRT, alpha, accuracy, respProvided, ratingProvided, \
+            confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
             startTrigger, soundTrigger, responseMadeTrigger,\
             ratingStartTrigger, ratingEndTrigger, endTrigger = trial(
                 parameters, condition, alpha, 'Intero', win=win,
@@ -572,12 +608,19 @@ def tutorial(parameters, win):
     confidence.draw()
     press = visual.TextStim(win,
                             height=parameters['textSize'],
-                            text='Please press SPACE to continue',
+                            text=parameters['texts']['textNext'],
                             pos=(0.0, -0.4))
     press.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
-    win.flip()
+    # Wait for participant input before continue
+    if parameters['device'] == 'keyboard':
+        event.waitKeys(keyList=parameters['startKey'])
+    else:
+        parameters['myMouse'].clickReset()
+        while True:
+            buttons = parameters['myMouse'].getPressed()
+            if buttons != [0, 0, 0]:
+                break
 
     parameters['oxiTask'].setup().read(duration=2)
     # Run 5 training trials with confidence rating
@@ -588,7 +631,7 @@ def tutorial(parameters, win):
         alpha = -20.0 if condition == 'Less' else 20.0
 
         listenBPM, responseBPM, estimation, estimationRT, confidence,\
-            confidenceRT, alpha, accuracy, respProvided, ratingProvided, \
+            confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
             startTrigger, soundTrigger, responseMadeTrigger,\
             ratingStartTrigger, ratingEndTrigger, endTrigger = trial(
                 parameters, condition, alpha, 'Intero', win=win,
@@ -599,14 +642,20 @@ def tutorial(parameters, win):
                                        height=parameters['textSize'],
                                        text=parameters['Tutorial5'])
     taskPresentation.draw()
-    press = visual.TextStim(win,
-                            height=parameters['textSize'],
-                            text='Please press SPACE to continue',
+    press = visual.TextStim(win, height=parameters['textSize'],
+                            text=parameters['texts']['textNext'],
                             pos=(0.0, -0.4))
     press.draw()
     win.flip()
-    event.waitKeys(keyList=parameters['startKey'])
-    win.flip()
+    # Wait for participant input before continue
+    if parameters['device'] == 'keyboard':
+        event.waitKeys(keyList=parameters['startKey'])
+    else:
+        parameters['myMouse'].clickReset()
+        while True:
+            buttons = parameters['myMouse'].getPressed()
+            if buttons != [0, 0, 0]:
+                break
 
 
 def responseEstimation(this_hr, parameters, feedback, condition, win=None):
@@ -623,14 +672,15 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
     feedback : bool
         If *True*, provide feedback after decision.
     condition : str
-        The trial condition ['More' or 'Less'] used to check response accuracy.
+        The trial condition ['More' or 'Less'] used to check is response is
+        correct or not.
     """
     print('...starting estimation phase.')
 
     if win is None:
         win = parameters['win']
 
-    estimation, estimationRT = None, None
+    estimation, estimationRT, isCorrect = None, None, None
     responseTrigger = time.time()
 
     if parameters['device'] == 'keyboard':
@@ -645,7 +695,7 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
         if parameters['setup'] in ['behavioral', 'test']:
             parameters['oxiTask'].readInWaiting()
             parameters['oxiTask'].channels['Channel_0'][-1] = 2  # Trigger
-        responseMaideTrigger = time.time()
+        responseMadeTrigger = time.time()
 
         # Check for response provided by the participant
         if not responseKey:
@@ -669,19 +719,14 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
             # Feedback
             if feedback is True:
                 # Is the answer Correct?
-                if (estimation == 'up') & (condition == 'More'):
-                    accuracy = 1
-                elif (estimation == 'down') & (condition == 'Less'):
-                    accuracy = 1
-                else:
-                    accuracy = 0
-                if accuracy == 0:
+                isCorrect = 1 if (estimation == condition) else 0
+                if isCorrect == 0:
                     acc = visual.TextStim(win, height=parameters['textSize'],
                                           color='red', text='False')
                     acc.draw()
                     win.flip()
                     core.wait(2)
-                elif accuracy == 1:
+                elif isCorrect == 1:
                     acc = visual.TextStim(win, height=parameters['textSize'],
                                           color='green', text='Correct')
                     acc.draw()
@@ -690,7 +735,6 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
 
     if parameters['device'] == 'mouse':
 
-        accuracy = None
         # Initialise response feedback
         less = visual.TextStim(win, height=parameters['textSize'],
                                color='white', text='Less', pos=(-0.2, 0.2))
@@ -750,7 +794,7 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
                 less.draw()
                 more.draw()
                 win.flip()
-        responseMaideTrigger = time.time()
+        responseMadeTrigger = time.time()
         this_hr.stop()
 
         # Check for response provided by the participant
@@ -762,39 +806,37 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
             win.flip()
             core.wait(1)
         else:
-
-            if parameters['setup'] in ['behavioral', 'test']:
-                # Read oximeter
-                parameters['oxiTask'].readInWaiting()
-
+            # Is the answer Correct?
+            isCorrect = 1 if (estimation == condition) else 0
             # Feedback
             if feedback is True:
-                # Is the answer Correct?
-                if (estimation == 'More') & (condition == 'More'):
-                    accuracy = 1
-                elif (estimation == 'Less') & (condition == 'Less'):
-                    accuracy = 1
-                else:
-                    accuracy = 0
-                if accuracy == 0:
+
+                if isCorrect == 0:
                     acc = visual.TextStim(win, height=parameters['textSize'],
                                           color='red', text='False')
                     acc.draw()
                     win.flip()
                     core.wait(2)
-                elif accuracy == 1:
+                elif isCorrect == 1:
                     acc = visual.TextStim(win, height=parameters['textSize'],
                                           color='green', text='Correct')
                     acc.draw()
                     win.flip()
                     core.wait(2)
 
-    return responseMaideTrigger, responseTrigger, respProvided, estimation, \
-        estimationRT, accuracy
+    return responseMadeTrigger, responseTrigger, respProvided, estimation, \
+        estimationRT, isCorrect
 
 
 def confidenceRatingTask(parameters, win=None):
     """Confidence rating scale, using keyboard or mouse inputs.
+
+    Parameters
+    ----------
+    parameters : dict
+        Parameters dictionnary.
+    win : psychopy window instance.
+        The window where to show the task.
     """
     print('...starting confidence rating.')
 
@@ -818,13 +860,13 @@ def confidenceRatingTask(parameters, win=None):
                                   text=parameters['texts']['Confidence'])
 
         # Wait for response
-        respProvided = False
+        ratingProvided = False
         clock = core.Clock()
         while clock.getTime() < parameters['maxRatingTime']:
             if not ratingScale.noResponse:
                 ratingScale.markerColor = (0, 0, 1)
                 if clock.getTime() > parameters['minRatingTime']:
-                    respProvided = True
+                    ratingProvided = True
                     break
             ratingScale.draw()
             message.draw()
@@ -836,7 +878,11 @@ def confidenceRatingTask(parameters, win=None):
     elif parameters['device'] == 'mouse':
 
         # Use the mouse position to update the slider position
-        parameters['myMouse'].setPos((np.random.uniform(-.25, .25), -.4))
+        # The mouse is constrined in a rectangle above the Slider
+        # To avoid being dragged out of the screen (in case of multi screens)
+        # and to avoid interferences with the Slider when clicking.
+        win.mouseVisible = False
+        parameters['myMouse'].setPos((np.random.uniform(-.25, .25), .2))
         parameters['myMouse'].clickReset()
         message = visual.TextStim(
             win, height=parameters['textSize'], pos=(0, 0.2),
@@ -849,12 +895,14 @@ def confidenceRatingTask(parameters, win=None):
         clock = core.Clock()
         parameters['myMouse'].clickReset()
         buttons, confidenceRT = parameters['myMouse'].getPressed(getTime=True)
+
         while True:
+            win.mouseVisible = False
             trialdur = clock.getTime()
             buttons, confidenceRT = \
                 parameters['myMouse'].getPressed(getTime=True)
 
-            # Mouse position (keep in window if needed)
+            # Mouse position (keep in in the rectangle)
             newPos = parameters['myMouse'].getPos()
             if newPos[0] < -.5:
                 newX = -.5
@@ -862,15 +910,19 @@ def confidenceRatingTask(parameters, win=None):
                 newX = .5
             else:
                 newX = newPos[0]
-            if newPos[1] < -0.4:
-                newY = -0.4
-            elif newPos[1] > 0:
-                newY = 0
+            if newPos[1] < 0.1:
+                newY = 0.1
+            elif newPos[1] > 0.3:
+                newY = 0.3
             else:
                 newY = newPos[1]
             parameters['myMouse'].setPos((newX, newY))
+
+            # Update marker position in Slider
             p = newX/0.5
             slider.markerPos = 50 + (p*50)
+
+            # Check if response provided
             if (buttons == [1, 0, 0]) &\
                     (trialdur > parameters['minRatingTime']):
                 confidence, confidenceRT, ratingProvided = \

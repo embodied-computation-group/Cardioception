@@ -11,8 +11,9 @@ from systole.recording import findOximeter, Oximeter
 
 def getParameters(participant='SubjectTest', session='001', serialPort=None,
                   setup='behavioral', stairType='psi', exteroception=True,
-                  nTrials=160, BrainVisionIP=None, device='mouse'):
-    """Create task parameters.
+                  nTrials=160, BrainVisionIP=None, device='mouse',
+                  screenNb=0):
+    """Create Heart Rate Discrimination task parameters.
 
     Many task parameters, aesthetics, and options are controlled by the
     parameters dictonary defined herein. These are intended to provide
@@ -94,7 +95,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         interleved staircase procedure following Cornsweet, 1976.
     nBreaking : int
         Number of trials to run before the break.
-    Condition : 1d-array
+    Condition : 1d array-like
         Array of 0s and 1s encoding the conditions (1 : Higher, 0 : Lower). The
         length of the array is defined by `parameters['nTrials']`. If
         `parameters['nTrials']` is odd, will use `parameters['nTrials']` - 1
@@ -115,7 +116,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         The text to present during the estimation and confidence.
     Tutorial 1-5 : str
         Texts presented during the tutorial.
-    win : Psychopy window
+    win : Psychopy window instance
         The window where to run the task.
     listenLogo, heartLogo : Psychopy visual instance
         Image used for the inference and recording phases, respectively.
@@ -128,7 +129,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         threshold) across trials for the interoceptive condition.
     lambdaExtero : 3d numpy array
         Posterior estimate of the psychophysics function parameters (slope and
-        threshold) across trials for the interoceptive condition.
+        threshold) across trials for the exteroceptive condition.
     signal_df : pandas.DataFrame instance
         Dataframe where the pulse signal recorded during the interoception
         condition will be stored.
@@ -139,13 +140,13 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     if parameters['device'] == 'keyboard':
         parameters['confScale'] = [1, 7]
     parameters['labelsRating'] = ['Guess', 'Certain']
-    parameters['screenNb'] = 0
+    parameters['screenNb'] = screenNb
     parameters['monitor'] = 'testMonitor'
     parameters['nFeedback'] = 10
     parameters['nConfidence'] = 5
     parameters['respMax'] = 8
-    parameters['minRatingTime'] = 1
-    parameters['maxRatingTime'] = 14
+    parameters['minRatingTime'] = .5
+    parameters['maxRatingTime'] = 5
     parameters['startKey'] = 'space'
     parameters['allowedKeys'] = ['up', 'down']
     parameters['nTrials'] = nTrials
@@ -169,13 +170,17 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     if not os.path.exists(parameters['results']):
         os.makedirs(parameters['results'])
 
+    # Create and randomize condition vectors
     if stairType == 'UpDown':
-        # Create condition randomized vector
-        parameters['Conditions'] = np.hstack(
-                [np.array(['More'] * round(parameters['nTrials']/2)),
-                 np.array(['Less'] * round(parameters['nTrials']/2))])
+        if exteroception is False:
+            # Create condition randomized vector
+            parameters['Conditions'] = np.hstack(
+                    [np.array(['More'] * round(parameters['nTrials']/2)),
+                     np.array(['Less'] * round(parameters['nTrials']/2))])
     elif stairType == 'psi':
-        parameters['Conditions'] = np.array(['psi'] * parameters['nTrials'])
+        parameters['Conditions'] = \
+            np.array([None] * round(parameters['nTrials']/2))
+
     parameters['staircaisePosteriors'] = {}
     parameters['staircaisePosteriors']['Intero'] = []
     if exteroception is True:
@@ -183,8 +188,8 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         parameters['Conditions'] = np.tile(parameters['Conditions'], 2)
         # Create condition randomized vector
         parameters['Modality'] = np.hstack(
-                [np.array(['Extero'] * parameters['nTrials']),
-                 np.array(['Intero'] * parameters['nTrials'])])
+                [np.array(['Extero'] * round(parameters['nTrials']/2)),
+                 np.array(['Intero'] * round(parameters['nTrials']/2))])
     elif exteroception is False:
         parameters['Modality'] = np.array(['Intero'] * parameters['nTrials'])
 
@@ -228,7 +233,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
             nTrials=nTrials, intensRange=[-40.5, 40.5],
             alphaRange=[-40.5, 40.5], betaRange=[0.1, 20],
             intensPrecision=1, alphaPrecision=1, betaPrecision=0.1,
-            delta=0.05, stepType='lin', expectedMin=0)
+            delta=0.02, stepType='lin', expectedMin=0)
 
     if exteroception is True:
         if stairType == 'UpDown':
@@ -255,7 +260,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
                 nTrials=nTrials, intensRange=[-40.5, 40.5],
                 alphaRange=[-40.5, 40.5], betaRange=[0.1, 20],
                 intensPrecision=1, alphaPrecision=1, betaPrecision=0.1,
-                delta=0.05, stepType='lin', expectedMin=0)
+                delta=0.02, stepType='lin', expectedMin=0)
 
     parameters['setup'] = setup
     if setup == 'behavioral':
@@ -270,21 +275,30 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         port = serial.Serial(serialPort)
         parameters['oxiTask'] = Oximeter(serial=port, sfreq=75, add_channels=1)
         parameters['oxiTask'].setup().read(duration=1)
-    if setup == 'test':
+    elif setup == 'test':
         # Use pre-recorded pulse time series for testing
         port = serialSim()
         parameters['oxiTask'] = Oximeter(serial=port, sfreq=75, add_channels=1)
         parameters['oxiTask'].setup().read(duration=1)
+    elif setup == 'fMRI':
+        parameters['fMRItrigger'] = ['5']  # Keys to listen for fMRI trigger
 
     #######
     # Texts
     #######
     parameters['texts'] = {
+            'textTaskStart': "The task is now going to start, get ready.",
+            'textWaitTrigger': "Waiting for fMRI trigger...",
             'Estimation': {'Intero': """Do you think the tone frequency was higher or lower than your heart rate?""",
                            'Extero': """Do you think the tone frequency was higher or lower than the previous one?"""},
             'Confidence': """How confident are you about your estimation?
 
         Use the RIGHT/LEFT keys to select and the DOWN key to confirm"""}
+
+    if parameters['device'] == 'keyboard':
+        parameters['texts']['textNext'] = 'Please press SPACE to continue'
+    elif parameters['device'] == 'mouse':
+        parameters['texts']['textNext'] = 'Please press any button to continue'
 
     parameters['Tutorial1'] = (
         "During this experiment, we are going to record your heart rate and generate sounds reflecting your cardiac activity.")
