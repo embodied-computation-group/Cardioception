@@ -146,9 +146,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
         if (nTrial % parameters['nBreaking'] == 0) & (nTrial != 0):
             message = visual.TextStim(
                             win, height=parameters['textSize'],
-                            text=('Break. You can rest as long as'
-                                  ' you want. Just press SPACE when you want'
-                                  ' to resume the task.'))
+                            text=parameters['texts']['textBreaks'])
             message.draw()
             win.flip()
             if parameters['setup'] in ['behavioral', 'test']:
@@ -213,7 +211,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
     # Save parameters
     print('Saving Parameters in pickle...')
     save_parameter = parameters.copy()
-    for k in ['win', 'heartLogo', 'listenLogo', 'listenResponse', 'stairCase',
+    for k in ['win', 'heartLogo', 'listenLogo', 'stairCase',
               'oxiTask', 'myMouse']:
         del save_parameter[k]
     with open(save_parameter['results'] + '/' +
@@ -432,7 +430,12 @@ def trial(parameters, condition, alpha, modality, win=None,
 
     # Play selected BPM frequency
     responseSound = sound.Sound(responseFile)
-    parameters['listenLogo'].autoDraw = True
+    if modality == 'Intero':
+        parameters['heartLogo'].autoDraw = True
+    elif modality == 'Extero':
+        parameters['listenLogo'].autoDraw = True
+    else:
+        raise ValueError('Invalid modality provided')
     # Record participant response (+/-)
     message = visual.TextStim(
         win, height=parameters['textSize'], pos=(0, 0.4),
@@ -463,8 +466,12 @@ def trial(parameters, condition, alpha, modality, win=None,
             responseSound, parameters, feedback, condition)
     press.autoDraw = False
     message.autoDraw = False
-    parameters['listenLogo'].autoDraw = False
-
+    if modality == 'Intero':
+        parameters['heartLogo'].autoDraw = False
+    elif modality == 'Extero':
+        parameters['listenLogo'].autoDraw = False
+    else:
+        raise ValueError('Invalid modality provided')
     ###################
     # Confidence Rating
     ###################
@@ -544,7 +551,7 @@ def tutorial(parameters, win=None):
     # Heartrate recording
     recording = visual.TextStim(win,
                                 height=parameters['textSize'],
-                                pos=(0.0, 0.2),
+                                pos=(0.0, 0.3),
                                 text=parameters['Tutorial2'])
     press = visual.TextStim(win,
                             height=parameters['textSize'],
@@ -568,7 +575,7 @@ def tutorial(parameters, win=None):
 
     # Listen and response
     listenResponse = visual.TextStim(win, height=parameters['textSize'],
-                                     pos=(0.0, 0.2),
+                                     pos=(0.0, 0.3),
                                      text=parameters['Tutorial3'])
     press = visual.TextStim(win, height=parameters['textSize'],
                             text=parameters['texts']['textNext'],
@@ -608,7 +615,7 @@ def tutorial(parameters, win=None):
     # If extero conditions required, show tutorial.
     if parameters['ExteroCondition'] is True:
         exteroText = visual.TextStim(win, height=parameters['textSize'],
-                                     pos=(0.0, 0.2),
+                                     pos=(0.0, 0.3),
                                      text=parameters['Tutorial3bis'])
         press = visual.TextStim(win, height=parameters['textSize'],
                                 text=parameters['texts']['textNext'],
@@ -630,7 +637,7 @@ def tutorial(parameters, win=None):
                     break
 
         exteroResponse = visual.TextStim(win, height=parameters['textSize'],
-                                         pos=(0.0, 0.2),
+                                         pos=(0.0, 0.3),
                                          text=parameters['Tutorial3ter'])
         press = visual.TextStim(win, height=parameters['textSize'],
                                 text=parameters['texts']['textNext'],
@@ -872,28 +879,22 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
         if respProvided is False:
             # Record participant response (+/-)
             message = visual.TextStim(win, height=parameters['textSize'],
-                                      text='Too late')
+                                      text='Too late', color='red')
             message.draw()
             win.flip()
-            core.wait(1)
+            core.wait(.5)
         else:
             # Is the answer Correct?
             isCorrect = 1 if (estimation == condition) else 0
             # Feedback
             if feedback is True:
-
-                if isCorrect == 0:
-                    acc = visual.TextStim(win, height=parameters['textSize'],
-                                          color='red', text='False')
-                    acc.draw()
-                    win.flip()
-                    core.wait(2)
-                elif isCorrect == 1:
-                    acc = visual.TextStim(win, height=parameters['textSize'],
-                                          color='green', text='Correct')
-                    acc.draw()
-                    win.flip()
-                    core.wait(2)
+                textFeedback = 'False' if isCorrect == 0 else 'Correct'
+                colorFeedback = 'red' if isCorrect == 0 else 'green'
+                acc = visual.TextStim(win, height=parameters['textSize'],
+                                      color=colorFeedback, text=textFeedback)
+                acc.draw()
+                win.flip()
+                core.wait(1)
 
     return responseMadeTrigger, responseTrigger, respProvided, estimation, \
         estimationRT, isCorrect
@@ -999,11 +1000,24 @@ def confidenceRatingTask(parameters, win=None):
                 confidence, confidenceRT, ratingProvided = \
                     slider.markerPos, clock.getTime(), True
                 print(f'...Confidence level: {confidence}' +
-                      ' with response time {round(confidenceRT)}')
+                      f' with response time {round(confidenceRT)}')
+                # Change marker color after response provided
+                slider.marker.color = 'green'
+                slider.draw()
+                message.draw()
+                win.flip()
+                core.wait(0.2)
                 break
             elif trialdur > parameters['maxRatingTime']:  # if too long
                 ratingProvided = False
                 confidenceRT = parameters['myMouse'].clickReset()
+
+                # Text feedback if no rating provided
+                message = visual.TextStim(win, height=parameters['textSize'],
+                                          text='Too late', color='red')
+                message.draw()
+                win.flip()
+                core.wait(.5)
                 break
             slider.draw()
             message.draw()

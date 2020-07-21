@@ -310,39 +310,39 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     parameters['Tutorial3'] = (
         f"""After this procedure, you will see the listening and response icons.
 
-        You will then have to focus on the tone frequency and decide if it is faster ({moreResp}) or slower ({lessResp}) than your recorded heart rate in the listening interval.
+You will then have to focus on the tone frequency and decide if it is faster ({moreResp}) or slower ({lessResp}) than your recorded heart rate in the listening interval.
 
-        The tone frequency will ALWAYS be slower or faster than your heart rate as previously recorded. Please guess if you are unsure.""")
+The tone frequency will ALWAYS be slower or faster than your heart rate as previously recorded. Please guess if you are unsure.""")
 
     if parameters['ExteroCondition'] is True:
         parameters['Tutorial3bis'] = (
             f"""For some trials, instead of seeing the heart icon at the beginning, you will see a listening icon.
 
-            You will then have to focus on the tone frequency you will hear.""")
+You will then have to focus on the tone frequency you will hear.""")
 
         parameters['Tutorial3ter'] = (
             f"""After this procedure, you will see the listening and response icons, like for the previous ones.
 
-            You will then have to focus on the tone frequency and decide if it is faster ({moreResp}) or slower ({lessResp}) than the previous one.
+You will then have to focus on the tone frequency and decide if it is faster ({moreResp}) or slower ({lessResp}) than the previous one.
 
-            The tone frequency will ALWAYS be slower or faster than the previous one. Please guess if you are unsure.""")
+The tone frequency will ALWAYS be slower or faster than the previous one. Please guess if you are unsure.""")
 
 
     parameters['Tutorial4'] = (
         """Once you have provided your decision, you will also be asked to provide your level of confidence.
 
-        A high number here means that you are totally certain in your choice, a small number means that you are guessing.
+A high number here means that you are totally certain in your choice, a small number means that you are guessing.
 
-        You should use the RIGHT and LEFT key to select your response and the DOWN key to confirm.""")
+You should use the RIGHT and LEFT key to select your response and the DOWN key to confirm.""")
 
     parameters['Tutorial5'] = (
         """This sequence will be repeated during the task.
 
-        At times the task may be very difficult; the difference between your true heart rate and the presented tones may be very small.
+At times the task may be very difficult; the difference between your true heart rate and the presented tones may be very small.
 
-        This means that you should try to use the entire length of the confidence scale to reflect your subjective uncertainty on each trial.
+This means that you should try to use the entire length of the confidence scale to reflect your subjective uncertainty on each trial.
 
-        As the task difficulty will change over time, it is rare that will be totally confident or totally uncertain""")
+As the task difficulty will change over time, it is rare that will be totally confident or totally uncertain""")
 
     # Open window
     if parameters['setup'] == 'test':
@@ -357,18 +357,11 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     ###############
     # Image loading
     ###############
-    parameters['listenResponse'] = visual.ImageStim(
-        win=parameters['win'],
-        units='height',
-        image=os.path.dirname(__file__) + '/Images/listenResponse.png',
-        pos=(0.0, -0.2))
-    parameters['listenResponse'].size *= 0.1
-
     parameters['listenLogo'] = visual.ImageStim(
         win=parameters['win'],
         units='height',
         image=os.path.dirname(__file__) + '/Images/listen.png',
-        pos=(0.0, -0.2))
+        pos=(0.0, 0.0))
     parameters['listenLogo'].size *= 0.1
 
     parameters['heartLogo'] = visual.ImageStim(
@@ -380,8 +373,9 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     parameters['textSize'] = 0.04
     parameters['HRcutOff'] = [40, 120]
     parameters["BrainVisionIP"] = BrainVisionIP
-    if parameters['device'] == 'mouse':
-        parameters['confScale'] = [1, 100]
+    if parameters['device'] == 'keyboard':
+        parameters['confScale'] = [1, 10]
+    elif parameters['device'] == 'mouse':
         parameters['myMouse'] = event.Mouse()
 
     return parameters
