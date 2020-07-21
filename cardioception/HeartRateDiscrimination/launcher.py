@@ -6,10 +6,10 @@ from psychopy import gui
 
 # Create a GUI and ask for high-evel experiment parameters
 g = gui.Dlg()
-g.addField("participant", initial='test')
+g.addField("participant", initial='micah_test')
 g.addField("session", initial='001')
 g.addField("Serial Port:", initial=None)
-g.addField("Setup:", initial='test')
+g.addField("Setup:", initial='behavioral')
 g.addField("stairType:", initial='psi')
 g.show()
 
@@ -21,8 +21,8 @@ parameters = getParameters(
 
 # Limit the number of trials to run
 # parameters['Conditions'] = parameters['Conditions'][:4]
-parameters['nFeedback'] = 1
-parameters['nConfidence'] = 1
+parameters['nFeedback'] = 4
+parameters['nConfidence'] = 4
 parameters['nBreaking'] = 2
 
 # Run task
