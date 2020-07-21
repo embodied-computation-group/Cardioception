@@ -12,7 +12,7 @@ from systole.recording import findOximeter, Oximeter
 def getParameters(participant='SubjectTest', session='001', serialPort=None,
                   setup='behavioral', stairType='psi', exteroception=True,
                   nTrials=160, BrainVisionIP=None, device='mouse',
-                  screenNb=0):
+                  screenNb=0, fullscr=True):
     """Create Heart Rate Discrimination task parameters.
 
     Many task parameters, aesthetics, and options are controlled by the
@@ -287,68 +287,66 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     #######
     # Texts
     #######
-    btnext = 'SPACE' if parameters['device'] == 'keyboard' else 'any button'
+    btnext = 'press SPACE' if parameters['device'] == 'keyboard' else 'click the mouse'
     parameters['texts'] = {
             'textTaskStart': "The task is now going to start, get ready.",
-            'textBreaks': f"Break. You can rest as long as you want. Just press {btnext} when you want to resume the task.",
-            'textNext': f'Please press {btnext} to continue',
+            'textBreaks': f"Break. You can rest as long as you want. Just {btnext} when you want to resume the task.",
+            'textNext': f'Please {btnext} to continue',
             'textWaitTrigger': "Waiting for fMRI trigger...",
-            'Estimation': {'Intero': """Do you think the tone frequency was higher or lower than your heart rate?""",
-                           'Extero': """Do you think the tone frequency was higher or lower than the previous one?"""},
-            'Confidence': """How confident are you about your estimation?
+            'Estimation': {'Intero': """Are these tones faster or slower than your heart?""",
+                           'Extero': """Are these tones faster or slower than the previous?"""},
+            'Confidence': """How confident are you in your choice?
 
-        Use the RIGHT/LEFT keys to select and the DOWN key to confirm"""}
+        Use the RIGHT or LEFT mouse buttons to select FASTER or SLOWER"""}
 
     parameters['Tutorial1'] = (
-        "During this experiment, we are going to record your heart rate and generate sounds reflecting your cardiac activity.")
+        "During this experiment, we will record your pulse and generate tones reflecting your heart rate.")
 
     parameters['Tutorial2'] = (
-        "When this heart icon is presented, you will have to focus on your cardiac activity while it is recorded for 5 seconds.")
+        "When you see this heart icon, try to focus on your heartbeat for 5 seconds. Try not to move, as we are recording your pulse in this period")
 
     moreResp = 'UP key' if parameters['device'] == 'keyboard' else 'RIGHT button'
     lessResp = 'DOWN key' if parameters['device'] == 'keyboard' else 'LEFT button'
     parameters['Tutorial3'] = (
-        f"""After this procedure, you will see the listening and response icons.
+        f"""After this 'heart listening' period, you will see the response icons and hear a series of beeps.
 
-You will then have to focus on the tone frequency and decide if it is faster ({moreResp}) or slower ({lessResp}) than your recorded heart rate in the listening interval.
+As quickly and accurately as possible, you will listen to these beeps and decide if they are faster ({moreResp}) or slower ({lessResp}) than your own heart rate.
 
-The tone frequency will ALWAYS be slower or faster than your heart rate as previously recorded. Please guess if you are unsure.""")
+The beeps will ALWAYS be slower or faster than your heart. Please guess, even if you are unsure.""")
 
     if parameters['ExteroCondition'] is True:
         parameters['Tutorial3bis'] = (
-            f"""For some trials, instead of seeing the heart icon at the beginning, you will see a listening icon.
+            f"""For some trials, instead of seeing the heart icon, you will see a listening icon.
 
-You will then have to focus on the tone frequency you will hear.""")
+You will then have to listen to a first set of beeps, instead of your heart.""")
 
         parameters['Tutorial3ter'] = (
-            f"""After this procedure, you will see the listening and response icons, like for the previous ones.
+            f"""After these first beeps, you will see the response icons appear, and a second set of beeps will play.
 
-You will then have to focus on the tone frequency and decide if it is faster ({moreResp}) or slower ({lessResp}) than the previous one.
+As quickly and accurately as possible, you will listen to these beeps and decide if they are faster ({moreResp}) or slower ({lessResp}) than the first set of beeps.
 
-The tone frequency will ALWAYS be slower or faster than the previous one. Please guess if you are unsure.""")
+The second seires of beeps will ALWAYS be slower or faster than the first series. Please guess, even if you are unsure.""")
 
 
     parameters['Tutorial4'] = (
-        """Once you have provided your decision, you will also be asked to provide your level of confidence.
+        """Once you have provided your decision, you will also be asked to rate how confident you feel in your decision.
 
-A high number here means that you are totally certain in your choice, a small number means that you are guessing.
+Here, the maximum rting (100) means that you are totally certain in your choice, and the smallest rating means that you felt that you were guessing.
 
-You should use the RIGHT and LEFT key to select your response and the DOWN key to confirm.""")
+You should use mouse to select your rating""")
 
     parameters['Tutorial5'] = (
         """This sequence will be repeated during the task.
 
-At times the task may be very difficult; the difference between your true heart rate and the presented tones may be very small.
+At times the task may be very difficult; the difference between your true heart rate and the presented beeps may be very small.
 
 This means that you should try to use the entire length of the confidence scale to reflect your subjective uncertainty on each trial.
 
-As the task difficulty will change over time, it is rare that will be totally confident or totally uncertain""")
+As the task difficulty will change over time, it is rare that you will be totally confident or totally uncertain""")
 
     # Open window
     if parameters['setup'] == 'test':
         fullscr = False
-    else:
-        fullscr = True
     parameters['win'] = visual.Window(monitor=parameters['monitor'],
                                       screen=parameters['screenNb'],
                                       fullscr=fullscr, units='height')
