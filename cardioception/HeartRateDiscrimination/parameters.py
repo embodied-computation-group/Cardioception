@@ -135,6 +135,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         condition will be stored.
     """
     parameters = dict()
+    parameters['ExteroCondition'] = exteroception
     parameters['setup'] = setup
     parameters['device'] = device
     if parameters['device'] == 'keyboard':
@@ -286,19 +287,17 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     #######
     # Texts
     #######
+    btnext = 'SPACE' if parameters['device'] == 'keyboard' else 'any button'
     parameters['texts'] = {
             'textTaskStart': "The task is now going to start, get ready.",
+            'textBreaks': f"Break. You can rest as long as you want. Just press {btnext} when you want to resume the task.",
+            'textNext': f'Please press {btnext} to continue',
             'textWaitTrigger': "Waiting for fMRI trigger...",
             'Estimation': {'Intero': """Do you think the tone frequency was higher or lower than your heart rate?""",
                            'Extero': """Do you think the tone frequency was higher or lower than the previous one?"""},
             'Confidence': """How confident are you about your estimation?
 
         Use the RIGHT/LEFT keys to select and the DOWN key to confirm"""}
-
-    if parameters['device'] == 'keyboard':
-        parameters['texts']['textNext'] = 'Please press SPACE to continue'
-    elif parameters['device'] == 'mouse':
-        parameters['texts']['textNext'] = 'Please press any button to continue'
 
     parameters['Tutorial1'] = (
         "During this experiment, we are going to record your heart rate and generate sounds reflecting your cardiac activity.")
@@ -314,6 +313,20 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         You will then have to focus on the tone frequency and decide if it is faster ({moreResp}) or slower ({lessResp}) than your recorded heart rate in the listening interval.
 
         The tone frequency will ALWAYS be slower or faster than your heart rate as previously recorded. Please guess if you are unsure.""")
+
+    if parameters['ExteroCondition'] is True:
+        parameters['Tutorial3bis'] = (
+            f"""For some trials, instead of seeing the heart icon at the beginning, you will see a listening icon.
+
+            You will then have to focus on the tone frequency you will hear.""")
+
+        parameters['Tutorial3ter'] = (
+            f"""After this procedure, you will see the listening and response icons, like for the previous ones.
+
+            You will then have to focus on the tone frequency and decide if it is faster ({moreResp}) or slower ({lessResp}) than the previous one.
+
+            The tone frequency will ALWAYS be slower or faster than the previous one. Please guess if you are unsure.""")
+
 
     parameters['Tutorial4'] = (
         """Once you have provided your decision, you will also be asked to provide your level of confidence.

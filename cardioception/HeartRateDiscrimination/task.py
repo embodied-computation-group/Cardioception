@@ -151,9 +151,10 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
                                   ' to resume the task.'))
             message.draw()
             win.flip()
-            parameters['oxiTask'].save(
-                parameters['results'] + '/' +
-                parameters['participant'] + str(nTrial))
+            if parameters['setup'] in ['behavioral', 'test']:
+                parameters['oxiTask'].save(
+                    parameters['results'] + '/' +
+                    parameters['participant'] + str(nTrial))
 
             # Wait for participant input before continue
             if parameters['device'] == 'keyboard':
@@ -172,8 +173,9 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
             win.flip()
 
             # Reset recording when ready
-            parameters['oxiTask'].setup()
-            parameters['oxiTask'].read(duration=1)
+            if parameters['setup'] in ['behavioral', 'test']:
+                parameters['oxiTask'].setup()
+                parameters['oxiTask'].read(duration=1)
 
     # save data as multiple formats
     try:
@@ -307,7 +309,8 @@ def trial(parameters, condition, alpha, modality, win=None,
         parameters['heartLogo'].draw()
         win.flip()
 
-        parameters['oxiTask'].channels['Channel_0'][-1] = 3  # Start trigger
+        if parameters['setup'] in ['behavioral', 'test']:
+            parameters['oxiTask'].channels['Channel_0'][-1] = 3  # Start trigger
         startTrigger = time.time()
 
         # Recording
@@ -587,7 +590,8 @@ def tutorial(parameters, win=None):
                 break
 
     # Run 10 training trials with feedback
-    parameters['oxiTask'].setup().read(duration=2)
+    if parameters['setup'] in ['test', 'behavioral']:
+        parameters['oxiTask'].setup().read(duration=2)
     for i in range(parameters['nFeedback']):
 
         # Ramdom selection of condition
@@ -601,6 +605,68 @@ def tutorial(parameters, win=None):
                 parameters, condition, alpha, 'Intero', win=win,
                 feedback=True, confidenceRating=False)
 
+    # If extero conditions required, show tutorial.
+    if parameters['ExteroCondition'] is True:
+        exteroText = visual.TextStim(win, height=parameters['textSize'],
+                                     pos=(0.0, 0.2),
+                                     text=parameters['Tutorial3bis'])
+        press = visual.TextStim(win, height=parameters['textSize'],
+                                text=parameters['texts']['textNext'],
+                                pos=(0.0, -0.4))
+        exteroText.draw()
+        parameters['listenLogo'].draw()
+        press.draw()
+        win.flip()
+        core.wait(1)
+
+        # Wait for participant input before continue
+        if parameters['device'] == 'keyboard':
+            event.waitKeys(keyList=parameters['startKey'])
+        else:
+            parameters['myMouse'].clickReset()
+            while True:
+                buttons = parameters['myMouse'].getPressed()
+                if buttons != [0, 0, 0]:
+                    break
+
+        exteroResponse = visual.TextStim(win, height=parameters['textSize'],
+                                         pos=(0.0, 0.2),
+                                         text=parameters['Tutorial3ter'])
+        press = visual.TextStim(win, height=parameters['textSize'],
+                                text=parameters['texts']['textNext'],
+                                pos=(0.0, -0.4))
+        exteroResponse.draw()
+        parameters['listenLogo'].draw()
+        press.draw()
+        win.flip()
+        core.wait(1)
+
+        # Wait for participant input before continue
+        if parameters['device'] == 'keyboard':
+            event.waitKeys(keyList=parameters['startKey'])
+        else:
+            parameters['myMouse'].clickReset()
+            while True:
+                buttons = parameters['myMouse'].getPressed()
+                if buttons != [0, 0, 0]:
+                    break
+
+        # Run 10 training trials with feedback
+        if parameters['setup'] in ['test', 'behavioral']:
+            parameters['oxiTask'].setup().read(duration=2)
+        for i in range(parameters['nFeedback']):
+
+            # Ramdom selection of condition
+            condition = np.random.choice(['More', 'Less'])
+            alpha = -20.0 if condition == 'Less' else 20.0
+
+            listenBPM, responseBPM, estimation, estimationRT, confidence,\
+                confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
+                startTrigger, soundTrigger, responseMadeTrigger,\
+                ratingStartTrigger, ratingEndTrigger, endTrigger = trial(
+                    parameters, condition, alpha, 'Extero', win=win,
+                    feedback=True, confidenceRating=False)
+
     # Confidence rating
     confidence = visual.TextStim(win,
                                  height=parameters['textSize'],
@@ -612,6 +678,8 @@ def tutorial(parameters, win=None):
                             pos=(0.0, -0.4))
     press.draw()
     win.flip()
+    core.wait(1)
+
     # Wait for participant input before continue
     if parameters['device'] == 'keyboard':
         event.waitKeys(keyList=parameters['startKey'])
@@ -622,7 +690,8 @@ def tutorial(parameters, win=None):
             if buttons != [0, 0, 0]:
                 break
 
-    parameters['oxiTask'].setup().read(duration=2)
+    if parameters['setup'] in ['test', 'behavioral']:
+        parameters['oxiTask'].setup().read(duration=2)
     # Run 5 training trials with confidence rating
     for i in range(parameters['nConfidence']):
 
@@ -647,6 +716,8 @@ def tutorial(parameters, win=None):
                             pos=(0.0, -0.4))
     press.draw()
     win.flip()
+    core.wait(1)
+
     # Wait for participant input before continue
     if parameters['device'] == 'keyboard':
         event.waitKeys(keyList=parameters['startKey'])
@@ -889,7 +960,7 @@ def confidenceRatingTask(parameters, win=None):
             text=parameters['texts']['Confidence'])
         slider = visual.Slider(
             win=win, name='slider', pos=(0, -0.2), size=(.7, 0.1),
-            labels=['low', 'high'], granularity=1, ticks=(1, 100),
+            labels=['low', '', 'high'], granularity=1, ticks=(0, 50, 100),
             style=('rating'), color='LightGray', flip=False, labelHeight=.1)
         slider.marker.size = (.03, .03)
         clock = core.Clock()
