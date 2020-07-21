@@ -1,0 +1,2 @@
+systole>=0.1.2
+psychopy>=2020.1.2

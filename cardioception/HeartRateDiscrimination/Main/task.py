@@ -51,8 +51,11 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
     oxiTask.read(duration=1)
 
     results_df, i = pd.DataFrame([]), 0  # Final DataFrame and trial count
-    for i, condition in enumerate(parameters['Conditions']):
+    for i, condition, modality in zip(np.arange(0, parameters['nTrials']),
+                                      parameters['Conditions'],
+                                      parameters['Modality']):
 
+        # Wait for key press if this is the first trial
         if i == 0:
             # Ask the participant to press 'Space' (default) to start
             messageStart = visual.TextStim(win,
@@ -62,39 +65,58 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             win.flip()
             event.waitKeys(keyList=parameters['startKey'])
 
-        try:
-            thisTrial = parameters['stairCase'].next()
-        except StopIteration:  # we got a StopIteration error
-            print('End of the trial')
-
-        # Select the staircase
-        stairCond = thisTrial[1]['label']
-        intensity = thisTrial[0]
+        # Is this an interoception or exteroception condition
+        if modality == 'Intero':
+            if parameters['stairType'] == 'UpDown':
+                thisTrial = parameters['stairCase'].next()
+                stairCond = thisTrial[1]['label']
+                intensity = thisTrial[0]
+            elif parameters['stairType'] == 'psi':
+                intensity = parameters['stairCase'][condition].next()
+                stairCond = condition
+        elif modality == 'Extero':
+            if parameters['stairType'] == 'UpDown':
+                thisTrial = parameters['exteroStairCase'].next()
+                stairCond = thisTrial[1]['label']
+                intensity = thisTrial[0]
+            elif parameters['stairType'] == 'psi':
+                intensity = parameters['exteroStairCase'][condition].next()
+                stairCond = condition
 
         # Start trial
         average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
             soundTrigger2, ratingTrigger, endTrigger = trial(
-                              parameters, condition, intensity, win=win,
-                              oxi=oxiTask, confidenceRating=confidenceRating)
+                          parameters, condition, intensity, modality, win=win,
+                          oxi=oxiTask, confidenceRating=confidenceRating)
 
         # Is the answer Correct? Update the staircase model
         if (estimation == 'up') & (condition == 'More'):
             if stairCase is not None:
-                parameters['stairCase'].addResponse(1)
+                if parameters['stairType'] == 'UpDown':
+                    parameters['stairCase'].addResponse(1)
+                elif parameters['stairType'] == 'psi':
+                    parameters['stairCase'][condition].addResponse(1)
             accuracy = 1
         elif (estimation == 'down') & (condition == 'Less'):
             if stairCase is not None:
-                parameters['stairCase'].addResponse(1)
+                if parameters['stairType'] == 'UpDown':
+                    parameters['stairCase'].addResponse(1)
+                elif parameters['stairType'] == 'psi':
+                    parameters['stairCase'][condition].addResponse(1)
             accuracy = 1
         else:
             if stairCase is not None:
-                parameters['stairCase'].addResponse(0)
+                if parameters['stairType'] == 'UpDown':
+                    parameters['stairCase'].addResponse(0)
+                elif parameters['stairType'] == 'psi':
+                    parameters['stairCase'][condition].addResponse(0)
             accuracy = 0
 
         # Store results
         results_df = results_df.append([
                     pd.DataFrame({'Condition': [condition],
+                                  'Modallity': [modality],
                                   'StairCond': [stairCond],
                                   'Estimation': [estimation],
                                   'EstimationRT': [estimationRT],
@@ -140,15 +162,24 @@ def run(parameters, stairCase=None, win=None, confidenceRating=True,
             oxiTask.read(duration=1)
 
     # save data as multiple formats
-    parameters['stairCase'].saveAsExcel(
-        parameters['results'] + '/' + parameters['subject'])
-    parameters['stairCase'].saveAsPickle(
-        parameters['results'] + '/' + parameters['subject'])
-
+    if parameters['stairType'] == 'UpDown':
+        parameters['stairCase'].saveAsExcel(
+            parameters['results'] + '/' + parameters['subject'])
+        parameters['stairCase'].saveAsPickle(
+            parameters['results'] + '/' + parameters['subject'])
+    elif parameters['stairType'] == 'psi':
+        parameters['stairCase']['low'].saveAsExcel(
+            parameters['results'] + '/' + parameters['subject'])
+        parameters['stairCase']['low'].saveAsPickle(
+            parameters['results'] + '/' + parameters['subject'])
+        parameters['stairCase']['high'].saveAsExcel(
+            parameters['results'] + '/' + parameters['subject'])
+        parameters['stairCase']['high'].saveAsPickle(
+            parameters['results'] + '/' + parameters['subject'])
     return results_df
 
 
-def trial(parameters, condition, intensity, win=None, oxi=None,
+def trial(parameters, condition, intensity, modality, win=None, oxi=None,
           confidenceRating=True, feedback=False):
     """Run one trial.
 
@@ -160,6 +191,9 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
         Can be 'Higher' or 'Lower'.
     intensity : float
         The intensity of the stimulus, from the staircase procedure.
+    modality : str
+        The modality, can be 'Intero' or 'Extro' if an exteroceptive control
+        condition has been added.
     stairCase : Instance of staircase handler.
         Staircase procedure used during the task. If `feedback=True`, stairCase
         should be None.
@@ -212,54 +246,87 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
     win.flip()
     core.wait(0.25)
 
-    ###########
-    # Recording
-    ###########
-    messageRecord = visual.TextStim(win,
-                                    height=parameters['textSize'],
-                                    pos=(0.0, 0.2),
-                                    text='Listen to your Heart')
-    messageRecord.draw()
+    if modality == 'Intero':
 
-    parameters['heartLogo'].draw()
-    win.flip()
+        ###########
+        # Recording
+        ###########
+        messageRecord = visual.TextStim(win,
+                                        height=parameters['textSize'],
+                                        pos=(0.0, 0.2),
+                                        text='Listen to your Heart')
+        messageRecord.draw()
 
-    oxi.channels['Channel_0'][-1] = 3  # Start trigger
-    startTrigger = time.time()
+        parameters['heartLogo'].draw()
+        win.flip()
 
-    # Recording
-    while True:
+        oxi.channels['Channel_0'][-1] = 3  # Start trigger
+        startTrigger = time.time()
 
-        # Read PPG
-        oxi.read(duration=5.0)
+        # Recording
+        while True:
 
-        # Get actual heart Rate
-        signal, peaks = oxi_peaks(oxi.recording)
-        average_hr = int(60000/np.diff(np.where(peaks[-5000:])[0]).mean())
+            # Read PPG
+            oxi.read(duration=5.0)
 
-        # Prevent crash if NaN value
-        if np.isnan(average_hr):
-            message = visual.TextStim(win, height=parameters['textSize'],
-                                      text=('Please make sure the oximeter'
-                                      'is correctly clipped to your finger.'))
-            message.draw()
-            win.flip()
-            core.wait(2)
+            # Get actual heart Rate
+            signal, peaks = oxi_peaks(oxi.recording)
+            average_hr = int(60000/np.diff(np.where(peaks[-5000:])[0]).mean())
 
-        else:
-            # Check for extreme heart rate values, if crosses theshold, hold
-            # the task until resolved. Cutoff values determined in parameters
-            # to correspond to biologically unlikely values.
-            if ((average_hr > parameters['HRcutOff'][0]) &
-               (average_hr < parameters['HRcutOff'][1])):
-                break
-            else:
-                message = visual.TextStim(win, height=parameters['textSize'],
-                                          text=('Please do not move your hand'
-                                                ' during the recording'))
+            # Prevent crash if NaN value
+            if np.isnan(average_hr):
+                message = visual.TextStim(
+                              win, height=parameters['textSize'],
+                              text=('Please make sure the oximeter'
+                                    'is correctly clipped to your finger.'))
                 message.draw()
                 win.flip()
                 core.wait(2)
+
+            else:
+                # Check for extreme heart rate values, if crosses theshold,
+                # hold the task until resolved. Cutoff values determined in
+                # parameters to correspond to biologically unlikely values.
+                if ((average_hr > parameters['HRcutOff'][0]) &
+                   (average_hr < parameters['HRcutOff'][1])):
+                    break
+                else:
+                    message = visual.TextStim(
+                          win, height=parameters['textSize'],
+                          text=('Please do not move your hand'
+                                ' during the recording'))
+                    message.draw()
+                    win.flip()
+                    core.wait(2)
+
+    elif modality == 'Extero':
+
+        ###########
+        # Recording
+        ###########
+        messageRecord = visual.TextStim(win,
+                                        height=parameters['textSize'],
+                                        pos=(0.0, 0.2),
+                                        text='Listen to the tones')
+        messageRecord.draw()
+
+        parameters['listenLogo'].draw()
+        win.flip()
+
+        oxi.channels['Channel_0'][-1] = 3  # Start trigger
+        startTrigger = time.time()
+
+        # Random selection of HR frequency
+        average_hr = np.random.choice(np.arange(40, 100))
+
+        # Play the corresponding beat file
+        file = parameters['path'] + '/sounds/' + str(average_hr) + '.wav'
+
+        # Play selected BPM frequency
+        this_hr = sound.Sound(file)
+        this_hr.play()
+        core.wait(this_hr.getDuration() + 0.5)
+        this_hr.stop()
 
     # Fixation cross
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
@@ -277,9 +344,12 @@ def trial(parameters, condition, intensity, win=None, oxi=None,
         condition = np.random.choice(['More', 'Less'])
 
     # Generate actual stimulus frequency
+    # When using the psi method, the stimulus intensity is encoded in real
+    # value and should not be modified
     alpha = int(intensity)
     if condition == 'Less':
-        alpha = -alpha
+        if parameters['stairType'] != 'psi':
+            alpha = -alpha
 
     # Check for extreme alpha values, e.g. if alpha changes massively from
     # trial to trial.
@@ -496,8 +566,8 @@ def tutorial(parameters, win, oxi=None):
         average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
             soundTrigger2, ratingTrigger, endTrigger = trial(
-                                parameters, condition, intensity, win=win,
-                                oxi=oxi, feedback=True, confidenceRating=False)
+                        parameters, condition, intensity, 'Intero', win=win,
+                        oxi=oxi, feedback=True, confidenceRating=False)
 
     # Confidence rating
     confidence = visual.TextStim(win,
@@ -525,8 +595,8 @@ def tutorial(parameters, win, oxi=None):
         average_hr, estimation, estimationRT, confidence, \
             confidenceRT, alpha, accuracy, missed, startTrigger, soundTrigger, \
             soundTrigger2, ratingTrigger, endTrigger = trial(
-                                parameters, condition, intensity, win=win,
-                                oxi=oxi, confidenceRating=True)
+                        parameters, condition, intensity, 'intero', win=win,
+                        oxi=oxi, confidenceRating=True)
 
     # Task
     taskPresentation = visual.TextStim(win,

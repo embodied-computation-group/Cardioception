@@ -1,3 +1,2 @@
-from .Bayesian import *
-from .fMRI import *
-from .Main import *
+from .parameters import *
+from .task import *

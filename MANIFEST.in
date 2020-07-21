@@ -1,0 +1,10 @@
+# Add README, LICENSE and requirements
+include README.md
+include LICENSE
+include requirements.txt
+
+# Add datasets files
+include cardioception/HeartRateDiscrimination/Images/heartbeat.png
+include cardioception/HeartRateDiscrimination/Images/Listen.png
+include cardioception/HeartRateDiscrimination/Images/listenResponse.png
+include cardioception/HeartRateDiscrimination/Sounds/*
