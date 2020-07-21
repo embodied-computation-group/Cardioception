@@ -369,7 +369,7 @@ def trial(parameters, condition, alpha, modality, win=None,
         messageRecord = visual.TextStim(win,
                                         height=parameters['textSize'],
                                         pos=(0.0, 0.2),
-                                        text='Listen to the tones')
+                                        text='Listen to the beeps')
         messageRecord.draw()
 
         parameters['listenLogo'].draw()
@@ -443,9 +443,9 @@ def trial(parameters, condition, alpha, modality, win=None,
     message.autoDraw = True
 
     if parameters['device'] == 'keyboard':
-        responseText = 'Use DOWN key for lower - UP key for higher.'
+        responseText = 'Use DOWN key for slower - UP key for faster.'
     elif parameters['device'] == 'mouse':
-        responseText = 'Use LEFT button for lower - RIGHT button for higher.'
+        responseText = 'Use LEFT button for slower - RIGHT button for faster.'
 
     press = visual.TextStim(win, height=parameters['textSize'],
                             text=responseText, pos=(0.0, -0.4))
@@ -574,14 +574,14 @@ def tutorial(parameters, win=None):
                 break
 
     # Listen and response
-    listenResponse = visual.TextStim(win, height=parameters['textSize'],
-                                     pos=(0.0, 0.3),
+    listenResponse = visual.TextStim(win, height=parameters['textSize']*.8,
+                                     pos=(0.0, 0.0),
                                      text=parameters['Tutorial3'])
-    press = visual.TextStim(win, height=parameters['textSize'],
+    press = visual.TextStim(win, height=parameters['textSize']*.8,
                             text=parameters['texts']['textNext'],
                             pos=(0.0, -0.4))
     listenResponse.draw()
-    parameters['listenLogo'].draw()
+    # parameters['listenLogo'].draw()
     press.draw()
     win.flip()
     core.wait(1)
@@ -615,13 +615,13 @@ def tutorial(parameters, win=None):
     # If extero conditions required, show tutorial.
     if parameters['ExteroCondition'] is True:
         exteroText = visual.TextStim(win, height=parameters['textSize'],
-                                     pos=(0.0, 0.3),
+                                     pos=(0.0, 0.0),
                                      text=parameters['Tutorial3bis'])
         press = visual.TextStim(win, height=parameters['textSize'],
                                 text=parameters['texts']['textNext'],
-                                pos=(0.0, -0.4))
+                                pos=(0.0, -0.3))
         exteroText.draw()
-        parameters['listenLogo'].draw()
+        #parameters['listenLogo'].draw()
         press.draw()
         win.flip()
         core.wait(1)
@@ -637,13 +637,13 @@ def tutorial(parameters, win=None):
                     break
 
         exteroResponse = visual.TextStim(win, height=parameters['textSize'],
-                                         pos=(0.0, 0.3),
+                                         pos=(0.0, 0.0),
                                          text=parameters['Tutorial3ter'])
         press = visual.TextStim(win, height=parameters['textSize'],
                                 text=parameters['texts']['textNext'],
-                                pos=(0.0, -0.4))
+                                pos=(0.0, -0.3))
         exteroResponse.draw()
-        parameters['listenLogo'].draw()
+        #parameters['listenLogo'].draw()
         press.draw()
         win.flip()
         core.wait(1)
@@ -891,7 +891,7 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
                 textFeedback = 'False' if isCorrect == 0 else 'Correct'
                 colorFeedback = 'red' if isCorrect == 0 else 'green'
                 acc = visual.TextStim(win, height=parameters['textSize'],
-                                      color=colorFeedback, text=textFeedback)
+                pos = (0.0,-0.2), color=colorFeedback, text=textFeedback)
                 acc.draw()
                 win.flip()
                 core.wait(1)
@@ -961,8 +961,8 @@ def confidenceRatingTask(parameters, win=None):
             text=parameters['texts']['Confidence'])
         slider = visual.Slider(
             win=win, name='slider', pos=(0, -0.2), size=(.7, 0.1),
-            labels=['low', '', 'high'], granularity=1, ticks=(0, 50, 100),
-            style=('rating'), color='LightGray', flip=False, labelHeight=.1)
+            labels=['Guess', '', 'Certain'], granularity=1, ticks=(0, 50, 100),
+            style=('rating'), color='LightGray', flip=False, labelHeight=.1*.6)
         slider.marker.size = (.03, .03)
         clock = core.Clock()
         parameters['myMouse'].clickReset()

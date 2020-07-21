@@ -293,20 +293,18 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
             'textBreaks': f"Break. You can rest as long as you want. Just {btnext} when you want to resume the task.",
             'textNext': f'Please {btnext} to continue',
             'textWaitTrigger': "Waiting for fMRI trigger...",
-            'Estimation': {'Intero': """Are these tones faster or slower than your heart?""",
-                           'Extero': """Are these tones faster or slower than the previous?"""},
-            'Confidence': """How confident are you in your choice?
-
-        Use the RIGHT or LEFT mouse buttons to select FASTER or SLOWER"""}
+            'Estimation': {'Intero': """Are these beeps faster or slower than your heart?""",
+                           'Extero': """Are these beeps faster or slower than the previous?"""},
+            'Confidence': """How confident are you in your choice?"""}
 
     parameters['Tutorial1'] = (
-        "During this experiment, we will record your pulse and generate tones reflecting your heart rate.")
+        "During this experiment, we will record your pulse and play beeps based on your heart rate.")
 
     parameters['Tutorial2'] = (
-        "When you see this heart icon, try to focus on your heartbeat for 5 seconds. Try not to move, as we are recording your pulse in this period")
+        "When you see this icon, try to focus on your heartbeat for 5 seconds. Try not to move, as we are recording your pulse in this period")
 
-    moreResp = 'UP key' if parameters['device'] == 'keyboard' else 'RIGHT button'
-    lessResp = 'DOWN key' if parameters['device'] == 'keyboard' else 'LEFT button'
+    moreResp = 'UP key' if parameters['device'] == 'keyboard' else 'RIGHT mouse button'
+    lessResp = 'DOWN key' if parameters['device'] == 'keyboard' else 'LEFT mouse button'
     parameters['Tutorial3'] = (
         f"""After this 'heart listening' period, you will see the response icons and hear a series of beeps.
 
@@ -325,13 +323,13 @@ You will then have to listen to a first set of beeps, instead of your heart.""")
 
 As quickly and accurately as possible, you will listen to these beeps and decide if they are faster ({moreResp}) or slower ({lessResp}) than the first set of beeps.
 
-The second seires of beeps will ALWAYS be slower or faster than the first series. Please guess, even if you are unsure.""")
+The second series of beeps will ALWAYS be slower or faster than the first series. Please guess, even if you are unsure.""")
 
 
     parameters['Tutorial4'] = (
         """Once you have provided your decision, you will also be asked to rate how confident you feel in your decision.
 
-Here, the maximum rting (100) means that you are totally certain in your choice, and the smallest rating means that you felt that you were guessing.
+Here, the maximum rating (100) means that you are totally certain in your choice, and the smallest rating (0) means that you felt that you were guessing.
 
 You should use mouse to select your rating""")
 
@@ -342,7 +340,9 @@ At times the task may be very difficult; the difference between your true heart 
 
 This means that you should try to use the entire length of the confidence scale to reflect your subjective uncertainty on each trial.
 
-As the task difficulty will change over time, it is rare that you will be totally confident or totally uncertain""")
+As the task difficulty will change over time, it is rare that you will be totally confident or totally uncertain.
+This concludes the tutorial. If you have any questions, please ask the experimenter now. 
+Otherwise, press any key to continue to the main task. """)
 
     # Open window
     if parameters['setup'] == 'test':
