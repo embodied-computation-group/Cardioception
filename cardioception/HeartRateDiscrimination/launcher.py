@@ -16,14 +16,14 @@ g.show()
 # Set global task parameters here
 parameters = getParameters(
     participant=g.data[0], session=g.data[1], serialPort=g.data[2],
-    setup=g.data[3], stairType=g.data[4], nTrials=4)
+    setup=g.data[3], stairType=g.data[4], nTrials=100)
     #BrainVisionIP='10.60.88.162')
 
 # Limit the number of trials to run
 # parameters['Conditions'] = parameters['Conditions'][:4]
-parameters['nFeedback'] = 4
-parameters['nConfidence'] = 4
-parameters['nBreaking'] = 2
+parameters['nFeedback'] = 2
+parameters['nConfidence'] = 2
+parameters['nBreaking'] = 25
 
 # Run task
 run(parameters, confidenceRating=True, runTutorial=True)
