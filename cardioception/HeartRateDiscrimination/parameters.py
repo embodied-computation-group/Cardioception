@@ -135,8 +135,8 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         condition will be stored.
     """
     parameters = dict()
+    parameters['nTrialsStaircaseInit'] = 20
     parameters['ExteroCondition'] = exteroception
-    parameters['setup'] = setup
     parameters['device'] = device
     if parameters['device'] == 'keyboard':
         parameters['confScale'] = [1, 7]
@@ -205,63 +205,44 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     # If UpDown is selected, 1 or 2 interleaved staircases are used (see
     # options in parameters dictionary), one is initalized 'high' and the other
     # 'low'.
-    parameters['stairCase'] = {}
-    if stairType == 'UpDown':
-        if parameters['nStaircase'] == 1:
-            parameters['stairCase']['Intero'] = data.StairHandler(
-                                startVal=40, nTrials=nTrials,
-                                nUp=1, nDown=2,
-                                stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
-                                stepType='lin', minVal=1, maxVal=100)
-        elif parameters['nStaircase'] == 2:
-            if stairType == 'UpDown':
-                conditions = [
-                    {'label': 'low', 'startVal': 5, 'nUp': 1, 'nDown': 2,
-                     'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
-                     'stepType': 'lin', 'minVal': 1, 'maxVal': 100},
-                    {'label': 'high', 'startVal': 40, 'nUp': 1, 'nDown': 2,
-                     'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
-                     'stepType': 'lin', 'minVal': 1, 'maxVal': 100},
-                    ]
-                parameters['stairCase']['Intero'] = data.MultiStairHandler(
-                                            conditions=conditions,
-                                            nTrials=nTrials)
-        else:
-            raise ValueError('Invalid number of Staircase')
+    parameters['stairCase'] = {'psi': {}, 'UpDown': {}}
 
-    elif stairType == 'psi':
-        parameters['stairCase']['Intero'] = data.PsiHandler(
+    conditions = [
+        {'label': 'low', 'startVal': -40.5, 'nUp': 1, 'nDown': 1,
+         'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
+         'stepType': 'lin', 'minVal': -40.5, 'maxVal': 40.5},
+        {'label': 'high', 'startVal': 40.5, 'nUp': 1, 'nDown': 1,
+         'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
+         'stepType': 'lin', 'minVal': -40.5, 'maxVal': 40.5},
+        ]
+    parameters['stairCase']['UpDown']['Intero'] = data.MultiStairHandler(
+                                conditions=conditions,
+                                nTrials=parameters['nTrialsStaircaseInit'])
+
+    parameters['stairCase']['psi']['Intero'] = data.PsiHandler(
+        nTrials=nTrials, intensRange=[-40.5, 40.5],
+        alphaRange=[-40.5, 40.5], betaRange=[0.1, 20],
+        intensPrecision=1, alphaPrecision=1, betaPrecision=0.1,
+        delta=0.02, stepType='lin', expectedMin=0)
+
+    if exteroception is True:
+        conditions = [
+            {'label': 'low', 'startVal': -40.5, 'nUp': 1, 'nDown': 1,
+             'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
+             'stepType': 'lin', 'minVal': -40.5, 'maxVal': 40.5},
+            {'label': 'high', 'startVal': 40.5, 'nUp': 1, 'nDown': 1,
+             'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
+             'stepType': 'lin', 'minVal': -40.5, 'maxVal': 40.5},
+            ]
+        parameters['stairCase']['UpDown']['Extero'] = \
+            data.MultiStairHandler(conditions=conditions,
+                                   nTrials=parameters['nTrialsStaircaseInit'])
+
+        parameters['stairCase']['psi']['Extero'] = data.PsiHandler(
             nTrials=nTrials, intensRange=[-40.5, 40.5],
             alphaRange=[-40.5, 40.5], betaRange=[0.1, 20],
             intensPrecision=1, alphaPrecision=1, betaPrecision=0.1,
             delta=0.02, stepType='lin', expectedMin=0)
-
-    if exteroception is True:
-        if stairType == 'UpDown':
-            if parameters['nStaircase'] == 1:
-                parameters['stairCase']['Extero'] = \
-                    data.StairHandler(
-                        startVal=40, nTrials=nTrials, nUp=1,
-                        nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
-                        stepType='lin', minVal=1, maxVal=100)
-            elif parameters['nStaircase'] == 2:
-                conditions = [
-                    {'label': 'low', 'startVal': 5, 'nUp': 1, 'nDown': 2,
-                     'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
-                     'stepType': 'lin', 'minVal': 1, 'maxVal': 100},
-                    {'label': 'high', 'startVal': 40, 'nUp': 1, 'nDown': 2,
-                     'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
-                     'stepType': 'lin', 'minVal': 1, 'maxVal': 100},
-                ]
-                parameters['stairCase']['Extero'] = \
-                    data.MultiStairHandler(conditions=conditions,
-                                           nTrials=nTrials)
-        elif stairType == 'psi':
-            parameters['stairCase']['Extero'] = data.PsiHandler(
-                nTrials=nTrials, intensRange=[-40.5, 40.5],
-                alphaRange=[-40.5, 40.5], betaRange=[0.1, 20],
-                intensPrecision=1, alphaPrecision=1, betaPrecision=0.1,
-                delta=0.02, stepType='lin', expectedMin=0)
 
     parameters['setup'] = setup
     if setup == 'behavioral':
@@ -341,7 +322,7 @@ At times the task may be very difficult; the difference between your true heart 
 This means that you should try to use the entire length of the confidence scale to reflect your subjective uncertainty on each trial.
 
 As the task difficulty will change over time, it is rare that you will be totally confident or totally uncertain.
-This concludes the tutorial. If you have any questions, please ask the experimenter now. 
+This concludes the tutorial. If you have any questions, please ask the experimenter now.
 Otherwise, press any key to continue to the main task. """)
 
     # Open window

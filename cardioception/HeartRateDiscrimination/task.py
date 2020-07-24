@@ -73,13 +73,14 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
                     if buttons != [0, 0, 0]:
                         break
 
-        # Is this an interoception or exteroception condition
-        if parameters['stairType'] == 'UpDown':
-            thisTrial = parameters['stairCase'][modality].next()
+        # Next intensity value
+        if nTrial <= parameters['nTrialsStaircaseInit']:
+            thisTrial = parameters['stairCase']['UpDown'][modality].next()
             stairCond = thisTrial[1]['label']
             alpha = thisTrial[0]
+            parameters['stairCase']['psi'][modality].next()
         elif parameters['stairType'] == 'psi':
-            alpha = parameters['stairCase'][modality].next()
+            alpha = parameters['stairCase']['psi'][modality].next()
             stairCond = None
 
         # Start trial
@@ -90,22 +91,34 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
                   parameters, condition, alpha, modality, win=win,
                   confidenceRating=confidenceRating, nTrial=nTrial)
 
-        # Update the staircase
-        if parameters['stairType'] == 'UpDown':
-            # Check if response is correct or not
-            parameters['stairCase'][modality].addResponse(isCorrect)
-        elif parameters['stairType'] == 'psi':
-            # Check if response is 'More' or 'Less'
-            isMore = 1 if estimation == 'More' else 0
-            parameters['stairCase'][modality].addResponse(isMore)
+        # Check if response is 'More' or 'Less'
+        isMore = 1 if estimation == 'More' else 0
+        # Update the UpDown staircase if initialization trial
+        if not parameters['stairCase']['UpDown'][modality].finished:
+            # Update the UpDown staircase
+            parameters['stairCase']['UpDown'][modality]\
+                .addResponse(isMore)
+            # Update the Psi staircase with forced intensity value
+            parameters['stairCase']['psi'][modality]\
+                .addResponse(isMore, intensity=alpha)
 
             # Store posteriors in list for each trials
             parameters['staircaisePosteriors'][modality].append(
-                parameters['stairCase'][modality]._psi._probLambda[0, :, :, 0])
+                parameters['stairCase']['psi'][modality]._psi._probLambda[0, :, :, 0])
 
             # Save estimated threshold and slope for each trials
             estimatedThreshold, estimatedSlope = \
-                parameters['stairCase'][modality].estimateLambda()
+                parameters['stairCase']['psi'][modality].estimateLambda()
+        else:
+            parameters['stairCase']['psi'][modality].addResponse(isMore)
+
+            # Store posteriors in list for each trials
+            parameters['staircaisePosteriors'][modality].append(
+                parameters['stairCase']['psi'][modality]._psi._probLambda[0, :, :, 0])
+
+            # Save estimated threshold and slope for each trials
+            estimatedThreshold, estimatedSlope = \
+                parameters['stairCase']['psi'][modality].estimateLambda()
 
         print(f'...Initial BPM: {listenBPM} - Staircase value: {alpha} '
               '- Response: {estimation} ({isCorrect})')
@@ -219,6 +232,14 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
               'wb') as handle:
         pickle.dump(save_parameter, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+    # End of the task
+    end = visual.TextStim(
+        win, height=parameters['textSize'], pos=(0.0, 0.0),
+        text='You have completed the task. Thank you for your participation.')
+    end.draw()
+    win.flip()
+    core.wait(3)
+
 
 def trial(parameters, condition, alpha, modality, win=None,
           confidenceRating=True, feedback=False, nTrial=0):
@@ -308,7 +329,7 @@ def trial(parameters, condition, alpha, modality, win=None,
         win.flip()
 
         if parameters['setup'] in ['behavioral', 'test']:
-            parameters['oxiTask'].channels['Channel_0'][-1] = 3  # Start trigger
+            parameters['oxiTask'].channels['Channel_0'][-1] = 3
         startTrigger = time.time()
 
         # Recording
@@ -327,8 +348,8 @@ def trial(parameters, condition, alpha, modality, win=None,
                 signal, peaks = oxi_peaks(signal, sfreq=75)
 
             # Get actual heart Rate
-            bpm = [15]
-
+            bpm = [15]  # Avoid NaN values
+            # Only use the last 5 seconds of the recording
             bpm = 60000/np.diff(np.where(peaks[-5000:])[0])
 
             print(f'...bpm: {[round(i) for i in bpm]}')
@@ -621,7 +642,6 @@ def tutorial(parameters, win=None):
                                 text=parameters['texts']['textNext'],
                                 pos=(0.0, -0.3))
         exteroText.draw()
-        #parameters['listenLogo'].draw()
         press.draw()
         win.flip()
         core.wait(1)
@@ -643,7 +663,6 @@ def tutorial(parameters, win=None):
                                 text=parameters['texts']['textNext'],
                                 pos=(0.0, -0.3))
         exteroResponse.draw()
-        #parameters['listenLogo'].draw()
         press.draw()
         win.flip()
         core.wait(1)
@@ -879,7 +898,8 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
         if respProvided is False:
             # Record participant response (+/-)
             message = visual.TextStim(win, height=parameters['textSize'],
-                                      text='Too late', color='red')
+                                      text='Too late', color='red',
+                                      pos=(0.0, -0.2))
             message.draw()
             win.flip()
             core.wait(.5)
@@ -891,7 +911,7 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
                 textFeedback = 'False' if isCorrect == 0 else 'Correct'
                 colorFeedback = 'red' if isCorrect == 0 else 'green'
                 acc = visual.TextStim(win, height=parameters['textSize'],
-                pos = (0.0,-0.2), color=colorFeedback, text=textFeedback)
+                pos=(0.0,-0.2), color=colorFeedback, text=textFeedback)
                 acc.draw()
                 win.flip()
                 core.wait(1)
@@ -1014,7 +1034,8 @@ def confidenceRatingTask(parameters, win=None):
 
                 # Text feedback if no rating provided
                 message = visual.TextStim(win, height=parameters['textSize'],
-                                          text='Too late', color='red')
+                                          text='Too late', color='red',
+                                          pos=(0.0, -0.2))
                 message.draw()
                 win.flip()
                 core.wait(.5)
