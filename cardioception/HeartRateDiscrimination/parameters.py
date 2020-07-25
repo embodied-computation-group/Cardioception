@@ -10,9 +10,9 @@ from systole.recording import findOximeter, Oximeter
 
 
 def getParameters(participant='SubjectTest', session='001', serialPort=None,
-                  setup='behavioral', stairType='psi', exteroception=True,
-                  nTrials=160, BrainVisionIP=None, device='mouse',
-                  screenNb=0, fullscr=True):
+                  setup='behavioral', exteroception=True,
+                  nTrials=120, BrainVisionIP=None, device='mouse',
+                  screenNb=0, fullscr=True, nTrialsStaircaseInit=10):
     """Create Heart Rate Discrimination task parameters.
 
     Many task parameters, aesthetics, and options are controlled by the
@@ -135,7 +135,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         condition will be stored.
     """
     parameters = dict()
-    parameters['nTrialsStaircaseInit'] = 20
+    parameters['nTrialsStaircaseInit'] = 10
     parameters['ExteroCondition'] = exteroception
     parameters['device'] = device
     if parameters['device'] == 'keyboard':
@@ -153,8 +153,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     parameters['nTrials'] = nTrials
     parameters['nBeatsLim'] = 5
     parameters['nStaircase'] = None
-    parameters['nBreaking'] = 25
-    parameters['stairType'] = stairType
+    parameters['nBreaking'] = 20
     parameters['lambdaIntero'] = []  # Save the history of lambda values
     parameters['lambdaExtero'] = []  # Save the history of lambda values
 
@@ -171,33 +170,37 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     if not os.path.exists(parameters['results']):
         os.makedirs(parameters['results'])
 
-    # Create and randomize condition vectors
-    if stairType == 'UpDown':
-        if exteroception is False:
-            # Create condition randomized vector
-            parameters['Conditions'] = np.hstack(
-                    [np.array(['More'] * round(parameters['nTrials']/2)),
-                     np.array(['Less'] * round(parameters['nTrials']/2))])
-    elif stairType == 'psi':
-        parameters['Conditions'] = \
-            np.array([None] * round(parameters['nTrials']/2))
-
+    # Create and randomize condition vectors separately for each staircase
     parameters['staircaisePosteriors'] = {}
     parameters['staircaisePosteriors']['Intero'] = []
     if exteroception is True:
         parameters['staircaisePosteriors']['Extero'] = []
-        parameters['Conditions'] = np.tile(parameters['Conditions'], 2)
-        # Create condition randomized vector
-        parameters['Modality'] = np.hstack(
-                [np.array(['Extero'] * round(parameters['nTrials']/2)),
-                 np.array(['Intero'] * round(parameters['nTrials']/2))])
-    elif exteroception is False:
-        parameters['Modality'] = np.array(['Intero'] * parameters['nTrials'])
+        # Create condition randomized vector for UpDown staircases
+        updown = np.hstack(
+            [np.array(['Extero'] *
+             round(parameters['nTrialsStaircaseInit']*2)),
+             np.array(['Intero'] *
+             round(parameters['nTrialsStaircaseInit']*2))])
+        np.random.shuffle(updown)
 
-    rand = np.arange(0, len(parameters['Modality']))
-    np.random.shuffle(rand)
-    parameters['Modality'] = parameters['Modality'][rand]  # Shuffle vector
-    parameters['Conditions'] = parameters['Conditions'][rand]  # Shuffle vector
+        # Create condition randomized vector for psi staircases
+        psi = np.hstack(
+            [np.array(['Extero'] * round(parameters['nTrials']/2)),
+             np.array(['Intero'] * round(parameters['nTrials']/2))])
+        np.random.shuffle(psi)
+
+        parameters['Modality'] = np.hstack([updown, psi])
+
+    elif exteroception is False:
+        # Create condition randomized vector for UpDown staircases
+        updown = np.hstack(
+            [np.array(['Intero'] *
+             round(parameters['nTrialsStaircaseInit']*2))])
+
+        # Create condition randomized vector for psi staircases
+        psi = np.hstack(
+            [np.array(['Intero'] * round(parameters['nTrials']))])
+        parameters['Modality'] = np.hstack([updown, psi])
 
     # Default parameters for the basic staircase are set here. Please see
     # PsychoPy Staircase Handler Documentation for full options. By default,

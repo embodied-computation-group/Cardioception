@@ -49,9 +49,8 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
     if runTutorial is True:
         tutorial(parameters)
 
-    for nTrial, condition, modality in zip(np.arange(0, parameters['nTrials']),
-                                           parameters['Conditions'],
-                                           parameters['Modality']):
+    for nTrial, modality in zip(np.arange(0, parameters['nTrials']),
+                                parameters['Modality']):
 
         # Wait for key press if this is the first trial
         if nTrial == 0:
@@ -74,21 +73,21 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
                         break
 
         # Next intensity value
-        if nTrial <= parameters['nTrialsStaircaseInit']:
+        if nTrial <= parameters['nTrialsStaircaseInit']*2:
             thisTrial = parameters['stairCase']['UpDown'][modality].next()
             stairCond = thisTrial[1]['label']
             alpha = thisTrial[0]
             parameters['stairCase']['psi'][modality].next()
-        elif parameters['stairType'] == 'psi':
+        else:
             alpha = parameters['stairCase']['psi'][modality].next()
-            stairCond = None
+            stairCond = 'psi'
 
         # Start trial
-        listenBPM, responseBPM, estimation, estimationRT, confidence,\
+        condition, listenBPM, responseBPM, estimation, estimationRT, confidence,\
             confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
             startTrigger, soundTrigger, responseMadeTrigger,\
             ratingStartTrigger, ratingEndTrigger, endTrigger = trial(
-                  parameters, condition, alpha, modality, win=win,
+                  parameters, alpha, modality, win=win,
                   confidenceRating=confidenceRating, nTrial=nTrial)
 
         # Check if response is 'More' or 'Less'
@@ -153,7 +152,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
         parameters['results_df'].to_csv(
                         parameters['results'] + '/' +
                         parameters['participant'] +
-                        parameters['session'] + '.txt')
+                        parameters['session'] + '.txt', index=False)
 
         # Breaks
         if (nTrial % parameters['nBreaking'] == 0) & (nTrial != 0):
@@ -197,20 +196,20 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
             parameters['results'] + '/' +
             parameters['participant'] + '_Extero')
     except:
-        print('Error while saving as Pickle')
+        print('Error when saving as Pickle')
 
     # Save the final results
     print('Saving final results in .txt file...')
     parameters['results_df'].to_csv(
                     parameters['results'] + '/' +
                     parameters['participant'] +
-                    parameters['session'] + '_final.txt')
+                    parameters['session'] + '_final.txt', index=False)
 
     # Save the final signals file
     print('Saving PPG signal data frame...')
     parameters['signal_df'].to_csv(
         parameters['results'] + '/' +
-        parameters['participant'] + '_signal.txt')
+        parameters['participant'] + '_signal.txt', index=False)
 
     # Save posterios (if relevant)
     if parameters['stairType'] == 'psi':
@@ -415,7 +414,7 @@ def trial(parameters, condition, alpha, modality, win=None,
         listenSound.stop()
 
     else:
-        raise ValueError('Invalid condition')
+        raise ValueError('Invalid modality')
 
     # Fixation cross
     fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
@@ -429,13 +428,7 @@ def trial(parameters, condition, alpha, modality, win=None,
     #######
 
     # Generate actual stimulus frequency
-    # When using the psi method, the stimulus intensity is encoded in real
-    # value and should not be modified
-    if parameters['stairType'] == 'UpDown':
-        if condition == 'Less':
-            alpha = -alpha
-    if parameters['stairType'] == 'psi':
-        condition = 'Less' if alpha < 0 else 'More'
+    condition = 'Less' if alpha < 0 else 'More'
 
     # Check for extreme alpha values, e.g. if alpha changes massively from
     # trial to trial.
@@ -529,7 +522,7 @@ def trial(parameters, condition, alpha, modality, win=None,
         parameters['signal_df'] = parameters['signal_df'].append(
             this_df, ignore_index=True)
 
-    return listenBPM, responseBPM, estimation, estimationRT, confidence,\
+    return condition, listenBPM, responseBPM, estimation, estimationRT, confidence,\
         confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
         startTrigger, soundTrigger, responseMadeTrigger, ratingStartTrigger, \
         ratingEndTrigger, endTrigger
@@ -911,7 +904,7 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
                 textFeedback = 'False' if isCorrect == 0 else 'Correct'
                 colorFeedback = 'red' if isCorrect == 0 else 'green'
                 acc = visual.TextStim(win, height=parameters['textSize'],
-                pos=(0.0,-0.2), color=colorFeedback, text=textFeedback)
+                pos=(0.0, -0.2), color=colorFeedback, text=textFeedback)
                 acc.draw()
                 win.flip()
                 core.wait(1)
@@ -970,7 +963,7 @@ def confidenceRatingTask(parameters, win=None):
     elif parameters['device'] == 'mouse':
 
         # Use the mouse position to update the slider position
-        # The mouse is constrined in a rectangle above the Slider
+        # The mouse movement is limited to a rectangle above the Slider
         # To avoid being dragged out of the screen (in case of multi screens)
         # and to avoid interferences with the Slider when clicking.
         win.mouseVisible = False

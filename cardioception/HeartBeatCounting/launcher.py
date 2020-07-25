@@ -9,7 +9,7 @@ g = gui.Dlg()
 g.addField("participant", initial='Participant')
 g.addField("session", initial='001')
 g.addField("Serial Port:", initial=None)
-g.addField("Setup:", initial='test')
+g.addField("Setup:", initial='behavioral')
 g.show()
 
 # Get parameters
@@ -19,6 +19,6 @@ parameters = getParameters(
     setup=g.data[3], screenNb=0)
 
 # Run task
-run(parameters, confidenceRating=True, runTutorial=False)
+run(parameters, confidenceRating=True, runTutorial=True)
 
 parameters['win'].close()

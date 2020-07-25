@@ -52,13 +52,13 @@ def run(parameters, confidenceRating=True, runTutorial=True, win=None):
         parameters['results_df'].to_csv(
                         parameters['results'] + '/' +
                         parameters['participant'] +
-                        parameters['session'] + '.txt')
+                        parameters['session'] + '.txt', index=False)
 
     # Save results
     parameters['results_df'].to_csv(
                     parameters['results'] + '/' +
                     parameters['participant'] +
-                    parameters['session'] + '_final.txt')
+                    parameters['session'] + '_final.txt', index=False)
 
     # End of the task
     end = visual.TextStim(
