@@ -9,7 +9,7 @@ from systole import serialSim
 from systole.recording import findOximeter, Oximeter
 
 
-def getParameters(participant='SubjectTest', session='001', serialPort=None,
+def getParameters(participant='Participant', session='001', serialPort=None,
                   taskVersion='Garfinkel', setup='behavioral', screenNb=0,
                   fullscr=True):
     """Create Heartbeat Counting task parameters.
@@ -127,29 +127,26 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
 
     # Set note played at trial start
     parameters['noteStart'] = \
-        sound.Sound(parameters['path'] + '/Sounds/start.wav')
+        sound.Sound(os.path.dirname(__file__) + '/Sounds/start.wav')
     parameters['noteEnd'] = \
-        sound.Sound(parameters['path'] + '/Sounds/stop.wav')
+        sound.Sound(os.path.dirname(__file__) + '/Sounds/stop.wav')
 
     # Open window
     parameters['win'] = visual.Window(screen=screenNb, fullscr=fullscr,
                                       units='height')
     parameters['win'].mouseVisible = False
 
-    # Serial port - Create the recording instance
-    parameters['serial'] = serial.Serial(serialPort)
-
     parameters['restLogo'] = visual.ImageStim(
                         win=parameters['win'],
                         units='height',
-                        image=parameters['path'] + '/Images/rest.png',
+                        image=os.path.dirname(__file__) + '/Images/rest.png',
                         pos=(0.0, -0.2))
     parameters['restLogo'].size *= 0.15
     parameters['heartLogo'] = visual.ImageStim(
-                            win=parameters['win'],
-                            units='height',
-                            image=parameters['path'] + '/Images/heartbeat.png',
-                            pos=(0.0, -0.2))
+                win=parameters['win'],
+                units='height',
+                image=os.path.dirname(__file__) + '/Images/heartbeat.png',
+                pos=(0.0, -0.2))
     parameters['heartLogo'].size *= 0.05
 
     parameters['setup'] = setup

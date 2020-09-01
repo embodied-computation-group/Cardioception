@@ -172,16 +172,17 @@ def trial(condition, duration, nTrial, parameters, win):
         while True:
 
             # Record new key
-            key = event.waitKeys()
+            key = event.waitKeys(
+                keyList=['backspace', 'return', '1', '2', '3', '4', '5', '6',
+                         '7', '8', '9', '0', 'num_1', 'num_2', 'num_3',
+                         'num_4', 'num_5', 'num_6', 'num_7', 'num_8',
+                         'num_9', 'num_0'])
 
             if key[0] == 'backspace':
                 if nCounts:
                     nCounts = nCounts[:-1]
             elif key[0] == 'return':
-                if all(char.isdigit() for char in nCounts):
-                    nCounts = int(nCounts)
-                    break
-                else:
+                if not all(char.isdigit() for char in nCounts):
                     messageError = visual.TextStim(
                         win, height=parameters['textSize'],
                         pos=(0, 0.2),
@@ -189,8 +190,21 @@ def trial(condition, duration, nTrial, parameters, win):
                     messageError.draw()
                     win.flip()
                     core.wait(2)
+                elif nCounts == '':
+                    messageError = visual.TextStim(
+                        win, height=parameters['textSize'],
+                        pos=(0, 0.2),
+                        text="You should provide numbers")
+                    messageError.draw()
+                    win.flip()
+                    core.wait(2)
+                else:
+                    nCounts = int(nCounts)
+                    break
+
             else:
-                nCounts += [s for s in key[0] if s.isdigit()][0]
+                if key:
+                    nCounts += [s for s in key[0] if s.isdigit()][0]
 
             # Show the text on the screen
             recordedText = visual.TextStim(win,
