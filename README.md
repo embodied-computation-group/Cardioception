@@ -23,8 +23,6 @@ The following packages should be installed:
 
 * [Systole](https://systole-docs.github.io/) can be installed using pip: `pip install systole`.
 
-Download the repository as zip archive and extract the files.
-
 If you run the task in behavioral mode, the **Nonin pulse oximeter** will be automatically detected and launched. The Heart Rate Discrimination task also include an fMRI version that can access pulse oximetry for BrainVision amplifier through a TCP/IP connection. These components might be adapted depending on your local configuration.
 
 Notes: Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 200 Mo). These files will be removed if you uninstall the package using `pip uninstall cardioception`.
