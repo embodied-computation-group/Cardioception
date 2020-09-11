@@ -3,23 +3,34 @@
 from psychopy import visual, event, core
 import pandas as pd
 import numpy as np
-from systole.recording import Oximeter
 
 
-def sequence(parameters, win=None):
+def run(parameters, confidenceRating=True, runTutorial=True, win=None):
     """Run the entire task sequence.
 
     Parameters
     ----------
     parameters : dict
         Task parameters.
+    confidenceRating : bool
+        Whether the trial show include a confidence rating scale.
+    tutorial : bool
+        If *True*, will present a tutorial with 10 training trial with feedback
+        and 5 trials with confidence rating.
     win : `psychopy.visual.Window`
         Window where to present stimuli.
     """
     if win is None:
         win = parameters['win']
 
-    results_df = pd.DataFrame([])
+    # Run tutorial
+    if runTutorial is True:
+        tutorial(parameters)
+
+    # Rest
+    if parameters['restPeriod'] is True:
+        rest(parameters, duration=parameters['restLength'])
+
     for condition, duration, nTrial in zip(
             parameters['conditions'], parameters['times'],
             range(0, len(parameters['conditions']))):
@@ -28,7 +39,7 @@ def sequence(parameters, win=None):
                                                  parameters, win)
 
         # Store results in a DataFrame
-        results_df = results_df.append(
+        parameters['results_df'] = parameters['results_df'].append(
                     pd.DataFrame({'nTrial': [nTrial],
                                   'Reported': [nCount],
                                   'Condition': [condition],
@@ -37,9 +48,25 @@ def sequence(parameters, win=None):
                                   'ConfidenceRT': [confidenceRT]}),
                     ignore_index=True)
 
+        # Save the results at each iteration
+        parameters['results_df'].to_csv(
+                        parameters['results'] + '/' +
+                        parameters['participant'] +
+                        parameters['session'] + '.txt', index=False)
+
     # Save results
-    results_df.to_csv(
-        parameters['results'] + '/' + parameters['subjectID'] + '.txt')
+    parameters['results_df'].to_csv(
+                    parameters['results'] + '/' +
+                    parameters['participant'] +
+                    parameters['session'] + '_final.txt', index=False)
+
+    # End of the task
+    end = visual.TextStim(
+        win, height=parameters['textSize'], pos=(0.0, 0.0),
+        text='You have completed the task. Thank you for your participation.')
+    end.draw()
+    win.flip()
+    core.wait(3)
 
 
 def trial(condition, duration, nTrial, parameters, win):
@@ -80,9 +107,8 @@ def trial(condition, duration, nTrial, parameters, win):
     event.waitKeys(keyList=parameters['startKey'])
     win.flip()
 
-    oxi = Oximeter(serial=parameters['serial'], sfreq=75, add_channels=1)
-    oxi.setup()
-    oxi.read(duration=2)
+    parameters['oxiTask'].setup()
+    parameters['oxiTask'].read(duration=2)
 
     # Show instructions
     if condition == 'Rest':
@@ -100,34 +126,36 @@ def trial(condition, duration, nTrial, parameters, win):
     win.flip()
 
     # Wait for a beat to start the task
-    oxi.waitBeat()
+    parameters['oxiTask'].waitBeat()
     core.wait(3)
 
     # Sound signaling trial start
     if (condition == 'Count') | (condition == 'Training'):
-        oxi.readInWaiting()
+        parameters['oxiTask'].readInWaiting()
         # Add event marker
-        oxi.channels['Channel_0'][-1] = 1
+        parameters['oxiTask'].channels['Channel_0'][-1] = 1
         parameters['noteStart'].play()
+        core.wait(1)
 
     # Record for a desired time length
-    oxi.read(duration=duration)
+    parameters['oxiTask'].read(duration=duration-1)
 
     # Sound signaling trial stop
     if (condition == 'Count') | (condition == 'Training'):
         # Add event marker
-        oxi.readInWaiting()
-        oxi.channels['Channel_0'][-1] = 2
+        parameters['oxiTask'].readInWaiting()
+        parameters['oxiTask'].channels['Channel_0'][-1] = 2
         parameters['noteEnd'].play()
         core.wait(3)
-        oxi.readInWaiting()
+        parameters['oxiTask'].readInWaiting()
 
     # Hide instructions
     win.flip()
 
     # Save recording
-    oxi.save(parameters['results'] +
-             parameters['subjectID'] + '_' + str(nTrial))
+    parameters['oxiTask'].save(parameters['results'] + '/' +
+                               parameters['participant'] + str(nTrial)
+                               + '_' + str(nTrial))
 
     ###############################
     # Record participant estimation
@@ -144,16 +172,17 @@ def trial(condition, duration, nTrial, parameters, win):
         while True:
 
             # Record new key
-            key = event.waitKeys()
+            key = event.waitKeys(
+                keyList=['backspace', 'return', '1', '2', '3', '4', '5', '6',
+                         '7', '8', '9', '0', 'num_1', 'num_2', 'num_3',
+                         'num_4', 'num_5', 'num_6', 'num_7', 'num_8',
+                         'num_9', 'num_0'])
 
             if key[0] == 'backspace':
                 if nCounts:
                     nCounts = nCounts[:-1]
             elif key[0] == 'return':
-                if all(char.isdigit() for char in nCounts):
-                    nCounts = int(nCounts)
-                    break
-                else:
+                if not all(char.isdigit() for char in nCounts):
                     messageError = visual.TextStim(
                         win, height=parameters['textSize'],
                         pos=(0, 0.2),
@@ -161,8 +190,21 @@ def trial(condition, duration, nTrial, parameters, win):
                     messageError.draw()
                     win.flip()
                     core.wait(2)
+                elif nCounts == '':
+                    messageError = visual.TextStim(
+                        win, height=parameters['textSize'],
+                        pos=(0, 0.2),
+                        text="You should provide numbers")
+                    messageError.draw()
+                    win.flip()
+                    core.wait(2)
+                else:
+                    nCounts = int(nCounts)
+                    break
+
             else:
-                nCounts += [s for s in key[0] if s.isdigit()][0]
+                if key:
+                    nCounts += [s for s in key[0] if s.isdigit()][0]
 
             # Show the text on the screen
             recordedText = visual.TextStim(win,
@@ -200,7 +242,7 @@ def trial(condition, duration, nTrial, parameters, win):
 
 
 def tutorial(parameters, win=None):
-    """Run tutorial for the Heart Beat Counting Task.
+    """Run tutorial for the Heartbeat Counting Task.
 
     Parameters
     ----------
@@ -331,7 +373,7 @@ def tutorial(parameters, win=None):
     event.waitKeys(keyList=parameters['startKey'])
 
 
-def rest(parameters, win=None):
+def rest(parameters, duration=300, win=None):
     """Run tutorial for the Heart Beat Counting Task.
 
     Parameters
@@ -354,9 +396,9 @@ def rest(parameters, win=None):
     win.flip()
 
     # Record PPG signal
-    oxi = Oximeter(serial=parameters['serial'], sfreq=75, add_channels=1)
-    oxi.setup()
-    oxi.read(duration=parameters['restLength'])
+    parameters['oxiTask'].setup()
+    parameters['oxiTask'].read(duration=duration)
 
     # Save recording
-    oxi.save(parameters['results'] + parameters['subjectID'] + '_Rest')
+    parameters['oxiTask'].save(parameters['results'] + '/' +
+                               parameters['participant'] + '_Rest')

@@ -10,9 +10,9 @@ from systole.recording import findOximeter, Oximeter
 
 
 def getParameters(participant='SubjectTest', session='001', serialPort=None,
-                  setup='behavioral', stairType='psi', exteroception=True,
-                  nTrials=160, BrainVisionIP=None, device='mouse',
-                  screenNb=0, fullscr=True):
+                  setup='behavioral', exteroception=True,
+                  nTrials=120, BrainVisionIP=None, device='mouse',
+                  screenNb=0, fullscr=True, nTrialsUpDown=10):
     """Create Heart Rate Discrimination task parameters.
 
     Many task parameters, aesthetics, and options are controlled by the
@@ -24,126 +24,124 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
 
     Parameters
     ----------
+    BrainVisionIP : str
+        The IP address of the recording computer (fMRI version only).
+    device : str
+        Select how the participant provide responses. Can be 'mouse' or
+        'keyboard'.
+    exteroception : bool
+        If *True*, an exteroceptive condition with be interleaved with the
+        interoceptive condition (either block or randomized design).
+    fullscr : bool
+        If *True*, activate full screen mode.
+    nStaircase : int
+        Number of staircase to use per condition (exteroceptive and
+        interoceptive).
+    nTrials : int
+        Number of trials to run (UpDown + psi staircase).
+    nTrialsUpDown : int
+        Number of trials to run using a 1Up-1Down staircase for threshold
+        estimation.
     participant : str
-        Subject ID. Default is 'exteroStairCase'.
-    session : int
-        Session number. Default to '001'.
+        Subject ID. Default is 'Participant'.
+    screenNb : int
+        Select screen number.
     serialPort: str
         The USB port where the pulse oximeter is plugged. Should be written as
         a string e.g., 'COM3', 'COM4'. If set to *None*, the pulse oximeter
         will be automatically detected. using the
         :py:func:`systole.recording.findOximeter()` function.
+    session : int
+        Session number. Default to '001'.
     setup : str
         Context of oximeter recording. Behavioral will record through a Nonin
         pulse oximeter, *fMRI* will record through BrainVision amplifier
         through TCP/IP conneciton. *test* will use pre-recorded pulse time
         series (for testing only).
-    nStaircase : int
-        Number of staircase to use per condition (exteroceptive and
-        interoceptive).
-    exteroception : bool
-        If *True*, an exteroceptive condition with be interleaved with the
-        interoceptive condition (either block or randomized design).
-    extero_design : str
-        If *exteroception* is *True*, define how to interleave the new trials.
-        Can be 'block' or 'random'.
-    stairType : str
-        Staircase method. Can be 'psi' or 'UpDown'.
-    nTrials : int
-        Number of trials in total (all conditions confounded).
 
     Attributes
     ----------
-    setup : str
-        The context of recording. Can be 'behavioral', 'fMRI' or 'test'.
+    allowedKeys : list of str
+        The possible response keys.
+    confScale : list
+        The range of the confidence rating scale.
     device : str
         The device used for response and rating scale. Can be 'keyboard' or
         'mouse'.
-    confScale : list
-        The range of the confidence rating scale.
+    HRcutOff : list
+        Cut off for extreme heart rate values during recording.
     labelsRating : list
         The labels of the confidence rating scale.
-    screenNb : int
-        The screen number (Psychopy parameter). Default set to 0.
-    monitor : str
-        The monitor used to present the task (Psychopy parameter).
-    nFeedback : int
-        The number of trial with feedback during the tutorial phase (no
-        confidence rating).
-    nConfidence : int
-        The number of trial with feedback during the tutorial phase (no
-        feedback).
-    respMax : float
+    lambdaExtero : 3d numpy array
+        Posterior estimate of the psychophysics function parameters (slope and
+        threshold) across trials for the exteroceptive condition.
+    lambdaIntero : 3d numpy array
+        Posterior estimate of the psychophysics function parameters (slope and
+        threshold) across trials for the interoceptive condition.
+    listenLogo, heartLogo : Psychopy visual instance
+        Image used for the inference and recording phases, respectively.
+    maxRatingTime : float
         The maximum time for a confidence rating (in seconds).
     minRatingTime : float
         The minimum time before a rating can be provided during the confidence
         rating (in seconds).
-    maxRatingTime : float
-        The maximum time for a confidence rating (in seconds).
-    startKey : str
-        The key to press to start the task and go to next steps.
-    allowedKeys : list of str
-        The possible response keys.
-    nTrials : int
-        The number of trial to run in each condition, interoception and
-        exteroception (if selected).
+    monitor : str
+        The monitor used to present the task (Psychopy parameter).
     nBeatsLim : int
         The number of beats to record at each trials. Only working with a
         behavioral setup with a Nonin USB pulse oximeter.
-    nStaircase : int
-        Number of staircase used. Can be 1 or 2. If 2, implements a randomized
-        interleved staircase procedure following Cornsweet, 1976.
     nBreaking : int
         Number of trials to run before the break.
-    Condition : 1d array-like
-        Array of 0s and 1s encoding the conditions (1 : Higher, 0 : Lower). The
-        length of the array is defined by `parameters['nTrials']`. If
-        `parameters['nTrials']` is odd, will use `parameters['nTrials']` - 1
-        to enseure an equal nuber of Higher and Lower conditions.
-    stairCase : instance of Psychopy StairHandler
-        The staircase object used to adjust the alpha value.
-    serial : PySerial instance
-        The serial port used to record the PPG activity.
-    subjectID : str
-        Subject identifier string.
-    subjectNumber : int
-        Subject reference number.
+    nConfidence : int
+        The number of trial with feedback during the tutorial phase (no
+        feedback).
+    nFeedback : int
+        The number of trial with feedback during the tutorial phase (no
+        confidence rating).
+    nTrials : int
+        The number of trial to run in each condition, interoception and
+        exteroception (if selected).
+    participant : str
+        Subject ID. Default is 'Participant'.
     path : str
         The task working directory.
-    results : str
-        The subject result directory.
-    texts : dict
-        The text to present during the estimation and confidence.
-    Tutorial 1-5 : str
-        Texts presented during the tutorial.
-    win : Psychopy window instance
-        The window where to run the task.
-    listenLogo, heartLogo : Psychopy visual instance
-        Image used for the inference and recording phases, respectively.
-    textSize : float
-        Text size.
-    HRcutOff : list
-        Cut off for extreme heart rate values during recording.
-    lambdaIntero : 3d numpy array
-        Posterior estimate of the psychophysics function parameters (slope and
-        threshold) across trials for the interoceptive condition.
-    lambdaExtero : 3d numpy array
-        Posterior estimate of the psychophysics function parameters (slope and
-        threshold) across trials for the exteroceptive condition.
+    serial : PySerial instance
+        The serial port used to record the PPG activity.
+    screenNb : int
+        The screen number (Psychopy parameter). Default set to 0.
     signal_df : pandas.DataFrame instance
         Dataframe where the pulse signal recorded during the interoception
         condition will be stored.
+    stairCase : dict
+        The staircase instances for 'psi' and 'UpDown'. Each entry contain
+        dictionnary for 'Intero' and 'Extero conditions' (if relevant).
+    startKey : str
+        The key to press to start the task and go to next steps.
+    respMax : float
+        The maximum time for decision (in seconds).
+    results : str
+        The result directory.
+    session : int
+        Session number. Default to '001'.
+    setup : str
+        The context of recording. Can be 'behavioral', 'fMRI' or 'test'.
+    texts : dict
+        Long text elements.
+    textSize : float
+        Scalling parameter for text size.
+    win : Psychopy window instance
+        The window where to run the task.
     """
     parameters = dict()
+    parameters['nTrialsUpDown'] = nTrialsUpDown
     parameters['ExteroCondition'] = exteroception
-    parameters['setup'] = setup
     parameters['device'] = device
     if parameters['device'] == 'keyboard':
         parameters['confScale'] = [1, 7]
     parameters['labelsRating'] = ['Guess', 'Certain']
     parameters['screenNb'] = screenNb
     parameters['monitor'] = 'testMonitor'
-    parameters['nFeedback'] = 10
+    parameters['nFeedback'] = 5
     parameters['nConfidence'] = 5
     parameters['respMax'] = 8
     parameters['minRatingTime'] = .5
@@ -152,9 +150,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     parameters['allowedKeys'] = ['up', 'down']
     parameters['nTrials'] = nTrials
     parameters['nBeatsLim'] = 5
-    parameters['nStaircase'] = None
-    parameters['nBreaking'] = 25
-    parameters['stairType'] = stairType
+    parameters['nBreaking'] = 20
     parameters['lambdaIntero'] = []  # Save the history of lambda values
     parameters['lambdaExtero'] = []  # Save the history of lambda values
 
@@ -171,33 +167,39 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     if not os.path.exists(parameters['results']):
         os.makedirs(parameters['results'])
 
-    # Create and randomize condition vectors
-    if stairType == 'UpDown':
-        if exteroception is False:
-            # Create condition randomized vector
-            parameters['Conditions'] = np.hstack(
-                    [np.array(['More'] * round(parameters['nTrials']/2)),
-                     np.array(['Less'] * round(parameters['nTrials']/2))])
-    elif stairType == 'psi':
-        parameters['Conditions'] = \
-            np.array([None] * round(parameters['nTrials']/2))
-
+    # Create and randomize condition vectors separately for each staircase
     parameters['staircaisePosteriors'] = {}
     parameters['staircaisePosteriors']['Intero'] = []
     if exteroception is True:
         parameters['staircaisePosteriors']['Extero'] = []
-        parameters['Conditions'] = np.tile(parameters['Conditions'], 2)
-        # Create condition randomized vector
-        parameters['Modality'] = np.hstack(
-                [np.array(['Extero'] * round(parameters['nTrials']/2)),
-                 np.array(['Intero'] * round(parameters['nTrials']/2))])
-    elif exteroception is False:
-        parameters['Modality'] = np.array(['Intero'] * parameters['nTrials'])
+        # Create condition randomized vector for UpDown staircases
+        updown = np.hstack(
+            [np.array(['Extero'] *
+             round(parameters['nTrialsUpDown']/2)),
+             np.array(['Intero'] *
+             round(parameters['nTrialsUpDown']/2))])
+        np.random.shuffle(updown)
 
-    rand = np.arange(0, len(parameters['Modality']))
-    np.random.shuffle(rand)
-    parameters['Modality'] = parameters['Modality'][rand]  # Shuffle vector
-    parameters['Conditions'] = parameters['Conditions'][rand]  # Shuffle vector
+        # Create condition randomized vector for psi staircases
+        nPsitrials = round((parameters['nTrials'] -
+                            parameters['nTrialsUpDown'])/2)
+        psi = np.hstack(
+            [np.array(['Extero'] * nPsitrials),
+             np.array(['Intero'] * nPsitrials)])
+        np.random.shuffle(psi)
+
+        parameters['Modality'] = np.hstack([updown, psi])
+
+    elif exteroception is False:
+        # Create condition randomized vector for UpDown staircases
+        updown = np.hstack(
+            [np.array(['Intero'] *
+             round(parameters['nTrialsUpDown']*2))])
+
+        # Create condition randomized vector for psi staircases
+        psi = np.hstack(
+            [np.array(['Intero'] * round(parameters['nTrials']))])
+        parameters['Modality'] = np.hstack([updown, psi])
 
     # Default parameters for the basic staircase are set here. Please see
     # PsychoPy Staircase Handler Documentation for full options. By default,
@@ -205,63 +207,44 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     # If UpDown is selected, 1 or 2 interleaved staircases are used (see
     # options in parameters dictionary), one is initalized 'high' and the other
     # 'low'.
-    parameters['stairCase'] = {}
-    if stairType == 'UpDown':
-        if parameters['nStaircase'] == 1:
-            parameters['stairCase']['Intero'] = data.StairHandler(
-                                startVal=40, nTrials=nTrials,
-                                nUp=1, nDown=2,
-                                stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
-                                stepType='lin', minVal=1, maxVal=100)
-        elif parameters['nStaircase'] == 2:
-            if stairType == 'UpDown':
-                conditions = [
-                    {'label': 'low', 'startVal': 5, 'nUp': 1, 'nDown': 2,
-                     'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
-                     'stepType': 'lin', 'minVal': 1, 'maxVal': 100},
-                    {'label': 'high', 'startVal': 40, 'nUp': 1, 'nDown': 2,
-                     'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
-                     'stepType': 'lin', 'minVal': 1, 'maxVal': 100},
-                    ]
-                parameters['stairCase']['Intero'] = data.MultiStairHandler(
-                                            conditions=conditions,
-                                            nTrials=nTrials)
-        else:
-            raise ValueError('Invalid number of Staircase')
+    parameters['stairCase'] = {'psi': {}, 'UpDown': {}}
 
-    elif stairType == 'psi':
-        parameters['stairCase']['Intero'] = data.PsiHandler(
+    conditions = [
+        {'label': 'low', 'startVal': -40.5, 'nUp': 1, 'nDown': 1,
+         'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
+         'stepType': 'lin', 'minVal': -40.5, 'maxVal': 40.5},
+        {'label': 'high', 'startVal': 40.5, 'nUp': 1, 'nDown': 1,
+         'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
+         'stepType': 'lin', 'minVal': -40.5, 'maxVal': 40.5},
+        ]
+    parameters['stairCase']['UpDown']['Intero'] = data.MultiStairHandler(
+                                conditions=conditions,
+                                nTrials=parameters['nTrialsUpDown'])
+
+    parameters['stairCase']['psi']['Intero'] = data.PsiHandler(
+        nTrials=nTrials, intensRange=[-40.5, 40.5],
+        alphaRange=[-40.5, 40.5], betaRange=[0.1, 20],
+        intensPrecision=1, alphaPrecision=1, betaPrecision=0.1,
+        delta=0.02, stepType='lin', expectedMin=0)
+
+    if exteroception is True:
+        conditions = [
+            {'label': 'low', 'startVal': -40.5, 'nUp': 1, 'nDown': 1,
+             'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
+             'stepType': 'lin', 'minVal': -40.5, 'maxVal': 40.5},
+            {'label': 'high', 'startVal': 40.5, 'nUp': 1, 'nDown': 1,
+             'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
+             'stepType': 'lin', 'minVal': -40.5, 'maxVal': 40.5},
+            ]
+        parameters['stairCase']['UpDown']['Extero'] = \
+            data.MultiStairHandler(conditions=conditions,
+                                   nTrials=parameters['nTrialsUpDown'])
+
+        parameters['stairCase']['psi']['Extero'] = data.PsiHandler(
             nTrials=nTrials, intensRange=[-40.5, 40.5],
             alphaRange=[-40.5, 40.5], betaRange=[0.1, 20],
             intensPrecision=1, alphaPrecision=1, betaPrecision=0.1,
             delta=0.02, stepType='lin', expectedMin=0)
-
-    if exteroception is True:
-        if stairType == 'UpDown':
-            if parameters['nStaircase'] == 1:
-                parameters['stairCase']['Extero'] = \
-                    data.StairHandler(
-                        startVal=40, nTrials=nTrials, nUp=1,
-                        nDown=2, stepSizes=[20, 12, 12, 7, 4, 3, 2, 1],
-                        stepType='lin', minVal=1, maxVal=100)
-            elif parameters['nStaircase'] == 2:
-                conditions = [
-                    {'label': 'low', 'startVal': 5, 'nUp': 1, 'nDown': 2,
-                     'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
-                     'stepType': 'lin', 'minVal': 1, 'maxVal': 100},
-                    {'label': 'high', 'startVal': 40, 'nUp': 1, 'nDown': 2,
-                     'stepSizes': [20, 12, 12, 7, 4, 3, 2, 1],
-                     'stepType': 'lin', 'minVal': 1, 'maxVal': 100},
-                ]
-                parameters['stairCase']['Extero'] = \
-                    data.MultiStairHandler(conditions=conditions,
-                                           nTrials=nTrials)
-        elif stairType == 'psi':
-            parameters['stairCase']['Extero'] = data.PsiHandler(
-                nTrials=nTrials, intensRange=[-40.5, 40.5],
-                alphaRange=[-40.5, 40.5], betaRange=[0.1, 20],
-                intensPrecision=1, alphaPrecision=1, betaPrecision=0.1,
-                delta=0.02, stepType='lin', expectedMin=0)
 
     parameters['setup'] = setup
     if setup == 'behavioral':
@@ -341,7 +324,7 @@ At times the task may be very difficult; the difference between your true heart 
 This means that you should try to use the entire length of the confidence scale to reflect your subjective uncertainty on each trial.
 
 As the task difficulty will change over time, it is rare that you will be totally confident or totally uncertain.
-This concludes the tutorial. If you have any questions, please ask the experimenter now. 
+This concludes the tutorial. If you have any questions, please ask the experimenter now.
 Otherwise, press any key to continue to the main task. """)
 
     # Open window

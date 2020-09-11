@@ -3,23 +3,35 @@
 import os
 import serial
 import numpy as np
-from psychopy import visual, sound
+import pandas as pd
+from psychopy import visual, sound, core
+from systole import serialSim
+from systole.recording import findOximeter, Oximeter
 
 
-def getParameters(subjectID, subjectNumber, serialPort,
-                  taskVersion='Garfinkel'):
-    """Create task parameters.
+def getParameters(participant='Participant', session='001', serialPort=None,
+                  taskVersion='Garfinkel', setup='behavioral', screenNb=0,
+                  fullscr=True):
+    """Create Heartbeat Counting task parameters.
 
     Parameters
     ----------
-    subjectID : str
-        Subject identifiant.
-    subjectNumber : int
-        Participant number.
+    participant : str
+        Subject ID. Default is 'exteroStairCase'.
+    session : int
+        Session number. Default to '001'.
     serialPort: str
-        The USB port where the pulse oximeter is plugged.
+        The USB port where the pulse oximeter is plugged. Should be written as
+        a string e.g., 'COM3', 'COM4'. If set to *None*, the pulse oximeter
+        will be automatically detected. using the
+        :py:func:`systole.recording.findOximeter()` function.
     taskVersion : str or None
         Task version to run. Can be 'Garfinkel', 'Shandry', 'test' or None.
+    setup : str
+        Context of oximeter recording. Behavioral will record through a Nonin
+        pulse oximeter, *fMRI* will record through BrainVision amplifier
+        through TCP/IP conneciton. *test* will use pre-recorded pulse time
+        series (for testing only).
 
     Attributes
     ----------
@@ -72,13 +84,13 @@ def getParameters(subjectID, subjectNumber, serialPort,
     parameters = dict()
     parameters['restPeriod'] = True
     parameters['restLength'] = 30
-    parameters['screenNb'] = 0
     parameters['randomize'] = True
     parameters['startKey'] = 'space'
     parameters['rating'] = True
     parameters['confScale'] = [1, 7]
     parameters['labelsRating'] = ['Guess', 'Certain']
     parameters['taskVersion'] = taskVersion
+    parameters['results_df'] = pd.DataFrame({})
 
     # Experimental design - can choose between a version based on recent
     # papers from Sarah Garfinkel's group, or the classic Schandry approach.
@@ -102,43 +114,61 @@ def getParameters(subjectID, subjectNumber, serialPort,
         raise ValueError('Invalid task condition')
 
     # Set default path /Results/ 'Subject ID' /
-    parameters['subjectID'] = subjectID
-    parameters['subjectNumber'] = subjectNumber
-
+    # Set default path /Results/ 'Subject ID' /
+    parameters['participant'] = participant
+    parameters['session'] = session
     parameters['path'] = os.getcwd()
-    parameters['results'] = (parameters['path'] + '/Results/' +
-                             subjectID + '_' + subjectNumber + '/')
+    parameters['results'] = \
+        parameters['path'] + '/data/' + participant + session
+
     # Create Results directory of not already exists
     if not os.path.exists(parameters['results']):
         os.makedirs(parameters['results'])
 
     # Set note played at trial start
     parameters['noteStart'] = \
-        sound.Sound(parameters['path'] + '/Sounds/start.wav')
+        sound.Sound(os.path.dirname(__file__) + '/Sounds/start.wav')
     parameters['noteEnd'] = \
-        sound.Sound(parameters['path'] + '/Sounds/stop.wav')
+        sound.Sound(os.path.dirname(__file__) + '/Sounds/stop.wav')
 
     # Open window
-    parameters['win'] = visual.Window(screen=parameters['screenNb'],
-                                      fullscr=True,
+    parameters['win'] = visual.Window(screen=screenNb, fullscr=fullscr,
                                       units='height')
     parameters['win'].mouseVisible = False
-
-    # Serial port - Create the recording instance
-    parameters['serial'] = serial.Serial(serialPort)
 
     parameters['restLogo'] = visual.ImageStim(
                         win=parameters['win'],
                         units='height',
-                        image=parameters['path'] + '/Images/rest.png',
+                        image=os.path.dirname(__file__) + '/Images/rest.png',
                         pos=(0.0, -0.2))
     parameters['restLogo'].size *= 0.15
     parameters['heartLogo'] = visual.ImageStim(
-                            win=parameters['win'],
-                            units='height',
-                            image=parameters['path'] + '/Images/heartbeat.png',
-                            pos=(0.0, -0.2))
+                win=parameters['win'],
+                units='height',
+                image=os.path.dirname(__file__) + '/Images/heartbeat.png',
+                pos=(0.0, -0.2))
     parameters['heartLogo'].size *= 0.05
+
+    parameters['setup'] = setup
+    if setup == 'behavioral':
+        # PPG recording
+        if serialPort is None:
+            serialPort = findOximeter()
+            if serialPort is None:
+                print('Cannot find the Pulse Oximeter automatically, please',
+                      ' enter port reference in the GUI')
+                core.quit()
+
+        port = serial.Serial(serialPort)
+        parameters['oxiTask'] = Oximeter(serial=port, sfreq=75, add_channels=1)
+        parameters['oxiTask'].setup().read(duration=1)
+    elif setup == 'test':
+        # Use pre-recorded pulse time series for testing
+        port = serialSim()
+        parameters['oxiTask'] = Oximeter(serial=port, sfreq=75, add_channels=1)
+        parameters['oxiTask'].setup().read(duration=1)
+    elif setup == 'fMRI':
+        parameters['fMRItrigger'] = ['5']  # Keys to listen for fMRI trigger
 
     #######
     # Texts
