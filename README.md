@@ -94,7 +94,7 @@ The `notebooks` folder includes Jupyter notebooks documenting the recommended an
 # Development
 This package was created and is maintained by Nicolas Legrand and Micah Allen (ECG group, https://the-ecg.org/).
 
-<img src = "images/LabLogo.png" height ="200" /> <img src = "images/AU.png" height ="200" />
+<img src = "images/LabLogo.png" height ="200" /><img src = "images/AU.png" height ="200" />
 
 # Credit
 Some icons used in the Figures or presented during the tasks were downloaded from **Flaticon** [www.flaticon.com](www.flaticon.com).
