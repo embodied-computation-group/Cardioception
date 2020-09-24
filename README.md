@@ -1,4 +1,7 @@
-![https://the-ecg.org/](images/LabLogo.png)
+[![GitHub license](https://img.shields.io/github/license/embodied-computation-group/Cardioception)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/)
+
+
 
 # Cardioception
 
@@ -7,23 +10,24 @@ The Cardioception Python Package - Measuring Interoception with Psychopy - imple
 2. The *Heartbeat Discrimination task* [forthcoming]
 3. a novel *Heart Rate Discrimination Task* implementing an adaptive psychophysical measure for measuring cardioception.
 
-Currently the toolbox natively supports the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). These devices are fairly cheap and readily available, however in time the intention is to support more sensors and modalities (e.g., ECG).  
+Currently the toolbox natively supports the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/) as well as Remote Data Access (RDA) via BrainVision Recorder together with Brain product ExG amplifier [](https://www.brainproducts.com/>).
 
 # Installation
 
+* Cardioception can be installed using pip:
+  `pip install cardioception`.
+
 ## Dependencies
 
-We recommend to use the last install of Anaconda for Python 3.5 or latest.
-
-* Cardioception can be installed using pip: `pip install cardioception`.
+We recommend to use the last install of Anaconda for Python 3.6 or latest (see https://www.anaconda.com/products/individual#download-section).
 
 The following packages should be installed:
 
-* [Psychopy](https://www.psychopy.org/) can be installed using pip: `pip install psychopy`.
+* [Psychopy](https://www.psychopy.org/) can be installed using pip:
+  `pip install psychopy`.
 
-* [Systole](https://systole-docs.github.io/) can be installed using pip: `pip install systole`.
-
-If you run the task in behavioral mode, the **Nonin pulse oximeter** will be automatically detected and launched. The Heart Rate Discrimination task also include an fMRI version that can access pulse oximetry for BrainVision amplifier through a TCP/IP connection. These components might be adapted depending on your local configuration.
+* [Systole](https://systole-docs.github.io/) can be installed using pip:
+  `pip install systole`.
 
 Notes: Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 200 Mo). These files will be removed if you uninstall the package using `pip uninstall cardioception`.
 
@@ -53,7 +57,7 @@ pause
 
 # Tasks
 
-## Heart Beat Counting
+## The Heartbeat Counting task
 
 <img src= "images/HeartBeatCounting.png">
 
@@ -62,7 +66,10 @@ This module is an implementation of the classic "heartbeat counting task" (HCT)<
 By default, this task implement the version used in recent publications <sup>3</sup> in which a training trial of 20s is proposed, after which the 6 experimental trials of different time-windows (25, 30, 35,40, 45 and 50s) occurred in a randomized order. The trial length, the condition ('Rest', 'Count', 'Training') and the randomization can be controlled in the parameters dictionary.
 
 
-## Heart Rate Discrimination
+## The Heartbeat Discrimination task
+
+
+## The Heart Rate Discrimination task
 
 <img src= "images/HeartRateDiscrimination.png">
 
@@ -72,7 +79,7 @@ This task implements an adaptive psychophysical procedure for estimating partici
 
 By default, the results will be saved in the `data` folder contained in each task folder.
 
-Each folder also include an `Analyses.ipynb` file documenting the recommended analyses that can be used to generate reports.
+The `notebooks` folder includes Jupyter notebooks documenting the recommended analyses steps for each tasks that can be used to generate reports.
 
 # References
 
@@ -83,6 +90,11 @@ Each folder also include an `Analyses.ipynb` file documenting the recommended an
 3. Leganes-Fonteneau, M., Cheang, Y., Lam, Y., Garfinkel, S., & Duka, T. (2019). Interoceptive awareness is associated with acute alcohol-induced changes in subjective effects. Pharmacology Biochemistry and Behavior, 181, 69–76. https://doi.org/10.1016/j.pbb.2019.03.007
 
 4. Hart, N., McGowan, J., Minati, L., & Critchley, H. D. (2013). Emotional Regulation and Bodily Sensation: Interoceptive Awareness Is Intact in Borderline Personality Disorder. Journal of Personality Disorders, 27(4), 506–518. https://doi.org/10.1521/pedi_2012_26_049
+
+# Development
+This package was created and is maintained by Nicolas Legrand and Micah Allen (ECG group, https://the-ecg.org/).
+
+<img src = "images/LabLogo.png" height ="200" /> <img src = "images/AU.png" height ="200" />
 
 # Credit
 Some icons used in the Figures or presented during the tasks were downloaded from **Flaticon** [www.flaticon.com](www.flaticon.com).
