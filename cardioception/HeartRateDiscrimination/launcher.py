@@ -15,8 +15,8 @@ g.show()
 # Set global task parameters here
 parameters = getParameters(
     participant=g.data[0], session=g.data[1], serialPort=g.data[2],
-    setup=g.data[3], nTrials=160, nTrialsUpDown=80,
-    screenNb=0, psiCatchTrials=0.2)
+    setup=g.data[3], nTrials=4, nTrialsUpDown=2,
+    screenNb=0, psiCatchTrials=0.0)
 
 # Run task
 run(parameters, confidenceRating=True, runTutorial=True)
