@@ -81,6 +81,30 @@ By default, the results will be saved in the `data` folder contained in each tas
 
 The `notebooks` folder includes Jupyter notebooks documenting the recommended analyses steps for each tasks that can be used to generate reports.
 
+# Generate reports
+
+The notebooks provided in the `/notebooks` folder can be used as templates to generate reports for each participants using the following code snippet. This will require the last version of [papermill](https://papermill.readthedocs.io/en/latest/).
+
+```
+import papermill as pm
+import subprocess
+import os
+
+dataPath = ''  # Folder where are stored the results
+reportsPath = ''  # Folder where to store the reports
+notebookTemplate = ''  # Notebook template (eg. HeartRateDiscrimination.ipynb)
+
+subjects = os.listdir(dataPath)
+for sub in subjects:
+
+    pm.execute_notebook(notebookTemplate, reportsPath + sub + '.ipynb',
+                        parameters=dict(subject=sub, path=dataPath))
+
+    command = f'jupyter nbconvert {reportsPath}{sub}.ipynb --output ' + \
+        '{reportsPath}{sub}_report.html --no-input'
+    subprocess.call(command)
+```
+
 # References
 
 1. Dale, A., & Anderson, D. (1978). Information Variables in Voluntary Control and Classical Conditioning of Heart Rate: Field Dependence and Heart-Rate Perception. Perceptual and Motor Skills, 47(1), 79–85. https://doi.org/10.2466/pms.1978.47.1.79
@@ -92,7 +116,7 @@ The `notebooks` folder includes Jupyter notebooks documenting the recommended an
 4. Hart, N., McGowan, J., Minati, L., & Critchley, H. D. (2013). Emotional Regulation and Bodily Sensation: Interoceptive Awareness Is Intact in Borderline Personality Disorder. Journal of Personality Disorders, 27(4), 506–518. https://doi.org/10.1521/pedi_2012_26_049
 
 # Development
-This package was created and is maintained by Nicolas Legrand and Micah Allen (ECG group, https://the-ecg.org/).
+This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/) and Micah Allen (ECG group, https://the-ecg.org/).
 
 <img src = "images/LabLogo.png" height ="200" /><img src = "images/AU.png" height ="200" />
 
