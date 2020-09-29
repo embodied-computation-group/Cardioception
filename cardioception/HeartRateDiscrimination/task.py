@@ -22,7 +22,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
     confidenceRating : bool
         Whether the trial show include a confidence rating scale.
     runTutorial : bool
-        If *True*, will present a tutorial with 10 training trial with feedback
+        If `True`, will present a tutorial with 10 training trial with feedback
         and 5 trials with confidence rating.
     """
     if win is None:
@@ -44,8 +44,9 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
     if runTutorial is True:
         tutorial(parameters)
 
-    for nTrial, modality in zip(range(parameters['nTrials']),
-                                parameters['Modality']):
+    for nTrial, modality, trialType in zip(range(parameters['nTrials']),
+                                           parameters['Modality'],
+                                           parameters['catchTrials']):
 
         # Wait for key press if this is the first trial
         if nTrial == 0:
@@ -68,16 +69,22 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
                         break
 
         # Next intensity value
-        if nTrial < parameters['nTrialsUpDown']:
+        if trialType == 'UpDown':
             print('... load UpDown staircase.')
             thisTrial = parameters['stairCase']['UpDown'][modality].next()
             stairCond = thisTrial[1]['label']
             alpha = thisTrial[0]
-            parameters['stairCase']['psi'][modality].next()
-        else:
+        elif trialType == 'psi':
             print('... load psi staircase.')
             alpha = parameters['stairCase']['psi'][modality].next()
             stairCond = 'psi'
+        elif trialType == 'psiCatchTrial':
+            print('... load psiCatchTrial staircase.')
+            # Randomly select extrem value with jitter to control for possible
+            # bias of Psi staircase
+            alpha = np.random.choice(np.hstack([np.arange(-25, -14),
+                                                np.arange(15, 26)]))
+            stairCond = 'psiCatchTrial'
 
         # Start trial
         condition, listenBPM, responseBPM, estimation, estimationRT, confidence,\
@@ -90,29 +97,18 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
         # Check if response is 'More' or 'Less'
         isMore = 1 if estimation == 'More' else 0
         # Update the UpDown staircase if initialization trial
-        if nTrial < parameters['nTrialsUpDown']:
+        if trialType == 'UpDown':
             print('... update UpDown staircase.')
             # Update the UpDown staircase
-            parameters['stairCase']['UpDown'][modality]\
-                .addResponse(isMore)
-            # Update the Psi staircase with forced intensity value
-            parameters['stairCase']['psi'][modality]\
-                .addResponse(isMore, intensity=alpha)
-
-            # Store posteriors in list for each trials
-            parameters['staircaisePosteriors'][modality].append(
-                parameters['stairCase']['psi'][modality]._psi._probLambda[0, :, :, 0])
-
-            # Save estimated threshold and slope for each trials
-            estimatedThreshold, estimatedSlope = \
-                parameters['stairCase']['psi'][modality].estimateLambda()
-        else:
+            parameters['stairCase']['UpDown'][modality].addResponse(isMore)
+        elif trialType == 'psi':
             print('... update psi staircase.')
             parameters['stairCase']['psi'][modality].addResponse(isMore)
 
             # Store posteriors in list for each trials
             parameters['staircaisePosteriors'][modality].append(
-                parameters['stairCase']['psi'][modality]._psi._probLambda[0, :, :, 0])
+                parameters['stairCase']['psi']
+                [modality]._psi._probLambda[0, :, :, 0])
 
             # Save estimated threshold and slope for each trials
             estimatedThreshold, estimatedSlope = \
@@ -123,7 +119,8 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
 
         # Store results
         parameters['results_df'] = parameters['results_df'].append([
-                    pd.DataFrame({'Condition': [condition],
+                    pd.DataFrame({'TrialType': [trialType],
+                                  'Condition': [condition],
                                   'Modality': [modality],
                                   'StairCond': [stairCond],
                                   'Estimation': [estimation],
@@ -254,17 +251,17 @@ def trial(parameters, alpha, modality, win=None, confidenceRating=True,
     alpha : float
         The intensity of the stimulus, from the staircase procedure.
     modality : str
-        The modality, can be 'Intero' or 'Extro' if an exteroceptive control
-        condition has been added.
+        The modality, can be `'Intero'` or `'Extro'` if an exteroceptive
+        control condition has been added.
     stairCase : Instance of staircase handler.
         Staircase procedure used during the task. If `feedback=True`, stairCase
-        should be None.
-    win :`psychopy.visual.window` or *None*
+        should be `None`.
+    win :`psychopy.visual.window` or `None`
         Where to draw the task.
     confidenceRating : boolean
-        If *False*, do not display confidence rating scale.
+        If `False`, do not display confidence rating scale.
     feedback : boolean
-        If *True*, will provide feedback.
+        If `True`, will provide feedback.
 
     Returns
     -------
@@ -273,11 +270,11 @@ def trial(parameters, alpha, modality, win=None, confidenceRating=True,
     average_hr : int
         The average heart rate recorded during the rest periode.
     condition : str
-        The condition of the trial. Can be 'More' (the beats are faster than
-        the heart rate) or 'Less' (the beats are slower than the heart rate).
+        The condition of the trial. Can be `'More'` (the beats are faster than
+        the heart rate) or `'Less'` (the beats are slower than the heart rate).
     estimation : str
         The participant estimation. Can be `'up'` (the participant indicates
-        the beats are faster than the recorded heart rate) or 'down' (the
+        the beats are faster than the recorded heart rate) or `'down'` (the
         participant indicates the beats are slower than recorded heart rate).
     estimationRT : float
         The response time from sound start to choice.
@@ -292,11 +289,11 @@ def trial(parameters, alpha, modality, win=None, confidenceRating=True,
         Alpha is defined by the stairCase.intensities values and is updated
         on each trial.
     isCorrect : int
-        *0* for incorrect response, *1* for correct responses. Note that this
+        `0` for incorrect response, `1` for correct responses. Note that this
         value is not feeded to the staircase when using the (Yes/No) version
-        of the task, but instead will check if the response is 'More' or not.
+        of the task, but instead will check if the response is `'More'` or not.
     missed : boolean
-        If *True*, the trial did not terminate correctly (e.g., participant was
+        If `True`, the trial did not terminate correctly (e.g., participant was
         too slow to provide the estimation or the confidence).
     """
     # Print infos at each trial start
@@ -905,8 +902,9 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
             if feedback is True:
                 textFeedback = 'False' if isCorrect == 0 else 'Correct'
                 colorFeedback = 'red' if isCorrect == 0 else 'green'
-                acc = visual.TextStim(win, height=parameters['textSize'],
-                pos=(0.0, -0.2), color=colorFeedback, text=textFeedback)
+                acc = visual.TextStim(
+                    win, height=parameters['textSize'],
+                    pos=(0.0, -0.2), color=colorFeedback, text=textFeedback)
                 acc.draw()
                 win.flip()
                 core.wait(1)

@@ -10,9 +10,9 @@ from systole.recording import findOximeter, Oximeter
 
 
 def getParameters(participant='SubjectTest', session='001', serialPort=None,
-                  setup='behavioral', exteroception=True,
-                  nTrials=120, BrainVisionIP=None, device='mouse',
-                  screenNb=0, fullscr=True, nTrialsUpDown=10):
+                  setup='behavioral', exteroception=True, psiCatchTrials=0.0,
+                  nTrials=160, BrainVisionIP=None, device='mouse',
+                  screenNb=0, fullscr=True, nTrialsUpDown=80):
     """Create Heart Rate Discrimination task parameters.
 
     Many task parameters, aesthetics, and options are controlled by the
@@ -44,18 +44,22 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         estimation.
     participant : str
         Subject ID. Default is 'Participant'.
+    psiCatchTrials : float
+        Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with
+        some jitter) to control for range of stimuli presented. The default is
+        `0.0` (no catch trials). If not `0.0`, recomended value is `0.2`.
     screenNb : int
         Select screen number.
     serialPort: str
         The USB port where the pulse oximeter is plugged. Should be written as
-        a string e.g., 'COM3', 'COM4'. If set to *None*, the pulse oximeter
+        a string e.g., `'COM3'`, `'COM4'`. If set to *None*, the pulse oximeter
         will be automatically detected. using the
         :py:func:`systole.recording.findOximeter()` function.
     session : int
         Session number. Default to '001'.
     setup : str
         Context of oximeter recording. Behavioral will record through a Nonin
-        pulse oximeter, *fMRI* will record through BrainVision amplifier
+        pulse oximeter, `'fMRI'` will record through BrainVision amplifier
         through TCP/IP conneciton. *test* will use pre-recorded pulse time
         series (for testing only).
 
@@ -178,7 +182,6 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
              round(parameters['nTrialsUpDown']/2)),
              np.array(['Intero'] *
              round(parameters['nTrialsUpDown']/2))])
-        np.random.shuffle(updown)
 
         # Create condition randomized vector for psi staircases
         nPsitrials = round((parameters['nTrials'] -
@@ -186,9 +189,31 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         psi = np.hstack(
             [np.array(['Extero'] * nPsitrials),
              np.array(['Intero'] * nPsitrials)])
-        np.random.shuffle(psi)
-
+        # Vector encoding the type of trial (psi, up/down or catch)
+        parameters['catchTrials'] = np.hstack(
+            [np.array(['UpDown'] * parameters['nTrialsUpDown']),
+             np.array(['psi'] * int((nPsitrials * 2 * (1-psiCatchTrials)))),
+             np.array(['psiCatchTrial'] * 2 *
+                      int((nPsitrials * psiCatchTrials)))])
         parameters['Modality'] = np.hstack([updown, psi])
+
+        # Firt we shuffle only up/down trials
+        shuffler = np.random.permutation(parameters['nTrialsUpDown'])
+        parameters['Modality'][:parameters['nTrialsUpDown']] = \
+            parameters['Modality'][shuffler]
+        parameters['catchTrials'][:parameters['nTrialsUpDown']] = \
+            parameters['catchTrials'][shuffler]
+
+        # Then we shuffle all trials except first 1/2 of up/down
+        # If no up/down trials are provided, this equal full shuffling
+        # Oherwise, this ensures that task start with up/down to avoid bias
+        shuffler = np.random.permutation(
+            np.arange(int(parameters['nTrialsUpDown']/2),
+                      parameters['nTrials']))
+        parameters['Modality'][int(parameters['nTrialsUpDown']/2):] = \
+            parameters['Modality'][shuffler]
+        parameters['catchTrials'][int(parameters['nTrialsUpDown']/2):] = \
+            parameters['catchTrials'][shuffler]
 
     elif exteroception is False:
         # Create condition randomized vector for UpDown staircases
