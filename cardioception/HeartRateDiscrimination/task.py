@@ -48,6 +48,9 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
                                            parameters['Modality'],
                                            parameters['catchTrials']):
 
+        # Initialize variable
+        estimatedThreshold, estimatedSlope = None, None
+
         # Wait for key press if this is the first trial
         if nTrial == 0:
 
@@ -87,7 +90,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
             stairCond = 'psiCatchTrial'
 
         # Start trial
-        condition, listenBPM, responseBPM, estimation, estimationRT, confidence,\
+        condition, listenBPM, responseBPM, decision, decisionRT, confidence,\
             confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
             startTrigger, soundTrigger, responseMadeTrigger,\
             ratingStartTrigger, ratingEndTrigger, endTrigger = trial(
@@ -95,7 +98,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
                   confidenceRating=confidenceRating, nTrial=nTrial)
 
         # Check if response is 'More' or 'Less'
-        isMore = 1 if estimation == 'More' else 0
+        isMore = 1 if decision == 'More' else 0
         # Update the UpDown staircase if initialization trial
         if trialType == 'UpDown':
             print('... update UpDown staircase.')
@@ -115,7 +118,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
                 parameters['stairCase']['psi'][modality].estimateLambda()
 
         print(f'...Initial BPM: {listenBPM} - Staircase value: {alpha} '
-              f'- Response: {estimation} ({isCorrect})')
+              f'- Response: {decision} ({isCorrect})')
 
         # Store results
         parameters['results_df'] = parameters['results_df'].append([
@@ -123,15 +126,15 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
                                   'Condition': [condition],
                                   'Modality': [modality],
                                   'StairCond': [stairCond],
-                                  'Estimation': [estimation],
-                                  'EstimationRT': [estimationRT],
+                                  'Decision': [decision],
+                                  'DecisionRT': [decisionRT],
                                   'Confidence': [confidence],
                                   'ConfidenceRT': [confidenceRT],
                                   'Alpha': [alpha],
                                   'listenBPM': [listenBPM],
                                   'responseBPM': [responseBPM],
                                   'ResponseCorrect': [isCorrect],
-                                  'EstimationProvided': [respProvided],
+                                  'DecisionProvided': [respProvided],
                                   'RatingProvided': [ratingProvided],
                                   'nTrials': [nTrial],
                                   'EstimatedThreshold': [estimatedThreshold],
@@ -272,11 +275,11 @@ def trial(parameters, alpha, modality, win=None, confidenceRating=True,
     condition : str
         The condition of the trial. Can be `'More'` (the beats are faster than
         the heart rate) or `'Less'` (the beats are slower than the heart rate).
-    estimation : str
-        The participant estimation. Can be `'up'` (the participant indicates
+    decision : str
+        The participant decision. Can be `'up'` (the participant indicates
         the beats are faster than the recorded heart rate) or `'down'` (the
         participant indicates the beats are slower than recorded heart rate).
-    estimationRT : float
+    decisionRT : float
         The response time from sound start to choice.
     confidence : int
         If confidenceRating is *True*, the confidence of the participant. The
@@ -294,7 +297,7 @@ def trial(parameters, alpha, modality, win=None, confidenceRating=True,
         of the task, but instead will check if the response is `'More'` or not.
     missed : boolean
         If `True`, the trial did not terminate correctly (e.g., participant was
-        too slow to provide the estimation or the confidence).
+        too slow to provide the decision or the confidence).
     """
     # Print infos at each trial start
     print(f'Starting trial - Intensity: {alpha} - Modality: {modality}')
@@ -451,7 +454,7 @@ def trial(parameters, alpha, modality, win=None, confidenceRating=True,
     # Record participant response (+/-)
     message = visual.TextStim(
         win, height=parameters['textSize'], pos=(0, 0.4),
-        text=parameters['texts']['Estimation'][modality])
+        text=parameters['texts']['Decision'][modality])
     message.autoDraw = True
 
     if parameters['device'] == 'keyboard':
@@ -473,8 +476,8 @@ def trial(parameters, alpha, modality, win=None, confidenceRating=True,
     #####################
     # Esimation Responses
     #####################
-    responseMadeTrigger, responseTrigger, respProvided, estimation,\
-        estimationRT, isCorrect = responseEstimation(
+    responseMadeTrigger, responseTrigger, respProvided, decision,\
+        decisionRT, isCorrect = responseDecision(
             responseSound, parameters, feedback, condition)
     press.autoDraw = False
     message.autoDraw = False
@@ -521,7 +524,7 @@ def trial(parameters, alpha, modality, win=None, confidenceRating=True,
             parameters['signal_df'] = parameters['signal_df'].append(
                 this_df, ignore_index=True)
 
-    return condition, listenBPM, responseBPM, estimation, estimationRT, confidence,\
+    return condition, listenBPM, responseBPM, decision, decisionRT, confidence,\
         confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
         startTrigger, soundTrigger, responseMadeTrigger, ratingStartTrigger, \
         ratingEndTrigger, endTrigger
@@ -618,7 +621,7 @@ def tutorial(parameters, win=None):
         condition = np.random.choice(['More', 'Less'])
         alpha = -20.0 if condition == 'Less' else 20.0
 
-        condition, listenBPM, responseBPM, estimation, estimationRT, confidence,\
+        condition, listenBPM, responseBPM, decision, decisionRT, confidence,\
             confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
             startTrigger, soundTrigger, responseMadeTrigger,\
             ratingStartTrigger, ratingEndTrigger, endTrigger = trial(
@@ -678,7 +681,7 @@ def tutorial(parameters, win=None):
             condition = np.random.choice(['More', 'Less'])
             alpha = -20.0 if condition == 'Less' else 20.0
 
-            condition, listenBPM, responseBPM, estimation, estimationRT, confidence,\
+            condition, listenBPM, responseBPM, decision, decisionRT, confidence,\
                 confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
                 startTrigger, soundTrigger, responseMadeTrigger,\
                 ratingStartTrigger, ratingEndTrigger, endTrigger = trial(
@@ -717,7 +720,7 @@ def tutorial(parameters, win=None):
         condition = np.random.choice(['More', 'Less'])
         alpha = -20.0 if condition == 'Less' else 20.0
 
-        condition, listenBPM, responseBPM, estimation, estimationRT, confidence,\
+        condition, listenBPM, responseBPM, decision, decisionRT, confidence,\
             confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
             startTrigger, soundTrigger, responseMadeTrigger,\
             ratingStartTrigger, ratingEndTrigger, endTrigger = trial(
@@ -747,8 +750,8 @@ def tutorial(parameters, win=None):
                 break
 
 
-def responseEstimation(this_hr, parameters, feedback, condition, win=None):
-    """ Recording response during the estimation BPM.
+def responseDecision(this_hr, parameters, feedback, condition, win=None):
+    """ Recording response during the decision phase.
 
     Parameters
     ----------
@@ -764,12 +767,12 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
     win : psychopy window instance.
         The window where to show the task.
     """
-    print('...starting estimation phase.')
+    print('...starting decision phase.')
 
     if win is None:
         win = parameters['win']
 
-    estimation, estimationRT, isCorrect = None, None, None
+    decision, decisionRT, isCorrect = None, None, None
     responseTrigger = time.time()
 
     if parameters['device'] == 'keyboard':
@@ -789,7 +792,7 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
         # Check for response provided by the participant
         if not responseKey:
             respProvided = False
-            estimation, estimationRT = None, None
+            decision, decisionRT = None, None
             # Record participant response (+/-)
             message = visual.TextStim(win, height=parameters['textSize'],
                                       text='Too late')
@@ -798,8 +801,8 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
             core.wait(1)
         else:
             respProvided = True
-            estimation = responseKey[0][0]
-            estimationRT = responseKey[0][1]
+            decision = responseKey[0][0]
+            decisionRT = responseKey[0][1]
 
             # Read oximeter
             if parameters['setup'] in ['behavioral', 'test']:
@@ -808,7 +811,7 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
             # Feedback
             if feedback is True:
                 # Is the answer Correct?
-                isCorrect = 1 if (estimation == condition) else 0
+                isCorrect = 1 if (decision == condition) else 0
                 if isCorrect == 0:
                     acc = visual.TextStim(win, height=parameters['textSize'],
                                           color='red', text='False')
@@ -840,16 +843,16 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
         clock = core.Clock()
         clock.reset()
         parameters['myMouse'].clickReset()
-        buttons, estimationRT = parameters['myMouse'].getPressed(getTime=True)
+        buttons, decisionRT = parameters['myMouse'].getPressed(getTime=True)
         while True:
-            buttons, estimationRT = \
+            buttons, decisionRT = \
                 parameters['myMouse'].getPressed(getTime=True)
             trialdur = clock.getTime()
             if parameters['setup'] in ['behavioral', 'test']:
                 parameters['oxiTask'].readInWaiting()
             if buttons == [1, 0, 0]:
-                estimationRT = estimationRT[0]
-                estimation, respProvided = 'Less', True
+                decisionRT = decisionRT[0]
+                decision, respProvided = 'Less', True
                 slower.color = 'blue'
                 slower.draw()
                 win.flip()
@@ -862,8 +865,8 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
                 core.wait(pauseFeedback)
                 break
             elif buttons == [0, 0, 1]:
-                estimationRT = estimationRT[-1]
-                estimation, respProvided = 'More', True
+                decisionRT = decisionRT[-1]
+                decision, respProvided = 'More', True
                 faster.color = 'blue'
                 faster.draw()
                 win.flip()
@@ -877,7 +880,7 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
                 break
             elif trialdur > parameters['respMax']:  # if too long
                 respProvided = False
-                estimationRT = None
+                decisionRT = None
                 break
             else:
                 slower.draw()
@@ -897,7 +900,7 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
             core.wait(.5)
         else:
             # Is the answer Correct?
-            isCorrect = 1 if (estimation == condition) else 0
+            isCorrect = 1 if (decision == condition) else 0
             # Feedback
             if feedback is True:
                 textFeedback = 'False' if isCorrect == 0 else 'Correct'
@@ -909,8 +912,8 @@ def responseEstimation(this_hr, parameters, feedback, condition, win=None):
                 win.flip()
                 core.wait(1)
 
-    return responseMadeTrigger, responseTrigger, respProvided, estimation, \
-        estimationRT, isCorrect
+    return responseMadeTrigger, responseTrigger, respProvided, decision, \
+        decisionRT, isCorrect
 
 
 def confidenceRatingTask(parameters, win=None):

@@ -12,7 +12,7 @@ from systole.recording import findOximeter, Oximeter
 def getParameters(participant='SubjectTest', session='001', serialPort=None,
                   setup='behavioral', exteroception=True, psiCatchTrials=0.0,
                   nTrials=160, BrainVisionIP=None, device='mouse',
-                  screenNb=0, fullscr=True, nTrialsUpDown=80):
+                  screenNb=0, fullscr=True, nTrialsUpDown=80, resultPath=None):
     """Create Heart Rate Discrimination task parameters.
 
     Many task parameters, aesthetics, and options are controlled by the
@@ -48,6 +48,8 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with
         some jitter) to control for range of stimuli presented. The default is
         `0.0` (no catch trials). If not `0.0`, recomended value is `0.2`.
+    resultPath : str or None
+        Where to save the results.
     screenNb : int
         Select screen number.
     serialPort: str
@@ -165,8 +167,11 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     parameters['participant'] = participant
     parameters['session'] = session
     parameters['path'] = os.getcwd()
-    parameters['results'] = \
-        parameters['path'] + '/data/' + participant + session
+    if resultPath is None:
+        parameters['results'] = \
+            parameters['path'] + '/data/' + participant + session
+    else:
+        parameters['results'] = None
     # Create Results directory if not already exists
     if not os.path.exists(parameters['results']):
         os.makedirs(parameters['results'])
@@ -301,7 +306,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
             'textBreaks': f"Break. You can rest as long as you want. Just {btnext} when you want to resume the task.",
             'textNext': f'Please {btnext} to continue',
             'textWaitTrigger': "Waiting for fMRI trigger...",
-            'Estimation': {'Intero': """Are these beeps faster or slower than your heart?""",
+            'Decision': {'Intero': """Are these beeps faster or slower than your heart?""",
                            'Extero': """Are these beeps faster or slower than the previous?"""},
             'Confidence': """How confident are you in your choice?"""}
 
