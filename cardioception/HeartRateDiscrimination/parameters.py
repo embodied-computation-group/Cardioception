@@ -12,7 +12,8 @@ from systole.recording import findOximeter, Oximeter
 def getParameters(participant='SubjectTest', session='001', serialPort=None,
                   setup='behavioral', exteroception=True, psiCatchTrials=0.0,
                   nTrials=160, BrainVisionIP=None, device='mouse',
-                  screenNb=0, fullscr=True, nTrialsUpDown=80, resultPath=None):
+                  screenNb=0, fullscr=True, nTrialsUpDown=80,
+                  nBreaking=20, resultPath=None):
     """Create Heart Rate Discrimination task parameters.
 
     Many task parameters, aesthetics, and options are controlled by the
@@ -34,6 +35,8 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         interoceptive condition (either block or randomized design).
     fullscr : bool
         If *True*, activate full screen mode.
+    nBreaking : int
+        Number of trials to run before the break.
     nStaircase : int
         Number of staircase to use per condition (exteroceptive and
         interoceptive).
@@ -121,6 +124,8 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     stairCase : dict
         The staircase instances for 'psi' and 'UpDown'. Each entry contain
         dictionnary for 'Intero' and 'Extero conditions' (if relevant).
+    staircaseType : 1d array-like
+        Vector indexing stairce type (`'UpDown'`, `'psi'`, `'psiCatchTrial'`).
     startKey : str
         The key to press to start the task and go to next steps.
     respMax : float
@@ -138,7 +143,7 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     win : Psychopy window instance
         The window where to run the task.
     """
-    parameters = dict()
+    parameters = {}
     parameters['nTrialsUpDown'] = nTrialsUpDown
     parameters['ExteroCondition'] = exteroception
     parameters['device'] = device
@@ -148,15 +153,15 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     parameters['screenNb'] = screenNb
     parameters['monitor'] = 'testMonitor'
     parameters['nFeedback'] = 5
-    parameters['nConfidence'] = 5
-    parameters['respMax'] = 8
+    parameters['nConfidence'] = 8
+    parameters['respMax'] = 5
     parameters['minRatingTime'] = .5
     parameters['maxRatingTime'] = 5
     parameters['startKey'] = 'space'
     parameters['allowedKeys'] = ['up', 'down']
     parameters['nTrials'] = nTrials
     parameters['nBeatsLim'] = 5
-    parameters['nBreaking'] = 20
+    parameters['nBreaking'] = nBreaking
     parameters['lambdaIntero'] = []  # Save the history of lambda values
     parameters['lambdaExtero'] = []  # Save the history of lambda values
 
@@ -176,6 +181,10 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     if not os.path.exists(parameters['results']):
         os.makedirs(parameters['results'])
 
+    # Create condition randomized vector for psi staircases
+    nPsitrials = round((parameters['nTrials'] -
+                        parameters['nTrialsUpDown']))
+
     # Create and randomize condition vectors separately for each staircase
     parameters['staircaisePosteriors'] = {}
     parameters['staircaisePosteriors']['Intero'] = []
@@ -183,31 +192,25 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
         parameters['staircaisePosteriors']['Extero'] = []
         # Create condition randomized vector for UpDown staircases
         updown = np.hstack(
-            [np.array(['Extero'] *
-             round(parameters['nTrialsUpDown']/2)),
-             np.array(['Intero'] *
+            [np.array(['Extero', 'Intero'] *
              round(parameters['nTrialsUpDown']/2))])
 
-        # Create condition randomized vector for psi staircases
-        nPsitrials = round((parameters['nTrials'] -
-                            parameters['nTrialsUpDown'])/2)
-        psi = np.hstack(
-            [np.array(['Extero'] * nPsitrials),
-             np.array(['Intero'] * nPsitrials)])
-        # Vector encoding the type of trial (psi, up/down or catch)
-        parameters['catchTrials'] = np.hstack(
-            [np.array(['UpDown'] * parameters['nTrialsUpDown']),
-             np.array(['psi'] * int((nPsitrials * 2 * (1-psiCatchTrials)))),
-             np.array(['psiCatchTrial'] * 2 *
-                      int((nPsitrials * psiCatchTrials)))])
+        psi = np.hstack([np.array(['Extero', 'Intero'] * int(nPsitrials/2))])
         parameters['Modality'] = np.hstack([updown, psi])
+
+        # Vector encoding the type of trial (psi, up/down or catch)
+        parameters['staircaseType'] = np.hstack(
+            [np.array(['UpDown'] * parameters['nTrialsUpDown']),
+             np.array(['psi'] * int((nPsitrials * (1-psiCatchTrials)))),
+             np.array(['psiCatchTrial'] *
+                      int((nPsitrials * psiCatchTrials)))])
 
         # Firt we shuffle only up/down trials
         shuffler = np.random.permutation(parameters['nTrialsUpDown'])
         parameters['Modality'][:parameters['nTrialsUpDown']] = \
             parameters['Modality'][shuffler]
-        parameters['catchTrials'][:parameters['nTrialsUpDown']] = \
-            parameters['catchTrials'][shuffler]
+        parameters['staircaseType'][:parameters['nTrialsUpDown']] = \
+            parameters['staircaseType'][shuffler]
 
         # Then we shuffle all trials except first 1/2 of up/down
         # If no up/down trials are provided, this equal full shuffling
@@ -217,19 +220,25 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
                       parameters['nTrials']))
         parameters['Modality'][int(parameters['nTrialsUpDown']/2):] = \
             parameters['Modality'][shuffler]
-        parameters['catchTrials'][int(parameters['nTrialsUpDown']/2):] = \
-            parameters['catchTrials'][shuffler]
+        parameters['staircaseType'][int(parameters['nTrialsUpDown']/2):] = \
+            parameters['staircaseType'][shuffler]
 
     elif exteroception is False:
         # Create condition randomized vector for UpDown staircases
         updown = np.hstack(
-            [np.array(['Intero'] *
-             round(parameters['nTrialsUpDown']*2))])
+            [np.array(['Intero'] * round(parameters['nTrialsUpDown']))])
 
         # Create condition randomized vector for psi staircases
         psi = np.hstack(
             [np.array(['Intero'] * round(parameters['nTrials']))])
         parameters['Modality'] = np.hstack([updown, psi])
+
+        # Vector encoding the type of trial (psi, up/down or catch)
+        parameters['staircaseType'] = np.hstack(
+            [np.array(['UpDown'] * parameters['nTrialsUpDown']),
+             np.array(['psi'] * int((nPsitrials * (1-psiCatchTrials)))),
+             np.array(['psiCatchTrial'] *
+                      int((nPsitrials * psiCatchTrials)))])
 
     # Default parameters for the basic staircase are set here. Please see
     # PsychoPy Staircase Handler Documentation for full options. By default,
@@ -252,8 +261,8 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
                                 nTrials=parameters['nTrialsUpDown'])
 
     parameters['stairCase']['psi']['Intero'] = data.PsiHandler(
-        nTrials=nTrials, intensRange=[-40.5, 40.5],
-        alphaRange=[-40.5, 40.5], betaRange=[0.1, 20],
+        nTrials=nTrials, intensRange=[-50.5, 50.5],
+        alphaRange=[-50.5, 50.5], betaRange=[0.1, 25],
         intensPrecision=1, alphaPrecision=1, betaPrecision=0.1,
         delta=0.02, stepType='lin', expectedMin=0)
 
@@ -271,8 +280,8 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
                                    nTrials=parameters['nTrialsUpDown'])
 
         parameters['stairCase']['psi']['Extero'] = data.PsiHandler(
-            nTrials=nTrials, intensRange=[-40.5, 40.5],
-            alphaRange=[-40.5, 40.5], betaRange=[0.1, 20],
+            nTrials=nTrials, intensRange=[-50.5, 50.5],
+            alphaRange=[-50.5, 50.5], betaRange=[0.1, 25],
             intensPrecision=1, alphaPrecision=1, betaPrecision=0.1,
             delta=0.02, stepType='lin', expectedMin=0)
 
@@ -300,7 +309,8 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
     #######
     # Texts
     #######
-    btnext = 'press SPACE' if parameters['device'] == 'keyboard' else 'click the mouse'
+    btnext = 'press SPACE' if parameters['device'] == \
+        'keyboard' else 'click the mouse'
     parameters['texts'] = {
             'textTaskStart': "The task is now going to start, get ready.",
             'textBreaks': f"Break. You can rest as long as you want. Just {btnext} when you want to resume the task.",
@@ -311,25 +321,39 @@ def getParameters(participant='SubjectTest', session='001', serialPort=None,
             'Confidence': """How confident are you in your choice?"""}
 
     parameters['Tutorial1'] = (
-        "During this experiment, we will record your pulse and play beeps based on your heart rate.")
+        """During this experiment, we will record your pulse and play beeps based on your heart rate.
+
+You will only be allowed to focus on the internal sensations of your heartbeats, but not to measure your heart rate by any other means (e.g. checking pulse at your wrist or your neck).
+        """)
+    if parameters['setup'] != 'fmri':
+
+        parameters['pulseTutorial1'] = (
+            "Please place the pulse oximeter on your forefinger. Use your non-dominant hand as depicted in this schema.")
+
+        parameters['pulseTutorial2'] = (
+            "If you can feel your heartbeats when you have the pulse oximeter in your forefinger, try to place it on another finger.")
+
+        parameters['pulseTutorial3'] = (
+            "You can test different configurations until you find the finger which provides you with the less sensory input about your heart rate.")
+
+        parameters['pulseTutorial4'] = (
+            "Please enter the number of the finger corresponding to the finger where you decided to place the pulse oximeter.")
 
     parameters['Tutorial2'] = (
         "When you see this icon, try to focus on your heartbeat for 5 seconds. Try not to move, as we are recording your pulse in this period")
 
-    moreResp = 'UP key' if parameters['device'] == 'keyboard' else 'RIGHT mouse button'
-    lessResp = 'DOWN key' if parameters['device'] == 'keyboard' else 'LEFT mouse button'
-    parameters['Tutorial3'] = (
-        f"""After this 'heart listening' period, you will see the response icons and hear a series of beeps.
-
-As quickly and accurately as possible, you will listen to these beeps and decide if they are faster ({moreResp}) or slower ({lessResp}) than your own heart rate.
+    moreResp = 'UP key' if parameters['device'] == \
+        'keyboard' else 'RIGHT mouse button'
+    lessResp = 'DOWN key' if parameters['device'] == \
+        'keyboard' else 'LEFT mouse button'
+    parameters['Tutorial3_icon'] = """After this 'heart listening' period, you will see the same icon and hear a series of beeps."""
+    parameters['Tutorial3_responses'] = (f"""As quickly and accurately as possible, you will listen to these beeps and decide if they are faster ({moreResp}) or slower ({lessResp}) than your own heart rate.
 
 The beeps will ALWAYS be slower or faster than your heart. Please guess, even if you are unsure.""")
 
     if parameters['ExteroCondition'] is True:
         parameters['Tutorial3bis'] = (
-            f"""For some trials, instead of seeing the heart icon, you will see a listening icon.
-
-You will then have to listen to a first set of beeps, instead of your heart.""")
+            """For some trials, instead of seeing the heart icon, you will see a listening icon. You will then have to listen to a first set of beeps, instead of your heart.""")
 
         parameters['Tutorial3ter'] = (
             f"""After these first beeps, you will see the response icons appear, and a second set of beeps will play.
@@ -353,10 +377,10 @@ At times the task may be very difficult; the difference between your true heart 
 
 This means that you should try to use the entire length of the confidence scale to reflect your subjective uncertainty on each trial.
 
-As the task difficulty will change over time, it is rare that you will be totally confident or totally uncertain.
-This concludes the tutorial. If you have any questions, please ask the experimenter now.
-Otherwise, press any key to continue to the main task. """)
+As the task difficulty will change over time, it is rare that you will be totally confident or totally uncertain.""")
 
+    parameters['Tutorial6'] = ("""This concludes the tutorial. If you have any questions, please ask the experimenter now.
+Otherwise, you can continue to the main task.""")
     # Open window
     if parameters['setup'] == 'test':
         fullscr = False
@@ -368,16 +392,26 @@ Otherwise, press any key to continue to the main task. """)
     ###############
     # Image loading
     ###############
+    if parameters['setup'] in ['test', 'behavioral']:
+        parameters['pulseSchema'] = visual.ImageStim(
+            win=parameters['win'], units='height',
+            image=os.path.dirname(__file__) + '/Images/pulseOximeter.png',
+            pos=(0.0, 0.0))
+        parameters['pulseSchema'].size *= 0.2
+        parameters['handSchema'] = visual.ImageStim(
+            win=parameters['win'], units='height',
+            image=os.path.dirname(__file__) + '/Images/hand.png',
+            pos=(0.0, -0.08))
+        parameters['handSchema'].size *= 0.15
+
     parameters['listenLogo'] = visual.ImageStim(
-        win=parameters['win'],
-        units='height',
+        win=parameters['win'], units='height',
         image=os.path.dirname(__file__) + '/Images/listen.png',
         pos=(0.0, 0.0))
-    parameters['listenLogo'].size *= 0.1
+    parameters['listenLogo'].size *= 0.08
 
     parameters['heartLogo'] = visual.ImageStim(
-        win=parameters['win'],
-        units='height',
+        win=parameters['win'], units='height',
         image=os.path.dirname(__file__) + '/Images/heartbeat.png',
         pos=(0.0, 0.0))
     parameters['heartLogo'].size *= 0.04

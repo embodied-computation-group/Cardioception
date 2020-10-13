@@ -33,7 +33,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
     elif parameters['setup'] == 'fMRI':
         messageWaitTrigger = visual.TextStim(
             win, height=parameters['textSize'],
-            text=parameters['texts']['textWaitTrgger'])
+            text=parameters['texts']['textWaitTrigger'])
         messageWaitTrigger.draw()  # Show instructions
         win.flip()
         event.waitKeys(keyList=parameters['fMRItrigger'])
@@ -46,7 +46,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
 
     for nTrial, modality, trialType in zip(range(parameters['nTrials']),
                                            parameters['Modality'],
-                                           parameters['catchTrials']):
+                                           parameters['staircaseType']):
 
         # Initialize variable
         estimatedThreshold, estimatedSlope = None, None
@@ -58,18 +58,14 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
             messageStart = visual.TextStim(
                 win, height=parameters['textSize'],
                 text=parameters['texts']['textTaskStart'])
+            press = visual.TextStim(win, height=parameters['textSize'],
+                                    pos=(0.0, -0.4),
+                                    text=parameters['texts']['textNext'])
+            press.draw()
             messageStart.draw()  # Show instructions
             win.flip()
 
-            # Wait for participant input before continue
-            if parameters['device'] == 'keyboard':
-                event.waitKeys(keyList=parameters['startKey'])
-            elif parameters['device'] == 'mouse':
-                parameters['myMouse'].clickReset()
-                while True:
-                    buttons = parameters['myMouse'].getPressed()
-                    if buttons != [0, 0, 0]:
-                        break
+            waitInput(parameters)
 
         # Next intensity value
         if trialType == 'UpDown':
@@ -83,10 +79,12 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
             stairCond = 'psi'
         elif trialType == 'psiCatchTrial':
             print('... load psiCatchTrial staircase.')
-            # Randomly select extrem value with jitter to control for possible
-            # bias of Psi staircase
-            alpha = np.random.choice(np.hstack([np.arange(-25, -14),
-                                                np.arange(15, 26)]))
+            # Select pseudo-random extrem value based on number
+            # of previous catch trial.
+            catchIdx = sum(parameters['staircaseType'][:nTrial]
+                           [parameters['Modality'][:nTrial] == modality]
+                           == 'psiCatchTrial')
+            alpha = np.array([-30, 10, -20, 20, -10, 30])[catchIdx % 6]
             stairCond = 'psiCatchTrial'
 
         # Start trial
@@ -106,7 +104,17 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
             parameters['stairCase']['UpDown'][modality].addResponse(isMore)
         elif trialType == 'psi':
             print('... update psi staircase.')
-            parameters['stairCase']['psi'][modality].addResponse(isMore)
+
+            # Update the Psi staircase with forced intensity value
+            # if impossible BPM was generated
+            if listenBPM + alpha < 15:
+                parameters['stairCase']['psi'][modality]\
+                    .addResponse(isMore, intensity=15)
+            elif listenBPM + alpha > 199:
+                parameters['stairCase']['psi'][modality]\
+                    .addResponse(isMore, intensity=199)
+            else:
+                parameters['stairCase']['psi'][modality].addResponse(isMore)
 
             # Store posteriors in list for each trials
             parameters['staircaisePosteriors'][modality].append(
@@ -158,7 +166,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
             message = visual.TextStim(
                             win, height=parameters['textSize'],
                             text=parameters['texts']['textBreaks'])
-            percRemain = (nTrial/parameters['nTrials'])*100
+            percRemain = round((nTrial/parameters['nTrials'])*100, 2)
             remain = visual.TextStim(
                 win, height=parameters['textSize'], pos=(0.0, 0.2),
                 text=f'You completed {percRemain} % of the task.')
@@ -171,14 +179,7 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
                     parameters['participant'] + str(nTrial))
 
             # Wait for participant input before continue
-            if parameters['device'] == 'keyboard':
-                event.waitKeys(keyList=parameters['startKey'])
-            elif parameters['device'] == 'mouse':
-                parameters['myMouse'].clickReset()
-                while True:
-                    buttons = parameters['myMouse'].getPressed()
-                    if buttons != [0, 0, 0]:
-                        break
+            waitInput(parameters)
 
             # Fixation cross
             fixation = visual.GratingStim(win=win, mask='cross', size=0.1,
@@ -227,8 +228,13 @@ def run(parameters, win=None, confidenceRating=True, runTutorial=False):
     print('Saving Parameters in pickle...')
     save_parameter = parameters.copy()
     for k in ['win', 'heartLogo', 'listenLogo', 'stairCase',
-              'oxiTask', 'myMouse']:
+              'oxiTask']:
         del save_parameter[k]
+    if parameters['device'] == 'mouse':
+        del save_parameter['myMouse']
+    if parameters['setup'] in ['test', 'behavioral']:
+        del save_parameter['handSchema']
+        del save_parameter['pulseSchema']
     with open(save_parameter['results'] + '/' +
               save_parameter['participant'] + '_parameters.pickle',
               'wb') as handle:
@@ -411,7 +417,7 @@ def trial(parameters, alpha, modality, win=None, confidenceRating=True,
         # Play selected BPM frequency
         listenSound = sound.Sound(listenFile)
         listenSound.play()
-        core.wait(listenSound.getDuration() + 0.25)
+        core.wait(5)
         listenSound.stop()
 
     else:
@@ -422,7 +428,7 @@ def trial(parameters, alpha, modality, win=None, confidenceRating=True,
                                   pos=[0, 0], sf=0)
     fixation.draw()
     win.flip()
-    core.wait(0.25)
+    core.wait(0.5)
 
     #######
     # Sound
@@ -530,6 +536,18 @@ def trial(parameters, alpha, modality, win=None, confidenceRating=True,
         ratingEndTrigger, endTrigger
 
 
+def waitInput(parameters):
+    """Wait for participant input before continue"""
+    if parameters['device'] == 'keyboard':
+        event.waitKeys(keyList=parameters['startKey'])
+    elif parameters['device'] == 'mouse':
+        parameters['myMouse'].clickReset()
+        while True:
+            buttons = parameters['myMouse'].getPressed()
+            if buttons != [0, 0, 0]:
+                break
+
+
 def tutorial(parameters, win=None):
     """Run tutorial before task run.
 
@@ -554,14 +572,64 @@ def tutorial(parameters, win=None):
     win.flip()
     core.wait(1)
 
-    # Wait for participant input before continue
-    if parameters['device'] == 'keyboard':
-        event.waitKeys(keyList=parameters['startKey'])
-    elif parameters['device'] == 'mouse':
-        parameters['myMouse'].clickReset()
+    waitInput(parameters)
+
+    # Pusle oximeter tutorial
+    if parameters['setup'] in ['test', 'behavioral']:
+        pulse1 = visual.TextStim(win, height=parameters['textSize'],
+                                 pos=(0.0, 0.3),
+                                 text=parameters['pulseTutorial1'])
+        press = visual.TextStim(win, height=parameters['textSize'],
+                                pos=(0.0, -0.4),
+                                text=parameters['texts']['textNext'])
+        pulse1.draw()
+        parameters['pulseSchema'].draw()
+        press.draw()
+        win.flip()
+        core.wait(1)
+
+        waitInput(parameters)
+
+        # Get finger number
+        pulse2 = visual.TextStim(win, height=parameters['textSize'],
+                                 pos=(0.0, 0.2),
+                                 text=parameters['pulseTutorial2'])
+        pulse3 = visual.TextStim(win, height=parameters['textSize'],
+                                 pos=(0.0, -0.2),
+                                 text=parameters['pulseTutorial3'])
+        pulse2.draw()
+        pulse3.draw()
+        press.draw()
+        win.flip()
+        core.wait(1)
+
+        waitInput(parameters)
+
+        pulse4 = visual.TextStim(win, height=parameters['textSize'],
+                                 pos=(0.0, 0.3),
+                                 text=parameters['pulseTutorial4'])
+        pulse4.draw()
+        parameters['handSchema'].draw()
+        win.flip()
+        core.wait(1)
+
+        # Record number and save in a .txt file
+        nFinger = ''
         while True:
-            buttons = parameters['myMouse'].getPressed()
-            if buttons != [0, 0, 0]:
+            # Record new key
+            key = event.waitKeys(
+                keyList=['1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+                         'num_1', 'num_2', 'num_3', 'num_4', 'num_5', 'num_6',
+                         'num_7', 'num_8', 'num_9', 'num_0'])
+            if key:
+                nFinger += [s for s in key[0] if s.isdigit()][0]
+                log_df = pd.DataFrame({'Subject': [parameters['participant']],
+                                       'Session': [parameters['session']],
+                                       'Finger': [nFinger]})
+                log_df.to_csv(parameters['results'] + '/' +
+                              parameters['participant'] +
+                              parameters['session'] + '_log.txt', index=False)
+                core.wait(0.5)
                 break
 
     # Heartrate recording
@@ -569,48 +637,36 @@ def tutorial(parameters, win=None):
                                 height=parameters['textSize'],
                                 pos=(0.0, 0.3),
                                 text=parameters['Tutorial2'])
-    press = visual.TextStim(win,
-                            height=parameters['textSize'],
-                            text=parameters['texts']['textNext'],
-                            pos=(0.0, -0.4))
     recording.draw()
     parameters['heartLogo'].draw()
     press.draw()
     win.flip()
     core.wait(1)
 
-    # Wait for participant input before continue
-    if parameters['device'] == 'keyboard':
-        event.waitKeys(keyList=parameters['startKey'])
-    elif parameters['device'] == 'mouse':
-        parameters['myMouse'].clickReset()
-        while True:
-            buttons = parameters['myMouse'].getPressed()
-            if buttons != [0, 0, 0]:
-                break
+    waitInput(parameters)
 
-    # Listen and response
-    listenResponse = visual.TextStim(win, height=parameters['textSize']*.8,
-                                     pos=(0.0, 0.0),
-                                     text=parameters['Tutorial3'])
-    press = visual.TextStim(win, height=parameters['textSize']*.8,
-                            text=parameters['texts']['textNext'],
-                            pos=(0.0, -0.4))
-    listenResponse.draw()
-    # parameters['listenLogo'].draw()
+    # Show reponse icon
+    listenIcon = visual.TextStim(win, height=parameters['textSize'],
+                                 pos=(0.0, 0.3),
+                                 text=parameters['Tutorial3_icon'])
+    parameters['heartLogo'].draw()
+    listenIcon.draw()
     press.draw()
     win.flip()
     core.wait(1)
 
-    # Wait for participant input before continue
-    if parameters['device'] == 'keyboard':
-        event.waitKeys(keyList=parameters['startKey'])
-    else:
-        parameters['myMouse'].clickReset()
-        while True:
-            buttons = parameters['myMouse'].getPressed()
-            if buttons != [0, 0, 0]:
-                break
+    waitInput(parameters)
+
+    # Response instructions
+    listenResponse = visual.TextStim(win, height=parameters['textSize'],
+                                     pos=(0.0, 0.0),
+                                     text=parameters['Tutorial3_responses'])
+    listenResponse.draw()
+    press.draw()
+    win.flip()
+    core.wait(1)
+
+    waitInput(parameters)
 
     # Run 10 training trials with feedback
     if parameters['setup'] in ['test', 'behavioral']:
@@ -631,46 +687,25 @@ def tutorial(parameters, win=None):
     # If extero conditions required, show tutorial.
     if parameters['ExteroCondition'] is True:
         exteroText = visual.TextStim(win, height=parameters['textSize'],
-                                     pos=(0.0, 0.0),
+                                     pos=(0.0, -0.2),
                                      text=parameters['Tutorial3bis'])
-        press = visual.TextStim(win, height=parameters['textSize'],
-                                text=parameters['texts']['textNext'],
-                                pos=(0.0, -0.3))
         exteroText.draw()
+        parameters['listenLogo'].draw()
         press.draw()
         win.flip()
         core.wait(1)
 
-        # Wait for participant input before continue
-        if parameters['device'] == 'keyboard':
-            event.waitKeys(keyList=parameters['startKey'])
-        else:
-            parameters['myMouse'].clickReset()
-            while True:
-                buttons = parameters['myMouse'].getPressed()
-                if buttons != [0, 0, 0]:
-                    break
+        waitInput(parameters)
 
         exteroResponse = visual.TextStim(win, height=parameters['textSize'],
                                          pos=(0.0, 0.0),
                                          text=parameters['Tutorial3ter'])
-        press = visual.TextStim(win, height=parameters['textSize'],
-                                text=parameters['texts']['textNext'],
-                                pos=(0.0, -0.3))
         exteroResponse.draw()
         press.draw()
         win.flip()
         core.wait(1)
 
-        # Wait for participant input before continue
-        if parameters['device'] == 'keyboard':
-            event.waitKeys(keyList=parameters['startKey'])
-        else:
-            parameters['myMouse'].clickReset()
-            while True:
-                buttons = parameters['myMouse'].getPressed()
-                if buttons != [0, 0, 0]:
-                    break
+        waitInput(parameters)
 
         # Run 10 training trials with feedback
         if parameters['setup'] in ['test', 'behavioral']:
@@ -693,23 +728,11 @@ def tutorial(parameters, win=None):
                                  height=parameters['textSize'],
                                  text=parameters['Tutorial4'])
     confidence.draw()
-    press = visual.TextStim(win,
-                            height=parameters['textSize'],
-                            text=parameters['texts']['textNext'],
-                            pos=(0.0, -0.4))
     press.draw()
     win.flip()
     core.wait(1)
 
-    # Wait for participant input before continue
-    if parameters['device'] == 'keyboard':
-        event.waitKeys(keyList=parameters['startKey'])
-    else:
-        parameters['myMouse'].clickReset()
-        while True:
-            buttons = parameters['myMouse'].getPressed()
-            if buttons != [0, 0, 0]:
-                break
+    waitInput(parameters)
 
     if parameters['setup'] in ['test', 'behavioral']:
         parameters['oxiTask'].setup().read(duration=2)
@@ -717,37 +740,34 @@ def tutorial(parameters, win=None):
     for i in range(parameters['nConfidence']):
 
         # Ramdom selection of condition
+        modality = np.random.choice(['Intero', 'Extero'])
         condition = np.random.choice(['More', 'Less'])
-        alpha = -20.0 if condition == 'Less' else 20.0
-
+        stim_intense = np.random.choice(np.array([1, 10, 30]))
+        alpha = -stim_intense if condition == 'Less' else stim_intense
         condition, listenBPM, responseBPM, decision, decisionRT, confidence,\
             confidenceRT, alpha, isCorrect, respProvided, ratingProvided, \
             startTrigger, soundTrigger, responseMadeTrigger,\
             ratingStartTrigger, ratingEndTrigger, endTrigger = trial(
-                parameters, alpha, 'Intero', win=win,
+                parameters, alpha, modality, win=win,
                 confidenceRating=True)
 
-    # Task
-    taskPresentation = visual.TextStim(win,
-                                       height=parameters['textSize'],
+    # End of tutorial
+    taskPresentation = visual.TextStim(win, height=parameters['textSize'],
                                        text=parameters['Tutorial5'])
     taskPresentation.draw()
-    press = visual.TextStim(win, height=parameters['textSize'],
-                            text=parameters['texts']['textNext'],
-                            pos=(0.0, -0.4))
     press.draw()
     win.flip()
     core.wait(1)
+    waitInput(parameters)
 
-    # Wait for participant input before continue
-    if parameters['device'] == 'keyboard':
-        event.waitKeys(keyList=parameters['startKey'])
-    else:
-        parameters['myMouse'].clickReset()
-        while True:
-            buttons = parameters['myMouse'].getPressed()
-            if buttons != [0, 0, 0]:
-                break
+    # Task
+    taskPresentation = visual.TextStim(win, height=parameters['textSize'],
+                                       text=parameters['Tutorial6'])
+    taskPresentation.draw()
+    press.draw()
+    win.flip()
+    core.wait(1)
+    waitInput(parameters)
 
 
 def responseDecision(this_hr, parameters, feedback, condition, win=None):
@@ -760,9 +780,9 @@ def responseDecision(this_hr, parameters, feedback, condition, win=None):
     parameters : dict
         Parameters dictionnary.
     feedback : bool
-        If *True*, provide feedback after decision.
+        If `True`, provide feedback after decision.
     condition : str
-        The trial condition ['More' or 'Less'] used to check is response is
+        The trial condition [`'More'` or `'Less'`] used to check is response is
         correct or not.
     win : psychopy window instance.
         The window where to show the task.
@@ -829,9 +849,9 @@ def responseDecision(this_hr, parameters, feedback, condition, win=None):
 
         # Initialise response feedback
         slower = visual.TextStim(win, height=parameters['textSize'],
-                               color='white', text='Slower', pos=(-0.2, 0.2))
+                                 color='white', text='Slower', pos=(-0.2, 0.2))
         faster = visual.TextStim(win, height=parameters['textSize'],
-                               color='white', text='Faster', pos=(0.2, 0.2))
+                                 color='white', text='Faster', pos=(0.2, 0.2))
         slower.draw()
         faster.draw()
         win.flip()
