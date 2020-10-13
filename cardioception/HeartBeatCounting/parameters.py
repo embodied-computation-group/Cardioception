@@ -11,7 +11,7 @@ from systole.recording import findOximeter, Oximeter
 
 def getParameters(participant='Participant', session='001', serialPort=None,
                   taskVersion='Garfinkel', setup='behavioral', screenNb=0,
-                  fullscr=True):
+                  fullscr=True, resultPath=None):
     """Create Heartbeat Counting task parameters.
 
     Parameters
@@ -27,6 +27,8 @@ def getParameters(participant='Participant', session='001', serialPort=None,
         :py:func:`systole.recording.findOximeter()` function.
     taskVersion : str or None
         Task version to run. Can be 'Garfinkel', 'Shandry', 'test' or None.
+    resultPath : str or None
+        Where to save the results.
     setup : str
         Context of oximeter recording. Behavioral will record through a Nonin
         pulse oximeter, *fMRI* will record through BrainVision amplifier
@@ -118,12 +120,14 @@ def getParameters(participant='Participant', session='001', serialPort=None,
     parameters['participant'] = participant
     parameters['session'] = session
     parameters['path'] = os.getcwd()
-    parameters['results'] = \
-        parameters['path'] + '/data/' + participant + session
-
+    if resultPath is None:
+        parameters['resultPath'] = \
+            parameters['path'] + '/data/' + participant + session
+    else:
+        parameters['resultPath'] = resultPath
     # Create Results directory of not already exists
-    if not os.path.exists(parameters['results']):
-        os.makedirs(parameters['results'])
+    if not os.path.exists(parameters['resultPath']):
+        os.makedirs(parameters['resultPath'])
 
     # Set note played at trial start
     parameters['noteStart'] = \
