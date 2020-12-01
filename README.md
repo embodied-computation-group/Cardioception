@@ -33,16 +33,23 @@ Notes: Cardioception will automatically copy the images and sound files necessar
 
 ## Run tasks
 
-Each task consist of a `parameters.py` and a `task.py` files containing the experimental parameters and the Psychopy script respectively.
+Each task contains a `parameters` and a `task` submodule describing the experimental parameters and the Psychopy script respectively. Once the package has been installed, you can run the task (e.g. here the Heart rate Discrimination task) using the following code snippet:
 
-These functions can be imported for later user:
+```python
+from cardioception.HeartRateDiscrimination import parameters, task
 
-`from cardioception.HeartRateDiscrimination import task, parameters`
+# Set global task parameters
+parameters = parameters.getParameters(
+    participant='Subject_01', session='Test', serialPort=None,
+    setup='behavioral', nTrials=10, nTrialsUpDown=4, screenNb=0)
 
-or run the wrapper in a console:
+# Run task
+task.run(parameters, confidenceRating=True, runTutorial=True)
 
-`python [path to the launcher.py file]`
+parameters['win'].close()
+```
 
+This will run the Heart Rate Discrimination task wth a total of 10 trials (4 using an 1-Up/1-Down starcase, and 6 using a Psi staircase).
 ## Creating a shortcut
 
 The tasks can easily be executed by running the corresponding `launcher.py` file in a console. It is also possible to create a shortcut (eg. in the Desktop) to facilitate its use in experimental context.
@@ -85,7 +92,7 @@ The `notebooks` folder includes Jupyter notebooks documenting the recommended an
 
 The notebooks provided in the `/notebooks` folder can be used as templates to generate reports for each participants using the following code snippet. This will require the last version of [papermill](https://papermill.readthedocs.io/en/latest/).
 
-```
+```python
 import papermill as pm
 import subprocess
 import os
@@ -101,7 +108,7 @@ for sub in subjects:
                         parameters=dict(subject=sub, path=dataPath))
 
     command = f'jupyter nbconvert {reportsPath}{sub}.ipynb --output ' + \
-        '{reportsPath}{sub}_report.html --no-input'
+        '{reportsPath}{sub}_report.html --no-input --to html'
     subprocess.call(command)
 ```
 
