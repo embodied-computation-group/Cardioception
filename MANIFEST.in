@@ -4,7 +4,7 @@ include LICENSE
 include requirements.txt
 
 # Add datasets files
-include cardioception/HeartRateDiscrimination/Images/*
-include cardioception/HeartRateDiscrimination/Sounds/*
-include cardioception/HeartBeatCounting/Images/*
-include cardioception/HeartBeatCounting/Sounds/*
+include cardioception/HRD/Images/*
+include cardioception/HRD/Sounds/*
+include cardioception/HBC/Images/*
+include cardioception/HBC/Sounds/*

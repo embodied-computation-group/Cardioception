@@ -1,14 +1,11 @@
-[![GitHub license](https://img.shields.io/github/license/embodied-computation-group/Cardioception)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/)
-
+[![GitHub license](https://img.shields.io/github/license/embodied-computation-group/Cardioception)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE)[![GitHub release](https://img.shields.io/github/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/)[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)[![pip](https://badge.fury.io/py/cardioception.svg)](https://badge.fury.io/py/metadPy)[![travis](https://travis-ci.com/embodied-computation-group/Cardioception.svg?branch=master)](https://travis-ci.com/embodied-computation-group/Cardioception)[![codecov](https://codecov.io/gh/embodied-computation-group/Cardioception/branch/master/graph/badge.svg)](https://codecov.io/gh/embodied-computation-group/Cardioception)[![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)[![mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 
 # Cardioception
 
-The Cardioception Python Package - Measuring Interoception with Psychopy - implements three measures of cardiac interoception (cardioception):
+The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):
 1. The *Heartbeat counting task* developed by Rainer Schandry<sup>1,2</sup>
-2. The *Heartbeat Discrimination task* [forthcoming]
-3. a novel *Heart Rate Discrimination Task* implementing an adaptive psychophysical measure for measuring cardioception.
+2. a novel *Heart Rate Discrimination Task* implementing an adaptive psychophysical measure for measuring cardioception.
 
 Currently the toolbox natively supports the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/) as well as Remote Data Access (RDA) via BrainVision Recorder together with Brain product ExG amplifier [](https://www.brainproducts.com/>).
 
@@ -19,7 +16,7 @@ Currently the toolbox natively supports the [Nonin 3012LP Xpod USB pulse oximete
 
 ## Dependencies
 
-We recommend to use the last install of Anaconda for Python 3.6 or latest (see https://www.anaconda.com/products/individual#download-section).
+We recommend to use the last install of Anaconda for Python 3.8 or latest (see https://www.anaconda.com/products/individual#download-section).
 
 The following packages should be installed:
 
@@ -36,7 +33,7 @@ Notes: Cardioception will automatically copy the images and sound files necessar
 Each task contains a `parameters` and a `task` submodule describing the experimental parameters and the Psychopy script respectively. Once the package has been installed, you can run the task (e.g. here the Heart rate Discrimination task) using the following code snippet:
 
 ```python
-from cardioception.HeartRateDiscrimination import parameters, task
+from cardioception.HRD import parameters, task
 
 # Set global task parameters
 parameters = parameters.getParameters(
@@ -123,9 +120,9 @@ for sub in subjects:
 4. Hart, N., McGowan, J., Minati, L., & Critchley, H. D. (2013). Emotional Regulation and Bodily Sensation: Interoceptive Awareness Is Intact in Borderline Personality Disorder. Journal of Personality Disorders, 27(4), 506–518. https://doi.org/10.1521/pedi_2012_26_049
 
 # Development
-This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/) and Micah Allen (ECG group, https://the-ecg.org/).
+This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/) and [Micah Allen](https://micahallen.org/) from the [ECG group](https://the-ecg.org/).
 
-<img src = "images/LabLogo.png" height ="200" /><img src = "images/AU.png" height ="200" />
+<img src = "images/LabLogo.png" height ="100"><img src = "images/AU.png" height ="100">
 
 # Credit
 Some icons used in the Figures or presented during the tasks were downloaded from **Flaticon** [www.flaticon.com](www.flaticon.com).

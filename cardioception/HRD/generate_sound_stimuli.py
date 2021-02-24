@@ -9,12 +9,12 @@ import struct
 import numpy as np
 
 
-def append_silence(audio, duration_milliseconds=500):
+def append_silence(audio: list, duration_milliseconds: int = 500):
     """Add silence to the signal.
 
     Parameters
     ----------
-    audio : array
+    audio : list
         The signal where the sine should be added.
     duration_milliseconds : int
         The sine length.
@@ -32,7 +32,9 @@ def append_silence(audio, duration_milliseconds=500):
     return audio
 
 
-def append_sinewave(audio, freq=440, duration_milliseconds=200, volume=1.0):
+def append_sinewave(
+    audio: list, freq: int = 440, duration_milliseconds: int = 200, volume: float = 1.0
+):
     """Add sinewave to the signal.
 
     Parameters
@@ -54,12 +56,12 @@ def append_sinewave(audio, freq=440, duration_milliseconds=200, volume=1.0):
     num_samples = duration_milliseconds * (sample_rate / 1000.0)
 
     for x in range(int(num_samples)):
-        audio.append(
-            volume * math.sin(2 * math.pi * freq * (x / sample_rate)))
+        audio.append(volume * math.sin(2 * math.pi * freq * (x / sample_rate)))
 
     return audio
 
-def save_wav(audio, file_name):
+
+def save_wav(audio: list, file_name: str):
     """Save the audio signal as wav file.
 
     Parameters
@@ -81,20 +83,21 @@ def save_wav(audio, file_name):
 
     # 44100 is the industry standard sample rate
     nframes = len(audio)
-    wav_file.setparams((nchannels, sampwidth, sample_rate,
-                        nframes, "NONE", "not compressed"))
+    wav_file.setparams(
+        (nchannels, sampwidth, sample_rate, nframes, "NONE", "not compressed")
+    )
 
     for sample in audio:
-        wav_file.writeframes(struct.pack('h', int(sample * 32767.0)))
+        wav_file.writeframes(struct.pack("h", int(sample * 32767.0)))
 
     wav_file.close()
 
 
 # Generate wav files for frequencies between 15 and 200 beats per minutes
-for bpm in np.arange(15, 200, .5):
+for bpm in np.arange(15, 200, 0.5):
 
-    rr = (60000/bpm) - 200
-    audio = []
+    rr = (60000 / bpm) - 200
+    audio: list = []
     sample_rate = 44100.0
 
     # Create
@@ -106,4 +109,4 @@ for bpm in np.arange(15, 200, .5):
         audio = append_silence(audio, duration_milliseconds=rr)
         beats -= 1
 
-    save_wav(audio, 'sounds/' + str(bpm) + '.wav')
+    save_wav(audio, "sounds/" + str(bpm) + ".wav")
