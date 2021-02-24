@@ -4,8 +4,9 @@
 # Not called by the actual task, but included for reproducibility.
 
 import math
-import wave
 import struct
+import wave
+
 import numpy as np
 
 

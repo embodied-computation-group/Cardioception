@@ -1,14 +1,15 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
 import os
-import serial
+from typing import Any, Dict, Optional
+
 import numpy as np
-from typing import Optional, Dict, Any
 import pandas as pd
-from psychopy import visual, sound, core
-from systole import serialSim
-from systole.recording import findOximeter, Oximeter
 import pkg_resources
+import serial
+from psychopy import core, sound, visual
+from systole import serialSim
+from systole.recording import Oximeter, findOximeter
 
 
 def getParameters(

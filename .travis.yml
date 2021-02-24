@@ -8,7 +8,7 @@ python:
 
 install:
   - pip install -r requirements.txt
-  - pip install coverage mypy flake8 isort  
+  - pip install coverage mypy black isort 
   - pip install pytest==4.0.0 
 
 script:
@@ -16,7 +16,6 @@ script:
   - black --check ./
   - isort ./
   - mypy ./cardioception/ --ignore-missing-imports --follow-imports=skip
-  - flake8 ./
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

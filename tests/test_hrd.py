@@ -7,10 +7,11 @@ import unittest
 from unittest import TestCase
 
 import numpy as np
-from psychopy import sound
 import pkg_resources
+from psychopy import sound
+
 from cardioception.HRD.parameters import getParameters
-from cardioception.HRD.task import confidenceRatingTask, trial, responseDecision
+from cardioception.HRD.task import confidenceRatingTask, responseDecision, trial
 
 
 class TestHRD(TestCase):
@@ -139,8 +140,7 @@ class TestHRD(TestCase):
             catchTrials=0.5,
         )
         this_hr = sound.Sound(
-            pkg_resources.resource_filename(
-                "cardioception.HRD", f"Sounds/60.0.wav")
+            pkg_resources.resource_filename("cardioception.HRD", "Sounds/60.0.wav")
         )
 
         (

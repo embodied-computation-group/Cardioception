@@ -1,14 +1,15 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
-import time
 import pickle
+import time
 from typing import Optional, Tuple
-from psychopy import visual, event, core, sound
-import pandas as pd
+
 import numpy as np
-from systole.recording import BrainVisionExG
-from systole.detection import oxi_peaks
+import pandas as pd
 import pkg_resources
+from psychopy import core, event, sound, visual
+from systole.detection import oxi_peaks
+from systole.recording import BrainVisionExG
 
 
 def run(
