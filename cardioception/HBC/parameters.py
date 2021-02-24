@@ -8,6 +8,7 @@ import pandas as pd
 from psychopy import visual, sound, core
 from systole import serialSim
 from systole.recording import findOximeter, Oximeter
+import pkg_resources
 
 
 def getParameters(
@@ -129,7 +130,6 @@ def getParameters(
         raise ValueError("Invalid task condition")
 
     # Set default path /Results/ 'Subject ID' /
-    # Set default path /Results/ 'Subject ID' /
     parameters["participant"] = participant
     parameters["session"] = session
     parameters["path"] = os.getcwd()
@@ -143,9 +143,11 @@ def getParameters(
 
     # Set note played at trial start
     parameters["noteStart"] = sound.Sound(
-        os.path.dirname(__file__) + "/Sounds/start.wav"
+        pkg_resources.resource_filename("cardioception.HBC", "Sounds/start.wav")
     )
-    parameters["noteEnd"] = sound.Sound(os.path.dirname(__file__) + "/Sounds/stop.wav")
+    parameters["noteEnd"] = sound.Sound(
+        pkg_resources.resource_filename("cardioception.HBC", "Sounds/stop.wav")
+    )
 
     # Open window
     parameters["win"] = visual.Window(screen=screenNb, fullscr=fullscr, units="height")

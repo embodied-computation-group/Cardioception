@@ -8,7 +8,8 @@ python:
 
 install:
   - pip install -r requirements.txt
-  - pip install coverage pytest mypy flake8 isort   
+  - pip install coverage mypy flake8 isort  
+  - pip install pytest==4.0.0 
 
 script:
   - coverage run -m pytest
