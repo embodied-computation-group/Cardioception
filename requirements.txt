@@ -1,5 +1,7 @@
-numpy>=1.15
+numpy>=1.19.4
 scipy>=1.3.0
-pandas>=0.24
-psychopy>=3.2.3
+pandas>=1.0.3
+psychopy>=2021.1.0
 pyserial>=3.4
+matplotlib>=3.3.3
+seaborn>=0.11.1

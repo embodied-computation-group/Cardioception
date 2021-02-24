@@ -21,7 +21,7 @@ def getParameters(
     screenNb: int = 0,
     fullscr: bool = True,
     resultPath: Optional[str] = None,
-):
+) -> Dict:
     """Create Heartbeat Counting task parameters.
 
     Parameters

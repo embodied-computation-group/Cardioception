@@ -1,6 +1,6 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
-from typing import Optional
+from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -101,7 +101,7 @@ def trial(
     nTrial: int,
     parameters: dict,
     win: Optional[visual.Window] = None,
-):
+) -> Tuple[Optional[int], Optional[float], Optional[float]]:
     """Run one trial.
 
     Parameters
