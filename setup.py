@@ -13,7 +13,7 @@ LONG_DESCRIPTION = """Measuring interoceptive performance with Psychopy.
 DISTNAME = "cardioception"
 MAINTAINER = "Nicolas Legrand"
 MAINTAINER_EMAIL = "nicolas.legrand@cfin.au.dk"
-VERSION = "0.3.0"
+VERSION = "0.4.0"
 
 INSTALL_REQUIRES = [
     "systole>=0.1.2",
@@ -22,8 +22,8 @@ INSTALL_REQUIRES = [
 
 PACKAGES = [
     "cardioception",
-    "cardioception.HeartBeatCounting",
-    "cardioception.HeartRateDiscrimination",
+    "cardioception.HBC",
+    "cardioception.HRD",
 ]
 
 try:

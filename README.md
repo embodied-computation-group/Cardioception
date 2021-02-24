@@ -33,7 +33,7 @@ Notes: Cardioception will automatically copy the images and sound files necessar
 Each task contains a `parameters` and a `task` submodule describing the experimental parameters and the Psychopy script respectively. Once the package has been installed, you can run the task (e.g. here the Heart rate Discrimination task) using the following code snippet:
 
 ```python
-from cardioception.HeartRateDiscrimination import parameters, task
+from cardioception.HRD import parameters, task
 
 # Set global task parameters
 parameters = parameters.getParameters(
