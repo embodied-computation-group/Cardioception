@@ -1,13 +1,15 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
 import os
-import serial
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
 import numpy as np
 import pandas as pd
-from psychopy import data, visual, core, event
+import pkg_resources
+import serial
+from psychopy import core, data, event, visual
 from systole import serialSim
-from systole.recording import findOximeter, Oximeter
+from systole.recording import Oximeter, findOximeter
 
 
 def getParameters(
@@ -15,14 +17,14 @@ def getParameters(
     session: str = "001",
     serialPort: Optional[str] = None,
     setup: str = "behavioral",
+    stairType: str = "psi",
     exteroception: bool = True,
-    psiCatchTrials: float = 0.0,
+    catchTrials: float = 0.0,
     nTrials: int = 160,
     BrainVisionIP: Optional[str] = None,
     device: str = "mouse",
     screenNb: int = 0,
     fullscr: bool = True,
-    nTrialsUpDown: int = 80,
     nBreaking: int = 20,
     resultPath: Optional[str] = None,
 ):
@@ -54,12 +56,9 @@ def getParameters(
         interoceptive).
     nTrials : int
         Number of trials to run (UpDown + psi staircase).
-    nTrialsUpDown : int
-        Number of trials to run using a 1Up-1Down staircase for threshold
-        estimation.
     participant : str
         Subject ID. Default is 'Participant'.
-    psiCatchTrials : float
+    catchTrials : float
         Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with
         some jitter) to control for range of stimuli presented. The default is
         `0.0` (no catch trials). If not `0.0`, recomended value is `0.2`.
@@ -79,6 +78,8 @@ def getParameters(
         pulse oximeter, `'fMRI'` will record through BrainVision amplifier
         through TCP/IP conneciton. *test* will use pre-recorded pulse time
         series (for testing only).
+    stairType : str
+        Staircase type. Can be "psi" or "updown". Default set to "psi".
 
     Attributes
     ----------
@@ -108,9 +109,6 @@ def getParameters(
         rating (in seconds).
     monitor : str
         The monitor used to present the task (Psychopy parameter).
-    nBeatsLim : int
-        The number of beats to record at each trials. Only working with a
-        behavioral setup with a Nonin USB pulse oximeter.
     nBreaking : int
         Number of trials to run before the break.
     nConfidence : int
@@ -156,7 +154,6 @@ def getParameters(
         The window where to run the task.
     """
     parameters: Dict[str, Any] = {}
-    parameters["nTrialsUpDown"] = nTrialsUpDown
     parameters["ExteroCondition"] = exteroception
     parameters["device"] = device
     if parameters["device"] == "keyboard":
@@ -172,13 +169,12 @@ def getParameters(
     parameters["startKey"] = "space"
     parameters["allowedKeys"] = ["up", "down"]
     parameters["nTrials"] = nTrials
-    parameters["nBeatsLim"] = 5
     parameters["nBreaking"] = nBreaking
     parameters["lambdaIntero"] = []  # Save the history of lambda values
     parameters["lambdaExtero"] = []  # Save the history of lambda values
 
-    parameters["signal_df"] = pd.DataFrame([])
-    parameters["results_df"] = pd.DataFrame([])
+    parameters["signal_df"] = pd.DataFrame([])  # Physiological recording
+    parameters["results_df"] = pd.DataFrame([])  # Behavioral results
 
     # Set default path /Results/ 'Subject ID' /
     parameters["participant"] = participant
@@ -192,69 +188,44 @@ def getParameters(
     if not os.path.exists(parameters["results"]):
         os.makedirs(parameters["results"])
 
-    # Create condition randomized vector for psi staircases
-    nPsitrials = round((parameters["nTrials"] - parameters["nTrialsUpDown"]))
-
-    # Create and randomize condition vectors separately for each staircase
+    # Store posterior in a dictionnary
     parameters["staircaisePosteriors"] = {}
     parameters["staircaisePosteriors"]["Intero"] = []
     if exteroception is True:
         parameters["staircaisePosteriors"]["Extero"] = []
-        # Create condition randomized vector for UpDown staircases
-        updown = np.hstack(
-            [np.array(["Extero", "Intero"] * round(parameters["nTrialsUpDown"] / 2))]
+
+    # Vector encoding the staircase type
+    if stairType == "psi":
+        sc = np.array(["psi"] * int((parameters["nTrials"] * (1 - catchTrials))))
+    elif stairType == "updown":
+        sc = np.array(["updown"] * int((parameters["nTrials"] * (1 - catchTrials))))
+    else:
+        raise ValueError("stairType should be 'psi' or 'updown'")
+
+    # Create and randomize condition vectors separately for each staircase
+    if exteroception is True:
+        # Create a modality vector containing nTrials/2 Intero and Extero conditions
+        parameters["Modality"] = np.hstack(
+            [np.array(["Extero", "Intero"] * int(parameters["nTrials"] / 2))]
         )
-
-        psi = np.hstack([np.array(["Extero", "Intero"] * int(nPsitrials / 2))])
-        parameters["Modality"] = np.hstack([updown, psi])
-
-        # Vector encoding the type of trial (psi, up/down or catch)
-        parameters["staircaseType"] = np.hstack(
-            [
-                np.array(["UpDown"] * parameters["nTrialsUpDown"]),
-                np.array(["psi"] * int((nPsitrials * (1 - psiCatchTrials)))),
-                np.array(["psiCatchTrial"] * int((nPsitrials * psiCatchTrials))),
-            ]
-        )
-
-        # Firt we shuffle only up/down trials
-        shuffler = np.random.permutation(parameters["nTrialsUpDown"])
-        parameters["Modality"][: parameters["nTrialsUpDown"]] = parameters["Modality"][
-            shuffler
-        ]
-        parameters["staircaseType"][: parameters["nTrialsUpDown"]] = parameters[
-            "staircaseType"
-        ][shuffler]
-
-        # Then we shuffle all trials except first 1/2 of up/down
-        # If no up/down trials are provided, this equal full shuffling
-        # Oherwise, this ensures that task start with up/down to avoid bias
-        shuffler = np.random.permutation(
-            np.arange(int(parameters["nTrialsUpDown"] / 2), parameters["nTrials"])
-        )
-        parameters["Modality"][int(parameters["nTrialsUpDown"] / 2) :] = parameters[
-            "Modality"
-        ][shuffler]
-        parameters["staircaseType"][
-            int(parameters["nTrialsUpDown"] / 2) :
-        ] = parameters["staircaseType"][shuffler]
-
     elif exteroception is False:
-        # Create condition randomized vector for UpDown staircases
-        updown = np.hstack([np.array(["Intero"] * round(parameters["nTrialsUpDown"]))])
+        # Create a modality vector containing nTrials/2 Intero and Extero conditions
+        parameters["Modality"] = np.array(["Intero"] * int(parameters["nTrials"]))
+    else:
+        raise ValueError("exteroception should be a boolean")
 
-        # Create condition randomized vector for psi staircases
-        psi = np.hstack([np.array(["Intero"] * round(parameters["nTrials"]))])
-        parameters["Modality"] = np.hstack([updown, psi])
+    # Vector encoding the type of trial (psi, up/down or catch)
+    parameters["staircaseType"] = np.hstack(
+        [
+            sc,
+            np.array(["CatchTrial"] * int((parameters["nTrials"] * catchTrials))),
+        ]
+    )
 
-        # Vector encoding the type of trial (psi, up/down or catch)
-        parameters["staircaseType"] = np.hstack(
-            [
-                np.array(["UpDown"] * parameters["nTrialsUpDown"]),
-                np.array(["psi"] * int((nPsitrials * (1 - psiCatchTrials)))),
-                np.array(["psiCatchTrial"] * int((nPsitrials * psiCatchTrials))),
-            ]
-        )
+    # Shuffle all trials
+    shuffler = np.random.permutation(parameters["nTrials"])
+    parameters["Modality"] = parameters["Modality"][shuffler]
+    parameters["staircaseType"] = parameters["staircaseType"][shuffler]
 
     # Default parameters for the basic staircase are set here. Please see
     # PsychoPy Staircase Handler Documentation for full options. By default,
@@ -262,48 +233,10 @@ def getParameters(
     # If UpDown is selected, 1 or 2 interleaved staircases are used (see
     # options in parameters dictionary), one is initalized 'high' and the other
     # 'low'.
-    parameters["stairCase"] = {"psi": {}, "UpDown": {}}
+    parameters["stairCase"] = {}
 
-    conditions = [
-        {
-            "label": "low",
-            "startVal": -40.5,
-            "nUp": 1,
-            "nDown": 1,
-            "stepSizes": [20, 12, 12, 7, 4, 3, 2, 1],
-            "stepType": "lin",
-            "minVal": -40.5,
-            "maxVal": 40.5,
-        },
-        {
-            "label": "high",
-            "startVal": 40.5,
-            "nUp": 1,
-            "nDown": 1,
-            "stepSizes": [20, 12, 12, 7, 4, 3, 2, 1],
-            "stepType": "lin",
-            "minVal": -40.5,
-            "maxVal": 40.5,
-        },
-    ]
-    parameters["stairCase"]["UpDown"]["Intero"] = data.MultiStairHandler(
-        conditions=conditions, nTrials=parameters["nTrialsUpDown"]
-    )
+    if stairType == "updown":
 
-    parameters["stairCase"]["psi"]["Intero"] = data.PsiHandler(
-        nTrials=nTrials,
-        intensRange=[-50.5, 50.5],
-        alphaRange=[-50.5, 50.5],
-        betaRange=[0.1, 25],
-        intensPrecision=1,
-        alphaPrecision=1,
-        betaPrecision=0.1,
-        delta=0.02,
-        stepType="lin",
-        expectedMin=0,
-    )
-
-    if exteroception is True:
         conditions = [
             {
                 "label": "low",
@@ -326,11 +259,13 @@ def getParameters(
                 "maxVal": 40.5,
             },
         ]
-        parameters["stairCase"]["UpDown"]["Extero"] = data.MultiStairHandler(
-            conditions=conditions, nTrials=parameters["nTrialsUpDown"]
+        parameters["stairCase"]["Intero"] = data.MultiStairHandler(
+            conditions=conditions, nTrials=parameters["nTrials"]
         )
 
-        parameters["stairCase"]["psi"]["Extero"] = data.PsiHandler(
+    elif stairType == "psi":
+
+        parameters["stairCase"]["Intero"] = data.PsiHandler(
             nTrials=nTrials,
             intensRange=[-50.5, 50.5],
             alphaRange=[-50.5, 50.5],
@@ -342,6 +277,50 @@ def getParameters(
             stepType="lin",
             expectedMin=0,
         )
+
+    if exteroception is True:
+        if stairType == "updown":
+
+            conditions = [
+                {
+                    "label": "low",
+                    "startVal": -40.5,
+                    "nUp": 1,
+                    "nDown": 1,
+                    "stepSizes": [20, 12, 12, 7, 4, 3, 2, 1],
+                    "stepType": "lin",
+                    "minVal": -40.5,
+                    "maxVal": 40.5,
+                },
+                {
+                    "label": "high",
+                    "startVal": 40.5,
+                    "nUp": 1,
+                    "nDown": 1,
+                    "stepSizes": [20, 12, 12, 7, 4, 3, 2, 1],
+                    "stepType": "lin",
+                    "minVal": -40.5,
+                    "maxVal": 40.5,
+                },
+            ]
+            parameters["stairCase"]["Extero"] = data.MultiStairHandler(
+                conditions=conditions, nTrials=parameters["nTrials"]
+            )
+
+        elif stairType == "psi":
+
+            parameters["stairCase"]["Extero"] = data.PsiHandler(
+                nTrials=nTrials,
+                intensRange=[-50.5, 50.5],
+                alphaRange=[-50.5, 50.5],
+                betaRange=[0.1, 25],
+                intensPrecision=1,
+                alphaPrecision=1,
+                betaPrecision=0.1,
+                delta=0.02,
+                stepType="lin",
+                expectedMin=0,
+            )
 
     parameters["setup"] = setup
     if setup == "behavioral":
@@ -474,14 +453,14 @@ Otherwise, you can continue to the main task."""
         parameters["pulseSchema"] = visual.ImageStim(
             win=parameters["win"],
             units="height",
-            image=os.path.dirname(__file__) + "/Images/pulseOximeter.png",
+            image=pkg_resources.resource_filename(__name__, "Images/pulseOximeter.png"),
             pos=(0.0, 0.0),
         )
         parameters["pulseSchema"].size *= 0.2
         parameters["handSchema"] = visual.ImageStim(
             win=parameters["win"],
             units="height",
-            image=os.path.dirname(__file__) + "/Images/hand.png",
+            image=pkg_resources.resource_filename(__name__, "Images/hand.png"),
             pos=(0.0, -0.08),
         )
         parameters["handSchema"].size *= 0.15
@@ -489,7 +468,7 @@ Otherwise, you can continue to the main task."""
     parameters["listenLogo"] = visual.ImageStim(
         win=parameters["win"],
         units="height",
-        image=os.path.dirname(__file__) + "/Images/listen.png",
+        image=pkg_resources.resource_filename(__name__, "Images/listen.png"),
         pos=(0.0, 0.0),
     )
     parameters["listenLogo"].size *= 0.08
@@ -497,7 +476,7 @@ Otherwise, you can continue to the main task."""
     parameters["heartLogo"] = visual.ImageStim(
         win=parameters["win"],
         units="height",
-        image=os.path.dirname(__file__) + "/Images/heartbeat.png",
+        image=pkg_resources.resource_filename(__name__, "Images/heartbeat.png"),
         pos=(0.0, 0.0),
     )
     parameters["heartLogo"].size *= 0.04

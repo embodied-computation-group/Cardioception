@@ -1,14 +1,15 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
-import os
-import time
 import pickle
-from typing import Optional
-from psychopy import visual, event, core, sound
-import pandas as pd
+import time
+from typing import Optional, Tuple
+
 import numpy as np
-from systole.recording import BrainVisionExG
+import pandas as pd
+import pkg_resources
+from psychopy import core, event, sound, visual
 from systole.detection import oxi_peaks
+from systole.recording import BrainVisionExG
 
 
 def run(
@@ -85,12 +86,12 @@ def run(
         # Next intensity value
         if trialType == "UpDown":
             print("... load UpDown staircase.")
-            thisTrial = parameters["stairCase"]["UpDown"][modality].next()
+            thisTrial = parameters["stairCase"][modality].next()
             stairCond = thisTrial[1]["label"]
             alpha = thisTrial[0]
         elif trialType == "psi":
             print("... load psi staircase.")
-            alpha = parameters["stairCase"]["psi"][modality].next()
+            alpha = parameters["stairCase"][modality].next()
             stairCond = "psi"
         elif trialType == "psiCatchTrial":
             print("... load psiCatchTrial staircase.")
@@ -139,30 +140,26 @@ def run(
         if trialType == "UpDown":
             print("... update UpDown staircase.")
             # Update the UpDown staircase
-            parameters["stairCase"]["UpDown"][modality].addResponse(isMore)
+            parameters["stairCase"][modality].addResponse(isMore)
         elif trialType == "psi":
             print("... update psi staircase.")
 
             # Update the Psi staircase with forced intensity value
             # if impossible BPM was generated
             if listenBPM + alpha < 15:
-                parameters["stairCase"]["psi"][modality].addResponse(
-                    isMore, intensity=15
-                )
+                parameters["stairCase"][modality].addResponse(isMore, intensity=15)
             elif listenBPM + alpha > 199:
-                parameters["stairCase"]["psi"][modality].addResponse(
-                    isMore, intensity=199
-                )
+                parameters["stairCase"][modality].addResponse(isMore, intensity=199)
             else:
-                parameters["stairCase"]["psi"][modality].addResponse(isMore)
+                parameters["stairCase"][modality].addResponse(isMore)
 
             # Store posteriors in list for each trials
             parameters["staircaisePosteriors"][modality].append(
-                parameters["stairCase"]["psi"][modality]._psi._probLambda[0, :, :, 0]
+                parameters["stairCase"][modality]._psi._probLambda[0, :, :, 0]
             )
 
             # Save estimated threshold and slope for each trials
-            estimatedThreshold, estimatedSlope = parameters["stairCase"]["psi"][
+            estimatedThreshold, estimatedSlope = parameters["stairCase"][
                 modality
             ].estimateLambda()
 
@@ -257,10 +254,10 @@ def run(
 
     # save data as multiple formats
     try:
-        parameters["stairCase"]["psi"]["Intero"].saveAsPickle(
+        parameters["stairCase"]["Intero"].saveAsPickle(
             parameters["results"] + "/" + parameters["participant"] + "_Intero"
         )
-        parameters["stairCase"]["psi"]["Extero"].saveAsPickle(
+        parameters["stairCase"]["Extero"].saveAsPickle(
             parameters["results"] + "/" + parameters["participant"] + "_Extero"
         )
     except:
@@ -335,7 +332,25 @@ def trial(
     confidenceRating: bool = True,
     feedback: bool = False,
     nTrial: Optional[int] = None,
-):
+) -> Tuple[
+    str,
+    float,
+    float,
+    Optional[str],
+    Optional[float],
+    Optional[float],
+    Optional[float],
+    float,
+    Optional[bool],
+    bool,
+    bool,
+    float,
+    float,
+    float,
+    Optional[float],
+    Optional[float],
+    float,
+]:
     """Run one trial of the Heart Rate Discrimination task.
 
     Parameters
@@ -347,31 +362,31 @@ def trial(
     modality : str
         The modality, can be `'Intero'` or `'Extro'` if an exteroceptive
         control condition has been added.
-    stairCase : Instance of staircase handler.
-        Staircase procedure used during the task. If `feedback=True`, stairCase
-        should be `None`.
     win :`psychopy.visual.window` or `None`
         Where to draw the task.
     confidenceRating : boolean
         If `False`, do not display confidence rating scale.
     feedback : boolean
         If `True`, will provide feedback.
+    nTrial : int
+        Trial number (optional).
 
     Returns
     -------
     condition : str
-        Can be `'Higher'` or `'Lower'`.
-    average_hr : int
-        The average heart rate recorded during the rest periode.
-    condition : str
-        The condition of the trial. Can be `'More'` (the beats are faster than
-        the heart rate) or `'Less'` (the beats are slower than the heart rate).
+        The trial condition, can be `'Higher'` or `'Lower'` depending on the
+        alpha value.
+    listenBPM : float
+        The frequency of the tones (exteroceptive condition) or of the heart rate
+        (interoceptive condition), expressed in BPM.
+    responseBPM : float
+        The frequency of thefeebdack tones, expressed in BPM.
     decision : str
         The participant decision. Can be `'up'` (the participant indicates
         the beats are faster than the recorded heart rate) or `'down'` (the
         participant indicates the beats are slower than recorded heart rate).
     decisionRT : float
-        The response time from sound start to choice.
+        The response time from sound start to choice (seconds).
     confidence : int
         If confidenceRating is *True*, the confidence of the participant. The
         range of the scale is defined in `parameters['confScale']`. Default is
@@ -386,9 +401,14 @@ def trial(
         `0` for incorrect response, `1` for correct responses. Note that this
         value is not feeded to the staircase when using the (Yes/No) version
         of the task, but instead will check if the response is `'More'` or not.
-    missed : boolean
-        If `True`, the trial did not terminate correctly (e.g., participant was
-        too slow to provide the decision or the confidence).
+    respProvided : bool
+        Was the decision provided (`True`) or not (`False`).
+    ratingProvided : bool
+        Was the rating provided (`True`) or not (`False`). If no decision was provided,
+        the ratig scale is not proposed and no ratings can be provided.
+    startTrigger, soundTrigger, responseMadeTrigger, ratingStartTrigger,\
+        ratingEndTrigger, endTrigger : float
+        Time stamp of key timepoints inside the trial.
     """
     if win is None:
         win = parameters["win"]
@@ -506,7 +526,9 @@ def trial(
         listenBPM = np.random.choice(np.arange(40, 100, 0.5))
 
         # Play the corresponding beat file
-        listenFile = os.path.dirname(__file__) + "/sounds/" + str(listenBPM) + ".wav"
+        listenFile = pkg_resources.resource_filename(
+            "cardioception.HRD", f"Sounds/{listenBPM}.wav"
+        )
         print(f"...loading file (Listen): {listenFile}")
 
         # Play selected BPM frequency
@@ -534,12 +556,14 @@ def trial(
     # Check for extreme alpha values, e.g. if alpha changes massively from
     # trial to trial.
     if (listenBPM + alpha) < 15:
-        responseBPM = "15.0"
+        responseBPM = 15.0
     elif (listenBPM + alpha) > 199:
-        responseBPM = "199.0"
+        responseBPM = 199.0
     else:
-        responseBPM = str(listenBPM + alpha)
-    responseFile = os.path.dirname(__file__) + "/sounds/" + responseBPM + ".wav"
+        responseBPM = listenBPM + alpha
+    responseFile = pkg_resources.resource_filename(
+        "cardioception.HRD", f"Sounds/{responseBPM}.wav"
+    )
     print(f"...loading file (Response): {responseFile}")
 
     # Play selected BPM frequency
@@ -943,10 +967,10 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
             )
 
     # Confidence rating
-    confidence = visual.TextStim(
+    confidenceText = visual.TextStim(
         win, height=parameters["textSize"], text=parameters["Tutorial4"]
     )
-    confidence.draw()
+    confidenceText.draw()
     press.draw()
     win.flip()
     core.wait(1)
@@ -1010,7 +1034,9 @@ def responseDecision(
     feedback: bool,
     condition: str,
     win: Optional[visual.Window] = None,
-):
+) -> Tuple[
+    float, Optional[float], bool, Optional[str], Optional[float], Optional[bool]
+]:
     """Recording response during the decision phase.
 
     Parameters
@@ -1026,6 +1052,21 @@ def responseDecision(
         correct or not.
     win : psychopy window instance.
         The window where to show the task.
+
+    Returns
+    -------
+    responseMadeTrigger : float
+        Time stamp of response provided.
+    responseTrigger : float
+        Time stamp of response start.
+    respProvided : bool
+        `True` if the response was provided, `False` otherwise.
+    decision : str or None
+        The decision made ('Higher', 'Lower' or None)
+    decisionRT : float
+        Decision response time (seconds).
+    isCorrect : bool or None
+        `True` if the response provided was correct, `False` otherwise.
     """
     print("...starting decision phase.")
 
@@ -1074,15 +1115,15 @@ def responseDecision(
             # Feedback
             if feedback is True:
                 # Is the answer Correct?
-                isCorrect = 1 if (decision == condition) else 0
-                if isCorrect == 0:
+                isCorrect = True if (decision == condition) else False
+                if isCorrect is False:
                     acc = visual.TextStim(
                         win, height=parameters["textSize"], color="red", text="False"
                     )
                     acc.draw()
                     win.flip()
                     core.wait(2)
-                elif isCorrect == 1:
+                elif isCorrect is True:
                     acc = visual.TextStim(
                         win,
                         height=parameters["textSize"],
@@ -1181,7 +1222,7 @@ def responseDecision(
             core.wait(0.5)
         else:
             # Is the answer Correct?
-            isCorrect = 1 if (decision == condition) else 0
+            isCorrect = True if (decision == condition) else False
             # Feedback
             if feedback is True:
                 textFeedback = "False" if isCorrect == 0 else "Correct"
@@ -1207,7 +1248,9 @@ def responseDecision(
     )
 
 
-def confidenceRatingTask(parameters: dict, win: Optional[visual.Window] = None):
+def confidenceRatingTask(
+    parameters: dict, win: Optional[visual.Window] = None
+) -> Tuple[Optional[float], Optional[float], bool, Optional[float]]:
     """Confidence rating scale, using keyboard or mouse inputs.
 
     Parameters

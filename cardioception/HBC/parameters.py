@@ -1,13 +1,15 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 
 import os
-import serial
+from typing import Any, Dict, Optional
+
 import numpy as np
-from typing import Optional, Dict, Any
 import pandas as pd
-from psychopy import visual, sound, core
+import pkg_resources
+import serial
+from psychopy import core, sound, visual
 from systole import serialSim
-from systole.recording import findOximeter, Oximeter
+from systole.recording import Oximeter, findOximeter
 
 
 def getParameters(
@@ -19,7 +21,7 @@ def getParameters(
     screenNb: int = 0,
     fullscr: bool = True,
     resultPath: Optional[str] = None,
-):
+) -> Dict:
     """Create Heartbeat Counting task parameters.
 
     Parameters
@@ -129,7 +131,6 @@ def getParameters(
         raise ValueError("Invalid task condition")
 
     # Set default path /Results/ 'Subject ID' /
-    # Set default path /Results/ 'Subject ID' /
     parameters["participant"] = participant
     parameters["session"] = session
     parameters["path"] = os.getcwd()
@@ -143,9 +144,11 @@ def getParameters(
 
     # Set note played at trial start
     parameters["noteStart"] = sound.Sound(
-        os.path.dirname(__file__) + "/Sounds/start.wav"
+        pkg_resources.resource_filename("cardioception.HBC", "Sounds/start.wav")
     )
-    parameters["noteEnd"] = sound.Sound(os.path.dirname(__file__) + "/Sounds/stop.wav")
+    parameters["noteEnd"] = sound.Sound(
+        pkg_resources.resource_filename("cardioception.HBC", "Sounds/stop.wav")
+    )
 
     # Open window
     parameters["win"] = visual.Window(screen=screenNb, fullscr=fullscr, units="height")

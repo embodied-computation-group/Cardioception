@@ -48,4 +48,8 @@ if __name__ == "__main__":
         install_requires=INSTALL_REQUIRES,
         include_package_data=True,
         packages=PACKAGES,
+        package_data={
+            "cardioception.HBC": ["*.wav", "*.png"],
+            "cardioception.HRD": ["*.wav", "*.png"],
+        },
     )

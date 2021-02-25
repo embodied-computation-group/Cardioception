@@ -4,8 +4,9 @@
 # Not called by the actual task, but included for reproducibility.
 
 import math
-import wave
 import struct
+import wave
+
 import numpy as np
 
 
@@ -109,4 +110,4 @@ for bpm in np.arange(15, 200, 0.5):
         audio = append_silence(audio, duration_milliseconds=rr)
         beats -= 1
 
-    save_wav(audio, "sounds/" + str(bpm) + ".wav")
+    save_wav(audio, "Sounds/" + str(bpm) + ".wav")
