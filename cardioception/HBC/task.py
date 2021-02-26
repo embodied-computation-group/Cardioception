@@ -224,6 +224,7 @@ def trial(
             # Record new key
             key = event.waitKeys(
                 keyList=[
+                    "escape",
                     "backspace",
                     "return",
                     "1",
@@ -249,6 +250,12 @@ def trial(
                 ]
             )
 
+            if key[0] == "escape":
+                keys = event.getKeys()
+                if "escape" in keys:
+                    print("User abort")
+                    parameters["win"].close()
+                    core.quit()
             if key[0] == "backspace":
                 if nCounts:
                     nCounts = nCounts[:-1]
