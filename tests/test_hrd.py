@@ -30,17 +30,17 @@ class TestHRD(TestCase):
 
         parameters = getParameters(
             setup="test",
-            nTrials=200,
-            exteroception=False,
+            nTrials=4,
+            exteroception=True,
             stairType="updown",
-            catchTrials=0.5,
+            catchTrials=0.2,
         )
         parameters["win"].close()
 
-        assert np.all(parameters["Modality"] == "Intero")
-        assert len(parameters["Modality"]) == 200
-        assert len(parameters["staircaseType"]) == 200
-        assert sum(parameters["staircaseType"] == "updown") == 100
+        assert sum(parameters["Modality"] == "Intero") == 2
+        assert len(parameters["Modality"]) == 4
+        assert len(parameters["staircaseType"]) == 4
+        assert sum(parameters["staircaseType"] == "updown") == 4
 
     def test_confidenceRatingTask(self):
         """Test confidence rating trial"""
