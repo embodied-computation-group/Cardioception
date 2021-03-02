@@ -27,6 +27,7 @@ def getParameters(
     fullscr: bool = True,
     nBreaking: int = 20,
     resultPath: Optional[str] = None,
+    systole_kw: dict = {},
 ):
     """Create Heart Rate Discrimination task parameters.
 
@@ -80,6 +81,8 @@ def getParameters(
         series (for testing only).
     stairType : str
         Staircase type. Can be "psi" or "updown". Default set to "psi".
+    systole_kw : dict
+        Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.
 
     Attributes
     ----------
@@ -338,12 +341,16 @@ def getParameters(
                 core.quit()
 
         port = serial.Serial(serialPort)
-        parameters["oxiTask"] = Oximeter(serial=port, sfreq=75, add_channels=1)
+        parameters["oxiTask"] = Oximeter(
+            serial=port, sfreq=75, add_channels=1, **systole_kw
+        )
         parameters["oxiTask"].setup().read(duration=1)
     elif setup == "test":
         # Use pre-recorded pulse time series for testing
         port = serialSim()
-        parameters["oxiTask"] = Oximeter(serial=port, sfreq=75, add_channels=1)
+        parameters["oxiTask"] = Oximeter(
+            serial=port, sfreq=75, add_channels=1, **systole_kw
+        )
         parameters["oxiTask"].setup().read(duration=1)
     elif setup == "fMRI":
         parameters["fMRItrigger"] = ["5"]  # Keys to listen for fMRI trigger

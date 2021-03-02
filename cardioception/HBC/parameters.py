@@ -21,6 +21,7 @@ def getParameters(
     screenNb: int = 0,
     fullscr: bool = True,
     resultPath: Optional[str] = None,
+    systole_kw: dict = {},
 ) -> Dict:
     """Create Heartbeat Counting task parameters.
 
@@ -44,6 +45,8 @@ def getParameters(
         pulse oximeter, *fMRI* will record through BrainVision amplifier
         through TCP/IP conneciton. *test* will use pre-recorded pulse time
         series (for testing only).
+    systole_kw : dict
+        Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.
 
     Attributes
     ----------
@@ -182,12 +185,16 @@ def getParameters(
                 core.quit()
 
         port = serial.Serial(serialPort)
-        parameters["oxiTask"] = Oximeter(serial=port, sfreq=75, add_channels=1)
+        parameters["oxiTask"] = Oximeter(
+            serial=port, sfreq=75, add_channels=1, **systole_kw
+        )
         parameters["oxiTask"].setup().read(duration=1)
     elif setup == "test":
         # Use pre-recorded pulse time series for testing
         port = serialSim()
-        parameters["oxiTask"] = Oximeter(serial=port, sfreq=75, add_channels=1)
+        parameters["oxiTask"] = Oximeter(
+            serial=port, sfreq=75, add_channels=1, **systole_kw
+        )
         parameters["oxiTask"].setup().read(duration=1)
     elif setup == "fMRI":
         parameters["fMRItrigger"] = ["5"]  # Keys to listen for fMRI trigger
