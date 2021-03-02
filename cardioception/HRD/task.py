@@ -427,6 +427,12 @@ def trial(
     win.flip()
     core.wait(0.25)
 
+    keys = event.getKeys()
+    if "escape" in keys:
+        print("User abort")
+        win.close()
+        core.quit()
+
     if modality == "Intero":
 
         ###########
@@ -688,13 +694,25 @@ def trial(
 def waitInput(parameters: dict):
     """Wait for participant input before continue"""
     if parameters["device"] == "keyboard":
-        event.waitKeys(keyList=parameters["startKey"])
+        while True:
+            keys = event.getKeys()
+            if "escape" in keys:
+                print("User abort")
+                parameters["win"].close()
+                core.quit()
+            elif parameters["startKey"] in keys:
+                break
     elif parameters["device"] == "mouse":
         parameters["myMouse"].clickReset()
         while True:
             buttons = parameters["myMouse"].getPressed()
             if buttons != [0, 0, 0]:
                 break
+            keys = event.getKeys()
+            if "escape" in keys:
+                print("User abort")
+                parameters["win"].close()
+                core.quit()
 
 
 def tutorial(parameters: dict, win: Optional[visual.Window] = None):

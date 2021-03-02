@@ -5,3 +5,5 @@ psychopy>=2021.1.0
 pyserial>=3.4
 matplotlib>=3.3.3
 seaborn>=0.11.1
+pingouin>=0.3.10
+papermill>=2.3.1

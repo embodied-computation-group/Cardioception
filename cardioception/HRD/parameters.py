@@ -194,11 +194,14 @@ def getParameters(
     if exteroception is True:
         parameters["staircaisePosteriors"]["Extero"] = []
 
+    nCatch = int(parameters["nTrials"] * catchTrials)
+    nStaircase = parameters["nTrials"] - nCatch
+
     # Vector encoding the staircase type
     if stairType == "psi":
-        sc = np.array(["psi"] * int((parameters["nTrials"] * (1 - catchTrials))))
+        sc = np.array(["psi"] * nStaircase)
     elif stairType == "updown":
-        sc = np.array(["updown"] * int((parameters["nTrials"] * (1 - catchTrials))))
+        sc = np.array(["updown"] * nStaircase)
     else:
         raise ValueError("stairType should be 'psi' or 'updown'")
 

@@ -24,6 +24,7 @@ PACKAGES = [
     "cardioception",
     "cardioception.HBC",
     "cardioception.HRD",
+    "cardioception.notebooks",
 ]
 
 try:
