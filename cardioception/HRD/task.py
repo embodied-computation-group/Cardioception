@@ -529,7 +529,7 @@ def trial(
         startTrigger = time.time()
 
         # Random selection of HR frequency
-        listenBPM = np.random.choice(np.arange(40, 100, 0.5))
+        listenBPM = parameters["referenceTone"]
 
         # Play the corresponding beat file
         listenFile = pkg_resources.resource_filename(
