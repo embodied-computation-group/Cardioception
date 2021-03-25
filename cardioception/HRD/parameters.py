@@ -127,6 +127,11 @@ def getParameters(
         Subject ID. Default is 'Participant'.
     path : str
         The task working directory.
+    referenceTone : callable
+        Function selecting the reference tones for the exteroceptive condition.
+        The output should be a single float matching the name of the `.wav` files
+        (ending with `.0` or `.5`). Default is uniform between 40.0 and 100.0 BPM
+        (`np.random.choice(np.arange(40, 100, 0.5))`).
     serial : PySerial instance
         The serial port used to record the PPG activity.
     screenNb : int
@@ -175,6 +180,7 @@ def getParameters(
     parameters["nBreaking"] = nBreaking
     parameters["lambdaIntero"] = []  # Save the history of lambda values
     parameters["lambdaExtero"] = []  # Save the history of lambda values
+    parameters["referenceTone"] = np.random.choice(np.arange(40, 100, 0.5))
 
     parameters["signal_df"] = pd.DataFrame([])  # Physiological recording
     parameters["results_df"] = pd.DataFrame([])  # Behavioral results
