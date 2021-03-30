@@ -20,7 +20,7 @@ def getParameters(
     stairType: str = "psi",
     exteroception: bool = True,
     catchTrials: float = 0.0,
-    nTrials: int = 160,
+    nTrials: int = 120,
     BrainVisionIP: Optional[str] = None,
     device: str = "mouse",
     screenNb: int = 0,
