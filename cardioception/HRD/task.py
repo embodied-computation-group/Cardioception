@@ -93,18 +93,18 @@ def run(
             print("... load psi staircase.")
             alpha = parameters["stairCase"][modality].next()
             stairCond = "psi"
-        elif trialType == "psiCatchTrial":
-            print("... load psiCatchTrial staircase.")
+        elif trialType == "CatchTrial":
+            print("... load catch trial.")
             # Select pseudo-random extrem value based on number
             # of previous catch trial.
             catchIdx = sum(
                 parameters["staircaseType"][:nTrial][
                     parameters["Modality"][:nTrial] == modality
                 ]
-                == "psiCatchTrial"
+                == "CatchTrial"
             )
             alpha = np.array([-30, 10, -20, 20, -10, 30])[catchIdx % 6]
-            stairCond = "psiCatchTrial"
+            stairCond = "CatchTrial"
 
         # Start trial
         (
@@ -997,6 +997,7 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
 
     if parameters["setup"] in ["test", "behavioral"]:
         parameters["oxiTask"].setup().read(duration=2)
+
     # Run 5 training trials with confidence rating
     for i in range(parameters["nConfidence"]):
 
