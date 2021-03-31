@@ -21,8 +21,10 @@ def report(resultPath: str, reportPath: Optional[str] = None, task: str = "HRD")
     task : str, optional
         The task ("HRD" or "HBC"), by default "HRD".
     """
-    temp_notebook = os.path.join(resultPath, "temp.ipynb")
-    htmlreport = os.path.join(resultPath, f"{task}_report.html")
+    if reportPath is None:
+        reportPath = resultPath
+    temp_notebook = os.path.join(reportPath, "temp.ipynb")
+    htmlreport = os.path.join(reportPath, f"{task}_report.html")
 
     if task == "HRD":
         template = "HeartRateDiscrimination.ipynb"
@@ -30,7 +32,7 @@ def report(resultPath: str, reportPath: Optional[str] = None, task: str = "HRD")
         template = "HeartBeatCounting.ipynb"
 
     pm.execute_notebook(
-        pkg_resources.resource_filename("notebooks", template),
+        pkg_resources.resource_filename("cardioception.notebooks", template),
         temp_notebook,
         parameters=dict(resultPath=resultPath, reportPath=reportPath),
     )

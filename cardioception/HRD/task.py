@@ -204,7 +204,7 @@ def run(
 
         # Save the results at each iteration
         parameters["results_df"].to_csv(
-            parameters["results"]
+            parameters["resultPath"]
             + "/"
             + parameters["participant"]
             + parameters["session"]
@@ -231,7 +231,7 @@ def run(
             win.flip()
             if parameters["setup"] in ["behavioral", "test"]:
                 parameters["oxiTask"].save(
-                    parameters["results"]
+                    parameters["resultPath"]
                     + "/"
                     + parameters["participant"]
                     + str(nTrial)
@@ -255,10 +255,10 @@ def run(
     # save data as multiple formats
     try:
         parameters["stairCase"]["Intero"].saveAsPickle(
-            parameters["results"] + "/" + parameters["participant"] + "_Intero"
+            parameters["resultPath"] + "/" + parameters["participant"] + "_Intero"
         )
         parameters["stairCase"]["Extero"].saveAsPickle(
-            parameters["results"] + "/" + parameters["participant"] + "_Extero"
+            parameters["resultPath"] + "/" + parameters["participant"] + "_Extero"
         )
     except:
         print("Error when saving as Pickle")
@@ -266,7 +266,7 @@ def run(
     # Save the final results
     print("Saving final results in .txt file...")
     parameters["results_df"].to_csv(
-        parameters["results"]
+        parameters["resultPath"]
         + "/"
         + parameters["participant"]
         + parameters["session"]
@@ -277,7 +277,7 @@ def run(
     # Save the final signals file
     print("Saving PPG signal data frame...")
     parameters["signal_df"].to_csv(
-        parameters["results"] + "/" + parameters["participant"] + "_signal.txt",
+        parameters["resultPath"] + "/" + parameters["participant"] + "_signal.txt",
         index=False,
     )
 
@@ -285,7 +285,7 @@ def run(
     print("Saving posterior distributions...")
     for k in set(parameters["Modality"]):
         np.save(
-            parameters["results"]
+            parameters["resultPath"]
             + "/"
             + parameters["participant"]
             + k
@@ -304,7 +304,7 @@ def run(
         del save_parameter["handSchema"]
         del save_parameter["pulseSchema"]
     with open(
-        save_parameter["results"]
+        save_parameter["resultPath"]
         + "/"
         + save_parameter["participant"]
         + "_parameters.pickle",
@@ -837,7 +837,7 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
                     }
                 )
                 log_df.to_csv(
-                    parameters["results"]
+                    parameters["resultPath"]
                     + "/"
                     + parameters["participant"]
                     + parameters["session"]

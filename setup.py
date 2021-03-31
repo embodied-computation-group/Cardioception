@@ -52,5 +52,6 @@ if __name__ == "__main__":
         package_data={
             "cardioception.HBC": ["*.wav", "*.png"],
             "cardioception.HRD": ["*.wav", "*.png"],
+            "cardioception.notebooks": ["*.ipynb", "*.npy", "*.txt"],
         },
     )

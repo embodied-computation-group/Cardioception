@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from psychopy import core, event, visual
+from psychopy import core, event, sound, visual
 
 
 def run(
@@ -65,7 +65,7 @@ def run(
 
         # Save the results at each iteration
         parameters["results_df"].to_csv(
-            parameters["results"]
+            parameters["resultPath"]
             + "/"
             + parameters["participant"]
             + parameters["session"]
@@ -75,7 +75,7 @@ def run(
 
     # Save results
     parameters["results_df"].to_csv(
-        parameters["results"]
+        parameters["resultPath"]
         + "/"
         + parameters["participant"]
         + parameters["session"]
@@ -187,7 +187,7 @@ def trial(
         # Add event marker
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 2
-        parameters["noteEnd"].play()
+        parameters["noteStop"].play()
         core.wait(3)
         parameters["oxiTask"].readInWaiting()
 
@@ -196,7 +196,7 @@ def trial(
 
     # Save recording
     parameters["oxiTask"].save(
-        parameters["results"]
+        parameters["resultPath"]
         + "/"
         + parameters["participant"]
         + str(nTrial)
@@ -523,5 +523,5 @@ def rest(
 
     # Save recording
     parameters["oxiTask"].save(
-        parameters["results"] + "/" + parameters["participant"] + "_Rest"
+        parameters["resultPath"] + "/" + parameters["participant"] + "_Rest"
     )

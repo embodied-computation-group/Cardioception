@@ -66,7 +66,8 @@ def getParameters(
     resultPath : str or None
         Where to save the results.
     screenNb : int
-        Select screen number.
+        Screen number. Used to parametrize py:func:`psychopy.visual.Window`.
+        Default is set to 0.
     serialPort: str
         The USB port where the pulse oximeter is plugged. Should be written as
         a string e.g., `'COM3'`, `'COM4'`. If set to *None*, the pulse oximeter
@@ -132,6 +133,8 @@ def getParameters(
         The output should be a single float matching the name of the `.wav` files
         (ending with `.0` or `.5`). Default is uniform between 40.0 and 100.0 BPM
         (`np.random.choice(np.arange(40, 100, 0.5))`).
+    resultPath : str or None
+        Where to save the results.
     serial : PySerial instance
         The serial port used to record the PPG activity.
     screenNb : int
@@ -190,12 +193,12 @@ def getParameters(
     parameters["session"] = session
     parameters["path"] = os.getcwd()
     if resultPath is None:
-        parameters["results"] = parameters["path"] + "/data/" + participant + session
+        parameters["resultPath"] = parameters["path"] + "/data/" + participant + session
     else:
-        parameters["results"] = None
+        parameters["resultPath"] = None
     # Create Results directory if not already exists
-    if not os.path.exists(parameters["results"]):
-        os.makedirs(parameters["results"])
+    if not os.path.exists(parameters["resultPath"]):
+        os.makedirs(parameters["resultPath"])
 
     # Store posterior in a dictionnary
     parameters["staircaisePosteriors"] = {}

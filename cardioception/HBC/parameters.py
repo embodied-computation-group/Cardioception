@@ -29,17 +29,18 @@ def getParameters(
     ----------
     participant : str
         Subject ID. Default is 'exteroStairCase'.
-    session : int
-        Session number. Default to '001'.
+    resultPath : str or None
+        Where to save the results.
+    screenNb : int
+        Screen number. Used to parametrize py:func:`psychopy.visual.Window`.
+        Default is set to 0.
     serialPort: str
         The USB port where the pulse oximeter is plugged. Should be written as
         a string e.g., 'COM3', 'COM4'. If set to *None*, the pulse oximeter
         will be automatically detected. using the
         :py:func:`systole.recording.findOximeter()` function.
-    taskVersion : str or None
-        Task version to run. Can be 'Garfinkel', 'Shandry', 'test' or None.
-    resultPath : str or None
-        Where to save the results.
+    session : int
+        Session number. Default to '001'.
     setup : str
         Context of oximeter recording. Behavioral will record through a Nonin
         pulse oximeter, *fMRI* will record through BrainVision amplifier
@@ -47,54 +48,55 @@ def getParameters(
         series (for testing only).
     systole_kw : dict
         Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.
+    taskVersion : str or None
+        Task version to run. Can be 'Garfinkel', 'Shandry', 'test' or None.
 
     Attributes
     ----------
-    restPeriod : bool
-        If *True*, a resting period will be proposed before the task.
-    restLength : int
-        The length of the resting period (seconds). Default is 300 seconds.
-    screenNb : int
-        The screen number (Psychopy parameter). Default set to 0.
+    conditions : 1d array-like of str
+        The conditions. Can be 'Rest', 'Training' or 'Count'.
+    confScale : list
+        The range of the confidence rating scale.
+    heartLogo : `psychopy.visual.ImageStim`
+        Image presented during resting conditions.
+    labelsRating : list
+        The labels of the confidence rating scale.
+    noteStart : psychopy.sound.Sound instance
+        The sound that will be played when trial starts.
+    noteStop : psychopy.sound.Sound instance
+        The sound that will be played when trial ends.
+    path : str
+        The task working directory.
     randomize : bool
         If `True` (default), will randomize the order of the conditions. If
         taskVersion is not None, will use the default task parameter instead.
-    startKey : str
-        The key to press to start the task and go to next steps.
     rating : bool
         If `True` (default), will add a rating scale after the evaluation.
-    confScale : list
-        The range of the confidence rating scale.
-    labelsRating : list
-        The labels of the confidence rating scale.
-    taskVersion : str or None
-        Task version to run. Can be 'Garfinkel', 'Shandry' or None.
-    times : 1d array-like of int
-        Length of trials, in seconds.
-    conditions : 1d array-like of str
-        The conditions. Can be 'Rest', 'Training' or 'Count'.
-    subjectID : str
-        Subject identifiant.
-    subjectNumber : int
-        Subject reference number.
-    path : str
-        The task working directory.
-    results : str
-        The subject result directory.
-    note : `psychopy.sound`
-        The sound played at trial start and trial end.
-    win : `psychopy.visual.Window`
-        Window where to present stimuli.
-    serial : `serial.Serial`
-        The serial port used to record the PPG activity.
+    restLength : int
+        The length of the resting period (seconds). Default is 300 seconds.
     restLogo : `psychopy.visual.ImageStim`
         Image presented during resting conditions.
-    heartLogo : `psychopy.visual.ImageStim`
-        Image presented during resting conditions.
+    restPeriod : bool
+        If *True*, a resting period will be proposed before the task.
+    resultPath : str
+        The subject result directory.
+    screenNb : int
+        The screen number (Psychopy parameter). Default set to 0.
+    serial : `serial.Serial`
+        The serial port used to record the PPG activity.
+    startKey : str
+        The key to press to start the task and go to next steps.
+    taskVersion : str or None
+        Task version to run. Can be 'Garfinkel', 'Shandry', 'test' or None.
     texts : dict
         Dictionnary containing the texts to be presented.
     textSize : float
         Text size.
+    times : 1d array-like of int
+        Length of trials, in seconds.
+    win : `psychopy.visual.Window`
+        Window where to present stimuli.
+
     """
     parameters: Dict[str, Any] = {}
     parameters["restPeriod"] = True
@@ -106,6 +108,7 @@ def getParameters(
     parameters["labelsRating"] = ["Guess", "Certain"]
     parameters["taskVersion"] = taskVersion
     parameters["results_df"] = pd.DataFrame({})
+    parameters["setup"] = setup
 
     # Experimental design - can choose between a version based on recent
     # papers from Sarah Garfinkel's group, or the classic Schandry approach.
@@ -149,30 +152,32 @@ def getParameters(
     parameters["noteStart"] = sound.Sound(
         pkg_resources.resource_filename("cardioception.HBC", "Sounds/start.wav")
     )
-    parameters["noteEnd"] = sound.Sound(
+
+    parameters["noteStop"] = sound.Sound(
         pkg_resources.resource_filename("cardioception.HBC", "Sounds/stop.wav")
     )
 
     # Open window
+    if parameters["setup"] == "test":
+        fullscr = False
     parameters["win"] = visual.Window(screen=screenNb, fullscr=fullscr, units="height")
     parameters["win"].mouseVisible = False
 
     parameters["restLogo"] = visual.ImageStim(
         win=parameters["win"],
         units="height",
-        image=os.path.dirname(__file__) + "/Images/rest.png",
+        image=pkg_resources.resource_filename(__name__, "Images/rest.png"),
         pos=(0.0, -0.2),
     )
     parameters["restLogo"].size *= 0.15
     parameters["heartLogo"] = visual.ImageStim(
         win=parameters["win"],
         units="height",
-        image=os.path.dirname(__file__) + "/Images/heartbeat.png",
+        image=pkg_resources.resource_filename(__name__, "Images/heartbeat.png"),
         pos=(0.0, -0.2),
     )
     parameters["heartLogo"].size *= 0.05
 
-    parameters["setup"] = setup
     if setup == "behavioral":
         # PPG recording
         if serialPort is None:
