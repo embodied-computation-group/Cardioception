@@ -121,6 +121,9 @@ def getParameters(
     nFeedback : int
         The number of trial with feedback during the tutorial phase (no
         confidence rating).
+    nFinger : str or None
+        The finger number ("1", "2", "3", "4" or "5") where the participant
+        decided to place the pulse oximeter (if relevant).
     nTrials : int
         The number of trial to run in each condition, interoception and
         exteroception (if selected).
@@ -184,7 +187,7 @@ def getParameters(
     parameters["lambdaIntero"] = []  # Save the history of lambda values
     parameters["lambdaExtero"] = []  # Save the history of lambda values
     parameters["referenceTone"] = np.random.choice(np.arange(40, 100, 0.5))
-
+    parameters["nFinger"] = None
     parameters["signal_df"] = pd.DataFrame([])  # Physiological recording
     parameters["results_df"] = pd.DataFrame([])  # Behavioral results
 

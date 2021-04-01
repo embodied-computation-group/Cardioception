@@ -799,7 +799,7 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
         win.flip()
         core.wait(1)
 
-        # Record number and save in a .txt file
+        # Record number
         nFinger = ""
         while True:
             # Record new key
@@ -810,40 +810,19 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
                     "3",
                     "4",
                     "5",
-                    "6",
-                    "7",
-                    "8",
-                    "9",
-                    "0",
                     "num_1",
                     "num_2",
                     "num_3",
                     "num_4",
                     "num_5",
-                    "num_6",
-                    "num_7",
-                    "num_8",
-                    "num_9",
-                    "num_0",
                 ]
             )
             if key:
                 nFinger += [s for s in key[0] if s.isdigit()][0]
-                log_df = pd.DataFrame(
-                    {
-                        "Subject": [parameters["participant"]],
-                        "Session": [parameters["session"]],
-                        "Finger": [nFinger],
-                    }
-                )
-                log_df.to_csv(
-                    parameters["resultPath"]
-                    + "/"
-                    + parameters["participant"]
-                    + parameters["session"]
-                    + "_log.txt",
-                    index=False,
-                )
+
+                # Save the finger number in the task parameters dictionary
+                parameters["nFinger"] = nFinger
+
                 core.wait(0.5)
                 break
 
