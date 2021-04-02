@@ -133,9 +133,9 @@ def getParameters(
         The task working directory.
     referenceTone : callable
         Function selecting the reference tones for the exteroceptive condition.
-        The output should be a single float matching the name of the `.wav` files
-        (ending with `.0` or `.5`). Default is uniform between 40.0 and 100.0 BPM
-        (`np.random.choice(np.arange(40, 100, 0.5))`).
+        The output should be a single float matching the name of the `.wav`
+        files (ending with `.0` or `.5`). Default is uniform between 40.0 and
+        100.0 BPM (`np.random.choice(np.arange(40, 100, 0.5))`).
     resultPath : str or None
         Where to save the results.
     serial : PySerial instance
@@ -164,8 +164,20 @@ def getParameters(
         Long text elements.
     textSize : float
         Scalling parameter for text size.
-    win : Psychopy window instance
-        The window where to run the task.
+    triggers : dict
+        Dictionary {str, callable or None}. The function will be executed
+        before the corresponding trial sequence. The default values are
+        `None` (no trigger sent).
+            * `"trialStart"`
+            * `"trialStop"`
+            * `"listeningStart"`
+            * `"listeningStop"`
+            * `"decisionStart"`
+            * `"decisionStop"`
+            * `"confidenceStart"`
+            * `"confidenceStop"`
+    win : `psychopy.visual.window`
+        The window in which to draw objects.
     """
     parameters: Dict[str, Any] = {}
     parameters["ExteroCondition"] = exteroception
@@ -190,6 +202,20 @@ def getParameters(
     parameters["nFinger"] = None
     parameters["signal_df"] = pd.DataFrame([])  # Physiological recording
     parameters["results_df"] = pd.DataFrame([])  # Behavioral results
+
+    # Initialize triggers dictionary with None
+    # Some or all can later be overwrited with callable
+    # sending the information needed.
+    parameters["triggers"] = {
+        "trialStart": None,
+        "trialStop": None,
+        "listeningStart": None,
+        "listeningStop": None,
+        "decisionStart": None,
+        "decisionStop": None,
+        "confidenceStart": None,
+        "confidenceStop": None,
+    }
 
     # Set default path /Results/ 'Subject ID' /
     parameters["participant"] = participant

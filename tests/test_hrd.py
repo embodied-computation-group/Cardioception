@@ -73,7 +73,7 @@ class TestHRD(TestCase):
             catchTrials=0.0,
         )
 
-        run(parameters, confidenceRating=False, runTutorial=False)
+        run(parameters, confidenceRating=True, runTutorial=False)
         parameters["win"].close()
         shutil.rmtree(parameters["resultPath"])
 

@@ -92,11 +92,22 @@ def getParameters(
         Dictionnary containing the texts to be presented.
     textSize : float
         Text size.
+    triggers : dict
+        Dictionary {str, callable or None}. The function will be executed
+        before the corresponding trial sequence. The default values are
+        `None` (no trigger sent).
+            * `"trialStart"`
+            * `"trialStop"`
+            * `"listeningStart"`
+            * `"listeningStop"`
+            * `"decisionStart"`
+            * `"decisionStop"`
+            * `"confidenceStart"`
+            * `"confidenceStop"`
     times : 1d array-like of int
         Length of trials, in seconds.
-    win : `psychopy.visual.Window`
-        Window where to present stimuli.
-
+    win : `psychopy.visual.window`
+        The window in which to draw objects.
     """
     parameters: Dict[str, Any] = {}
     parameters["restPeriod"] = True
@@ -109,6 +120,20 @@ def getParameters(
     parameters["taskVersion"] = taskVersion
     parameters["results_df"] = pd.DataFrame({})
     parameters["setup"] = setup
+
+    # Initialize triggers dictionary with None
+    # Some or all can later be overwrited with callable
+    # sending the information needed.
+    parameters["triggers"] = {
+        "trialStart": None,
+        "trialStop": None,
+        "listeningStart": None,
+        "listeningStop": None,
+        "decisionStart": None,
+        "decisionStop": None,
+        "confidenceStart": None,
+        "confidenceStop": None,
+    }
 
     # Experimental design - can choose between a version based on recent
     # papers from Sarah Garfinkel's group, or the classic Schandry approach.

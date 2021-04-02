@@ -12,7 +12,7 @@ The Cardioception Python Package - Measuring Interoception with Psychopy - imple
 
 These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task use the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. 
 
-The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...). See the *Send triggers* session for details.
+The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...). See *Sending triggers* below for details.
 
 ##How to cite?
 
@@ -26,19 +26,21 @@ If you are using [systole](https://systole-docs.github.io/) to interact with you
 
 
 # Installation
-## Using the Python Package Index
+**Using the Python Package Index**
 * The most recent version can be installed uing:
     `pip install cardioception`
 * The current development branch can be installed using 
   `pip install git+https://github.com/embodied-computation-group/Cardioception.git`
 
-## Downloading the ZIP file
+**Downloading the ZIP file**
 
 <img src="/images/downloadZIP.png" align="left" alt="metadPy" height="200" HSPACE=30>
+
 You can also download the most recent version by downloading the repository as a .zip file.
 
 After extracting the content of the file, the package can be installed via the command line by running `pip install .`. Note that this command should be executed when your terminal run inside the extracted folder. You can navigate through your local folder using the command `cd [path to your folder]`.
 
+<br clear="left"/>
 
 ## Dependencies
 
@@ -70,6 +72,7 @@ The version provided here are the ones used when testing and runing cardioceptio
 
 Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 160 Mo). These files will be removed if you uninstall the package using `pip uninstall cardioception`.
 
+# Package modularity
 ## Physiological recording
 
 Both the Heartbeat counting task (HBC) and the heart rate discrimination task (HRD) require access to physiological recording device during the task to estimate the heart rate or count the number of heartbeats in a given time window. Cardioception natively supports:
@@ -77,6 +80,45 @@ Both the Heartbeat counting task (HBC) and the heart rate discrimination task (H
 * Remote Data Access (RDA) via BrainVision Recorder together with [Brain product ExG amplifier](https://www.brainproducts.com/>).
 
 The package can easily be extended and integrate other recording devices by providing another recording class that will interface with your own devices (ECG, pulse oximeters, or any king of recording that will offer precise estimation of the cardiac frequency).
+
+## Sending triggers
+
+The package includes function calls at the beginning and the end of each meaningful trial phase (trial start/end, listening start/end, decision start/end, and confidence rating start/end). These function calls are embedded in the `"triggers"` parameter dictionary.
+
+```python
+from cardioception.HRD.parameters import getParameters
+
+parameters = getParameters()
+parameters["triggers"]
+```
+`
+{'trialStart': None,
+ 'trialStop': None,
+ 'listeningStart': None,
+ 'listeningStop': None,
+ 'decisionStart': None,
+ 'decisionStop': None,
+ 'confidenceStart': None,
+ 'confidenceStop': None}
+ `
+
+By default, keys are initialized with `None` (no triggers sent). But these values can be overwritten with callable implementing the proper trigger message fitting your setup. This can be done by creating a new function and applying it to the relevant dictionary key.
+
+```python
+def sendTrigger(x):
+  # Function connecting to your device and sending the
+  # required value. For illustration, we are using a simple print call.
+  print(f'Send a trigger with value {x}')
+
+
+# Here we use this function to send triggers with value 1 
+# at the begining of the listening phase
+# and with value 2 at the end of the listening phase
+parameters["triggers"]["listeningStart"] = sendTrigger("1")
+parameters["triggers"]["listeningStop"] = sendTrigger("2")
+```
+
+Note that we are using the function call (`sendTrigger("1")`) and not the function itself (`sendTrigger`) here.
 
 # Run the tasks
 
@@ -90,7 +132,8 @@ Each task contains a `parameters` and a `task` submodule describing the experime
 Once the package has been installed, you can run the task (e.g. here the Heart rate Discrimination task) using the following code snippet:
 
 ```python
-from cardioception.HRD import parameters, task
+from cardioception.HRD.parameters import getParameters
+from cardioception.HRD import task
 
 # Set global task parameters
 parameters = parameters.getParameters(

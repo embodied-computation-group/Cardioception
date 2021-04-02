@@ -25,7 +25,7 @@ def run(
     parameters : dict
         Task parameters.
     win : `psychopy.visual.window`
-        Instance of Psychopy window.
+        The window in which to draw objects.
     confidenceRating : bool
         Whether the trial show include a confidence rating scale.
     runTutorial : bool
@@ -84,7 +84,7 @@ def run(
             waitInput(parameters)
 
         # Next intensity value
-        if trialType == "UpDown":
+        if trialType == "updown":
             print("... load UpDown staircase.")
             thisTrial = parameters["stairCase"][modality].next()
             stairCond = thisTrial[1]["label"]
@@ -137,7 +137,7 @@ def run(
         # Check if response is 'More' or 'Less'
         isMore = 1 if decision == "More" else 0
         # Update the UpDown staircase if initialization trial
-        if trialType == "UpDown":
+        if trialType == "updown":
             print("... update UpDown staircase.")
             # Update the UpDown staircase
             parameters["stairCase"][modality].addResponse(isMore)
@@ -362,8 +362,8 @@ def trial(
     modality : str
         The modality, can be `'Intero'` or `'Extro'` if an exteroceptive
         control condition has been added.
-    win :`psychopy.visual.window` or `None`
-        Where to draw the task.
+    win : `psychopy.visual.window` or None
+        The window in which to draw objects.
     confidenceRating : boolean
         If `False`, do not display confidence rating scale.
     feedback : boolean
@@ -377,8 +377,8 @@ def trial(
         The trial condition, can be `'Higher'` or `'Lower'` depending on the
         alpha value.
     listenBPM : float
-        The frequency of the tones (exteroceptive condition) or of the heart rate
-        (interoceptive condition), expressed in BPM.
+        The frequency of the tones (exteroceptive condition) or of the heart
+        rate (interoceptive condition), expressed in BPM.
     responseBPM : float
         The frequency of thefeebdack tones, expressed in BPM.
     decision : str
@@ -404,8 +404,8 @@ def trial(
     respProvided : bool
         Was the decision provided (`True`) or not (`False`).
     ratingProvided : bool
-        Was the rating provided (`True`) or not (`False`). If no decision was provided,
-        the ratig scale is not proposed and no ratings can be provided.
+        Was the rating provided (`True`) or not (`False`). If no decision was
+        provided, the ratig scale is not proposed and no ratings can be provided.
     startTrigger, soundTrigger, responseMadeTrigger, ratingStartTrigger,\
         ratingEndTrigger, endTrigger : float
         Time stamp of key timepoints inside the trial.
@@ -425,6 +425,7 @@ def trial(
     fixation = visual.GratingStim(win=win, mask="cross", size=0.1, pos=[0, 0], sf=0)
     fixation.draw()
     win.flip()
+    parameters["triggers"]["trialStart"]  # Send triggers
     core.wait(0.25)
 
     keys = event.getKeys()
@@ -452,6 +453,7 @@ def trial(
         if parameters["setup"] in ["behavioral", "test"]:
             parameters["oxiTask"].channels["Channel_0"][-1] = 3
         startTrigger = time.time()
+        parameters["triggers"]["listeningStart"]  # Send triggers
 
         # Recording
         while True:
@@ -527,6 +529,7 @@ def trial(
         if parameters["setup"] in ["behavioral", "test"]:
             parameters["oxiTask"].channels["Channel_0"][-1] = 3  # Trigger
         startTrigger = time.time()
+        parameters["triggers"]["listeningStart"]  # Send triggers
 
         # Random selection of HR frequency
         listenBPM = parameters["referenceTone"]
@@ -545,6 +548,8 @@ def trial(
 
     else:
         raise ValueError("Invalid modality")
+
+    parameters["triggers"]["listeningStop"]  # Send triggers
 
     # Fixation cross
     fixation = visual.GratingStim(win=win, mask="cross", size=0.1, pos=[0, 0], sf=0)
@@ -653,6 +658,7 @@ def trial(
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 5  # Start trigger
     endTrigger = time.time()
+    parameters["triggers"]["trialStop"]  # Execute function if provided
 
     # Save PPG signal
     if nTrial is not None:  # Not during the tutorial
@@ -1048,8 +1054,8 @@ def responseDecision(
     condition : str
         The trial condition [`'More'` or `'Less'`] used to check is response is
         correct or not.
-    win : psychopy window instance.
-        The window where to show the task.
+    win : `psychopy.visual.window` or None
+        The window in which to draw objects.
 
     Returns
     -------
@@ -1073,6 +1079,7 @@ def responseDecision(
 
     decision, decisionRT, isCorrect = None, None, None
     responseTrigger = time.time()
+    parameters["triggers"]["decisionStart"]
 
     if parameters["device"] == "keyboard":
         this_hr.play()
@@ -1205,6 +1212,8 @@ def responseDecision(
         responseMadeTrigger = time.time()
         this_hr.stop()
 
+        parameters["triggers"]["decisionStop"]
+
         # Check for response provided by the participant
         if respProvided is False:
             # Record participant response (+/-)
@@ -1255,8 +1264,8 @@ def confidenceRatingTask(
     ----------
     parameters : dict
         Parameters dictionnary.
-    win : psychopy window instance.
-        The window where to show the task.
+    win : `psychopy.visual.window` or None
+        The window in which to draw objects.
     """
     print("...starting confidence rating.")
 
@@ -1265,6 +1274,8 @@ def confidenceRatingTask(
 
     # Initialise default values
     confidence, confidenceRT = None, None
+
+    parameters["triggers"]["confidenceStart"]
 
     if parameters["device"] == "keyboard":
 
@@ -1397,6 +1408,7 @@ def confidenceRatingTask(
             message.draw()
             win.flip()
     ratingEndTrigger = time.time()
+    parameters["triggers"]["confidenceStop"]
     win.flip()
 
     return confidence, confidenceRT, ratingProvided, ratingEndTrigger
