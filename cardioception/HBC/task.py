@@ -4,12 +4,11 @@ from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from psychopy import core, event, visual
+from psychopy import core, event, sound, visual
 
 
 def run(
     parameters: dict,
-    confidenceRating: bool = True,
     runTutorial: bool = True,
     win: Optional[visual.Window] = None,
 ):
@@ -19,13 +18,11 @@ def run(
     ----------
     parameters : dict
         Task parameters.
-    confidenceRating : bool
-        Whether the trial show include a confidence rating scale.
     tutorial : bool
-        If *True*, will present a tutorial with 10 training trial with feedback
+        If `True`, will present a tutorial with 10 training trial with feedback
         and 5 trials with confidence rating.
-    win : `psychopy.visual.Window`
-        Window where to present stimuli.
+    win : `psychopy.visual.window` or None
+        The window in which to draw objects.
     """
     if win is None:
         win = parameters["win"]
@@ -44,9 +41,13 @@ def run(
         range(0, len(parameters["conditions"])),
     ):
 
+        parameters["triggers"]["trialStart"]  # Send trigger or None
+
         nCount, confidence, confidenceRT = trial(
             condition, duration, nTrial, parameters, win
         )
+
+        parameters["triggers"]["trialStop"]  # Send trigger or None
 
         # Store results in a DataFrame
         parameters["results_df"] = parameters["results_df"].append(
@@ -65,7 +66,7 @@ def run(
 
         # Save the results at each iteration
         parameters["results_df"].to_csv(
-            parameters["results"]
+            parameters["resultPath"]
             + "/"
             + parameters["participant"]
             + parameters["session"]
@@ -75,7 +76,7 @@ def run(
 
     # Save results
     parameters["results_df"].to_csv(
-        parameters["results"]
+        parameters["resultPath"]
         + "/"
         + parameters["participant"]
         + parameters["session"]
@@ -114,8 +115,8 @@ def trial(
         Trial number.
     parameters : dict
         Task parameters.
-    win : `psychopy.visual.Window`
-        Window where to present stimuli.
+    win : `psychopy.visual.window` or None
+        The window in which to draw objects.
 
     Returns
     -------
@@ -177,6 +178,7 @@ def trial(
         # Add event marker
         parameters["oxiTask"].channels["Channel_0"][-1] = 1
         parameters["noteStart"].play()
+        parameters["triggers"]["listeningStart"]
         core.wait(1)
 
     # Record for a desired time length
@@ -187,7 +189,8 @@ def trial(
         # Add event marker
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 2
-        parameters["noteEnd"].play()
+        parameters["noteStop"].play()
+        parameters["triggers"]["listeningStop"]
         core.wait(3)
         parameters["oxiTask"].readInWaiting()
 
@@ -196,7 +199,7 @@ def trial(
 
     # Save recording
     parameters["oxiTask"].save(
-        parameters["results"]
+        parameters["resultPath"]
         + "/"
         + parameters["participant"]
         + str(nTrial)
@@ -217,6 +220,8 @@ def trial(
         )
         messageCount.draw()
         win.flip()
+
+        parameters["triggers"]["decisionStart"]  # Send trigger or None
 
         nCounts = ""
         while True:
@@ -295,6 +300,8 @@ def trial(
             messageCount.draw()
             win.flip()
 
+        parameters["triggers"]["decisionStop"]  # Send trigger or None
+
         ##############
         # Rating scale
         ##############
@@ -316,12 +323,14 @@ def trial(
                 text=parameters["texts"]["confidence"],
                 height=parameters["textSize"],
             )
+            parameters["triggers"]["confidenceStart"]
             while ratingScale.noResponse:
                 message.draw()
                 ratingScale.draw()
                 win.flip()
             confidence = ratingScale.getRating()
             confidenceRT = ratingScale.getRT()
+            parameters["triggers"]["confidenceStop"]
 
     finalCount = int(nCounts) if nCounts else None
 
@@ -335,8 +344,8 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
     ----------
     parameters : dict
         Task parameters.
-    win : `psychopy.visual.Window`
-        Window where to present stimuli.
+    win : `psychopy.visual.window` or None
+        The window in which to draw objects.
     """
     if win is None:
         win = parameters["win"]
@@ -500,8 +509,10 @@ def rest(
     ----------
     parameters : dict
         Task parameters.
-    win : `psychopy.visual.Window`
-        Window where to present stimuli.
+    duration : float
+        Duration or the recording (seconds).
+    win : `psychopy.visual.window` or None
+        The window in which to draw objects.
     """
     if win is None:
         win = parameters["win"]
@@ -523,5 +534,5 @@ def rest(
 
     # Save recording
     parameters["oxiTask"].save(
-        parameters["results"] + "/" + parameters["participant"] + "_Rest"
+        parameters["resultPath"] + "/" + parameters["participant"] + "_Rest"
     )

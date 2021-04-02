@@ -20,7 +20,7 @@ def getParameters(
     stairType: str = "psi",
     exteroception: bool = True,
     catchTrials: float = 0.0,
-    nTrials: int = 160,
+    nTrials: int = 120,
     BrainVisionIP: Optional[str] = None,
     device: str = "mouse",
     screenNb: int = 0,
@@ -66,7 +66,8 @@ def getParameters(
     resultPath : str or None
         Where to save the results.
     screenNb : int
-        Select screen number.
+        Screen number. Used to parametrize py:func:`psychopy.visual.Window`.
+        Default is set to 0.
     serialPort: str
         The USB port where the pulse oximeter is plugged. Should be written as
         a string e.g., `'COM3'`, `'COM4'`. If set to *None*, the pulse oximeter
@@ -120,6 +121,9 @@ def getParameters(
     nFeedback : int
         The number of trial with feedback during the tutorial phase (no
         confidence rating).
+    nFinger : str or None
+        The finger number ("1", "2", "3", "4" or "5") where the participant
+        decided to place the pulse oximeter (if relevant).
     nTrials : int
         The number of trial to run in each condition, interoception and
         exteroception (if selected).
@@ -129,9 +133,11 @@ def getParameters(
         The task working directory.
     referenceTone : callable
         Function selecting the reference tones for the exteroceptive condition.
-        The output should be a single float matching the name of the `.wav` files
-        (ending with `.0` or `.5`). Default is uniform between 40.0 and 100.0 BPM
-        (`np.random.choice(np.arange(40, 100, 0.5))`).
+        The output should be a single float matching the name of the `.wav`
+        files (ending with `.0` or `.5`). Default is uniform between 40.0 and
+        100.0 BPM (`np.random.choice(np.arange(40, 100, 0.5))`).
+    resultPath : str or None
+        Where to save the results.
     serial : PySerial instance
         The serial port used to record the PPG activity.
     screenNb : int
@@ -158,8 +164,20 @@ def getParameters(
         Long text elements.
     textSize : float
         Scalling parameter for text size.
-    win : Psychopy window instance
-        The window where to run the task.
+    triggers : dict
+        Dictionary {str, callable or None}. The function will be executed
+        before the corresponding trial sequence. The default values are
+        `None` (no trigger sent).
+            * `"trialStart"`
+            * `"trialStop"`
+            * `"listeningStart"`
+            * `"listeningStop"`
+            * `"decisionStart"`
+            * `"decisionStop"`
+            * `"confidenceStart"`
+            * `"confidenceStop"`
+    win : `psychopy.visual.window`
+        The window in which to draw objects.
     """
     parameters: Dict[str, Any] = {}
     parameters["ExteroCondition"] = exteroception
@@ -181,21 +199,35 @@ def getParameters(
     parameters["lambdaIntero"] = []  # Save the history of lambda values
     parameters["lambdaExtero"] = []  # Save the history of lambda values
     parameters["referenceTone"] = np.random.choice(np.arange(40, 100, 0.5))
-
+    parameters["nFinger"] = None
     parameters["signal_df"] = pd.DataFrame([])  # Physiological recording
     parameters["results_df"] = pd.DataFrame([])  # Behavioral results
+
+    # Initialize triggers dictionary with None
+    # Some or all can later be overwrited with callable
+    # sending the information needed.
+    parameters["triggers"] = {
+        "trialStart": None,
+        "trialStop": None,
+        "listeningStart": None,
+        "listeningStop": None,
+        "decisionStart": None,
+        "decisionStop": None,
+        "confidenceStart": None,
+        "confidenceStop": None,
+    }
 
     # Set default path /Results/ 'Subject ID' /
     parameters["participant"] = participant
     parameters["session"] = session
     parameters["path"] = os.getcwd()
     if resultPath is None:
-        parameters["results"] = parameters["path"] + "/data/" + participant + session
+        parameters["resultPath"] = parameters["path"] + "/data/" + participant + session
     else:
-        parameters["results"] = None
+        parameters["resultPath"] = None
     # Create Results directory if not already exists
-    if not os.path.exists(parameters["results"]):
-        os.makedirs(parameters["results"])
+    if not os.path.exists(parameters["resultPath"]):
+        os.makedirs(parameters["resultPath"])
 
     # Store posterior in a dictionnary
     parameters["staircaisePosteriors"] = {}

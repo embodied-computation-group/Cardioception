@@ -25,7 +25,7 @@ def run(
     parameters : dict
         Task parameters.
     win : `psychopy.visual.window`
-        Instance of Psychopy window.
+        The window in which to draw objects.
     confidenceRating : bool
         Whether the trial show include a confidence rating scale.
     runTutorial : bool
@@ -84,7 +84,7 @@ def run(
             waitInput(parameters)
 
         # Next intensity value
-        if trialType == "UpDown":
+        if trialType == "updown":
             print("... load UpDown staircase.")
             thisTrial = parameters["stairCase"][modality].next()
             stairCond = thisTrial[1]["label"]
@@ -137,7 +137,7 @@ def run(
         # Check if response is 'More' or 'Less'
         isMore = 1 if decision == "More" else 0
         # Update the UpDown staircase if initialization trial
-        if trialType == "UpDown":
+        if trialType == "updown":
             print("... update UpDown staircase.")
             # Update the UpDown staircase
             parameters["stairCase"][modality].addResponse(isMore)
@@ -204,7 +204,7 @@ def run(
 
         # Save the results at each iteration
         parameters["results_df"].to_csv(
-            parameters["results"]
+            parameters["resultPath"]
             + "/"
             + parameters["participant"]
             + parameters["session"]
@@ -231,7 +231,7 @@ def run(
             win.flip()
             if parameters["setup"] in ["behavioral", "test"]:
                 parameters["oxiTask"].save(
-                    parameters["results"]
+                    parameters["resultPath"]
                     + "/"
                     + parameters["participant"]
                     + str(nTrial)
@@ -255,10 +255,10 @@ def run(
     # save data as multiple formats
     try:
         parameters["stairCase"]["Intero"].saveAsPickle(
-            parameters["results"] + "/" + parameters["participant"] + "_Intero"
+            parameters["resultPath"] + "/" + parameters["participant"] + "_Intero"
         )
         parameters["stairCase"]["Extero"].saveAsPickle(
-            parameters["results"] + "/" + parameters["participant"] + "_Extero"
+            parameters["resultPath"] + "/" + parameters["participant"] + "_Extero"
         )
     except:
         print("Error when saving as Pickle")
@@ -266,7 +266,7 @@ def run(
     # Save the final results
     print("Saving final results in .txt file...")
     parameters["results_df"].to_csv(
-        parameters["results"]
+        parameters["resultPath"]
         + "/"
         + parameters["participant"]
         + parameters["session"]
@@ -277,7 +277,7 @@ def run(
     # Save the final signals file
     print("Saving PPG signal data frame...")
     parameters["signal_df"].to_csv(
-        parameters["results"] + "/" + parameters["participant"] + "_signal.txt",
+        parameters["resultPath"] + "/" + parameters["participant"] + "_signal.txt",
         index=False,
     )
 
@@ -285,7 +285,7 @@ def run(
     print("Saving posterior distributions...")
     for k in set(parameters["Modality"]):
         np.save(
-            parameters["results"]
+            parameters["resultPath"]
             + "/"
             + parameters["participant"]
             + k
@@ -304,7 +304,7 @@ def run(
         del save_parameter["handSchema"]
         del save_parameter["pulseSchema"]
     with open(
-        save_parameter["results"]
+        save_parameter["resultPath"]
         + "/"
         + save_parameter["participant"]
         + "_parameters.pickle",
@@ -362,8 +362,8 @@ def trial(
     modality : str
         The modality, can be `'Intero'` or `'Extro'` if an exteroceptive
         control condition has been added.
-    win :`psychopy.visual.window` or `None`
-        Where to draw the task.
+    win : `psychopy.visual.window` or None
+        The window in which to draw objects.
     confidenceRating : boolean
         If `False`, do not display confidence rating scale.
     feedback : boolean
@@ -377,8 +377,8 @@ def trial(
         The trial condition, can be `'Higher'` or `'Lower'` depending on the
         alpha value.
     listenBPM : float
-        The frequency of the tones (exteroceptive condition) or of the heart rate
-        (interoceptive condition), expressed in BPM.
+        The frequency of the tones (exteroceptive condition) or of the heart
+        rate (interoceptive condition), expressed in BPM.
     responseBPM : float
         The frequency of thefeebdack tones, expressed in BPM.
     decision : str
@@ -404,8 +404,8 @@ def trial(
     respProvided : bool
         Was the decision provided (`True`) or not (`False`).
     ratingProvided : bool
-        Was the rating provided (`True`) or not (`False`). If no decision was provided,
-        the ratig scale is not proposed and no ratings can be provided.
+        Was the rating provided (`True`) or not (`False`). If no decision was
+        provided, the ratig scale is not proposed and no ratings can be provided.
     startTrigger, soundTrigger, responseMadeTrigger, ratingStartTrigger,\
         ratingEndTrigger, endTrigger : float
         Time stamp of key timepoints inside the trial.
@@ -425,6 +425,7 @@ def trial(
     fixation = visual.GratingStim(win=win, mask="cross", size=0.1, pos=[0, 0], sf=0)
     fixation.draw()
     win.flip()
+    parameters["triggers"]["trialStart"]  # Send triggers
     core.wait(0.25)
 
     keys = event.getKeys()
@@ -452,6 +453,7 @@ def trial(
         if parameters["setup"] in ["behavioral", "test"]:
             parameters["oxiTask"].channels["Channel_0"][-1] = 3
         startTrigger = time.time()
+        parameters["triggers"]["listeningStart"]  # Send triggers
 
         # Recording
         while True:
@@ -527,6 +529,7 @@ def trial(
         if parameters["setup"] in ["behavioral", "test"]:
             parameters["oxiTask"].channels["Channel_0"][-1] = 3  # Trigger
         startTrigger = time.time()
+        parameters["triggers"]["listeningStart"]  # Send triggers
 
         # Random selection of HR frequency
         listenBPM = parameters["referenceTone"]
@@ -545,6 +548,8 @@ def trial(
 
     else:
         raise ValueError("Invalid modality")
+
+    parameters["triggers"]["listeningStop"]  # Send triggers
 
     # Fixation cross
     fixation = visual.GratingStim(win=win, mask="cross", size=0.1, pos=[0, 0], sf=0)
@@ -653,6 +658,7 @@ def trial(
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 5  # Start trigger
     endTrigger = time.time()
+    parameters["triggers"]["trialStop"]  # Execute function if provided
 
     # Save PPG signal
     if nTrial is not None:  # Not during the tutorial
@@ -799,7 +805,7 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
         win.flip()
         core.wait(1)
 
-        # Record number and save in a .txt file
+        # Record number
         nFinger = ""
         while True:
             # Record new key
@@ -810,40 +816,19 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
                     "3",
                     "4",
                     "5",
-                    "6",
-                    "7",
-                    "8",
-                    "9",
-                    "0",
                     "num_1",
                     "num_2",
                     "num_3",
                     "num_4",
                     "num_5",
-                    "num_6",
-                    "num_7",
-                    "num_8",
-                    "num_9",
-                    "num_0",
                 ]
             )
             if key:
                 nFinger += [s for s in key[0] if s.isdigit()][0]
-                log_df = pd.DataFrame(
-                    {
-                        "Subject": [parameters["participant"]],
-                        "Session": [parameters["session"]],
-                        "Finger": [nFinger],
-                    }
-                )
-                log_df.to_csv(
-                    parameters["results"]
-                    + "/"
-                    + parameters["participant"]
-                    + parameters["session"]
-                    + "_log.txt",
-                    index=False,
-                )
+
+                # Save the finger number in the task parameters dictionary
+                parameters["nFinger"] = nFinger
+
                 core.wait(0.5)
                 break
 
@@ -1069,8 +1054,8 @@ def responseDecision(
     condition : str
         The trial condition [`'More'` or `'Less'`] used to check is response is
         correct or not.
-    win : psychopy window instance.
-        The window where to show the task.
+    win : `psychopy.visual.window` or None
+        The window in which to draw objects.
 
     Returns
     -------
@@ -1094,6 +1079,7 @@ def responseDecision(
 
     decision, decisionRT, isCorrect = None, None, None
     responseTrigger = time.time()
+    parameters["triggers"]["decisionStart"]
 
     if parameters["device"] == "keyboard":
         this_hr.play()
@@ -1226,6 +1212,8 @@ def responseDecision(
         responseMadeTrigger = time.time()
         this_hr.stop()
 
+        parameters["triggers"]["decisionStop"]
+
         # Check for response provided by the participant
         if respProvided is False:
             # Record participant response (+/-)
@@ -1276,8 +1264,8 @@ def confidenceRatingTask(
     ----------
     parameters : dict
         Parameters dictionnary.
-    win : psychopy window instance.
-        The window where to show the task.
+    win : `psychopy.visual.window` or None
+        The window in which to draw objects.
     """
     print("...starting confidence rating.")
 
@@ -1286,6 +1274,8 @@ def confidenceRatingTask(
 
     # Initialise default values
     confidence, confidenceRT = None, None
+
+    parameters["triggers"]["confidenceStart"]
 
     if parameters["device"] == "keyboard":
 
@@ -1418,6 +1408,7 @@ def confidenceRatingTask(
             message.draw()
             win.flip()
     ratingEndTrigger = time.time()
+    parameters["triggers"]["confidenceStop"]
     win.flip()
 
     return confidence, confidenceRT, ratingProvided, ratingEndTrigger

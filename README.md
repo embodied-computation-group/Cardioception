@@ -4,26 +4,43 @@
 
 # Cardioception
 
-<img src="/images/logo.png" align="left" alt="metadPy" height="250" HSPACE=30>
+<img src="/images/logo.png" align="left" alt="metadPy" height="230" HSPACE=30>
 
 The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):
-1. The *Heartbeat counting task* developed by Rainer Schandry<sup>1,2</sup>
-2. a novel *Heart Rate Discrimination Task* <sup>5</sup> implementing an adaptive psychophysical measure for measuring cardioception.
+1. The **Heartbeat counting task** developed by Rainer Schandry<sup>1,2</sup>. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.
+2. The **Heart Rate Discrimination Task** <sup>3</sup> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see *Analyses* below), together with metacognitive efficiency.
 
-# How to cite Cardioception?
+These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task use the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. 
+
+The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...). See *Sending triggers* below for details.
+
+##How to cite?
 
 If you are using cardioception in a publication we ask you to cite the following paper:
 
 >Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., & Allen, M. (2021). The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. bioRxiv 2021.02.18.431871. https://doi.org/10.1101/2021.02.18.431871 
 
-If you are using Systole to interact with your recording device (this is the default behavior in cardioception), you might also cite the following reference:
+If you are using [systole](https://systole-docs.github.io/) to interact with your recording device (this is the default behavior in cardioception), you might also cite the following reference:
 
 > Legrand, N., & Allen, M. (2020). Systole: V 0.1.2—September 2020 (0.1.2) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.3607912
 
 
 # Installation
+**Using the Python Package Index**
+* The most recent version can be installed uing:
+    `pip install cardioception`
+* The current development branch can be installed using 
+  `pip install git+https://github.com/embodied-computation-group/Cardioception.git`
 
-* Cardioception can be installed uing `pip install cardioception`.
+**Downloading the ZIP file**
+
+<img src="/images/downloadZIP.png" align="left" alt="metadPy" height="200" HSPACE=30>
+
+You can also download the most recent version by downloading the repository as a .zip file.
+
+After extracting the content of the file, the package can be installed via the command line by running `pip install .`. Note that this command should be executed when your terminal run inside the extracted folder. You can navigate through your local folder using the command `cd [path to your folder]`.
+
+<br clear="left"/>
 
 ## Dependencies
 
@@ -42,7 +59,7 @@ The other main dependencies are:
 * [pandas](https://pandas.pydata.org/) (>=1.0.3)
 * [pyserial](https://pypi.org/project/pyserial/) (>=3.4)
 
-In addition, some function for HTML report functions will require:
+In addition, some function for HTML reports will require:
 
 * [papermill](https://papermill.readthedocs.io/en/latest/) (>=2.3.1)
 * [matplotlib](https://matplotlib.org/) (>=3.3.3)
@@ -53,8 +70,9 @@ In addition, some function for HTML report functions will require:
 **NOTE**
 The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles. 
 
-Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 200 Mo). These files will be removed if you uninstall the package using `pip uninstall cardioception`.
+Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 160 Mo). These files will be removed if you uninstall the package using `pip uninstall cardioception`.
 
+# Package modularity
 ## Physiological recording
 
 Both the Heartbeat counting task (HBC) and the heart rate discrimination task (HRD) require access to physiological recording device during the task to estimate the heart rate or count the number of heartbeats in a given time window. Cardioception natively supports:
@@ -62,6 +80,45 @@ Both the Heartbeat counting task (HBC) and the heart rate discrimination task (H
 * Remote Data Access (RDA) via BrainVision Recorder together with [Brain product ExG amplifier](https://www.brainproducts.com/>).
 
 The package can easily be extended and integrate other recording devices by providing another recording class that will interface with your own devices (ECG, pulse oximeters, or any king of recording that will offer precise estimation of the cardiac frequency).
+
+## Sending triggers
+
+The package includes function calls at the beginning and the end of each meaningful trial phase (trial start/end, listening start/end, decision start/end, and confidence rating start/end). These function calls are embedded in the `"triggers"` parameter dictionary.
+
+```python
+from cardioception.HRD.parameters import getParameters
+
+parameters = getParameters()
+parameters["triggers"]
+```
+`
+{'trialStart': None,
+ 'trialStop': None,
+ 'listeningStart': None,
+ 'listeningStop': None,
+ 'decisionStart': None,
+ 'decisionStop': None,
+ 'confidenceStart': None,
+ 'confidenceStop': None}
+ `
+
+By default, keys are initialized with `None` (no triggers sent). But these values can be overwritten with callable implementing the proper trigger message fitting your setup. This can be done by creating a new function and applying it to the relevant dictionary key.
+
+```python
+def sendTrigger(x):
+  # Function connecting to your device and sending the
+  # required value. For illustration, we are using a simple print call.
+  print(f'Send a trigger with value {x}')
+
+
+# Here we use this function to send triggers with value 1 
+# at the begining of the listening phase
+# and with value 2 at the end of the listening phase
+parameters["triggers"]["listeningStart"] = sendTrigger("1")
+parameters["triggers"]["listeningStop"] = sendTrigger("2")
+```
+
+Note that we are using the function call (`sendTrigger("1")`) and not the function itself (`sendTrigger`) here.
 
 # Run the tasks
 
@@ -75,7 +132,8 @@ Each task contains a `parameters` and a `task` submodule describing the experime
 Once the package has been installed, you can run the task (e.g. here the Heart rate Discrimination task) using the following code snippet:
 
 ```python
-from cardioception.HRD import parameters, task
+from cardioception.HRD.parameters import getParameters
+from cardioception.HRD import task
 
 # Set global task parameters
 parameters = parameters.getParameters(
@@ -88,16 +146,19 @@ task.run(parameters, confidenceRating=True, runTutorial=True)
 parameters['win'].close()
 ```
 
-This will run the Heart Rate Discrimination task wth a total of 10 trials (4 using an 1-Up/1-Down starcase, and 6 using a Psi staircase).
-## Creating a shortcut
+This minimal example will run the Heart Rate Discrimination task with a total of 10 trials using a Psi staircase.
 
-The tasks can easily be executed by running the corresponding `launcher.py` file in a console. It is also possible to create a shortcut (eg. in the Desktop) to facilitate its use in experimental context.
+We provide standard scripts in the [wrappers](https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers) folder that can be adapted to your needs. We recommend copying this script in your local task folder if you want to parametrize it to fit your needs. The tasks can then easily be executed by running the corresponding wrapper file (e.g in a terminal).
 
-In Windows, you can simply create a `.bat` file containing the following:
+**Creating a shortcut**
+
+Once you have adapted the scripts, you can create a shortcut (e.g in the Desktop) so the task can be executed just by clicking on it without any coding or command lines interactions.
+
+If you are using Windows, you can simply create a `.bat` file containing the following:
 
 ```
 conda activate
-[path to your local Python .exe] [path to your launcher.py]
+[path to your local Python .exe] [path to your wrapper file]
 pause
 ```
 
@@ -107,19 +168,41 @@ pause
 
 <img src= "images/HeartBeatCounting.png">
 
-This module is an implementation of the classic "heartbeat counting task" (HCT)<sup>1,2</sup> in which participants attend to their heartbeats in intervals of various length. Afterwards the participant indicates the number of counted heartbeats and a score is computed to represent their accuracy. In the original version<sup>1</sup>, the task started with a resting period of 60 seconds and consisted in three estimation session (25, 35 and 45 seconds) interleaved with resting periods of 30 seconds in the following order:
+This module is an implementation of the classic "heartbeat counting task" (HCT)<sup>1,2</sup> in which participants attend to their heartbeats in intervals of various lengths. Afterward, the participant indicates the number of counted heartbeats, and a score is computed to represent their accuracy. In the original version<sup>1</sup>, the task started with a resting period of 60 seconds and consisted of three estimation session (25, 35, and 45 seconds) interleaved with resting periods of 30 seconds in the following order:
 
-By default, this task implement the version used in recent publications <sup>3</sup> in which a training trial of 20s is proposed, after which the 6 experimental trials of different time-windows (25, 30, 35,40, 45 and 50s) occurred in a randomized order. The trial length, the condition ('Rest', 'Count', 'Training') and the randomization can be controlled in the parameters dictionary.
+By default, this task implements the version used in recent publications <sup>4, 5</sup> in which a training trial of 20 seconds is proposed, after which the 6 experimental trials of different time windows (25, 30, 35,40, 45 and 50s) occurred in a randomized order. The trial length, the condition ('Rest', 'Count', 'Training'), and the randomization can be controlled in the parameters dictionary.
 
 ## The Heart Rate Discrimination task
 
 <img src= "images/HeartRateDiscrimination.png">
 
-This task implements an adaptive psychophysical procedure for estimating participant ability to discriminate their own heart-rate. On each trial, participants attend to their heartbeat sensations for five seconds and estimate their average heartrate. Immediately following this period, a cardiac feedback stimulus of 5 tones is played at a particular BPM frequency. The frequency is determined as their estimate average BPM plus or minus an intensity value that is updated by an adaptive staircase procedure (up/down or psi).
+This task implements an adaptive psychophysical procedure for estimating participants' ability to discriminate their heart rate. On each trial, participants attend to their heartbeat sensations for five seconds and estimate their average heart rate. Immediately following this period, a cardiac feedback stimulus of 5 tones is played at a particular BPM frequency. The frequency is determined as their estimated average BPM plus or minus an intensity value that is updated by an adaptive staircase procedure (up/down or psi).
 
 # Analyses
 
-Some of the default analyses and the Python code can be found in the report notebook templates (`./cardioception/notebooks/`). These notebooks will automatically save preprocessed data in the result folder.
+## Task reports
+
+The results are saved in the `'resultPath'` folder defined in the parameters dictionary. For each task, we provide a comprehensive notebook detailing the main results, quality checks, and basic preprocessing steps. You can automatically generate the HTML reports using the following code snippet:
+
+```python
+from cardioception.reports import report
+
+resultPath = "./"  # the folder containing the result files
+reportPath = "./"  # the folder where you want to save the HTML report
+
+report(resultPath, reportPath, task='HRD)
+```
+
+This code will generate the HTML reports for the Heart Rate Discrimination task in the `reportPath` folder using the results files located in `resultPath`. This will require [papermill](https://papermill.readthedocs.io/en/latest/).
+
+You can also analyze the results in [Google Colab](https://colab.research.google.com/) using one of the following link and upload the content of your result folder.
+
+| Notebook | Colab | nbViewer |
+| --- | ---| --- |
+| Heartbeat Counting task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb)
+| Heart Rate Discrimination task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb)
+
+## Bayesian modeling
 
 More advanced subject and group-level Bayesian modeling approaches are described in the following notebooks.
 
@@ -128,42 +211,13 @@ More advanced subject and group-level Bayesian modeling approaches are described
 | Fitting psychometric function with PyMC3 - Subject-level | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/main/code/psychophysics_subjectLevel.ipynb?flush_cache=true) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/main/code/psychophysics_subjectLevel.ipynb?flush_cache=true)
 | Fitting psychometric function with PyMC3 - Group-level | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/main/code/psychophysics_groupLevel.ipynb?flush_cache=true) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/main/code/psychophysics_groupLevel.ipynb?flush_cache=true)
 
-# Generate reports
-
-The notebooks provided in the `/notebooks` folder can be used as templates to generate reports for each participants using the following code snippet. This will require the last version of [papermill](https://papermill.readthedocs.io/en/latest/).
-
-```python
-import papermill as pm
-import subprocess
-import os
-
-dataPath = ''  # Folder where are stored the results
-reportsPath = ''  # Folder where to store the reports
-notebookTemplate = ''  # Notebook template (eg. HeartRateDiscrimination.ipynb)
-
-subjects = os.listdir(dataPath)
-for sub in subjects:
-
-    pm.execute_notebook(notebookTemplate, reportsPath + sub + '.ipynb',
-                        parameters=dict(subject=sub, path=dataPath))
-
-    command = f'jupyter nbconvert {reportsPath}{sub}.ipynb --output ' + \
-        '{reportsPath}{sub}_report.html --no-input --to html'
-    subprocess.call(command)
-```
-
-
 # References
 
 1. Dale, A., & Anderson, D. (1978). Information Variables in Voluntary Control and Classical Conditioning of Heart Rate: Field Dependence and Heart-Rate Perception. Perceptual and Motor Skills, 47(1), 79–85. https://doi.org/10.2466/pms.1978.47.1.79
-
 2. Schandry, R. (1981). Heart Beat Perception and Emotional Experience. Psychophysiology, 18(4), 483–488. https://doi.org/10.1111/j.1469-8986.1981.tb02486.x
-
-3. Leganes-Fonteneau, M., Cheang, Y., Lam, Y., Garfinkel, S., & Duka, T. (2019). Interoceptive awareness is associated with acute alcohol-induced changes in subjective effects. Pharmacology Biochemistry and Behavior, 181, 69–76. https://doi.org/10.1016/j.pbb.2019.03.007
-
-4. Hart, N., McGowan, J., Minati, L., & Critchley, H. D. (2013). Emotional Regulation and Bodily Sensation: Interoceptive Awareness Is Intact in Borderline Personality Disorder. Journal of Personality Disorders, 27(4), 506–518. https://doi.org/10.1521/pedi_2012_26_049
-   
-5. Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., & Allen, M. (2021). The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. bioRxiv 2021.02.18.431871. https://doi.org/10.1101/2021.02.18.431871
+3. Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., & Allen, M. (2021). The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. bioRxiv 2021.02.18.431871. https://doi.org/10.1101/2021.02.18.431871
+4. Leganes-Fonteneau, M., Cheang, Y., Lam, Y., Garfinkel, S., & Duka, T. (2019). Interoceptive awareness is associated with acute alcohol-induced changes in subjective effects. Pharmacology Biochemistry and Behavior, 181, 69–76. https://doi.org/10.1016/j.pbb.2019.03.007
+5. Hart, N., McGowan, J., Minati, L., & Critchley, H. D. (2013). Emotional Regulation and Bodily Sensation: Interoceptive Awareness Is Intact in Borderline Personality Disorder. Journal of Personality Disorders, 27(4), 506–518. https://doi.org/10.1521/pedi_2012_26_049
 
 # Development
 This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/) and [Micah Allen](https://micahallen.org/) from the [ECG group](https://the-ecg.org/).
