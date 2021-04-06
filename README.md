@@ -14,7 +14,7 @@ These tasks can run using minimal experimental settings: a computer and a record
 
 The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...). See *Sending triggers* below for details.
 
-##How to cite?
+## How to cite?
 
 If you are using cardioception in a publication we ask you to cite the following paper:
 
