@@ -20,7 +20,6 @@ parameters = getParameters(
     session=g.data[1],
     serialPort=g.data[2],
     setup=g.data[3],
-    nTrials=120,
     screenNb=0,
 )
 
