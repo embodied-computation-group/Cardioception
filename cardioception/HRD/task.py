@@ -281,6 +281,15 @@ def run(
         index=False,
     )
 
+    # Save last pulse oximeter recording, if relevant
+    if parameters["setup"] in ["behavioral", "test"]:
+        parameters["oxiTask"].save(
+            parameters["resultPath"]
+            + "/"
+            + parameters["participant"]
+            + "_final"
+        )
+
     # Save posterios (if relevant)
     print("Saving posterior distributions...")
     for k in set(parameters["Modality"]):
