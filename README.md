@@ -190,7 +190,7 @@ from cardioception.reports import report
 resultPath = "./"  # the folder containing the result files
 reportPath = "./"  # the folder where you want to save the HTML report
 
-report(resultPath, reportPath, task='HRD)
+report(resultPath, reportPath, task='HRD')
 ```
 
 This code will generate the HTML reports for the Heart Rate Discrimination task in the `reportPath` folder using the results files located in `resultPath`. This will require [papermill](https://papermill.readthedocs.io/en/latest/).
