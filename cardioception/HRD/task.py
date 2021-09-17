@@ -414,7 +414,7 @@ def trial(
     fixation.draw()
     parameters["win"].flip()
     parameters["triggers"]["trialStart"]  # Send triggers
-    core.wait(0.25)
+    core.wait(np.random.uniform(parameters["isi"][0], parameters["isi"][1]))
 
     keys = event.getKeys()
     if "escape" in keys:
