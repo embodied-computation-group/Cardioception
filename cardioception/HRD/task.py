@@ -14,7 +14,6 @@ from systole.recording import BrainVisionExG
 
 def run(
     parameters: dict,
-    win: Optional[visual.Window] = None,
     confidenceRating: bool = True,
     runTutorial: bool = False,
 ):
@@ -24,27 +23,23 @@ def run(
     ----------
     parameters : dict
         Task parameters.
-    win : `psychopy.visual.window`
-        The window in which to draw objects.
     confidenceRating : bool
         Whether the trial show include a confidence rating scale.
     runTutorial : bool
         If `True`, will present a tutorial with 10 training trial with feedback
         and 5 trials with confidence rating.
     """
-    if win is None:
-        win = parameters["win"]
 
     if parameters["setup"] in ["behavioral", "test"]:
         parameters["oxiTask"].setup().read(duration=1)
     elif parameters["setup"] == "fMRI":
         messageWaitTrigger = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             text=parameters["texts"]["textWaitTrigger"],
         )
         messageWaitTrigger.draw()  # Show instructions
-        win.flip()
+        parameters["win"].flip()
         event.waitKeys(keyList=parameters["fMRItrigger"])
         fMRIStart = time.time()
         parameters["results_df"] = pd.DataFrame({"fMRITrigger": [fMRIStart]})
@@ -67,19 +62,19 @@ def run(
 
             # Ask the participant to press default button to start
             messageStart = visual.TextStim(
-                win,
+                parameters["win"],
                 height=parameters["textSize"],
                 text=parameters["texts"]["textTaskStart"],
             )
             press = visual.TextStim(
-                win,
+                parameters["win"],
                 height=parameters["textSize"],
                 pos=(0.0, -0.4),
                 text=parameters["texts"]["textNext"],
             )
             press.draw()
             messageStart.draw()  # Show instructions
-            win.flip()
+            parameters["win"].flip()
 
             waitInput(parameters)
 
@@ -129,7 +124,7 @@ def run(
             parameters,
             alpha,
             modality,
-            win=win,
+            win=parameters["win"],
             confidenceRating=confidenceRating,
             nTrial=nTrial,
         )
@@ -215,20 +210,20 @@ def run(
         # Breaks
         if (nTrial % parameters["nBreaking"] == 0) & (nTrial != 0):
             message = visual.TextStim(
-                win,
+                parameters["win"],
                 height=parameters["textSize"],
                 text=parameters["texts"]["textBreaks"],
             )
             percRemain = round((nTrial / parameters["nTrials"]) * 100, 2)
             remain = visual.TextStim(
-                win,
+                parameters["win"],
                 height=parameters["textSize"],
                 pos=(0.0, 0.2),
                 text=f"You completed {percRemain} % of the task.",
             )
             remain.draw()
             message.draw()
-            win.flip()
+            parameters["win"].flip()
             if parameters["setup"] in ["behavioral", "test"]:
                 parameters["oxiTask"].save(
                     parameters["resultPath"]
@@ -242,10 +237,10 @@ def run(
 
             # Fixation cross
             fixation = visual.GratingStim(
-                win=win, mask="cross", size=0.1, pos=[0, 0], sf=0
+                win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
             )
             fixation.draw()
-            win.flip()
+            parameters["win"].flip()
 
             # Reset recording when ready
             if parameters["setup"] in ["behavioral", "test"]:
@@ -284,10 +279,7 @@ def run(
     # Save last pulse oximeter recording, if relevant
     if parameters["setup"] in ["behavioral", "test"]:
         parameters["oxiTask"].save(
-            parameters["resultPath"]
-            + "/"
-            + parameters["participant"]
-            + "_final"
+            parameters["resultPath"] + "/" + parameters["participant"] + "_final"
         )
 
     # Save posterios (if relevant)
@@ -323,13 +315,13 @@ def run(
 
     # End of the task
     end = visual.TextStim(
-        win,
+        parameters["win"],
         height=parameters["textSize"],
         pos=(0.0, 0.0),
         text="You have completed the task. Thank you for your participation.",
     )
     end.draw()
-    win.flip()
+    parameters["win"].flip()
     core.wait(3)
 
 
@@ -337,7 +329,6 @@ def trial(
     parameters: dict,
     alpha: float,
     modality: str,
-    win: Optional[visual.Window] = None,
     confidenceRating: bool = True,
     feedback: bool = False,
     nTrial: Optional[int] = None,
@@ -371,8 +362,6 @@ def trial(
     modality : str
         The modality, can be `'Intero'` or `'Extro'` if an exteroceptive
         control condition has been added.
-    win : `psychopy.visual.window` or None
-        The window in which to draw objects.
     confidenceRating : boolean
         If `False`, do not display confidence rating scale.
     feedback : boolean
@@ -419,28 +408,28 @@ def trial(
         ratingEndTrigger, endTrigger : float
         Time stamp of key timepoints inside the trial.
     """
-    if win is None:
-        win = parameters["win"]
 
     # Print infos at each trial start
     print(f"Starting trial - Intensity: {alpha} - Modality: {modality}")
 
-    win.mouseVisible = False
+    parameters["win"].mouseVisible = False
 
     # Restart the trial until participant provide response on time
     confidence, confidenceRT, isCorrect, ratingProvided = None, None, None, False
 
     # Fixation cross
-    fixation = visual.GratingStim(win=win, mask="cross", size=0.1, pos=[0, 0], sf=0)
+    fixation = visual.GratingStim(
+        win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
+    )
     fixation.draw()
-    win.flip()
+    parameters["win"].flip()
     parameters["triggers"]["trialStart"]  # Send triggers
     core.wait(0.25)
 
     keys = event.getKeys()
     if "escape" in keys:
         print("User abort")
-        win.close()
+        parameters["win"].close()
         core.quit()
 
     if modality == "Intero":
@@ -449,7 +438,7 @@ def trial(
         # Recording
         ###########
         messageRecord = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.2),
             text="Listen to your Heart",
@@ -457,7 +446,7 @@ def trial(
         messageRecord.draw()
 
         parameters["heartLogo"].draw()
-        win.flip()
+        parameters["win"].flip()
 
         if parameters["setup"] in ["behavioral", "test"]:
             parameters["oxiTask"].channels["Channel_0"][-1] = 3
@@ -486,7 +475,7 @@ def trial(
             # Prevent crash if NaN value
             if np.isnan(bpm).any() or (bpm is None) or (bpm.size == 0):
                 message = visual.TextStim(
-                    win,
+                    parameters["win"],
                     height=parameters["textSize"],
                     text=(
                         "Please make sure the oximeter",
@@ -495,7 +484,7 @@ def trial(
                     color="red",
                 )
                 message.draw()
-                win.flip()
+                parameters["win"].flip()
                 core.wait(2)
 
             else:
@@ -510,13 +499,13 @@ def trial(
                     break
                 else:
                     message = visual.TextStim(
-                        win,
+                        parameters["win"],
                         height=parameters["textSize"],
                         text=("Please stay still during the recording"),
                         color="red",
                     )
                     message.draw()
-                    win.flip()
+                    parameters["win"].flip()
                     core.wait(2)
 
     elif modality == "Extero":
@@ -525,7 +514,7 @@ def trial(
         # Recording
         ###########
         messageRecord = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.2),
             text="Listen to the beeps",
@@ -533,7 +522,7 @@ def trial(
         messageRecord.draw()
 
         parameters["listenLogo"].draw()
-        win.flip()
+        parameters["win"].flip()
 
         if parameters["setup"] in ["behavioral", "test"]:
             parameters["oxiTask"].channels["Channel_0"][-1] = 3  # Trigger
@@ -561,9 +550,11 @@ def trial(
     parameters["triggers"]["listeningStop"]  # Send triggers
 
     # Fixation cross
-    fixation = visual.GratingStim(win=win, mask="cross", size=0.1, pos=[0, 0], sf=0)
+    fixation = visual.GratingStim(
+        win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
+    )
     fixation.draw()
-    win.flip()
+    parameters["win"].flip()
     core.wait(0.5)
 
     #######
@@ -596,7 +587,7 @@ def trial(
         raise ValueError("Invalid modality provided")
     # Record participant response (+/-)
     message = visual.TextStim(
-        win,
+        parameters["win"],
         height=parameters["textSize"],
         pos=(0, 0.4),
         text=parameters["texts"]["Decision"][modality],
@@ -609,7 +600,10 @@ def trial(
         responseText = "Use LEFT button for slower - RIGHT button for faster."
 
     press = visual.TextStim(
-        win, height=parameters["textSize"], text=responseText, pos=(0.0, -0.4)
+        parameters["win"],
+        height=parameters["textSize"],
+        text=responseText,
+        pos=(0.0, -0.4),
     )
     press.autoDraw = True
 
@@ -618,7 +612,7 @@ def trial(
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 2
     soundTrigger = time.time()
-    win.flip()
+    parameters["win"].flip()
 
     #####################
     # Esimation Responses
@@ -730,32 +724,29 @@ def waitInput(parameters: dict):
                 core.quit()
 
 
-def tutorial(parameters: dict, win: Optional[visual.Window] = None):
+def tutorial(parameters: dict):
     """Run tutorial before task run.
 
     Parameters
     ----------
     parameters : dict
         Task parameters.
-    win : instance of `psychopy.visual.Window`
-        Where to draw the task.
+
     """
-    if win is None:
-        win = parameters["win"]
 
     # Introduction
     intro = visual.TextStim(
-        win, height=parameters["textSize"], text=parameters["Tutorial1"]
+        parameters["win"], height=parameters["textSize"], text=parameters["Tutorial1"]
     )
     press = visual.TextStim(
-        win,
+        parameters["win"],
         height=parameters["textSize"],
         pos=(0.0, -0.4),
         text=parameters["texts"]["textNext"],
     )
     intro.draw()
     press.draw()
-    win.flip()
+    parameters["win"].flip()
     core.wait(1)
 
     waitInput(parameters)
@@ -763,13 +754,13 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
     # Pusle oximeter tutorial
     if parameters["setup"] in ["test", "behavioral"]:
         pulse1 = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.3),
             text=parameters["pulseTutorial1"],
         )
         press = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, -0.4),
             text=parameters["texts"]["textNext"],
@@ -777,20 +768,20 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
         pulse1.draw()
         parameters["pulseSchema"].draw()
         press.draw()
-        win.flip()
+        parameters["win"].flip()
         core.wait(1)
 
         waitInput(parameters)
 
         # Get finger number
         pulse2 = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.2),
             text=parameters["pulseTutorial2"],
         )
         pulse3 = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, -0.2),
             text=parameters["pulseTutorial3"],
@@ -798,20 +789,20 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
         pulse2.draw()
         pulse3.draw()
         press.draw()
-        win.flip()
+        parameters["win"].flip()
         core.wait(1)
 
         waitInput(parameters)
 
         pulse4 = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.3),
             text=parameters["pulseTutorial4"],
         )
         pulse4.draw()
         parameters["handSchema"].draw()
-        win.flip()
+        parameters["win"].flip()
         core.wait(1)
 
         # Record number
@@ -843,19 +834,22 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
 
     # Heartrate recording
     recording = visual.TextStim(
-        win, height=parameters["textSize"], pos=(0.0, 0.3), text=parameters["Tutorial2"]
+        parameters["win"],
+        height=parameters["textSize"],
+        pos=(0.0, 0.3),
+        text=parameters["Tutorial2"],
     )
     recording.draw()
     parameters["heartLogo"].draw()
     press.draw()
-    win.flip()
+    parameters["win"].flip()
     core.wait(1)
 
     waitInput(parameters)
 
     # Show reponse icon
     listenIcon = visual.TextStim(
-        win,
+        parameters["win"],
         height=parameters["textSize"],
         pos=(0.0, 0.3),
         text=parameters["Tutorial3_icon"],
@@ -863,21 +857,21 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
     parameters["heartLogo"].draw()
     listenIcon.draw()
     press.draw()
-    win.flip()
+    parameters["win"].flip()
     core.wait(1)
 
     waitInput(parameters)
 
     # Response instructions
     listenResponse = visual.TextStim(
-        win,
+        parameters["win"],
         height=parameters["textSize"],
         pos=(0.0, 0.0),
         text=parameters["Tutorial3_responses"],
     )
     listenResponse.draw()
     press.draw()
-    win.flip()
+    parameters["win"].flip()
     core.wait(1)
 
     waitInput(parameters)
@@ -910,13 +904,18 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
             ratingEndTrigger,
             endTrigger,
         ) = trial(
-            parameters, alpha, "Intero", win=win, feedback=True, confidenceRating=False
+            parameters,
+            alpha,
+            "Intero",
+            win=parameters["win"],
+            feedback=True,
+            confidenceRating=False,
         )
 
     # If extero conditions required, show tutorial.
     if parameters["ExteroCondition"] is True:
         exteroText = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, -0.2),
             text=parameters["Tutorial3bis"],
@@ -924,20 +923,20 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
         exteroText.draw()
         parameters["listenLogo"].draw()
         press.draw()
-        win.flip()
+        parameters["win"].flip()
         core.wait(1)
 
         waitInput(parameters)
 
         exteroResponse = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.0),
             text=parameters["Tutorial3ter"],
         )
         exteroResponse.draw()
         press.draw()
-        win.flip()
+        parameters["win"].flip()
         core.wait(1)
 
         waitInput(parameters)
@@ -955,7 +954,7 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
                 parameters,
                 alpha,
                 "Extero",
-                win=win,
+                win=parameters["win"],
                 feedback=True,
                 confidenceRating=False,
             )
@@ -964,11 +963,11 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
     # Confidence rating
     ###################
     confidenceText = visual.TextStim(
-        win, height=parameters["textSize"], text=parameters["Tutorial4"]
+        parameters["win"], height=parameters["textSize"], text=parameters["Tutorial4"]
     )
     confidenceText.draw()
     press.draw()
-    win.flip()
+    parameters["win"].flip()
     core.wait(1)
 
     waitInput(parameters)
@@ -982,8 +981,10 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
         condition = np.random.choice(["More", "Less"])
         stim_intense = np.random.choice(np.array([1, 10, 30]))
         alpha = -stim_intense if condition == "Less" else stim_intense
-        _ = trial(parameters, alpha, modality, win=win, confidenceRating=True)
-    
+        _ = trial(
+            parameters, alpha, modality, win=parameters["win"], confidenceRating=True
+        )
+
     # If extero conditions required, show tutorial.
     if parameters["ExteroCondition"] is True:
         # Run n training trials with confidence rating
@@ -992,28 +993,33 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
             condition = np.random.choice(["More", "Less"])
             stim_intense = np.random.choice(np.array([1, 10, 30]))
             alpha = -stim_intense if condition == "Less" else stim_intense
-            _ = trial(parameters, alpha, modality, win=win, confidenceRating=True)
+            _ = trial(
+                parameters,
+                alpha,
+                modality,
+                win=parameters["win"],
+                confidenceRating=True,
+            )
 
-    
-    #################  
+    #################
     # End of tutorial
     #################
     taskPresentation = visual.TextStim(
-        win, height=parameters["textSize"], text=parameters["Tutorial5"]
+        parameters["win"], height=parameters["textSize"], text=parameters["Tutorial5"]
     )
     taskPresentation.draw()
     press.draw()
-    win.flip()
+    parameters["win"].flip()
     core.wait(1)
     waitInput(parameters)
 
     # Task
     taskPresentation = visual.TextStim(
-        win, height=parameters["textSize"], text=parameters["Tutorial6"]
+        parameters["win"], height=parameters["textSize"], text=parameters["Tutorial6"]
     )
     taskPresentation.draw()
     press.draw()
-    win.flip()
+    parameters["win"].flip()
     core.wait(1)
     waitInput(parameters)
 
@@ -1023,7 +1029,6 @@ def responseDecision(
     parameters: dict,
     feedback: bool,
     condition: str,
-    win: Optional[visual.Window] = None,
 ) -> Tuple[
     float, Optional[float], bool, Optional[str], Optional[float], Optional[bool]
 ]:
@@ -1040,8 +1045,6 @@ def responseDecision(
     condition : str
         The trial condition [`'More'` or `'Less'`] used to check is response is
         correct or not.
-    win : `psychopy.visual.window` or None
-        The window in which to draw objects.
 
     Returns
     -------
@@ -1057,11 +1060,10 @@ def responseDecision(
         Decision response time (seconds).
     isCorrect : bool or None
         `True` if the response provided was correct, `False` otherwise.
-    """
-    print("...starting decision phase.")
 
-    if win is None:
-        win = parameters["win"]
+    """
+
+    print("...starting decision phase.")
 
     decision, decisionRT, isCorrect = None, None, None
     responseTrigger = time.time()
@@ -1089,10 +1091,10 @@ def responseDecision(
             decision, decisionRT = None, None
             # Record participant response (+/-)
             message = visual.TextStim(
-                win, height=parameters["textSize"], text="Too late"
+                parameters["win"], height=parameters["textSize"], text="Too late"
             )
             message.draw()
-            win.flip()
+            parameters["win"].flip()
             core.wait(1)
         else:
             respProvided = True
@@ -1109,34 +1111,37 @@ def responseDecision(
                 isCorrect = True if (decision == condition) else False
                 if isCorrect is False:
                     acc = visual.TextStim(
-                        win, height=parameters["textSize"], color="red", text="False"
+                        parameters["win"],
+                        height=parameters["textSize"],
+                        color="red",
+                        text="False",
                     )
                     acc.draw()
-                    win.flip()
+                    parameters["win"].flip()
                     core.wait(2)
                 elif isCorrect is True:
                     acc = visual.TextStim(
-                        win,
+                        parameters["win"],
                         height=parameters["textSize"],
                         color="green",
                         text="Correct",
                     )
                     acc.draw()
-                    win.flip()
+                    parameters["win"].flip()
                     core.wait(2)
 
     if parameters["device"] == "mouse":
 
         # Initialise response feedback
         slower = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             color="white",
             text="Slower",
             pos=(-0.2, 0.2),
         )
         faster = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             color="white",
             text="Faster",
@@ -1144,7 +1149,7 @@ def responseDecision(
         )
         slower.draw()
         faster.draw()
-        win.flip()
+        parameters["win"].flip()
         # Stat trigger
         if parameters["setup"] in ["behavioral", "test"]:
             parameters["oxiTask"].readInWaiting()
@@ -1164,7 +1169,7 @@ def responseDecision(
                 decision, respProvided = "Less", True
                 slower.color = "blue"
                 slower.draw()
-                win.flip()
+                parameters["win"].flip()
                 if parameters["setup"] in ["behavioral", "test"]:
                     parameters["oxiTask"].readInWaiting()
                     parameters["oxiTask"].channels["Channel_0"][-1] = 4
@@ -1178,7 +1183,7 @@ def responseDecision(
                 decision, respProvided = "More", True
                 faster.color = "blue"
                 faster.draw()
-                win.flip()
+                parameters["win"].flip()
                 if parameters["setup"] in ["behavioral", "test"]:
                     parameters["oxiTask"].readInWaiting()
                     parameters["oxiTask"].channels["Channel_0"][-1] = 4
@@ -1194,7 +1199,7 @@ def responseDecision(
             else:
                 slower.draw()
                 faster.draw()
-                win.flip()
+                parameters["win"].flip()
         responseMadeTrigger = time.time()
         this_hr.stop()
 
@@ -1204,14 +1209,14 @@ def responseDecision(
         if respProvided is False:
             # Record participant response (+/-)
             message = visual.TextStim(
-                win,
+                parameters["win"],
                 height=parameters["textSize"],
                 text="Too late",
                 color="red",
                 pos=(0.0, -0.2),
             )
             message.draw()
-            win.flip()
+            parameters["win"].flip()
             core.wait(0.5)
         else:
             # Is the answer Correct?
@@ -1221,14 +1226,14 @@ def responseDecision(
                 textFeedback = "False" if isCorrect == 0 else "Correct"
                 colorFeedback = "red" if isCorrect == 0 else "green"
                 acc = visual.TextStim(
-                    win,
+                    parameters["win"],
                     height=parameters["textSize"],
                     pos=(0.0, -0.2),
                     color=colorFeedback,
                     text=textFeedback,
                 )
                 acc.draw()
-                win.flip()
+                parameters["win"].flip()
                 core.wait(1)
 
     return (
@@ -1242,7 +1247,7 @@ def responseDecision(
 
 
 def confidenceRatingTask(
-    parameters: dict, win: Optional[visual.Window] = None
+    parameters: dict,
 ) -> Tuple[Optional[float], Optional[float], bool, Optional[float]]:
     """Confidence rating scale, using keyboard or mouse inputs.
 
@@ -1250,13 +1255,9 @@ def confidenceRatingTask(
     ----------
     parameters : dict
         Parameters dictionnary.
-    win : `psychopy.visual.window` or None
-        The window in which to draw objects.
+
     """
     print("...starting confidence rating.")
-
-    if win is None:
-        win = parameters["win"]
 
     # Initialise default values
     confidence, confidenceRT = None, None
@@ -1269,7 +1270,7 @@ def confidenceRatingTask(
             np.arange(parameters["confScale"][0], parameters["confScale"][1])
         )
         ratingScale = visual.RatingScale(
-            win,
+            parameters["win"],
             low=parameters["confScale"][0],
             high=parameters["confScale"][1],
             noMouse=True,
@@ -1279,7 +1280,9 @@ def confidenceRatingTask(
         )
 
         message = visual.TextStim(
-            win, height=parameters["textSize"], text=parameters["texts"]["Confidence"]
+            parameters["win"],
+            height=parameters["textSize"],
+            text=parameters["texts"]["Confidence"],
         )
 
         # Wait for response
@@ -1293,7 +1296,7 @@ def confidenceRatingTask(
                     break
             ratingScale.draw()
             message.draw()
-            win.flip()
+            parameters["win"].flip()
 
         confidence = ratingScale.getRating()
         confidenceRT = ratingScale.getRT()
@@ -1304,17 +1307,17 @@ def confidenceRatingTask(
         # The mouse movement is limited to a rectangle above the Slider
         # To avoid being dragged out of the screen (in case of multi screens)
         # and to avoid interferences with the Slider when clicking.
-        win.mouseVisible = False
+        parameters["win"].mouseVisible = False
         parameters["myMouse"].setPos((np.random.uniform(-0.25, 0.25), 0.2))
         parameters["myMouse"].clickReset()
         message = visual.TextStim(
-            win,
+            parameters["win"],
             height=parameters["textSize"],
             pos=(0, 0.2),
             text=parameters["texts"]["Confidence"],
         )
         slider = visual.Slider(
-            win=win,
+            win=parameters["win"],
             name="slider",
             pos=(0, -0.2),
             size=(0.7, 0.1),
@@ -1332,7 +1335,7 @@ def confidenceRatingTask(
         buttons, confidenceRT = parameters["myMouse"].getPressed(getTime=True)
 
         while True:
-            win.mouseVisible = False
+            parameters["win"].mouseVisible = False
             trialdur = clock.getTime()
             buttons, confidenceRT = parameters["myMouse"].getPressed(getTime=True)
 
@@ -1371,7 +1374,7 @@ def confidenceRatingTask(
                 slider.marker.color = "green"
                 slider.draw()
                 message.draw()
-                win.flip()
+                parameters["win"].flip()
                 core.wait(0.2)
                 break
             elif trialdur > parameters["maxRatingTime"]:  # if too long
@@ -1380,21 +1383,21 @@ def confidenceRatingTask(
 
                 # Text feedback if no rating provided
                 message = visual.TextStim(
-                    win,
+                    parameters["win"],
                     height=parameters["textSize"],
                     text="Too late",
                     color="red",
                     pos=(0.0, -0.2),
                 )
                 message.draw()
-                win.flip()
+                parameters["win"].flip()
                 core.wait(0.5)
                 break
             slider.draw()
             message.draw()
-            win.flip()
+            parameters["win"].flip()
     ratingEndTrigger = time.time()
     parameters["triggers"]["confidenceStop"]
-    win.flip()
+    parameters["win"].flip()
 
     return confidence, confidenceRT, ratingProvided, ratingEndTrigger
