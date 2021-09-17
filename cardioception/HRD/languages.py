@@ -142,13 +142,13 @@ def danish(device: str, setup: str, exteroception: bool):
         "done": "Du har genemført opgaven. Tak for din deltagalse.",
         "slower": "Langsommere",
         "faster": "Hurtigere",
-        "checkOximeter": "Sørg venligst for, at pulsoximeteret sidder rigtigt på din finger.",
+        "checkOximeter": "Sørg venligst for at pulsoximeteret sidder rigtigt på din finger.",
         "stayStill": "Sid venglist rogligt under målingen",
         "tooLate": "For langsomt",
         "correctResponse": "Rigtigt",
         "incorrectResponse": "Forkert",
         "VASlabels": ["Gæt", "Helt sikker"],
-        "textHeartListening": "Mærk din hjertrytme",
+        "textHeartListening": "Mærk din hjerterytme",
         "textToneListening": "Lyt til tonerne",
         "textTaskStart": "Opgaven begynder nu, gør dig klar.",
         "textBreaks": f"Pause. Du kan tage så lang en pause, som du har brug for. Bare {btnext} når du vil fortsætte opgaven.",
@@ -192,7 +192,7 @@ Du må kun fokusere på din indre følelse af din hjerterytme. Du må altså ikk
 
         texts[
             "pulseTutorial4"
-        ] = "Indtast venligt nummeret på den finger, som du besluttede at placere puls oximeteret på."
+        ] = "Indtast venligt nummeret på den finger som du besluttede at placere puls oximeteret på."
 
     texts[
         "Tutorial2"
@@ -202,7 +202,7 @@ Du må kun fokusere på din indre følelse af din hjerterytme. Du må altså ikk
     lessResp = "NED tasten" if device == "keyboard" else "VENSTRE mussetast"
     texts[
         "Tutorial3_icon"
-    ] = """Efter tidsrummet hvor du har lyttet til dit hjerte, vil du se det samme ikon og høre en række bib-lyde."""
+    ] = """Efter tidsrummet hvor du har forsøgt at mærke dit hjerte, vil du se det samme ikon og høre en række bib-lyde."""
     texts[
         "Tutorial3_responses"
     ] = f"""Det følgende skal du gøre så hurtigt og præcist som muligt: Du vil lytte til disse bib-lyde og beslutte om de er hurtigere ({moreResp}) eller langsommere ({lessResp}) end din egen hjerterytme.
