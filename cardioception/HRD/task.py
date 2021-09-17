@@ -951,25 +951,7 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
             condition = np.random.choice(["More", "Less"])
             alpha = -20.0 if condition == "Less" else 20.0
 
-            (
-                condition,
-                listenBPM,
-                responseBPM,
-                decision,
-                decisionRT,
-                confidence,
-                confidenceRT,
-                alpha,
-                isCorrect,
-                respProvided,
-                ratingProvided,
-                startTrigger,
-                soundTrigger,
-                responseMadeTrigger,
-                ratingStartTrigger,
-                ratingEndTrigger,
-                endTrigger,
-            ) = trial(
+            _ = trial(
                 parameters,
                 alpha,
                 "Extero",
@@ -978,7 +960,9 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
                 confidenceRating=False,
             )
 
+    ###################
     # Confidence rating
+    ###################
     confidenceText = visual.TextStim(
         win, height=parameters["textSize"], text=parameters["Tutorial4"]
     )
@@ -992,35 +976,28 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
     if parameters["setup"] in ["test", "behavioral"]:
         parameters["oxiTask"].setup().read(duration=2)
 
-    # Run 5 training trials with confidence rating
+    # Run n training trials with confidence rating
     for i in range(parameters["nConfidence"]):
-
-        # Ramdom selection of condition
-        modality = np.random.choice(["Intero", "Extero"])
+        modality = "Intero"
         condition = np.random.choice(["More", "Less"])
         stim_intense = np.random.choice(np.array([1, 10, 30]))
         alpha = -stim_intense if condition == "Less" else stim_intense
-        (
-            condition,
-            listenBPM,
-            responseBPM,
-            decision,
-            decisionRT,
-            confidence,
-            confidenceRT,
-            alpha,
-            isCorrect,
-            respProvided,
-            ratingProvided,
-            startTrigger,
-            soundTrigger,
-            responseMadeTrigger,
-            ratingStartTrigger,
-            ratingEndTrigger,
-            endTrigger,
-        ) = trial(parameters, alpha, modality, win=win, confidenceRating=True)
+        _ = trial(parameters, alpha, modality, win=win, confidenceRating=True)
+    
+    # If extero conditions required, show tutorial.
+    if parameters["ExteroCondition"] is True:
+        # Run n training trials with confidence rating
+        for i in range(parameters["nConfidence"]):
+            modality = "Extero"
+            condition = np.random.choice(["More", "Less"])
+            stim_intense = np.random.choice(np.array([1, 10, 30]))
+            alpha = -stim_intense if condition == "Less" else stim_intense
+            _ = trial(parameters, alpha, modality, win=win, confidenceRating=True)
 
+    
+    #################  
     # End of tutorial
+    #################
     taskPresentation = visual.TextStim(
         win, height=parameters["textSize"], text=parameters["Tutorial5"]
     )
