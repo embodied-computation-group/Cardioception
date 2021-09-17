@@ -7,10 +7,6 @@ import shutil
 import unittest
 from unittest import TestCase
 
-from psychopy import prefs
-
-prefs.hardware["audioLib"] = ["pygame"]
-
 from cardioception.HBC.parameters import getParameters
 from cardioception.HBC.task import run
 
