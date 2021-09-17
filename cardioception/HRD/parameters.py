@@ -11,6 +11,8 @@ from psychopy import core, data, event, visual
 from systole import serialSim
 from systole.recording import Oximeter, findOximeter
 
+from cardioception.HRD.languages import danish, english
+
 
 def getParameters(
     participant: str = "SubjectTest",
@@ -27,6 +29,7 @@ def getParameters(
     fullscr: bool = True,
     nBreaking: int = 20,
     resultPath: Optional[str] = None,
+    language: str = "english",
     systole_kw: dict = {},
 ):
     """Create Heart Rate Discrimination task parameters.
@@ -50,6 +53,9 @@ def getParameters(
         interoceptive condition (either block or randomized design).
     fullscr : bool
         If *True*, activate full screen mode.
+    language : str
+        The language used for the instruction. Can be `"english"` or
+        `"danish"`.
     nBreaking : int
         Number of trials to run before the break.
     nStaircase : int
@@ -92,8 +98,8 @@ def getParameters(
     confScale : list
         The range of the confidence rating scale.
     device : str
-        The device used for response and rating scale. Can be 'keyboard' or
-        'mouse'.
+        The device used for response and rating scale. Can be `"keyboard"` or
+        `"mouse"`.
     HRcutOff : list
         Cut off for extreme heart rate values during recording.
     labelsRating : list
@@ -173,6 +179,20 @@ def getParameters(
             * `"confidenceStop"`
     win : `psychopy.visual.window`
         The window in which to draw objects.
+
+    Notes
+    -----
+    When using the `behavioral` setup, triggers will be sent to the PPG
+    recording. The trigger channel is coding for different events during
+    the task as follows:
+        * Trial start: 1
+        * recording trigger: 2
+        * sound trigger : 3
+        * rating trigger: 4
+        * end trigger: 5
+    All these events, except trial start, have also their time stamps
+    encoded in the behavioral results data frame.
+
     """
     parameters: Dict[str, Any] = {}
     parameters["ExteroCondition"] = exteroception
@@ -387,96 +407,18 @@ def getParameters(
     elif setup == "fMRI":
         parameters["fMRItrigger"] = ["5"]  # Keys to listen for fMRI trigger
 
-    #######
-    # Texts
-    #######
-    btnext = "press SPACE" if parameters["device"] == "keyboard" else "click the mouse"
-    parameters["texts"] = {
-        "textTaskStart": "The task is now going to start, get ready.",
-        "textBreaks": f"Break. You can rest as long as you want. Just {btnext} when you want to resume the task.",
-        "textNext": f"Please {btnext} to continue",
-        "textWaitTrigger": "Waiting for fMRI trigger...",
-        "Decision": {
-            "Intero": """Are these beeps faster or slower than your heart?""",
-            "Extero": """Are these beeps faster or slower than the previous?""",
-        },
-        "Confidence": """How confident are you in your choice?""",
-    }
+    ##############
+    # Load texts #
+    ##############
+    if language == "english":
+        parameters["texts"] = english(
+            device=device, setup=setup, exteroception=exteroception
+        )
+    elif language == "danish":
+        parameters["texts"] = danish(
+            device=device, setup=setup, exteroception=exteroception
+        )
 
-    parameters[
-        "Tutorial1"
-    ] = """During this experiment, we will record your pulse and play beeps based on your heart rate.
-
-You will only be allowed to focus on the internal sensations of your heartbeats, but not to measure your heart rate by any other means (e.g. checking pulse at your wrist or your neck).
-        """
-    if parameters["setup"] != "fmri":
-
-        parameters[
-            "pulseTutorial1"
-        ] = "Please place the pulse oximeter on your forefinger. Use your non-dominant hand as depicted in this schema."
-
-        parameters[
-            "pulseTutorial2"
-        ] = "If you can feel your heartbeats when you have the pulse oximeter in your forefinger, try to place it on another finger."
-
-        parameters[
-            "pulseTutorial3"
-        ] = "You can test different configurations until you find the finger which provides you with the less sensory input about your heart rate."
-
-        parameters[
-            "pulseTutorial4"
-        ] = "Please enter the number of the finger corresponding to the finger where you decided to place the pulse oximeter."
-
-    parameters[
-        "Tutorial2"
-    ] = "When you see this icon, try to focus on your heartbeat for 5 seconds. Try not to move, as we are recording your pulse in this period"
-
-    moreResp = "UP key" if parameters["device"] == "keyboard" else "RIGHT mouse button"
-    lessResp = "DOWN key" if parameters["device"] == "keyboard" else "LEFT mouse button"
-    parameters[
-        "Tutorial3_icon"
-    ] = """After this 'heart listening' period, you will see the same icon and hear a series of beeps."""
-    parameters[
-        "Tutorial3_responses"
-    ] = f"""As quickly and accurately as possible, you will listen to these beeps and decide if they are faster ({moreResp}) or slower ({lessResp}) than your own heart rate.
-
-The beeps will ALWAYS be slower or faster than your heart. Please guess, even if you are unsure."""
-
-    if parameters["ExteroCondition"] is True:
-        parameters[
-            "Tutorial3bis"
-        ] = """For some trials, instead of seeing the heart icon, you will see a listening icon. You will then have to listen to a first set of beeps, instead of your heart."""
-
-        parameters[
-            "Tutorial3ter"
-        ] = f"""After these first beeps, you will see the response icons appear, and a second set of beeps will play.
-
-As quickly and accurately as possible, you will listen to these beeps and decide if they are faster ({moreResp}) or slower ({lessResp}) than the first set of beeps.
-
-The second series of beeps will ALWAYS be slower or faster than the first series. Please guess, even if you are unsure."""
-
-    parameters[
-        "Tutorial4"
-    ] = """Once you have provided your decision, you will also be asked to rate how confident you feel in your decision.
-
-Here, the maximum rating (100) means that you are totally certain in your choice, and the smallest rating (0) means that you felt that you were guessing.
-
-You should use mouse to select your rating"""
-
-    parameters[
-        "Tutorial5"
-    ] = """This sequence will be repeated during the task.
-
-At times the task may be very difficult; the difference between your true heart rate and the presented beeps may be very small.
-
-This means that you should try to use the entire length of the confidence scale to reflect your subjective uncertainty on each trial.
-
-As the task difficulty will change over time, it is rare that you will be totally confident or totally uncertain."""
-
-    parameters[
-        "Tutorial6"
-    ] = """This concludes the tutorial. If you have any questions, please ask the experimenter now.
-Otherwise, you can continue to the main task."""
     # Open window
     if parameters["setup"] == "test":
         fullscr = False

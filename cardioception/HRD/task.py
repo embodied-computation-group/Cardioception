@@ -101,6 +101,11 @@ def run(
             alpha = np.array([-30, 10, -20, 20, -10, 30])[catchIdx % 6]
             stairCond = "CatchTrial"
 
+        # Before trial triggers
+        if parameters["setup"] in ["behavioral", "test"]:
+            parameters["oxiTask"].readInWaiting()
+            parameters["oxiTask"].channels["Channel_0"][-1] = 1  # Trigger
+
         # Start trial
         (
             condition,
@@ -124,7 +129,6 @@ def run(
             parameters,
             alpha,
             modality,
-            win=parameters["win"],
             confidenceRating=confidenceRating,
             nTrial=nTrial,
         )
@@ -159,7 +163,7 @@ def run(
             ].estimateLambda()
 
         print(
-            f"...Initial BPM: {listenBPM} - Staircase value: {alpha} "
+            f"... Initial BPM: {listenBPM} - Staircase value: {alpha} "
             f"- Response: {decision} ({isCorrect})"
         )
 
@@ -226,10 +230,7 @@ def run(
             parameters["win"].flip()
             if parameters["setup"] in ["behavioral", "test"]:
                 parameters["oxiTask"].save(
-                    parameters["resultPath"]
-                    + "/"
-                    + parameters["participant"]
-                    + str(nTrial)
+                    f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}.txt"
                 )
 
             # Wait for participant input before continue
@@ -246,17 +247,6 @@ def run(
             if parameters["setup"] in ["behavioral", "test"]:
                 parameters["oxiTask"].setup()
                 parameters["oxiTask"].read(duration=1)
-
-    # save data as multiple formats
-    try:
-        parameters["stairCase"]["Intero"].saveAsPickle(
-            parameters["resultPath"] + "/" + parameters["participant"] + "_Intero"
-        )
-        parameters["stairCase"]["Extero"].saveAsPickle(
-            parameters["resultPath"] + "/" + parameters["participant"] + "_Extero"
-        )
-    except:
-        print("Error when saving as Pickle")
 
     # Save the final results
     print("Saving final results in .txt file...")
@@ -279,7 +269,7 @@ def run(
     # Save last pulse oximeter recording, if relevant
     if parameters["setup"] in ["behavioral", "test"]:
         parameters["oxiTask"].save(
-            parameters["resultPath"] + "/" + parameters["participant"] + "_final"
+            f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}_end.txt"
         )
 
     # Save posterios (if relevant)
@@ -318,7 +308,7 @@ def run(
         parameters["win"],
         height=parameters["textSize"],
         pos=(0.0, 0.0),
-        text="You have completed the task. Thank you for your participation.",
+        text=parameters["texts"]["done"],
     )
     end.draw()
     parameters["win"].flip()
@@ -441,15 +431,18 @@ def trial(
             parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.2),
-            text="Listen to your Heart",
+            text=parameters["texts"]["textHeartListening"],
         )
         messageRecord.draw()
+
+        # Start recording trigger
+        if parameters["setup"] in ["behavioral", "test"]:
+            parameters["oxiTask"].readInWaiting()
+            parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
 
         parameters["heartLogo"].draw()
         parameters["win"].flip()
 
-        if parameters["setup"] in ["behavioral", "test"]:
-            parameters["oxiTask"].channels["Channel_0"][-1] = 3
         startTrigger = time.time()
         parameters["triggers"]["listeningStart"]  # Send triggers
 
@@ -470,17 +463,14 @@ def trial(
             # Only use the last 5 seconds of the recording
             bpm = 60000 / np.diff(np.where(peaks[-5000:])[0])
 
-            print(f"...bpm: {[round(i) for i in bpm]}")
+            print(f"... bpm: {[round(i) for i in bpm]}")
 
             # Prevent crash if NaN value
             if np.isnan(bpm).any() or (bpm is None) or (bpm.size == 0):
                 message = visual.TextStim(
                     parameters["win"],
                     height=parameters["textSize"],
-                    text=(
-                        "Please make sure the oximeter",
-                        "is correctly clipped to your finger.",
-                    ),
+                    text=parameters["texts"]["checkOximeter"],
                     color="red",
                 )
                 message.draw()
@@ -501,7 +491,7 @@ def trial(
                     message = visual.TextStim(
                         parameters["win"],
                         height=parameters["textSize"],
-                        text=("Please stay still during the recording"),
+                        text=parameters["texts"]["stayStill"],
                         color="red",
                     )
                     message.draw()
@@ -517,15 +507,18 @@ def trial(
             parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.2),
-            text="Listen to the beeps",
+            text=parameters["texts"]["textToneListening"],
         )
         messageRecord.draw()
+
+        # Start recording trigger
+        if parameters["setup"] in ["behavioral", "test"]:
+            parameters["oxiTask"].readInWaiting()
+            parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
 
         parameters["listenLogo"].draw()
         parameters["win"].flip()
 
-        if parameters["setup"] in ["behavioral", "test"]:
-            parameters["oxiTask"].channels["Channel_0"][-1] = 3  # Trigger
         startTrigger = time.time()
         parameters["triggers"]["listeningStart"]  # Send triggers
 
@@ -594,23 +587,18 @@ def trial(
     )
     message.autoDraw = True
 
-    if parameters["device"] == "keyboard":
-        responseText = "Use DOWN key for slower - UP key for faster."
-    elif parameters["device"] == "mouse":
-        responseText = "Use LEFT button for slower - RIGHT button for faster."
-
     press = visual.TextStim(
         parameters["win"],
         height=parameters["textSize"],
-        text=responseText,
+        text=parameters["texts"]["responseText"],
         pos=(0.0, -0.4),
     )
     press.autoDraw = True
 
+    # Sound trigger
     if parameters["setup"] in ["behavioral", "test"]:
-        # Sound trigger
         parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 2
+        parameters["oxiTask"].channels["Channel_0"][-1] = 3
     soundTrigger = time.time()
     parameters["win"].flip()
 
@@ -640,6 +628,7 @@ def trial(
     # Record participant confidence
     if (confidenceRating is True) & (respProvided is True):
 
+        # Rating start trigger
         if parameters["setup"] in ["behavioral", "test"]:
             # Start trigger
             parameters["oxiTask"].readInWaiting()
@@ -659,7 +648,7 @@ def trial(
     # End trigger
     if parameters["setup"] in ["behavioral", "test"]:
         parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 5  # Start trigger
+        parameters["oxiTask"].channels["Channel_0"][-1] = 5
     endTrigger = time.time()
     parameters["triggers"]["trialStop"]  # Execute function if provided
 
@@ -736,7 +725,9 @@ def tutorial(parameters: dict):
 
     # Introduction
     intro = visual.TextStim(
-        parameters["win"], height=parameters["textSize"], text=parameters["Tutorial1"]
+        parameters["win"],
+        height=parameters["textSize"],
+        text=parameters["texts"]["Tutorial1"],
     )
     press = visual.TextStim(
         parameters["win"],
@@ -757,7 +748,7 @@ def tutorial(parameters: dict):
             parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.3),
-            text=parameters["pulseTutorial1"],
+            text=parameters["texts"]["pulseTutorial1"],
         )
         press = visual.TextStim(
             parameters["win"],
@@ -778,13 +769,13 @@ def tutorial(parameters: dict):
             parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.2),
-            text=parameters["pulseTutorial2"],
+            text=parameters["texts"]["pulseTutorial2"],
         )
         pulse3 = visual.TextStim(
             parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, -0.2),
-            text=parameters["pulseTutorial3"],
+            text=parameters["texts"]["pulseTutorial3"],
         )
         pulse2.draw()
         pulse3.draw()
@@ -798,7 +789,7 @@ def tutorial(parameters: dict):
             parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.3),
-            text=parameters["pulseTutorial4"],
+            text=parameters["texts"]["pulseTutorial4"],
         )
         pulse4.draw()
         parameters["handSchema"].draw()
@@ -837,7 +828,7 @@ def tutorial(parameters: dict):
         parameters["win"],
         height=parameters["textSize"],
         pos=(0.0, 0.3),
-        text=parameters["Tutorial2"],
+        text=parameters["texts"]["Tutorial2"],
     )
     recording.draw()
     parameters["heartLogo"].draw()
@@ -852,7 +843,7 @@ def tutorial(parameters: dict):
         parameters["win"],
         height=parameters["textSize"],
         pos=(0.0, 0.3),
-        text=parameters["Tutorial3_icon"],
+        text=parameters["texts"]["Tutorial3_icon"],
     )
     parameters["heartLogo"].draw()
     listenIcon.draw()
@@ -867,7 +858,7 @@ def tutorial(parameters: dict):
         parameters["win"],
         height=parameters["textSize"],
         pos=(0.0, 0.0),
-        text=parameters["Tutorial3_responses"],
+        text=parameters["texts"]["Tutorial3_responses"],
     )
     listenResponse.draw()
     press.draw()
@@ -876,7 +867,7 @@ def tutorial(parameters: dict):
 
     waitInput(parameters)
 
-    # Run 10 training trials with feedback
+    # Run training trials with feedback
     if parameters["setup"] in ["test", "behavioral"]:
         parameters["oxiTask"].setup().read(duration=2)
     for i in range(parameters["nFeedback"]):
@@ -885,29 +876,10 @@ def tutorial(parameters: dict):
         condition = np.random.choice(["More", "Less"])
         alpha = -20.0 if condition == "Less" else 20.0
 
-        (
-            condition,
-            listenBPM,
-            responseBPM,
-            decision,
-            decisionRT,
-            confidence,
-            confidenceRT,
-            alpha,
-            isCorrect,
-            respProvided,
-            ratingProvided,
-            startTrigger,
-            soundTrigger,
-            responseMadeTrigger,
-            ratingStartTrigger,
-            ratingEndTrigger,
-            endTrigger,
-        ) = trial(
+        _ = trial(
             parameters,
             alpha,
             "Intero",
-            win=parameters["win"],
             feedback=True,
             confidenceRating=False,
         )
@@ -918,7 +890,7 @@ def tutorial(parameters: dict):
             parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, -0.2),
-            text=parameters["Tutorial3bis"],
+            text=parameters["texts"]["Tutorial3bis"],
         )
         exteroText.draw()
         parameters["listenLogo"].draw()
@@ -932,7 +904,7 @@ def tutorial(parameters: dict):
             parameters["win"],
             height=parameters["textSize"],
             pos=(0.0, 0.0),
-            text=parameters["Tutorial3ter"],
+            text=parameters["texts"]["Tutorial3ter"],
         )
         exteroResponse.draw()
         press.draw()
@@ -954,7 +926,6 @@ def tutorial(parameters: dict):
                 parameters,
                 alpha,
                 "Extero",
-                win=parameters["win"],
                 feedback=True,
                 confidenceRating=False,
             )
@@ -963,7 +934,9 @@ def tutorial(parameters: dict):
     # Confidence rating
     ###################
     confidenceText = visual.TextStim(
-        parameters["win"], height=parameters["textSize"], text=parameters["Tutorial4"]
+        parameters["win"],
+        height=parameters["textSize"],
+        text=parameters["texts"]["Tutorial4"],
     )
     confidenceText.draw()
     press.draw()
@@ -981,9 +954,7 @@ def tutorial(parameters: dict):
         condition = np.random.choice(["More", "Less"])
         stim_intense = np.random.choice(np.array([1, 10, 30]))
         alpha = -stim_intense if condition == "Less" else stim_intense
-        _ = trial(
-            parameters, alpha, modality, win=parameters["win"], confidenceRating=True
-        )
+        _ = trial(parameters, alpha, modality, confidenceRating=True)
 
     # If extero conditions required, show tutorial.
     if parameters["ExteroCondition"] is True:
@@ -997,7 +968,6 @@ def tutorial(parameters: dict):
                 parameters,
                 alpha,
                 modality,
-                win=parameters["win"],
                 confidenceRating=True,
             )
 
@@ -1005,7 +975,9 @@ def tutorial(parameters: dict):
     # End of tutorial
     #################
     taskPresentation = visual.TextStim(
-        parameters["win"], height=parameters["textSize"], text=parameters["Tutorial5"]
+        parameters["win"],
+        height=parameters["textSize"],
+        text=parameters["texts"]["Tutorial5"],
     )
     taskPresentation.draw()
     press.draw()
@@ -1015,7 +987,9 @@ def tutorial(parameters: dict):
 
     # Task
     taskPresentation = visual.TextStim(
-        parameters["win"], height=parameters["textSize"], text=parameters["Tutorial6"]
+        parameters["win"],
+        height=parameters["textSize"],
+        text=parameters["texts"]["Tutorial6"],
     )
     taskPresentation.draw()
     press.draw()
@@ -1079,10 +1053,6 @@ def responseDecision(
         )
         this_hr.stop()
 
-        # End trigger
-        if parameters["setup"] in ["behavioral", "test"]:
-            parameters["oxiTask"].readInWaiting()
-            parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
         responseMadeTrigger = time.time()
 
         # Check for response provided by the participant
@@ -1137,23 +1107,20 @@ def responseDecision(
             parameters["win"],
             height=parameters["textSize"],
             color="white",
-            text="Slower",
+            text=parameters["texts"]["slower"],
             pos=(-0.2, 0.2),
         )
         faster = visual.TextStim(
             parameters["win"],
             height=parameters["textSize"],
             color="white",
-            text="Faster",
+            text=parameters["texts"]["faster"],
             pos=(0.2, 0.2),
         )
         slower.draw()
         faster.draw()
         parameters["win"].flip()
-        # Stat trigger
-        if parameters["setup"] in ["behavioral", "test"]:
-            parameters["oxiTask"].readInWaiting()
-            parameters["oxiTask"].channels["Channel_0"][-1] = 3  # Trigger
+
         this_hr.play()
         clock = core.Clock()
         clock.reset()
@@ -1170,9 +1137,7 @@ def responseDecision(
                 slower.color = "blue"
                 slower.draw()
                 parameters["win"].flip()
-                if parameters["setup"] in ["behavioral", "test"]:
-                    parameters["oxiTask"].readInWaiting()
-                    parameters["oxiTask"].channels["Channel_0"][-1] = 4
+
                 # Show feedback for .5 seconds if enough time
                 remain = parameters["respMax"] - trialdur
                 pauseFeedback = 0.5 if (remain > 0.5) else remain
@@ -1184,9 +1149,7 @@ def responseDecision(
                 faster.color = "blue"
                 faster.draw()
                 parameters["win"].flip()
-                if parameters["setup"] in ["behavioral", "test"]:
-                    parameters["oxiTask"].readInWaiting()
-                    parameters["oxiTask"].channels["Channel_0"][-1] = 4
+
                 # Show feedback for .5 seconds if enough time
                 remain = parameters["respMax"] - trialdur
                 pauseFeedback = 0.5 if (remain > 0.5) else remain
@@ -1211,7 +1174,7 @@ def responseDecision(
             message = visual.TextStim(
                 parameters["win"],
                 height=parameters["textSize"],
-                text="Too late",
+                text=parameters["texts"]["tooLate"],
                 color="red",
                 pos=(0.0, -0.2),
             )
@@ -1223,7 +1186,10 @@ def responseDecision(
             isCorrect = True if (decision == condition) else False
             # Feedback
             if feedback is True:
-                textFeedback = "False" if isCorrect == 0 else "Correct"
+                if isCorrect == 0:
+                    textFeedback = parameters["texts"]["incorrectResponse"]
+                else:
+                    textFeedback = parameters["texts"]["correctResponse"]
                 colorFeedback = "red" if isCorrect == 0 else "green"
                 acc = visual.TextStim(
                     parameters["win"],
@@ -1321,7 +1287,7 @@ def confidenceRatingTask(
             name="slider",
             pos=(0, -0.2),
             size=(0.7, 0.1),
-            labels=["Guess", "Certain"],
+            labels=parameters["texts"]["VASlabels"],
             granularity=1,
             ticks=(0, 100),
             style=("rating"),
@@ -1367,8 +1333,8 @@ def confidenceRatingTask(
                     True,
                 )
                 print(
-                    f"...Confidence level: {confidence}"
-                    + f" with response time {round(confidenceRT)}"
+                    f"... Confidence level: {confidence}"
+                    + f" with response time {round(confidenceRT, 2)} seconds"
                 )
                 # Change marker color after response provided
                 slider.marker.color = "green"
