@@ -102,6 +102,11 @@ def getParameters(
         `"mouse"`.
     HRcutOff : list
         Cut off for extreme heart rate values during recording.
+    isi : tuple
+        Range of the inter-stimulus interval (seconds). Should be in the form of (low,
+        high). At each trial the value is generated using a uniform distribution
+        between these two values. Default is set to `(0.25, 0.25)` so the value is
+        fixed at `0.25`.
     labelsRating : list
         The labels of the confidence rating scale.
     lambdaExtero : 3d numpy array
@@ -207,6 +212,7 @@ def getParameters(
     parameters["respMax"] = 5
     parameters["minRatingTime"] = 0.5
     parameters["maxRatingTime"] = 5
+    parameters["isi"] = (0.25, 0.25)
     parameters["startKey"] = "space"
     parameters["allowedKeys"] = ["up", "down"]
     parameters["nTrials"] = nTrials
