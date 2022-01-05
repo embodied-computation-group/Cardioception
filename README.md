@@ -157,8 +157,8 @@ Once you have adapted the scripts, you can create a shortcut (e.g in the Desktop
 If you are using Windows, you can simply create a `.bat` file containing the following:
 
 ```
-conda activate
-[path to your local Python .exe] [path to your wrapper file]
+call [path to your environment */conda.bat] activate
+[path to your local */python.exe] [path to your wrapper */hrd.py]
 pause
 ```
 
