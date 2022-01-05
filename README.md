@@ -18,7 +18,7 @@ The tasks can also integrate easily with other recording devices and experimenta
 
 If you are using cardioception in a publication we ask you to cite the following paper:
 
->Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., & Allen, M. (2021). The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. bioRxiv 2021.02.18.431871. https://doi.org/10.1101/2021.02.18.431871 
+>Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., &amp; Allen, M. (2021). The Heart Rate Discrimination Task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 108239. https://doi.org/10.1016/j.biopsycho.2021.108239 
 
 If you are using [systole](https://systole-docs.github.io/) to interact with your recording device (this is the default behavior in cardioception), you might also cite the following reference:
 
