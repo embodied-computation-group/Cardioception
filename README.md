@@ -22,7 +22,7 @@ If you are using cardioception in a publication we ask you to cite the following
 
 If you are using [systole](https://systole-docs.github.io/) to interact with your recording device (this is the default behavior in cardioception), you might also cite the following reference:
 
-> Legrand, N., & Allen, M. (2020). Systole: V 0.1.2—September 2020 (0.1.2) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.3607912
+> Legrand et al., (2022). Systole: A python package for cardiac signal synchrony and analysis. Journal of Open Source Software, 7(69), 3832, https://doi.org/10.21105/joss.03832
 
 ## Do you need help?
 
