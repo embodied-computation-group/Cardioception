@@ -84,52 +84,10 @@ Both the Heartbeat counting task (HBC) and the heart rate discrimination task (H
 
 The package can easily be extended and integrate other recording devices by providing another recording class that will interface with your own devices (ECG, pulse oximeters, or any king of recording that will offer precise estimation of the cardiac frequency).
 
-## Sending triggers
-
-The package includes function calls at the beginning and the end of each meaningful trial phase (trial start/end, listening start/end, decision start/end, and confidence rating start/end). These function calls are embedded in the `"triggers"` parameter dictionary.
-
-```python
-from cardioception.HRD.parameters import getParameters
-
-parameters = getParameters()
-parameters["triggers"]
-```
-`
-{'trialStart': None,
- 'trialStop': None,
- 'listeningStart': None,
- 'listeningStop': None,
- 'decisionStart': None,
- 'decisionStop': None,
- 'confidenceStart': None,
- 'confidenceStop': None}
- `
-
-By default, keys are initialized with `None` (no triggers sent). But these values can be overwritten with callable implementing the proper trigger message fitting your setup. This can be done by creating a new function and applying it to the relevant dictionary key.
-
-```python
-def sendTrigger(x):
-  # Function connecting to your device and sending the
-  # required value. For illustration, we are using a simple print call.
-  print(f'Send a trigger with value {x}')
-
-
-# Here we use this function to send triggers with value 1 
-# at the begining of the listening phase
-# and with value 2 at the end of the listening phase
-parameters["triggers"]["listeningStart"] = sendTrigger("1")
-parameters["triggers"]["listeningStop"] = sendTrigger("2")
-```
-
-Note that we are using the function call (`sendTrigger("1")`) and not the function itself (`sendTrigger`) here.
-
 # Run the tasks
 
 Each task contains a `parameters` and a `task` submodule describing the experimental parameters and the Psychopy script respectively. Several changes and adaptation can be parametrized just by passing arguments to the parameters functions. Please refer to the API documentation for details.
 
-## From the command line
-
-*(forthcoming)*
 ## Using a script
 
 Once the package has been installed, you can run the task (e.g. here the Heart rate Discrimination task) using the following code snippet:
@@ -153,7 +111,7 @@ This minimal example will run the Heart Rate Discrimination task with a total of
 
 We provide standard scripts in the [wrappers](https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers) folder that can be adapted to your needs. We recommend copying this script in your local task folder if you want to parametrize it to fit your needs. The tasks can then easily be executed by running the corresponding wrapper file (e.g in a terminal).
 
-**Creating a shortcut**
+## Creating a shortcut (Windows)
 
 Once you have adapted the scripts, you can create a shortcut (e.g in the Desktop) so the task can be executed just by clicking on it without any coding or command lines interactions.
 

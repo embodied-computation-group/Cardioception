@@ -223,20 +223,6 @@ def getParameters(
     parameters["signal_df"] = pd.DataFrame([])  # Physiological recording
     parameters["results_df"] = pd.DataFrame([])  # Behavioral results
 
-    # Initialize triggers dictionary with None
-    # Some or all can later be overwrited with callable
-    # sending the information needed.
-    parameters["triggers"] = {
-        "trialStart": None,
-        "trialStop": None,
-        "listeningStart": None,
-        "listeningStop": None,
-        "decisionStart": None,
-        "decisionStop": None,
-        "confidenceStart": None,
-        "confidenceStop": None,
-    }
-
     # Set default path /Results/ 'Subject ID' /
     parameters["participant"] = participant
     parameters["session"] = session

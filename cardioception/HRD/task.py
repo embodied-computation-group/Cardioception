@@ -413,7 +413,6 @@ def trial(
     )
     fixation.draw()
     parameters["win"].flip()
-    parameters["triggers"]["trialStart"]  # Send triggers
     core.wait(np.random.uniform(parameters["isi"][0], parameters["isi"][1]))
 
     keys = event.getKeys()
@@ -444,7 +443,6 @@ def trial(
         parameters["win"].flip()
 
         startTrigger = time.time()
-        parameters["triggers"]["listeningStart"]  # Send triggers
 
         # Recording
         while True:
@@ -520,7 +518,6 @@ def trial(
         parameters["win"].flip()
 
         startTrigger = time.time()
-        parameters["triggers"]["listeningStart"]  # Send triggers
 
         # Random selection of HR frequency
         listenBPM = np.random.choice(np.arange(40, 100, 0.5))
@@ -539,8 +536,6 @@ def trial(
 
     else:
         raise ValueError("Invalid modality")
-
-    parameters["triggers"]["listeningStop"]  # Send triggers
 
     # Fixation cross
     fixation = visual.GratingStim(
@@ -650,7 +645,6 @@ def trial(
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 5
     endTrigger = time.time()
-    parameters["triggers"]["trialStop"]  # Execute function if provided
 
     # Save PPG signal
     if nTrial is not None:  # Not during the tutorial
@@ -1041,7 +1035,6 @@ def responseDecision(
 
     decision, decisionRT, isCorrect = None, None, None
     responseTrigger = time.time()
-    parameters["triggers"]["decisionStart"]
 
     if parameters["device"] == "keyboard":
         this_hr.play()
@@ -1166,8 +1159,6 @@ def responseDecision(
         responseMadeTrigger = time.time()
         this_hr.stop()
 
-        parameters["triggers"]["decisionStop"]
-
         # Check for response provided by the participant
         if respProvided is False:
             # Record participant response (+/-)
@@ -1227,8 +1218,6 @@ def confidenceRatingTask(
 
     # Initialise default values
     confidence, confidenceRT = None, None
-
-    parameters["triggers"]["confidenceStart"]
 
     if parameters["device"] == "keyboard":
 
@@ -1363,7 +1352,6 @@ def confidenceRatingTask(
             message.draw()
             parameters["win"].flip()
     ratingEndTrigger = time.time()
-    parameters["triggers"]["confidenceStop"]
     parameters["win"].flip()
 
     return confidence, confidenceRT, ratingProvided, ratingEndTrigger
