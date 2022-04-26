@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pkg_resources
 from psychopy import core, event, sound, visual
-from systole.detection import oxi_peaks
+from systole.detection import ppg_peaks
 from systole.recording import BrainVisionExG
 
 
@@ -451,11 +451,13 @@ def trial(
                 signal = BrainVisionExG(
                     ip=parameters["BrainVisionIP"], sfreq=1000
                 ).read(5)["PLETH"]
-                signal, peaks = oxi_peaks(signal, sfreq=1000, clipping=False)
+                signal, peaks = ppg_peaks(signal, sfreq=1000, clipping=False)
             elif parameters["setup"] in ["behavioral", "test"]:
                 # Read PPG
                 signal = parameters["oxiTask"].read(duration=5.0).recording[-75 * 6 :]
-                signal, peaks = oxi_peaks(signal, sfreq=75)
+                signal, peaks = ppg_peaks(
+                    signal, sfreq=75, new_sfreq=1000, clipping=True
+                    )
 
             # Get actual heart Rate
             # Only use the last 5 seconds of the recording

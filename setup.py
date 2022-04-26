@@ -16,7 +16,7 @@ MAINTAINER_EMAIL = "nicolas.legrand@cfin.au.dk"
 VERSION = "0.4.3"
 
 INSTALL_REQUIRES = [
-    "systole==0.1.3",
+    "systole>=0.2.2",
     "psychopy>=2020.1.2",
 ]
 
