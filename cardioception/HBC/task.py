@@ -500,10 +500,9 @@ def tutorial(parameters: dict, win: Optional[visual.Window] = None):
     event.waitKeys(keyList=parameters["startKey"])
 
 
-def rest(
-    parameters: dict, duration: float = 300.0, win: Optional[visual.Window] = None
-):
-    """Run tutorial for the Heart Beat Counting Task.
+def rest(parameters: dict, duration: float = 300.0):
+    """Run a resting state period for heart rate variability before running the Heart
+    Beat Counting Task.
 
     Parameters
     ----------
@@ -511,22 +510,18 @@ def rest(
         Task parameters.
     duration : float
         Duration or the recording (seconds).
-    win : `psychopy.visual.window` or None
-        The window in which to draw objects.
-    """
-    if win is None:
-        win = parameters["win"]
 
-    # Show instructions
+    """
+    # Show the resting state instructions
     messageStart = visual.TextStim(
-        win,
+        parameters["win"],
         height=parameters["textSize"],
         pos=(0.0, 0.2),
         text=("Calibrating... Please sit quietly" " until the end of the recording."),
     )
     messageStart.draw()
     parameters["restLogo"].draw()
-    win.flip()
+    parameters["win"].flip()
 
     # Record PPG signal
     parameters["oxiTask"].setup()
