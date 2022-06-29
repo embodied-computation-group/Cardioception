@@ -89,7 +89,7 @@ def getParameters(
     taskVersion : str or None
         Task version to run. Can be 'Garfinkel', 'Shandry', 'test' or None.
     texts : dict
-        Dictionnary containing the texts to be presented.
+        Dictionary containing the texts to be presented.
     textSize : float
         Text size.
     triggers : dict

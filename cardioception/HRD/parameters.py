@@ -153,7 +153,7 @@ def getParameters(
         condition will be stored.
     stairCase : dict
         The staircase instances for 'psi' and 'UpDown'. Each entry contain
-        dictionnary for 'Intero' and 'Extero conditions' (if relevant).
+        dictionary for 'Intero' and 'Extero conditions' (if relevant).
     staircaseType : 1d array-like
         Vector indexing stairce type (`'UpDown'`, `'psi'`, `'psiCatchTrial'`).
     startKey : str
@@ -235,7 +235,7 @@ def getParameters(
     if not os.path.exists(parameters["resultPath"]):
         os.makedirs(parameters["resultPath"])
 
-    # Store posterior in a dictionnary
+    # Store posterior in a dictionary
     parameters["staircaisePosteriors"] = {}
     parameters["staircaisePosteriors"]["Intero"] = []
     if exteroception is True:

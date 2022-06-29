@@ -1009,7 +1009,7 @@ def responseDecision(
     this_hr : psychopy sound instance
         The sound .wav file to play.
     parameters : dict
-        Parameters dictionnary.
+        Parameters dictionary.
     feedback : bool
         If `True`, provide feedback after decision.
     condition : str
@@ -1213,7 +1213,7 @@ def confidenceRatingTask(
     Parameters
     ----------
     parameters : dict
-        Parameters dictionnary.
+        Parameters dictionary.
 
     """
     print("...starting confidence rating.")
