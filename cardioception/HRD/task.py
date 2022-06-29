@@ -30,19 +30,8 @@ def run(
         and 5 trials with confidence rating.
     """
 
-    if parameters["setup"] in ["behavioral", "test"]:
-        parameters["oxiTask"].setup().read(duration=1)
-    elif parameters["setup"] == "fMRI":
-        messageWaitTrigger = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            text=parameters["texts"]["textWaitTrigger"],
-        )
-        messageWaitTrigger.draw()  # Show instructions
-        parameters["win"].flip()
-        event.waitKeys(keyList=parameters["fMRItrigger"])
-        fMRIStart = time.time()
-        parameters["results_df"] = pd.DataFrame({"fMRITrigger": [fMRIStart]})
+    # Initialization of the Pulse Oximeter
+    parameters["oxiTask"].setup().read(duration=1)
 
     # Show tutorial and training trials
     if runTutorial is True:
@@ -102,9 +91,8 @@ def run(
             stairCond = "CatchTrial"
 
         # Before trial triggers
-        if parameters["setup"] in ["behavioral", "test"]:
-            parameters["oxiTask"].readInWaiting()
-            parameters["oxiTask"].channels["Channel_0"][-1] = 1  # Trigger
+        parameters["oxiTask"].readInWaiting()
+        parameters["oxiTask"].channels["Channel_0"][-1] = 1  # Trigger
 
         # Start trial
         (
@@ -228,10 +216,9 @@ def run(
             remain.draw()
             message.draw()
             parameters["win"].flip()
-            if parameters["setup"] in ["behavioral", "test"]:
-                parameters["oxiTask"].save(
-                    f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}.txt"
-                )
+            parameters["oxiTask"].save(
+                f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}.txt"
+            )
 
             # Wait for participant input before continue
             waitInput(parameters)
@@ -244,9 +231,8 @@ def run(
             parameters["win"].flip()
 
             # Reset recording when ready
-            if parameters["setup"] in ["behavioral", "test"]:
-                parameters["oxiTask"].setup()
-                parameters["oxiTask"].read(duration=1)
+            parameters["oxiTask"].setup()
+            parameters["oxiTask"].read(duration=1)
 
     # Save the final results
     print("Saving final results in .txt file...")
@@ -267,10 +253,9 @@ def run(
     )
 
     # Save last pulse oximeter recording, if relevant
-    if parameters["setup"] in ["behavioral", "test"]:
-        parameters["oxiTask"].save(
-            f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}_end.txt"
-        )
+    parameters["oxiTask"].save(
+        f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}_end.txt"
+    )
 
     # Save posterios (if relevant)
     print("Saving posterior distributions...")
@@ -291,9 +276,8 @@ def run(
         del save_parameter[k]
     if parameters["device"] == "mouse":
         del save_parameter["myMouse"]
-    if parameters["setup"] in ["test", "behavioral"]:
-        del save_parameter["handSchema"]
-        del save_parameter["pulseSchema"]
+    del save_parameter["handSchema"]
+    del save_parameter["pulseSchema"]
     with open(
         save_parameter["resultPath"]
         + "/"
@@ -435,9 +419,8 @@ def trial(
         messageRecord.draw()
 
         # Start recording trigger
-        if parameters["setup"] in ["behavioral", "test"]:
-            parameters["oxiTask"].readInWaiting()
-            parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
+        parameters["oxiTask"].readInWaiting()
+        parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
 
         parameters["heartLogo"].draw()
         parameters["win"].flip()
@@ -446,18 +429,15 @@ def trial(
 
         # Recording
         while True:
-            if parameters["setup"] == "fMRI":
-                # Read ExG
-                signal = BrainVisionExG(
-                    ip=parameters["BrainVisionIP"], sfreq=1000
-                ).read(5)["PLETH"]
-                signal, peaks = ppg_peaks(signal, sfreq=1000, clipping=False)
-            elif parameters["setup"] in ["behavioral", "test"]:
-                # Read PPG
-                signal = parameters["oxiTask"].read(duration=5.0).recording[-75 * 6 :]
-                signal, peaks = ppg_peaks(
-                    signal, sfreq=75, new_sfreq=1000, clipping=True
-                    )
+
+            # Read the raw PPG signal from the pulse oximeter
+            # You can adapt these line to work with a different setup provided that
+            # it can measure and create the new variable `bpm` (the average beats per
+            # minute over the 5 seconds of recording).
+            signal = parameters["oxiTask"].read(duration=5.0).recording[-75 * 6 :]
+            signal, peaks = ppg_peaks(
+                signal, sfreq=75, new_sfreq=1000, clipping=True
+            )
 
             # Get actual heart Rate
             # Only use the last 5 seconds of the recording
@@ -512,9 +492,8 @@ def trial(
         messageRecord.draw()
 
         # Start recording trigger
-        if parameters["setup"] in ["behavioral", "test"]:
-            parameters["oxiTask"].readInWaiting()
-            parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
+        parameters["oxiTask"].readInWaiting()
+        parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
 
         parameters["listenLogo"].draw()
         parameters["win"].flip()
@@ -593,9 +572,8 @@ def trial(
     press.autoDraw = True
 
     # Sound trigger
-    if parameters["setup"] in ["behavioral", "test"]:
-        parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 3
+    parameters["oxiTask"].readInWaiting()
+    parameters["oxiTask"].channels["Channel_0"][-1] = 3
     soundTrigger = time.time()
     parameters["win"].flip()
 
@@ -625,11 +603,9 @@ def trial(
     # Record participant confidence
     if (confidenceRating is True) & (respProvided is True):
 
-        # Rating start trigger
-        if parameters["setup"] in ["behavioral", "test"]:
-            # Start trigger
-            parameters["oxiTask"].readInWaiting()
-            parameters["oxiTask"].channels["Channel_0"][-1] = 4  # Trigger
+        # Confidence rating start trigger
+        parameters["oxiTask"].readInWaiting()
+        parameters["oxiTask"].channels["Channel_0"][-1] = 4  # Trigger
 
         # Confidence rating scale
         ratingStartTrigger: Optional[float] = time.time()
@@ -642,10 +618,9 @@ def trial(
     else:
         ratingStartTrigger, ratingEndTrigger = None, None
 
-    # End trigger
-    if parameters["setup"] in ["behavioral", "test"]:
-        parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 5
+    # Confidence rating end trigger
+    parameters["oxiTask"].readInWaiting()
+    parameters["oxiTask"].channels["Channel_0"][-1] = 5
     endTrigger = time.time()
 
     # Save PPG signal
@@ -739,85 +714,84 @@ def tutorial(parameters: dict):
     waitInput(parameters)
 
     # Pusle oximeter tutorial
-    if parameters["setup"] in ["test", "behavioral"]:
-        pulse1 = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, 0.3),
-            text=parameters["texts"]["pulseTutorial1"],
+    pulse1 = visual.TextStim(
+        parameters["win"],
+        height=parameters["textSize"],
+        pos=(0.0, 0.3),
+        text=parameters["texts"]["pulseTutorial1"],
+    )
+    press = visual.TextStim(
+        parameters["win"],
+        height=parameters["textSize"],
+        pos=(0.0, -0.4),
+        text=parameters["texts"]["textNext"],
+    )
+    pulse1.draw()
+    parameters["pulseSchema"].draw()
+    press.draw()
+    parameters["win"].flip()
+    core.wait(1)
+
+    waitInput(parameters)
+
+    # Get finger number
+    pulse2 = visual.TextStim(
+        parameters["win"],
+        height=parameters["textSize"],
+        pos=(0.0, 0.2),
+        text=parameters["texts"]["pulseTutorial2"],
+    )
+    pulse3 = visual.TextStim(
+        parameters["win"],
+        height=parameters["textSize"],
+        pos=(0.0, -0.2),
+        text=parameters["texts"]["pulseTutorial3"],
+    )
+    pulse2.draw()
+    pulse3.draw()
+    press.draw()
+    parameters["win"].flip()
+    core.wait(1)
+
+    waitInput(parameters)
+
+    pulse4 = visual.TextStim(
+        parameters["win"],
+        height=parameters["textSize"],
+        pos=(0.0, 0.3),
+        text=parameters["texts"]["pulseTutorial4"],
+    )
+    pulse4.draw()
+    parameters["handSchema"].draw()
+    parameters["win"].flip()
+    core.wait(1)
+
+    # Record number
+    nFinger = ""
+    while True:
+        # Record new key
+        key = event.waitKeys(
+            keyList=[
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "num_1",
+                "num_2",
+                "num_3",
+                "num_4",
+                "num_5",
+            ]
         )
-        press = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, -0.4),
-            text=parameters["texts"]["textNext"],
-        )
-        pulse1.draw()
-        parameters["pulseSchema"].draw()
-        press.draw()
-        parameters["win"].flip()
-        core.wait(1)
+        if key:
+            nFinger += [s for s in key[0] if s.isdigit()][0]
 
-        waitInput(parameters)
+            # Save the finger number in the task parameters dictionary
+            parameters["nFinger"] = nFinger
 
-        # Get finger number
-        pulse2 = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, 0.2),
-            text=parameters["texts"]["pulseTutorial2"],
-        )
-        pulse3 = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, -0.2),
-            text=parameters["texts"]["pulseTutorial3"],
-        )
-        pulse2.draw()
-        pulse3.draw()
-        press.draw()
-        parameters["win"].flip()
-        core.wait(1)
-
-        waitInput(parameters)
-
-        pulse4 = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, 0.3),
-            text=parameters["texts"]["pulseTutorial4"],
-        )
-        pulse4.draw()
-        parameters["handSchema"].draw()
-        parameters["win"].flip()
-        core.wait(1)
-
-        # Record number
-        nFinger = ""
-        while True:
-            # Record new key
-            key = event.waitKeys(
-                keyList=[
-                    "1",
-                    "2",
-                    "3",
-                    "4",
-                    "5",
-                    "num_1",
-                    "num_2",
-                    "num_3",
-                    "num_4",
-                    "num_5",
-                ]
-            )
-            if key:
-                nFinger += [s for s in key[0] if s.isdigit()][0]
-
-                # Save the finger number in the task parameters dictionary
-                parameters["nFinger"] = nFinger
-
-                core.wait(0.5)
-                break
+            core.wait(0.5)
+            break
 
     # Heartrate recording
     recording = visual.TextStim(
@@ -864,8 +838,7 @@ def tutorial(parameters: dict):
     waitInput(parameters)
 
     # Run training trials with feedback
-    if parameters["setup"] in ["test", "behavioral"]:
-        parameters["oxiTask"].setup().read(duration=2)
+    parameters["oxiTask"].setup().read(duration=2)
     for i in range(parameters["nFeedback"]):
 
         # Ramdom selection of condition
@@ -910,8 +883,7 @@ def tutorial(parameters: dict):
         waitInput(parameters)
 
         # Run 10 training trials with feedback
-        if parameters["setup"] in ["test", "behavioral"]:
-            parameters["oxiTask"].setup().read(duration=2)
+        parameters["oxiTask"].setup().read(duration=2)
         for i in range(parameters["nFeedback"]):
 
             # Ramdom selection of condition
@@ -941,8 +913,7 @@ def tutorial(parameters: dict):
 
     waitInput(parameters)
 
-    if parameters["setup"] in ["test", "behavioral"]:
-        parameters["oxiTask"].setup().read(duration=2)
+    parameters["oxiTask"].setup().read(duration=2)
 
     # Run n training trials with confidence rating
     for i in range(parameters["nConfidence"]):
@@ -1067,8 +1038,7 @@ def responseDecision(
             decisionRT = responseKey[0][1]
 
             # Read oximeter
-            if parameters["setup"] in ["behavioral", "test"]:
-                parameters["oxiTask"].readInWaiting()
+            parameters["oxiTask"].readInWaiting()
 
             # Feedback
             if feedback is True:
@@ -1124,8 +1094,7 @@ def responseDecision(
         while True:
             buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
             trialdur = clock.getTime()
-            if parameters["setup"] in ["behavioral", "test"]:
-                parameters["oxiTask"].readInWaiting()
+            parameters["oxiTask"].readInWaiting()
             if buttons == [1, 0, 0]:
                 decisionRT = decisionRT[0]
                 decision, respProvided = "Less", True

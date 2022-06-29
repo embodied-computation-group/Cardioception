@@ -4,7 +4,7 @@ The Heart Rate Discrimination task
 Staircases
 ----------
 
-If you run the task in behavioral mode, the **Nonin pulse oximeter** will be automatically detected and launched. The task also include an fMRI version that can access pulse oximetry for BrainVision amplifier through a TCP/IP connection. These components might be adapted depending on your local configuration.
+If you run the task in behavioral mode, the **Nonin pulse oximeter** will be read from the port provided. These components might be adapted depending on your local configuration.
 
 Two staircasing procedure are implemented and can be controlled through the `staircase` parameters in the logging screen:
 

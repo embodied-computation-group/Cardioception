@@ -23,7 +23,6 @@ def getParameters(
     exteroception: bool = True,
     catchTrials: float = 0.0,
     nTrials: int = 120,
-    BrainVisionIP: Optional[str] = None,
     device: str = "mouse",
     screenNb: int = 0,
     fullscr: bool = True,
@@ -43,8 +42,6 @@ def getParameters(
 
     Parameters
     ----------
-    BrainVisionIP : str
-        The IP address of the recording computer (fMRI version only).
     device : str
         Select how the participant provide responses. Can be 'mouse' or
         'keyboard'.
@@ -82,10 +79,9 @@ def getParameters(
     session : int
         Session number. Default to '001'.
     setup : str
-        Context of oximeter recording. Behavioral will record through a Nonin
-        pulse oximeter, `'fMRI'` will record through BrainVision amplifier
-        through TCP/IP conneciton. *test* will use pre-recorded pulse time
-        series (for testing only).
+        Context of oximeter recording. `"ehavioral"` will record through a Nonin
+        pulse oximeter and `"test"` will use pre-recorded pulse time series (for
+        testing only).
     stairType : str
         Staircase type. Can be "psi" or "updown". Default set to "psi".
     systole_kw : dict
@@ -165,7 +161,7 @@ def getParameters(
     session : int
         Session number. Default to '001'.
     setup : str
-        The context of recording. Can be 'behavioral', 'fMRI' or 'test'.
+        The context of recording. Can be `'behavioral'` or `'test'`.
     texts : dict
         Long text elements.
     textSize : float
@@ -396,8 +392,6 @@ def getParameters(
             serial=port, sfreq=75, add_channels=1, **systole_kw
         )
         parameters["oxiTask"].setup().read(duration=1)
-    elif setup == "fMRI":
-        parameters["fMRItrigger"] = ["5"]  # Keys to listen for fMRI trigger
 
     ##############
     # Load texts #
@@ -458,7 +452,6 @@ def getParameters(
     parameters["heartLogo"].size *= 0.04
     parameters["textSize"] = 0.04
     parameters["HRcutOff"] = [40, 120]
-    parameters["BrainVisionIP"] = BrainVisionIP
     if parameters["device"] == "keyboard":
         parameters["confScale"] = [1, 10]
     elif parameters["device"] == "mouse":

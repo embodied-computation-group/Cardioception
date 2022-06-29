@@ -1,14 +1,17 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
+from typing import Dict
 
-
-def english(device: str, setup: str, exteroception: bool):
+def english(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
     """Create the text dictionary with instruction in Danish
 
     Parameters
     ----------
     device : str
+        Can be `"keyboard"` or `"mouse"`.
     setup : str
-    ExteroCondition : str
+        The experimental setup. Can be `"behavioral"` or `"test"`.
+    exteroception : bool
+        If `True`, the task includes and exteroceptive control condition.
 
     Returns
     -------
@@ -50,23 +53,21 @@ def english(device: str, setup: str, exteroception: bool):
 
 You will only be allowed to focus on the internal sensations of your heartbeats, but not to measure your heart rate by any other means (e.g. checking pulse at your wrist or your neck).
         """
-    if setup != "fmri":
+    texts[
+        "pulseTutorial1"
+    ] = "Please place the pulse oximeter on your forefinger. Use your non-dominant hand as depicted in this schema."
 
-        texts[
-            "pulseTutorial1"
-        ] = "Please place the pulse oximeter on your forefinger. Use your non-dominant hand as depicted in this schema."
+    texts[
+        "pulseTutorial2"
+    ] = "If you can feel your heartbeats when you have the pulse oximeter in your forefinger, try to place it on another finger."
 
-        texts[
-            "pulseTutorial2"
-        ] = "If you can feel your heartbeats when you have the pulse oximeter in your forefinger, try to place it on another finger."
+    texts[
+        "pulseTutorial3"
+    ] = "You can test different configurations until you find the finger which provides you with the less sensory input about your heart rate."
 
-        texts[
-            "pulseTutorial3"
-        ] = "You can test different configurations until you find the finger which provides you with the less sensory input about your heart rate."
-
-        texts[
-            "pulseTutorial4"
-        ] = "Please enter the number of the finger corresponding to the finger where you decided to place the pulse oximeter."
+    texts[
+        "pulseTutorial4"
+    ] = "Please enter the number of the finger corresponding to the finger where you decided to place the pulse oximeter."
 
     texts[
         "Tutorial2"
@@ -122,14 +123,17 @@ Otherwise, you can continue to the main task."""
     return texts
 
 
-def danish(device: str, setup: str, exteroception: bool):
+def danish(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
     """Create the text dictionary with instruction in Danish
 
     Parameters
     ----------
     device : str
+        Can be `"keyboard"` or `"mouse"`.
     setup : str
-    ExteroCondition : str
+        The experimental setup. Can be `"behavioral"` or `"test"`.
+    exteroception : bool
+        If `True`, the task includes and exteroceptive control condition.
 
     Returns
     -------
@@ -176,23 +180,21 @@ def danish(device: str, setup: str, exteroception: bool):
 
 Du må kun fokusere på din indre følelse af din hjerterytme. Du må altså ikke måle din hjerterytme på andre måder (fx ved at tjekke din puls på dit håndled eller din hals).
         """
-    if setup != "fmri":
+    texts[
+        "pulseTutorial1"
+    ] = "Placer venligst puls oximeteret på din pegefinger. Brug din ikke-dominante hånd som beskrevet i dette skema."
 
-        texts[
-            "pulseTutorial1"
-        ] = "Placer venligst puls oximeteret på din pegefinger. Brug din ikke-dominante hånd som beskrevet i dette skema."
+    texts[
+        "pulseTutorial2"
+    ] = "Hvis du kan mærke din hjerterytme, når du har puls oximeteret på din pegefinger, så prøv at placere det på en anden finger."
 
-        texts[
-            "pulseTutorial2"
-        ] = "Hvis du kan mærke din hjerterytme, når du har puls oximeteret på din pegefinger, så prøv at placere det på en anden finger."
+    texts[
+        "pulseTutorial3"
+    ] = "Du kan teste forskellige fingre indtil du finder den finger, der giver dig mindst sensorisk indput omkring din hjerterytme."
 
-        texts[
-            "pulseTutorial3"
-        ] = "Du kan teste forskellige fingre indtil du finder den finger, der giver dig mindst sensorisk indput omkring din hjerterytme."
-
-        texts[
-            "pulseTutorial4"
-        ] = "Indtast venligt nummeret på den finger som du besluttede at placere puls oximeteret på."
+    texts[
+        "pulseTutorial4"
+    ] = "Indtast venligt nummeret på den finger som du besluttede at placere puls oximeteret på."
 
     texts[
         "Tutorial2"

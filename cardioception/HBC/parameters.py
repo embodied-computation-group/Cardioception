@@ -42,10 +42,9 @@ def getParameters(
     session : int
         Session number. Default to '001'.
     setup : str
-        Context of oximeter recording. Behavioral will record through a Nonin
-        pulse oximeter, *fMRI* will record through BrainVision amplifier
-        through TCP/IP conneciton. *test* will use pre-recorded pulse time
-        series (for testing only).
+        Context of oximeter recording. `"behavioral"` will record through a Nonin
+        pulse oximeter, `"test"` will use pre-recorded pulse time series (for testing
+        only).
     systole_kw : dict
         Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.
     taskVersion : str or None
@@ -226,8 +225,6 @@ def getParameters(
             serial=port, sfreq=75, add_channels=1, **systole_kw
         )
         parameters["oxiTask"].setup().read(duration=1)
-    elif setup == "fMRI":
-        parameters["fMRItrigger"] = ["5"]  # Keys to listen for fMRI trigger
 
     #######
     # Texts
