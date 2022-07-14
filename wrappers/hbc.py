@@ -24,6 +24,6 @@ parameters = getParameters(
 )
 
 # Run task
-run(parameters, confidenceRating=True, runTutorial=True)
+run(parameters, runTutorial=True)
 
 parameters["win"].close()
