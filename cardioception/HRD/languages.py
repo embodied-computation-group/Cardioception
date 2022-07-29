@@ -59,11 +59,11 @@ You will only be allowed to focus on the internal sensations of your heartbeats,
 
     texts[
         "pulseTutorial2"
-    ] = "If you can feel your heartbeats when you have the pulse oximeter in your forefinger, try to place it on another finger."
+    ] = "If you can feel your heartbeats when you have the pulse oximeter on your forefinger, try to place it on another finger."
 
     texts[
         "pulseTutorial3"
-    ] = "You can test different configurations until you find the finger which provides you with the less sensory input about your heart rate."
+    ] = "You can test different configurations until you find the finger which provides you with the least sensory input about your heart rate."
 
     texts[
         "pulseTutorial4"
