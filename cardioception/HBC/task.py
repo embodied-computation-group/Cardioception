@@ -50,17 +50,20 @@ def run(
         parameters["triggers"]["trialStop"]  # Send trigger or None
 
         # Store results in a DataFrame
-        parameters["results_df"] = parameters["results_df"].append(
-            pd.DataFrame(
-                {
-                    "nTrial": [nTrial],
-                    "Reported": [nCount],
-                    "Condition": [condition],
-                    "Duration": [duration],
-                    "Confidence": [confidence],
-                    "ConfidenceRT": [confidenceRT],
-                }
-            ),
+        parameters["results_df"] = pd.concat(
+            [
+                parameters["results_df"],
+                pd.DataFrame(
+                    {
+                        "nTrial": [nTrial],
+                        "Reported": [nCount],
+                        "Condition": [condition],
+                        "Duration": [duration],
+                        "Confidence": [confidence],
+                        "ConfidenceRT": [confidenceRT],
+                    }
+                ),
+            ],
             ignore_index=True,
         )
 

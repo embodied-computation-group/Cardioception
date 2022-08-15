@@ -156,8 +156,9 @@ def run(
         )
 
         # Store results
-        parameters["results_df"] = parameters["results_df"].append(
+        parameters["results_df"] = pd.concat(
             [
+                parameters["results_df"],
                 pd.DataFrame(
                     {
                         "TrialType": [trialType],
@@ -184,7 +185,7 @@ def run(
                         "RatingEnds": [ratingEndTrigger],
                         "endTrigger": [endTrigger],
                     }
-                )
+                ),
             ],
             ignore_index=True,
         )
@@ -633,8 +634,8 @@ def trial(
                 }
             )
 
-            parameters["signal_df"] = parameters["signal_df"].append(
-                this_df, ignore_index=True
+            parameters["signal_df"] = pd.concat(
+                [parameters["signal_df"], this_df], ignore_index=True
             )
 
     return (
