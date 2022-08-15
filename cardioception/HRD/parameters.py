@@ -11,7 +11,7 @@ from psychopy import core, data, event, visual
 from systole import serialSim
 from systole.recording import Oximeter, findOximeter
 
-from cardioception.HRD.languages import danish, english
+from cardioception.HRD.languages import danish, english, danish_children
 
 
 def getParameters(
@@ -51,8 +51,8 @@ def getParameters(
     fullscr : bool
         If *True*, activate full screen mode.
     language : str
-        The language used for the instruction. Can be `"english"` or
-        `"danish"`.
+        The language used for the instruction. Can be `"english"`, `"danish"` or
+        `"danish_children"` (a slightly simplified danish version).
     nBreaking : int
         Number of trials to run before the break.
     nStaircase : int
@@ -402,6 +402,10 @@ def getParameters(
         )
     elif language == "danish":
         parameters["texts"] = danish(
+            device=device, setup=setup, exteroception=exteroception
+        )
+    elif language == "danish_children":
+        parameters["texts"] = danish_children(
             device=device, setup=setup, exteroception=exteroception
         )
 

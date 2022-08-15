@@ -1,6 +1,7 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
 from typing import Dict
 
+
 def english(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
     """Create the text dictionary with instruction in Danish
 
@@ -141,7 +142,7 @@ def danish(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
 
     """
 
-    btnext = "tryk på mellemrumstasten" if device == "keyboard" else "click på musen"
+    btnext = "tryk på mellemrumstasten" if device == "keyboard" else "klik på musen"
     texts = {
         "done": "Du har genemført opgaven. Tak for din deltagalse.",
         "slower": "Langsommere",
@@ -246,5 +247,131 @@ Da opgavens sværhedsgrad ændrer sig over tid, er det sjældent at du vil være
         "Tutorial6"
     ] = """Dette er slutningen på vejledningen. Hvis du har noget spørgsmål, så spørg endelig en forsker nu.
 Ellers kan du fortsætte til hovedopgaven."""
+
+    return texts
+
+def danish_children(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
+    """Create the text dictionary with instruction in Danish
+
+    Parameters
+    ----------
+    device : str
+        Can be `"keyboard"` or `"mouse"`.
+    setup : str
+        The experimental setup. Can be `"behavioral"` or `"test"`.
+    exteroception : bool
+        If `True`, the task includes and exteroceptive control condition.
+
+    Returns
+    -------
+    texts : dict
+
+    """
+
+    btnext = "tryk på mellemrumstasten" if device == "keyboard" else "klik på musen"
+    texts = {
+        "done": "Du har genemført opgaven. Tak for din deltagalse.",
+        "slower": "Langsommere",
+        "faster": "Hurtigere",
+        "checkOximeter": "Spørg forskningsassistensen om, hvordan du skal placere fingerklemmen.",
+        "stayStill": "Sid venglist rogligt under målingen",
+        "tooLate": "For langsomt",
+        "correctResponse": "Rigtigt",
+        "incorrectResponse": "Forkert",
+        "VASlabels": ["Gæt", "Helt sikker"],
+        "textHeartListening": "Mærk din indre puls",
+        "textToneListening": "Lyt til tonerne",
+        "textTaskStart": "Opgaven begynder nu, gør dig klar.",
+        "textBreaks": f"Pause. Du kan tage så lang en pause, som du har brug for. Bare {btnext} når du vil fortsætte opgaven.",
+        "textNext": f"Venligst, {btnext} for at fortsætte",
+        "textWaitTrigger": "Venter på fMRI-udløseren...",
+        "Decision": {
+            "Intero": """Er disse bib-lyde hurtigere eller langsommere end dit hjerte?""",
+            "Extero": """Er disse bib-lyde hurtigere eller langsommere end den de forrige? """,
+        },
+        "Confidence": """Hvor sikker er du på dit svar?""",
+    }
+
+    if device == "keyboard":
+        texts[
+            "responseText"
+        ] = "Brug NED tasten for langsommere - OP tasten for hurtigere."
+    elif device == "mouse":
+        texts[
+            "responseText"
+        ] = "Brug VENSTRE museknap for langsommere - HØJRE museknap for hurtigere."
+
+    texts[
+        "Tutorial1"
+    ] = """I dette forsøg vil vi registrere din puls og afspille bib-lyde baseret på din hjerterytme.
+
+Du må kun fokusere på din indre følelse af din hjerterytme. Du må altså ikke måle din hjerterytme på andre måder (fx ved at tjekke din puls på dit håndled eller din hals).
+        """
+    texts[
+        "pulseTutorial1"
+    ] = "Placer venligst puls oximeteret på din pegefinger. Brug din ikke-dominante hånd som beskrevet i dette skema."
+
+    texts[
+        "pulseTutorial2"
+    ] = "Hvis du kan mærke din hjerterytme, når du har puls oximeteret på din pegefinger, så prøv at placere det på en anden finger."
+
+    texts[
+        "pulseTutorial3"
+    ] = "Du kan teste forskellige fingre indtil du finder den finger, der giver dig mindst sensorisk indput omkring din hjerterytme."
+
+    texts[
+        "pulseTutorial4"
+    ] = "Indtast venligt nummeret på den finger som du besluttede at placere fingerklemmen på."
+
+    texts[
+        "Tutorial2"
+    ] = "Når du ser dette ikon, forsøg da at fokusere på indre puls i 5 sekunder. Prøv ikke at bevæge dig, da vi måler din puls i dette tidsrum"
+
+    moreResp = "OP tasten" if device == "keyboard" else "HØJRE mussetast"
+    lessResp = "NED tasten" if device == "keyboard" else "VENSTRE mussetast"
+    texts[
+        "Tutorial3_icon"
+    ] = """Efter du har forsøgt at mærke din indre puls, vil du se det samme ikon og høre en række bib-lyde."""
+    texts[
+        "Tutorial3_responses"
+    ] = f"""Det følgende skal du gøre så hurtigt og præcist som muligt: Du vil lytte til disse bib-lyde og beslutte om de er hurtigere ({moreResp}) eller langsommere ({lessResp}) end din egen hjerterytme.
+
+Bib-lydene vil ALTID være langsommere eller hurtigere end dit hjerte. Gæt venligst selvom du er usikker."""
+
+    if exteroception is True:
+        texts[
+            "Tutorial3bis"
+        ] = """I nogle runder vil du se et lytteikon i stedet for et hjerteikon. Her vil du skulle lytte til et sæt af bib-lyde i stedet for dit hjerte."""
+
+        texts[
+            "Tutorial3ter"
+        ] = f"""Efter dette sæt af bib-lyde vil du se, at svarikonet dukker op, og et andet sæt af bib-lyde vil blive afspillet.
+
+Det følgende skal du gøre så hurtigt og præcist som muligt: Du vil lytte til det sidste sæt af bib-lyde og beslutte om de er hurtigere ({moreResp}) eller langsommere ({lessResp}) end det første sæt af bib-lyde.
+
+Det andet sæt af bib-lyde vil ALTID være langsommere eller hurtigere end det første sæt. Gæt venligst selvom du er usikker."""
+
+    texts[
+        "Tutorial4"
+    ] = """Når du har svaret, vil du også blive bedt om at angive hvor sikker du er på din beslutning.
+
+Her betyder den højeste score (100) at du er helt sikker på dit valg, og den mindste score (0) betyder, at du følte, at du gættede.
+
+Du skal bruge musen til at vælge en score."""
+
+    texts[
+        "Tutorial5"
+    ] = """Denne sekvens vil blive gentaget igennem opgaven.
+
+Nogle gange kan opgaven være virkelig svær; forskellen mellem din faktiske hjerterytme og bib-lydene kan være meget små.
+
+Dette betyder, at du skal forsøge at bruge hele skalaens længde til at angive din subjektive usikkerhed i hver runde.
+
+Da opgavens sværhedsgrad ændrer sig over tid, er det sjældent at du vil være totalt sikker eller totalt usikker."""
+
+    texts[
+        "Tutorial6"
+    ] = """Dette er slutningen på vejledningen. Hvis du har noget spørgsmål, så spørg endelig en forsker nu.
+Ellers kan du fortsætte til opgaven."""
 
     return texts
