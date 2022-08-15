@@ -148,7 +148,7 @@ def danish(device: str, setup: str, exteroception: bool) -> Dict[str, Collection
         "slower": "Langsommere",
         "faster": "Hurtigere",
         "checkOximeter": "Sørg venligst for at pulsoximeteret sidder rigtigt på din finger.",
-        "stayStill": "Sid venglist rogligt under målingen",
+        "stayStill": "Sid venligst roligt under målingen",
         "tooLate": "For langsomt",
         "correctResponse": "Rigtigt",
         "incorrectResponse": "Forkert",
@@ -254,7 +254,8 @@ Ellers kan du fortsætte til hovedopgaven."""
 def danish_children(
     device: str, setup: str, exteroception: bool
 ) -> Dict[str, Collection[str]]:
-    """Create the text dictionary with instruction in Danish
+    """Create the text dictionary with instruction in Danish (simplified version for
+    children).
 
     Parameters
     ----------
@@ -277,11 +278,11 @@ def danish_children(
         "slower": "Langsommere",
         "faster": "Hurtigere",
         "checkOximeter": "Spørg forskningsassistensen om, hvordan du skal placere fingerklemmen.",
-        "stayStill": "Sid venglist rogligt under målingen",
+        "stayStill": "Sid venligst roligt under målingen",
         "tooLate": "For langsomt",
         "correctResponse": "Rigtigt",
         "incorrectResponse": "Forkert",
-        "VASlabels": ["Gæt", "Helt sikker"],
+        "VASlabels": ["Slet ikke sikker", "Helt sikker"],
         "textHeartListening": "Mærk din indre puls",
         "textToneListening": "Lyt til tonerne",
         "textTaskStart": "Opgaven begynder nu, gør dig klar.",
@@ -306,13 +307,13 @@ def danish_children(
 
     texts[
         "Tutorial1"
-    ] = """Instruktion
+    ] = """Instruktion 1
         """
     texts["pulseTutorial1"] = "Udstyr."
 
-    texts["pulseTutorial2"] = "Udstyr."
+    texts["pulseTutorial2"] = ""
 
-    texts["pulseTutorial3"] = "Udstyr."
+    texts["pulseTutorial3"] = ""
 
     texts[
         "pulseTutorial4"
@@ -320,14 +321,14 @@ def danish_children(
 
     texts[
         "Tutorial2"
-    ] = "Når du ser dette ikon, forsøg da at fokusere på indre puls i 5 sekunder. Prøv ikke at bevæge dig, da vi måler din puls i dette tidsrum"
+    ] = "Når du ser dette ikon, forsøg da at fokusere på din indre puls i 5 sekunder. Prøv ikke at bevæge dig, da vi måler din puls i dette tidsrum"
 
     moreResp = "OP tasten" if device == "keyboard" else "HØJRE mussetast"
     lessResp = "NED tasten" if device == "keyboard" else "VENSTRE mussetast"
     texts[
         "Tutorial3_icon"
     ] = """Efter du har forsøgt at mærke din indre puls, vil du se det samme ikon og høre en række bib-lyde."""
-    texts["Tutorial3_responses"] = """Instruktion"""
+    texts["Tutorial3_responses"] = """Instruktion 2"""
 
     if exteroception is True:
         texts[
@@ -342,9 +343,9 @@ Det følgende skal du gøre så hurtigt og præcist som muligt: Du vil lytte til
 
 Det andet sæt af bib-lyde vil ALTID være langsommere eller hurtigere end det første sæt. Gæt venligst selvom du er usikker."""
 
-    texts["Tutorial4"] = """Instruktion."""
+    texts["Tutorial4"] = """Instruktion 3"""
 
-    texts["Tutorial5"] = """Instruktion."""
+    texts["Tutorial5"] = """Instruktion 4"""
 
     texts[
         "Tutorial6"

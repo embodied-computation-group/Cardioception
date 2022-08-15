@@ -212,7 +212,7 @@ def run(
                 parameters["win"],
                 height=parameters["textSize"],
                 pos=(0.0, 0.2),
-                text=f"You completed {percRemain} % of the task.",
+                text=f" ---- {percRemain} % ---- ",
             )
             remain.draw()
             message.draw()
@@ -733,26 +733,27 @@ def tutorial(parameters: dict):
 
     waitInput(parameters)
 
-    # Get finger number
-    pulse2 = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.2),
-        text=parameters["texts"]["pulseTutorial2"],
-    )
-    pulse3 = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, -0.2),
-        text=parameters["texts"]["pulseTutorial3"],
-    )
-    pulse2.draw()
-    pulse3.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
+    # Get finger number - Skip this part for the danish_children version (empty string)
+    if parameters["texts"]["pulseTutorial2"]:
+        pulse2 = visual.TextStim(
+            parameters["win"],
+            height=parameters["textSize"],
+            pos=(0.0, 0.2),
+            text=parameters["texts"]["pulseTutorial2"],
+        )
+        pulse3 = visual.TextStim(
+            parameters["win"],
+            height=parameters["textSize"],
+            pos=(0.0, -0.2),
+            text=parameters["texts"]["pulseTutorial3"],
+        )
+        pulse2.draw()
+        pulse3.draw()
+        press.draw()
+        parameters["win"].flip()
+        core.wait(1)
 
-    waitInput(parameters)
+        waitInput(parameters)
 
     pulse4 = visual.TextStim(
         parameters["win"],
