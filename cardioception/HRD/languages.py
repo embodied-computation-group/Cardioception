@@ -306,21 +306,13 @@ def danish_children(
 
     texts[
         "Tutorial1"
-    ] = """I dette forsøg vil vi registrere din puls og afspille bib-lyde baseret på din hjerterytme.
-
-Du må kun fokusere på din indre følelse af din hjerterytme. Du må altså ikke måle din hjerterytme på andre måder (fx ved at tjekke din puls på dit håndled eller din hals).
+    ] = """Instruktion
         """
-    texts[
-        "pulseTutorial1"
-    ] = "Placer venligst puls oximeteret på din pegefinger. Brug din ikke-dominante hånd som beskrevet i dette skema."
+    texts["pulseTutorial1"] = "Udstyr."
 
-    texts[
-        "pulseTutorial2"
-    ] = "Hvis du kan mærke din hjerterytme, når du har puls oximeteret på din pegefinger, så prøv at placere det på en anden finger."
+    texts["pulseTutorial2"] = "Udstyr."
 
-    texts[
-        "pulseTutorial3"
-    ] = "Du kan teste forskellige fingre indtil du finder den finger, der giver dig mindst sensorisk indput omkring din hjerterytme."
+    texts["pulseTutorial3"] = "Udstyr."
 
     texts[
         "pulseTutorial4"
@@ -335,11 +327,7 @@ Du må kun fokusere på din indre følelse af din hjerterytme. Du må altså ikk
     texts[
         "Tutorial3_icon"
     ] = """Efter du har forsøgt at mærke din indre puls, vil du se det samme ikon og høre en række bib-lyde."""
-    texts[
-        "Tutorial3_responses"
-    ] = f"""Det følgende skal du gøre så hurtigt og præcist som muligt: Du vil lytte til disse bib-lyde og beslutte om de er hurtigere ({moreResp}) eller langsommere ({lessResp}) end din egen hjerterytme.
-
-Bib-lydene vil ALTID være langsommere eller hurtigere end dit hjerte. Gæt venligst selvom du er usikker."""
+    texts["Tutorial3_responses"] = """Instruktion"""
 
     if exteroception is True:
         texts[
@@ -354,23 +342,9 @@ Det følgende skal du gøre så hurtigt og præcist som muligt: Du vil lytte til
 
 Det andet sæt af bib-lyde vil ALTID være langsommere eller hurtigere end det første sæt. Gæt venligst selvom du er usikker."""
 
-    texts[
-        "Tutorial4"
-    ] = """Når du har svaret, vil du også blive bedt om at angive hvor sikker du er på din beslutning.
+    texts["Tutorial4"] = """Instruktion."""
 
-Her betyder den højeste score (100) at du er helt sikker på dit valg, og den mindste score (0) betyder, at du følte, at du gættede.
-
-Du skal bruge musen til at vælge en score."""
-
-    texts[
-        "Tutorial5"
-    ] = """Denne sekvens vil blive gentaget igennem opgaven.
-
-Nogle gange kan opgaven være virkelig svær; forskellen mellem din faktiske hjerterytme og bib-lydene kan være meget små.
-
-Dette betyder, at du skal forsøge at bruge hele skalaens længde til at angive din subjektive usikkerhed i hver runde.
-
-Da opgavens sværhedsgrad ændrer sig over tid, er det sjældent at du vil være totalt sikker eller totalt usikker."""
+    texts["Tutorial5"] = """Instruktion."""
 
     texts[
         "Tutorial6"
