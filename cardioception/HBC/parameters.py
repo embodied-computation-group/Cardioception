@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
-import pkg_resources
+import pkg_resources  # type: ignore
 import serial
 from psychopy import core, sound, visual
 from systole import serialSim

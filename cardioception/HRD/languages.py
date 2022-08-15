@@ -1,8 +1,8 @@
 # Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
-from typing import Dict
+from typing import Collection, Dict
 
 
-def english(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
+def english(device: str, setup: str, exteroception: bool) -> Dict[str, Collection[str]]:
     """Create the text dictionary with instruction in Danish
 
     Parameters
@@ -124,7 +124,7 @@ Otherwise, you can continue to the main task."""
     return texts
 
 
-def danish(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
+def danish(device: str, setup: str, exteroception: bool) -> Dict[str, Collection[str]]:
     """Create the text dictionary with instruction in Danish
 
     Parameters
@@ -250,7 +250,10 @@ Ellers kan du fortsætte til hovedopgaven."""
 
     return texts
 
-def danish_children(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
+
+def danish_children(
+    device: str, setup: str, exteroception: bool
+) -> Dict[str, Collection[str]]:
     """Create the text dictionary with instruction in Danish
 
     Parameters

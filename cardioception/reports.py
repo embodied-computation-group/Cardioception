@@ -5,7 +5,7 @@ import subprocess
 from typing import Optional
 
 import papermill as pm
-import pkg_resources
+import pkg_resources  # type: ignore
 
 
 def report(resultPath: str, reportPath: Optional[str] = None, task: str = "HRD"):

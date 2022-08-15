@@ -85,7 +85,7 @@ def save_wav(audio: list, file_name: str):
     # 44100 is the industry standard sample rate
     nframes = len(audio)
     wav_file.setparams(
-        (nchannels, sampwidth, sample_rate, nframes, "NONE", "not compressed")
+        (nchannels, sampwidth, sample_rate, nframes, "NONE", "not compressed")  # type: ignore
     )
 
     for sample in audio:

@@ -5,13 +5,13 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
-import pkg_resources
+import pkg_resources  # type: ignore
 import serial
 from psychopy import core, data, event, visual
 from systole import serialSim
 from systole.recording import Oximeter, findOximeter
 
-from cardioception.HRD.languages import danish, english, danish_children
+from cardioception.HRD.languages import danish, danish_children, english
 
 
 def getParameters(

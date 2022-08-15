@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
-import pkg_resources
+import pkg_resources  # type: ignore
 from psychopy import core, event, sound, visual
 from systole.detection import ppg_peaks
 from systole.recording import BrainVisionExG
@@ -435,9 +435,7 @@ def trial(
             # it can measure and create the new variable `bpm` (the average beats per
             # minute over the 5 seconds of recording).
             signal = parameters["oxiTask"].read(duration=5.0).recording[-75 * 6 :]
-            signal, peaks = ppg_peaks(
-                signal, sfreq=75, new_sfreq=1000, clipping=True
-            )
+            signal, peaks = ppg_peaks(signal, sfreq=75, new_sfreq=1000, clipping=True)
 
             # Get actual heart Rate
             # Only use the last 5 seconds of the recording
