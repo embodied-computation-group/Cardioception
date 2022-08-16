@@ -69,6 +69,8 @@ source_suffix = [".rst", ".md"]
 # The master toctree document.
 master_doc = "index"
 
+nb_execution_timeout = 300
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
@@ -102,18 +104,14 @@ html_theme_options = {
             icon="fas fa-box",
         ),
     ],
-    "logo_link": "https://embodied-computation-group.github.io/Carcioception/#",
     "logo": {
         "text": "Cardioception",
+        "link": "https://embodied-computation-group.github.io/Carcioception/#",
     },
 }
 
 html_sidebars = {"index": []}
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
 ]

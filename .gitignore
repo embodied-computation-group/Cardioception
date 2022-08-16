@@ -6,7 +6,8 @@
 /dist
 /cardioception.egg-info
 /build
-docs/auto_examples
-docs/generated
-docs/api
+docs/source/auto_examples
+docs/source/generated
+docs/source/api
 docs/build
+docs/auto_examples

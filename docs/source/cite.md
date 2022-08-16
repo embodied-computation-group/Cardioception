@@ -1,4 +1,4 @@
-## How to cite?
+# How to cite?
 
 If you are using the [cardioception](https://github.com/embodied-computation-group/Cardioception) package for your research, we ask you to cite the following paper in the final publication:
 
