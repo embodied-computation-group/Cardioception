@@ -14,20 +14,18 @@ import time
 
 import sphinx_bootstrap_theme
 
-import cardioception
-
 # -- Project information -----------------------------------------------------
 
 project = "cardioception"
 copyright = "2022-{}, Nicolas Legrand".format(time.strftime("%Y"))
 author = "Nicolas Legrand"
-release = cardioception.__version__
+release = "0.4.3"
 
 
 image_scrapers = ("matplotlib",)
 
 sphinx_gallery_conf = {
-    "examples_dirs": "../examples/",
+    "examples_dirs": "./examples/",
     "backreferences_dir": "api",
     "image_scrapers": image_scrapers,
 }
@@ -131,5 +129,4 @@ intersphinx_mapping = {
     "matplotlib": ("http://matplotlib.org/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
     "seaborn": ("https://seaborn.pydata.org/", None),
-    "psychopy": ("https://psychopy.org/index.html", None),
 }
