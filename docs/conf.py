@@ -103,9 +103,12 @@ html_theme_options = {
         ),
     ],
     "logo_link": "https://embodied-computation-group.github.io/Carcioception/#",
+    "logo": {
+        "text": "Cardioception",
+    },
 }
 
-html_sidebars = {"api": [], "changelog": [], "notebooks/*": []}
+html_sidebars = {"index": []}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
