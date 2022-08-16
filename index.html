@@ -86,6 +86,8 @@
     <img src="_static/logo.png" class="logo__image only-dark" alt="Logo image">
   
   
+    <p class="title logo__title">Cardioception</p>
+  
 </a>
     
   </div>
@@ -144,26 +146,13 @@
       <div class="bd-container__inner row">
           
 
-<!-- Only show if we have sidebars configured, else just a small margin  -->
-<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
-  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
-    
-  </div>
-</nav>
-  </div>
-  <div class="sidebar-end-items">
-  </div>
-</div>
+<div class="sidebar-primary col-12 col-md-1 col-xl-2 bd-sidebar no-sidebar"></div>
 
 
           
 
 
-<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+<div class="bd-sidebar-secondary d-none d-md-block col-md-2 bd-toc">
   
     
     <div class="toc-item">
@@ -178,76 +167,6 @@
   <a class="reference internal nav-link" href="#">
    Cardioception
   </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#how-to-cite">
-     How to cite?
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#do-you-need-help">
-     Do you need help?
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#installation">
-   Installation
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#dependencies">
-     Dependencies
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#package-modularity">
-   Package modularity
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#physiological-recording">
-     Physiological recording
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#run-the-tasks">
-   Run the tasks
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#using-a-script">
-     Using a script
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#creating-a-shortcut-windows">
-     Creating a shortcut (Windows)
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#tasks">
-   Tasks
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#the-heartbeat-counting-task">
-     The Heartbeat Counting task
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#the-heart-rate-discrimination-task">
-     The Heart Rate Discrimination task
-    </a>
-   </li>
-  </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#analyses">
@@ -296,7 +215,7 @@
 
           
           
-          <div class="bd-content col-12 col-md-9 col-xl-7">
+          <div class="bd-content col-12 col-md-9 col-xl-8">
               
               <article class="bd-article" role="main">
                 
@@ -304,7 +223,7 @@
 <hr class="docutils" />
 <section id="cardioception">
 <h1>Cardioception<a class="headerlink" href="#cardioception" title="Permalink to this headline">#</a></h1>
-<img src="/images/logo.png" align="left" alt="metadPy" height="230" HSPACE=30>
+<img src="./images/logo.png" align="left" alt="cardioception" height="230" HSPACE=30>
 <p>The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):</p>
 <ol class="arabic simple">
 <li><p>The <strong>Heartbeat counting task</strong> developed by Rainer Schandry<sup>1,2</sup>. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.</p></li>
@@ -312,123 +231,6 @@
 </ol>
 <p>These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task use the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>. This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required.</p>
 <p>The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI…). See <em>Sending triggers</em> below for details.</p>
-<section id="how-to-cite">
-<h2>How to cite?<a class="headerlink" href="#how-to-cite" title="Permalink to this headline">#</a></h2>
-<p>If you are using cardioception in a publication we ask you to cite the following paper:</p>
-<blockquote>
-<div><p>Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., &amp; Allen, M. (2021). The Heart Rate Discrimination Task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 108239. https://doi.org/10.1016/j.biopsycho.2021.108239</p>
-</div></blockquote>
-<p>If you are using <a class="reference external" href="https://systole-docs.github.io/">systole</a> to interact with your recording device (this is the default behavior in cardioception), you might also cite the following reference:</p>
-<blockquote>
-<div><p>Legrand et al., (2022). Systole: A python package for cardiac signal synchrony and analysis. Journal of Open Source Software, 7(69), 3832, https://doi.org/10.21105/joss.03832</p>
-</div></blockquote>
-</section>
-<section id="do-you-need-help">
-<h2>Do you need help?<a class="headerlink" href="#do-you-need-help" title="Permalink to this headline">#</a></h2>
-<p>If you have questions regarding the tasks, want to report a bug or discuss data analysis, please ask on our public <a class="reference external" href="https://gitter.im/Cardioception/community?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge"><img alt="Gitter" src="https://badges.gitter.im/Cardioception/community.svg" /></a>.</p>
-</section>
-</section>
-<section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">#</a></h1>
-<p><strong>Using the Python Package Index</strong></p>
-<ul class="simple">
-<li><p>The most recent version can be installed uing:
-<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cardioception</span></code></p></li>
-<li><p>The current development branch can be installed using
-<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/embodied-computation-group/Cardioception.git</span></code></p></li>
-</ul>
-<p><strong>Downloading the ZIP file</strong></p>
-<img src="/images/downloadZIP.png" align="left" alt="metadPy" height="200" HSPACE=30>
-<p>You can also download the most recent version by downloading the repository as a .zip file.</p>
-<p>After extracting the content of the file, the package can be installed via the command line by running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code>. Note that this command should be executed when your terminal run inside the extracted folder. You can navigate through your local folder using the command <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">[path</span> <span class="pre">to</span> <span class="pre">your</span> <span class="pre">folder]</span></code>.</p>
-<br clear="left"/>
-<section id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">#</a></h2>
-<p>Cardioception has been tested with Python 3.7. We recommend to use the last install of Anaconda for Python 3.7 or latest (see https://www.anaconda.com/products/individual#download-section).</p>
-<p>Make sure that you have the following packages installed and up to date before running cardioception:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://www.psychopy.org/">psychopy</a> can be installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">psychopy</span></code>.</p></li>
-<li><p><a class="reference external" href="https://systole-docs.github.io/">systole</a> can be installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">systole</span></code>.</p></li>
-</ul>
-<p>The other main dependencies are:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://numpy.org/">numpy</a> (&gt;=1.19.4)</p></li>
-<li><p><a class="reference external" href="https://www.scipy.org/">scipy</a> (&gt;=1.3.0)</p></li>
-<li><p><a class="reference external" href="https://pandas.pydata.org/">pandas</a> (&gt;=1.0.3)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/pyserial/">pyserial</a> (&gt;=3.4)</p></li>
-</ul>
-<p>In addition, some function for HTML reports will require:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://papermill.readthedocs.io/en/latest/">papermill</a> (&gt;=2.3.1)</p></li>
-<li><p><a class="reference external" href="https://matplotlib.org/">matplotlib</a> (&gt;=3.3.3)</p></li>
-<li><p><a class="reference external" href="https://seaborn.pydata.org/">seaborn</a> (&gt;=0.11.1)</p></li>
-<li><p><a class="reference external" href="https://pingouin-stats.org/">pingouin</a> (&gt;=0.3.10)</p></li>
-<li><p><a class="reference external" href="https://github.com/LegrandNico/metadPy">metadPy</a> (&gt;=0.01)</p></li>
-</ul>
-<p><strong>NOTE</strong>
-The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles.</p>
-<p>Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 160 Mo). These files will be removed if you uninstall the package using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">uninstall</span> <span class="pre">cardioception</span></code>.</p>
-</section>
-</section>
-<section id="package-modularity">
-<h1>Package modularity<a class="headerlink" href="#package-modularity" title="Permalink to this headline">#</a></h1>
-<section id="physiological-recording">
-<h2>Physiological recording<a class="headerlink" href="#physiological-recording" title="Permalink to this headline">#</a></h2>
-<p>Both the Heartbeat counting task (HBC) and the heart rate discrimination task (HRD) require access to physiological recording device during the task to estimate the heart rate or count the number of heartbeats in a given time window. Cardioception natively supports:</p>
-<ul class="simple">
-<li><p>The <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a></p></li>
-<li><p>Remote Data Access (RDA) via BrainVision Recorder together with <a class="reference external" href="https://www.brainproducts.com/%3E">Brain product ExG amplifier</a>.</p></li>
-</ul>
-<p>The package can easily be extended and integrate other recording devices by providing another recording class that will interface with your own devices (ECG, pulse oximeters, or any king of recording that will offer precise estimation of the cardiac frequency).</p>
-</section>
-</section>
-<section id="run-the-tasks">
-<h1>Run the tasks<a class="headerlink" href="#run-the-tasks" title="Permalink to this headline">#</a></h1>
-<p>Each task contains a <code class="docutils literal notranslate"><span class="pre">parameters</span></code> and a <code class="docutils literal notranslate"><span class="pre">task</span></code> submodule describing the experimental parameters and the Psychopy script respectively. Several changes and adaptation can be parametrized just by passing arguments to the parameters functions. Please refer to the API documentation for details.</p>
-<section id="using-a-script">
-<h2>Using a script<a class="headerlink" href="#using-a-script" title="Permalink to this headline">#</a></h2>
-<p>Once the package has been installed, you can run the task (e.g. here the Heart rate Discrimination task) using the following code snippet:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cardioception.HRD.parameters</span> <span class="kn">import</span> <span class="n">getParameters</span>
-<span class="kn">from</span> <span class="nn">cardioception.HRD</span> <span class="kn">import</span> <span class="n">task</span>
-
-<span class="c1"># Set global task parameters</span>
-<span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">getParameters</span><span class="p">(</span>
-    <span class="n">participant</span><span class="o">=</span><span class="s1">&#39;Subject_01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;Test&#39;</span><span class="p">,</span> <span class="n">serialPort</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">setup</span><span class="o">=</span><span class="s1">&#39;behavioral&#39;</span><span class="p">,</span> <span class="n">nTrials</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">screenNb</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-<span class="c1"># Run task</span>
-<span class="n">task</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">confidenceRating</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">runTutorial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;win&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>This minimal example will run the Heart Rate Discrimination task with a total of 10 trials using a Psi staircase.</p>
-<p>We provide standard scripts in the <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers">wrappers</a> folder that can be adapted to your needs. We recommend copying this script in your local task folder if you want to parametrize it to fit your needs. The tasks can then easily be executed by running the corresponding wrapper file (e.g in a terminal).</p>
-</section>
-<section id="creating-a-shortcut-windows">
-<h2>Creating a shortcut (Windows)<a class="headerlink" href="#creating-a-shortcut-windows" title="Permalink to this headline">#</a></h2>
-<p>Once you have adapted the scripts, you can create a shortcut (e.g in the Desktop) so the task can be executed just by clicking on it without any coding or command lines interactions.</p>
-<p>If you are using Windows, you can simply create a <code class="docutils literal notranslate"><span class="pre">.bat</span></code> file containing the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">call</span> <span class="p">[</span><span class="n">path</span> <span class="n">to</span> <span class="n">your</span> <span class="n">environment</span> <span class="o">*/</span><span class="n">conda</span><span class="o">.</span><span class="n">bat</span><span class="p">]</span> <span class="n">activate</span>
-<span class="p">[</span><span class="n">path</span> <span class="n">to</span> <span class="n">your</span> <span class="n">local</span> <span class="o">*/</span><span class="n">python</span><span class="o">.</span><span class="n">exe</span><span class="p">]</span> <span class="p">[</span><span class="n">path</span> <span class="n">to</span> <span class="n">your</span> <span class="n">wrapper</span> <span class="o">*/</span><span class="n">hrd</span><span class="o">.</span><span class="n">py</span><span class="p">]</span>
-<span class="n">pause</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="tasks">
-<h1>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">#</a></h1>
-<section id="the-heartbeat-counting-task">
-<h2>The Heartbeat Counting task<a class="headerlink" href="#the-heartbeat-counting-task" title="Permalink to this headline">#</a></h2>
-<img src= "images/HeartBeatCounting.png">
-<p>This module is an implementation of the classic “heartbeat counting task” (HCT)<sup>1,2</sup> in which participants attend to their heartbeats in intervals of various lengths. Afterward, the participant indicates the number of counted heartbeats, and a score is computed to represent their accuracy. In the original version<sup>1</sup>, the task started with a resting period of 60 seconds and consisted of three estimation session (25, 35, and 45 seconds) interleaved with resting periods of 30 seconds in the following order:</p>
-<p>By default, this task implements the version used in recent publications <sup>4, 5</sup> in which a training trial of 20 seconds is proposed, after which the 6 experimental trials of different time windows (25, 30, 35,40, 45 and 50s) occurred in a randomized order. The trial length, the condition (‘Rest’, ‘Count’, ‘Training’), and the randomization can be controlled in the parameters dictionary.</p>
-</section>
-<section id="the-heart-rate-discrimination-task">
-<h2>The Heart Rate Discrimination task<a class="headerlink" href="#the-heart-rate-discrimination-task" title="Permalink to this headline">#</a></h2>
-<img src= "images/HeartRateDiscrimination.png">
-<p>This task implements an adaptive psychophysical procedure for estimating participants’ ability to discriminate their heart rate. On each trial, participants attend to their heartbeat sensations for five seconds and estimate their average heart rate. Immediately following this period, a cardiac feedback stimulus of 5 tones is played at a particular BPM frequency. The frequency is determined as their estimated average BPM plus or minus an intensity value that is updated by an adaptive staircase procedure (up/down or psi).</p>
-</section>
 </section>
 <section id="analyses">
 <h1>Analyses<a class="headerlink" href="#analyses" title="Permalink to this headline">#</a></h1>
@@ -508,11 +310,18 @@ The version provided here are the ones used when testing and runing cardioceptio
 <section id="development">
 <h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">#</a></h1>
 <p>This package was created and is maintained by <a class="reference external" href="https://legrandnico.github.io/">Nicolas Legrand</a> and <a class="reference external" href="https://micahallen.org/">Micah Allen</a> from the <a class="reference external" href="https://the-ecg.org/">ECG group</a>.</p>
-<p><img src = "images/LabLogo.png" height ="100"><img src = "images/AU.png" height ="100"></p>
+<p><img src = "./images/LabLogo.png" height ="100"><img src = "./images/AU.png" height ="100"></p>
 </section>
 <section id="credit">
 <h1>Credit<a class="headerlink" href="#credit" title="Permalink to this headline">#</a></h1>
 <p>Some icons used in the Figures or presented during the tasks were downloaded from <strong>Flaticon</strong> <span class="xref myst">www.flaticon.com</span>.</p>
+<p>:::{toctree}
+:hidden:</p>
+<p>User guide &lt;user_guide&gt;
+API <api>
+Statistical analysis &lt;examples/README.md&gt;
+Cite <cite>
+:::</p>
 </section>
 
 
