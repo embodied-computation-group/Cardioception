@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from psychopy import core, event, sound, visual
+from psychopy import core, event, visual
 
 
 def run(

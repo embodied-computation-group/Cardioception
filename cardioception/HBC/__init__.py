@@ -1,2 +1,4 @@
-from .parameters import *
-from .task import *
+from .parameters import getParameters
+from .task import rest, run, trial, tutorial
+
+__all__ = ["getParameters", "run", "trial", "tutorial", "rest"]

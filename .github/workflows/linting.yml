@@ -30,3 +30,4 @@ jobs:
         mypy ./cardioception/ --ignore-missing-imports
         black ./cardioception/
         isort ./cardioception/
+        flake8 ./cardioception/

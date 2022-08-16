@@ -1,20 +1,24 @@
 repos:
--   repo: https://github.com/asottile/seed-isort-config
-    rev: v2.2.0
-    hooks:
-    - id: seed-isort-config
 -   repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.10.1
     hooks:
     - id: isort
-      exclude: tests/
+      files: ^cardioception/
 -   repo: https://github.com/ambv/black
     rev: 22.6.0
     hooks:
     - id: black
       language_version: python3
+      files: ^cardioception/
+-   repo: https://github.com/pycqa/flake8
+    rev: 5.0.4
+    hooks:
+    - id: flake8
+      files: ^cardioception/
+      args: [--extend-ignore=E501]
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: 'v0.971'
     hooks:
-    - id: mypy
+    - id: mypy 
+      files: ^cardioception/
       args: [--ignore-missing-imports, --follow-imports=skip]
