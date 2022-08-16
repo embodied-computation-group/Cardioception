@@ -1,4 +1,5 @@
 matplotlib>=3.0.2
+jupyter_sphinx>=0.4.0
 pydata-sphinx-theme>=0.9.0
 sphinx-bootstrap-theme>=0.8.1
 sphinx-gallery>=0.11.0
