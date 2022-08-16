@@ -57,6 +57,8 @@
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Cardioception" href="index.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="None">
   </head>
@@ -75,9 +77,10 @@
     
     
   
+  
 
 
-<a class="navbar-brand logo" href="index.html">
+<a class="navbar-brand logo" href="https%3A//embodied-computation-group.github.io/Carcioception/%23.html">
   
   
   
@@ -102,7 +105,30 @@
       
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
-    
+    <li class="toctree-l1 current active nav-item">
+ <a class="current reference internal nav-link" href="#">
+  Do you need help?
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="examples/README.html">
+  Statistical analysis
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="cite.html">
+  Cite
+ </a>
+</li>
+
     
 </ul>
       </div>
@@ -185,25 +211,16 @@
   <a class="reference internal nav-link" href="#installation">
    Installation
   </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#dependencies">
-     Dependencies
-    </a>
-   </li>
-  </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#package-modularity">
-   Package modularity
+  <a class="reference internal nav-link" href="#dependencies">
+   Dependencies
   </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#physiological-recording">
-     Physiological recording
-    </a>
-   </li>
-  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#physiological-recording">
+   Physiological recording
+  </a>
  </li>
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#run-the-tasks">
@@ -276,8 +293,9 @@
 <p>You can also download the most recent version by downloading the repository as a .zip file.</p>
 <p>After extracting the content of the file, the package can be installed via the command line by running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code>. Note that this command should be executed when your terminal run inside the extracted folder. You can navigate through your local folder using the command <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">[path</span> <span class="pre">to</span> <span class="pre">your</span> <span class="pre">folder]</span></code>.</p>
 <br clear="left"/>
+</section>
 <section id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">#</a></h2>
+<h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">#</a></h1>
 <p>Cardioception has been tested with Python 3.7. We recommend to use the last install of Anaconda for Python 3.7 or latest (see https://www.anaconda.com/products/individual#download-section).</p>
 <p>Make sure that you have the following packages installed and up to date before running cardioception:</p>
 <ul class="simple">
@@ -303,18 +321,14 @@
 The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles.</p>
 <p>Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 160 Mo). These files will be removed if you uninstall the package using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">uninstall</span> <span class="pre">cardioception</span></code>.</p>
 </section>
-</section>
-<section id="package-modularity">
-<h1>Package modularity<a class="headerlink" href="#package-modularity" title="Permalink to this headline">#</a></h1>
 <section id="physiological-recording">
-<h2>Physiological recording<a class="headerlink" href="#physiological-recording" title="Permalink to this headline">#</a></h2>
+<h1>Physiological recording<a class="headerlink" href="#physiological-recording" title="Permalink to this headline">#</a></h1>
 <p>Both the Heartbeat counting task (HBC) and the heart rate discrimination task (HRD) require access to physiological recording device during the task to estimate the heart rate or count the number of heartbeats in a given time window. Cardioception natively supports:</p>
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a></p></li>
 <li><p>Remote Data Access (RDA) via BrainVision Recorder together with <a class="reference external" href="https://www.brainproducts.com/%3E">Brain product ExG amplifier</a>.</p></li>
 </ul>
 <p>The package can easily be extended and integrate other recording devices by providing another recording class that will interface with your own devices (ECG, pulse oximeters, or any king of recording that will offer precise estimation of the cardiac frequency).</p>
-</section>
 </section>
 <section id="run-the-tasks">
 <h1>Run the tasks<a class="headerlink" href="#run-the-tasks" title="Permalink to this headline">#</a></h1>
@@ -373,6 +387,20 @@ The version provided here are the ones used when testing and runing cardioceptio
               <footer class="bd-footer-article">
                   <!-- Previous / next buttons -->
 <div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="index.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Cardioception</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="api.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">API</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
 </div>
               </footer>
               

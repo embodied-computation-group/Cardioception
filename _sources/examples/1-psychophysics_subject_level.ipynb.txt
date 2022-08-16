@@ -22,8 +22,10 @@
       "outputs": [],
       "source": [
         "%%capture\n",
-        "! pip install arviz\n",
-        "! pip install pymc"
+        "import sys\n",
+        "if 'google.colab' in sys.modules:\n",
+        "    ! pip install arviz\n",
+        "    ! pip install pymc"
       ]
     },
     {
@@ -35,14 +37,15 @@
       },
       "outputs": [],
       "source": [
+        "import aesara.tensor as at\n",
         "import arviz as az\n",
         "import matplotlib.pyplot as plt\n",
         "import numpy as np\n",
         "import pandas as pd\n",
-        "import pymc as pm\n",
         "import seaborn as sns\n",
-        "import aesara.tensor as at\n",
         "from scipy.stats import norm\n",
+        "\n",
+        "import pymc as pm\n",
         "\n",
         "sns.set_context('talk')"
       ]
