@@ -4,7 +4,7 @@
 
 # Cardioception
 
-<img src="/images/logo.png" align="left" alt="cardioception" height="230" HSPACE=30>
+<img src="./images/logo.png" align="left" alt="cardioception" height="230" HSPACE=30>
 
 The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):
 1. The **Heartbeat counting task** developed by Rainer Schandry<sup>1,2</sup>. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.
@@ -49,7 +49,7 @@ You can also analyze the results in [Google Colab](https://colab.research.google
 # Development
 This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/) and [Micah Allen](https://micahallen.org/) from the [ECG group](https://the-ecg.org/).
 
-<img src = "/images/LabLogo.png" height ="100"><img src = "/images/AU.png" height ="100">
+<img src = "./images/LabLogo.png" height ="100"><img src = "./images/AU.png" height ="100">
 
 # Credit
 Some icons used in the Figures or presented during the tasks were downloaded from [www.flaticon.com](www.flaticon.com).
