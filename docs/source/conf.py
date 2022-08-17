@@ -25,7 +25,6 @@ release = "0.4.3"
 image_scrapers = ("matplotlib",)
 
 sphinx_gallery_conf = {
-    "examples_dirs": "./examples/",
     "backreferences_dir": "api",
     "image_scrapers": image_scrapers,
 }
@@ -43,14 +42,15 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
-    "sphinx_gallery.gen_gallery",
     "matplotlib.sphinxext.plot_directive",
     "numpydoc",
     "jupyter_sphinx",
     "sphinx_panels",
     "myst_nb",
-    "sphinx_gallery.load_style",
+    "sphinxcontrib.bibtex"
 ]
+
+bibtex_bibfiles = ['refs.bib']
 
 panels_add_bootstrap_css = False
 
@@ -106,7 +106,6 @@ html_theme_options = {
     ],
     "logo": {
         "text": "Cardioception",
-        "link": "https://embodied-computation-group.github.io/Carcioception/#",
     },
 }
 
