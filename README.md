@@ -12,7 +12,7 @@ The Cardioception Python Package - Measuring Interoception with Psychopy - imple
 
 These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task use the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...).
 
-The documentation can be found under the following [link](https://embodied-computation-group.github.io/systole/#).
+The documentation can be found under the following [link](https://embodied-computation-group.github.io/Cardioception/#).
 
 ## How to cite?
 
@@ -24,7 +24,7 @@ If you are using [systole](https://systole-docs.github.io/) to interact with you
 
 > Legrand et al., (2022). Systole: A python package for cardiac signal synchrony and analysis. Journal of Open Source Software, 7(69), 3832, https://doi.org/10.21105/joss.03832
 
-## Do you need help?
+## Looking for help?
 
 If you have questions regarding the tasks, want to report a bug or discuss data analysis, please ask on our public [![Gitter](https://badges.gitter.im/Cardioception/community.svg)](https://gitter.im/Cardioception/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge).
 
