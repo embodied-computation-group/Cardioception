@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Do you need help? &#8212; cardioception 0.4.3 documentation</title>
+    <title>Installation &#8212; cardioception 0.4.3 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -31,11 +31,6 @@
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/style.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
@@ -57,8 +52,6 @@
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API" href="api.html" />
-    <link rel="prev" title="Cardioception" href="index.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="None">
   </head>
@@ -77,10 +70,9 @@
     
     
   
-  
 
 
-<a class="navbar-brand logo" href="https%3A//embodied-computation-group.github.io/Carcioception/%23.html">
+<a class="navbar-brand logo" href="index.html">
   
   
   
@@ -105,30 +97,7 @@
       
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 current active nav-item">
- <a class="current reference internal nav-link" href="#">
-  Do you need help?
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="api.html">
-  API
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="examples/README.html">
-  Statistical analysis
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="cite.html">
-  Cite
- </a>
-</li>
-
+    
     
 </ul>
       </div>
@@ -204,11 +173,6 @@
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#">
-   Do you need help?
-  </a>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#installation">
    Installation
   </a>
  </li>
@@ -256,6 +220,11 @@
    </li>
   </ul>
  </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#creating-reports">
+   Creating reports
+  </a>
+ </li>
 </ul>
 
 </nav>
@@ -275,11 +244,7 @@
               
               <article class="bd-article" role="main">
                 
-  <section id="do-you-need-help">
-<h1>Do you need help?<a class="headerlink" href="#do-you-need-help" title="Permalink to this headline">#</a></h1>
-<p>If you have questions regarding the tasks, want to report a bug or discuss data analysis, please ask on our public <a class="reference external" href="https://gitter.im/Cardioception/community?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge"><img alt="Gitter" src="https://badges.gitter.im/Cardioception/community.svg" /></a>.</p>
-</section>
-<section id="installation">
+  <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">#</a></h1>
 <p><strong>Using the Python Package Index</strong></p>
 <ul class="simple">
@@ -378,6 +343,38 @@ The version provided here are the ones used when testing and runing cardioceptio
 <p>This task implements an adaptive psychophysical procedure for estimating participants’ ability to discriminate their heart rate. On each trial, participants attend to their heartbeat sensations for five seconds and estimate their average heart rate. Immediately following this period, a cardiac feedback stimulus of 5 tones is played at a particular BPM frequency. The frequency is determined as their estimated average BPM plus or minus an intensity value that is updated by an adaptive staircase procedure (up/down or psi).</p>
 </section>
 </section>
+<section id="creating-reports">
+<h1>Creating reports<a class="headerlink" href="#creating-reports" title="Permalink to this headline">#</a></h1>
+<p>The results are saved in the <code class="docutils literal notranslate"><span class="pre">'resultPath'</span></code> folder defined in the parameters dictionary. For each task, we provide a comprehensive notebook detailing the main results, quality checks, and basic preprocessing steps. You can automatically generate the HTML reports using the following code snippet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cardioception.reports</span> <span class="kn">import</span> <span class="n">report</span>
+
+<span class="n">resultPath</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span>  <span class="c1"># the folder containing the result files</span>
+<span class="n">reportPath</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span>  <span class="c1"># the folder where you want to save the HTML report</span>
+
+<span class="n">report</span><span class="p">(</span><span class="n">resultPath</span><span class="p">,</span> <span class="n">reportPath</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;HRD&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This code will generate the HTML reports for the Heart Rate Discrimination task in the <code class="docutils literal notranslate"><span class="pre">reportPath</span></code> folder using the results files located in <code class="docutils literal notranslate"><span class="pre">resultPath</span></code>. This will require <a class="reference external" href="https://papermill.readthedocs.io/en/latest/">papermill</a>.</p>
+<p>You can also analyze the results in <a class="reference external" href="https://colab.research.google.com/">Google Colab</a> using one of the following link and upload the content of your result folder.</p>
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Notebook</p></th>
+<th class="head"><p>Colab</p></th>
+<th class="head"><p>nbViewer</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Heartbeat Counting task report</p></td>
+<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
+<td><p><a class="reference external" href="https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb"><img alt="View the notebook" src="https://img.shields.io/badge/render-nbviewer-orange.svg" /></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Heart Rate Discrimination task report</p></td>
+<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
+<td><p><a class="reference external" href="https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb"><img alt="View the notebook" src="https://img.shields.io/badge/render-nbviewer-orange.svg" /></a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 
 
               </article>
@@ -387,20 +384,6 @@ The version provided here are the ones used when testing and runing cardioceptio
               <footer class="bd-footer-article">
                   <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="index.html" title="previous page">
-      <i class="fas fa-angle-left"></i>
-      <div class="prev-next-info">
-          <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">Cardioception</p>
-      </div>
-  </a>
-  <a class='right-next' id="next-link" href="api.html" title="next page">
-  <div class="prev-next-info">
-      <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">API</p>
-  </div>
-  <i class="fas fa-angle-right"></i>
-  </a>
 </div>
               </footer>
               

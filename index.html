@@ -31,11 +31,6 @@
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/style.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
@@ -57,7 +52,6 @@
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Do you need help?" href="user_guide.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="None">
   </head>
@@ -76,10 +70,9 @@
     
     
   
-  
 
 
-<a class="navbar-brand logo" href="https%3A//embodied-computation-group.github.io/Carcioception/%23.html">
+<a class="navbar-brand logo" href="#">
   
   
   
@@ -104,30 +97,7 @@
       
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="user_guide.html">
-  Do you need help?
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="api.html">
-  API
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="examples/README.html">
-  Statistical analysis
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="cite.html">
-  Cite
- </a>
-</li>
-
+    
     
 </ul>
       </div>
@@ -182,46 +152,9 @@
     
     <div class="toc-item">
       
-<div class="tocsection onthispage mt-5 pt-1 pb-3">
-    <i class="fas fa-list"></i> On this page
-</div>
 
 <nav id="bd-toc-nav">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#">
-   Cardioception
-  </a>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#analyses">
-   Analyses
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#task-reports">
-     Task reports
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#references">
-   References
-  </a>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#development">
-   Development
-  </a>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#credit">
-   Credit
-  </a>
- </li>
-</ul>
-
+    
 </nav>
     </div>
     
@@ -246,66 +179,43 @@
 <img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/logo.png" align="left" alt="cardioception" height="230" HSPACE=30>
 <p>The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):</p>
 <ol class="arabic simple">
-<li><p>The <strong>Heartbeat counting task</strong> developed by Rainer Schandry<sup>1,2</sup>. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.</p></li>
-<li><p>The <strong>Heart Rate Discrimination Task</strong> <sup>3</sup> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see <em>Analyses</em> below), together with metacognitive efficiency.</p></li>
+<li><p>The <strong>Heartbeat counting task (HBC)</strong>, also known as the <strong>Heartbeat tracking task</strong>, developed by Rainer Schandry :cite:t:<code class="docutils literal notranslate"><span class="pre">1978:dale,1981:schandry</span></code>. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.</p></li>
+<li><p>The <strong>Heart Rate Discrimination task</strong> :cite:t:<code class="docutils literal notranslate"><span class="pre">2022:legrand</span></code> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see <em>Analyses</em> below), together with metacognitive efficiency.</p></li>
 </ol>
-<p>These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task use the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>. This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required.</p>
-<p>The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI…). See <em>Sending triggers</em> below for details.</p>
-</section>
-<section id="analyses">
-<h1>Analyses<a class="headerlink" href="#analyses" title="Permalink to this headline">#</a></h1>
-<section id="task-reports">
-<h2>Task reports<a class="headerlink" href="#task-reports" title="Permalink to this headline">#</a></h2>
-<p>The results are saved in the <code class="docutils literal notranslate"><span class="pre">'resultPath'</span></code> folder defined in the parameters dictionary. For each task, we provide a comprehensive notebook detailing the main results, quality checks, and basic preprocessing steps. You can automatically generate the HTML reports using the following code snippet:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cardioception.reports</span> <span class="kn">import</span> <span class="n">report</span>
+<p>```{note} While having slightly similar names, the <strong>Heartbeat counting task (HBC)</strong> and the <strong>Heart Rate Discrimination task</strong> are different in term of implementation and the measures they provided and should not be conflated. The <strong>HBC</strong> task has been largely criticized (see the section How to measure cardiac interoception). We developped the cardioception package first to provide an open sourced version of this task, which was lacking, and easy support to record heart rate via cheap pulse oximetry via <a class="reference external" href="https://github.com/embodied-computation-group/systole">Systole</a>. In addition to that, we developped the <strong>HRD</strong> task as a new measure of cardiac interoception, grounding on a different reasonning and trying to control for the confounds other interoception tasks migh have :cite:t:<code class="docutils literal notranslate"><span class="pre">2022:legrand</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task use the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM &#39;soft-clip&#39; fingertip sensors](https://www.nonin.com/products/8000s/). This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...).
 
-<span class="n">resultPath</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span>  <span class="c1"># the folder containing the result files</span>
-<span class="n">reportPath</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span>  <span class="c1"># the folder where you want to save the HTML report</span>
+# Looking for help?
 
-<span class="n">report</span><span class="p">(</span><span class="n">resultPath</span><span class="p">,</span> <span class="n">reportPath</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;HRD&#39;</span><span class="p">)</span>
+If you have questions regarding the tasks or want discuss data analysis, please ask on our public [![Gitter](https://badges.gitter.im/Cardioception/community.svg)](https://gitter.im/Cardioception/community?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge).
+
+If you want to report a bug, you can open an issue on the [GitHub page](https://github.com/embodied-computation-group/Cardioception).
+
+# References
+
+.. bibliography::
+
+# Development
+This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/) and [Micah Allen](https://micahallen.org/) from the [ECG group](https://the-ecg.org/).
+
+&lt;img src = &quot;https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/LabLogo.png&quot; height =&quot;100&quot;&gt;&lt;img src = &quot;https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/AU.png&quot; height =&quot;100&quot;&gt;
+
+# Credit
+Some icons used in the Figures or presented during the tasks were downloaded from [www.flaticon.com](www.flaticon.com).
+
+
+```{toctree}
+---
+hidden:
+maxdepth: 3
+---
+Theory &lt;measuring.md&gt;
+Guide &lt;user_guide.md&gt;
+API &lt;api.rst&gt;
+Statistical analysis &lt;examples/README.md&gt;
+Cite &lt;cite.md&gt;
 </pre></div>
-</div>
-<p>This code will generate the HTML reports for the Heart Rate Discrimination task in the <code class="docutils literal notranslate"><span class="pre">reportPath</span></code> folder using the results files located in <code class="docutils literal notranslate"><span class="pre">resultPath</span></code>. This will require <a class="reference external" href="https://papermill.readthedocs.io/en/latest/">papermill</a>.</p>
-<p>You can also analyze the results in <a class="reference external" href="https://colab.research.google.com/">Google Colab</a> using one of the following link and upload the content of your result folder.</p>
-<table class="colwidths-auto table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Notebook</p></th>
-<th class="head"><p>Colab</p></th>
-<th class="head"><p>nbViewer</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Heartbeat Counting task report</p></td>
-<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
-<td><p><a class="reference external" href="https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb"><img alt="View the notebook" src="https://img.shields.io/badge/render-nbviewer-orange.svg" /></a></p></td>
-</tr>
-<tr class="row-odd"><td><p>Heart Rate Discrimination task report</p></td>
-<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
-<td><p><a class="reference external" href="https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb"><img alt="View the notebook" src="https://img.shields.io/badge/render-nbviewer-orange.svg" /></a></p></td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="references">
-<h1>References<a class="headerlink" href="#references" title="Permalink to this headline">#</a></h1>
-<ol class="arabic simple">
-<li><p>Dale, A., &amp; Anderson, D. (1978). Information Variables in Voluntary Control and Classical Conditioning of Heart Rate: Field Dependence and Heart-Rate Perception. Perceptual and Motor Skills, 47(1), 79–85. https://doi.org/10.2466/pms.1978.47.1.79</p></li>
-<li><p>Schandry, R. (1981). Heart Beat Perception and Emotional Experience. Psychophysiology, 18(4), 483–488. https://doi.org/10.1111/j.1469-8986.1981.tb02486.x</p></li>
-<li><p>Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., &amp; Allen, M. (2021). The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. bioRxiv 2021.02.18.431871. https://doi.org/10.1101/2021.02.18.431871</p></li>
-<li><p>Leganes-Fonteneau, M., Cheang, Y., Lam, Y., Garfinkel, S., &amp; Duka, T. (2019). Interoceptive awareness is associated with acute alcohol-induced changes in subjective effects. Pharmacology Biochemistry and Behavior, 181, 69–76. https://doi.org/10.1016/j.pbb.2019.03.007</p></li>
-<li><p>Hart, N., McGowan, J., Minati, L., &amp; Critchley, H. D. (2013). Emotional Regulation and Bodily Sensation: Interoceptive Awareness Is Intact in Borderline Personality Disorder. Journal of Personality Disorders, 27(4), 506–518. https://doi.org/10.1521/pedi_2012_26_049</p></li>
-</ol>
-</section>
-<section id="development">
-<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">#</a></h1>
-<p>This package was created and is maintained by <a class="reference external" href="https://legrandnico.github.io/">Nicolas Legrand</a> and <a class="reference external" href="https://micahallen.org/">Micah Allen</a> from the <a class="reference external" href="https://the-ecg.org/">ECG group</a>.</p>
-<p><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/LabLogo.png" height ="100"><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/AU.png" height ="100"></p>
-</section>
-<section id="credit">
-<h1>Credit<a class="headerlink" href="#credit" title="Permalink to this headline">#</a></h1>
-<p>Some icons used in the Figures or presented during the tasks were downloaded from <span class="xref myst">www.flaticon.com</span>.</p>
-<div class="toctree-wrapper compound">
 </div>
 </section>
 
@@ -317,13 +227,6 @@
               <footer class="bd-footer-article">
                   <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='right-next' id="next-link" href="user_guide.html" title="next page">
-  <div class="prev-next-info">
-      <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">Do you need help?</p>
-  </div>
-  <i class="fas fa-angle-right"></i>
-  </a>
 </div>
               </footer>
               

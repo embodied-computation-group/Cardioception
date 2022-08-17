@@ -1,8 +1,8 @@
 API
 =====
 
-.. automodule:: cardioception.HRD
+.. automodule:: cardioception.HRD.parameters
     :members:
 
-.. automodule:: cardioception.HBC
+.. automodule:: cardioception.HBC.parameters
     :members:

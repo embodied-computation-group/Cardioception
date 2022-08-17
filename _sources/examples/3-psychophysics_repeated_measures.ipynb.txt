@@ -1,0 +1,99 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "1t8qlBkOKjvT",
+   "metadata": {
+    "id": "1t8qlBkOKjvT"
+   },
+   "source": [
+    "**Author**: Nicolas Legrand <nicolas.legrand@cfin.au.dk>\n",
+    "\n",
+    "The model is adapted from https://github.com/pymc-devs/resources/blob/master/BCM/CaseStudies/PsychophysicalFunctions.ipynb"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "naked-volleyball",
+   "metadata": {
+    "id": "naked-volleyball"
+   },
+   "outputs": [],
+   "source": [
+    "%%capture\n",
+    "import sys\n",
+    "if 'google.colab' in sys.modules:\n",
+    "    ! pip install arviz\n",
+    "    ! pip install pymc"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "designed-insulin",
+   "metadata": {
+    "id": "designed-insulin"
+   },
+   "outputs": [],
+   "source": [
+    "import arviz as az\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import seaborn as sns\n",
+    "from scipy.stats import norm\n",
+    "\n",
+    "import pymc as pm\n",
+    "import aesara.tensor as at\n",
+    "\n",
+    "sns.set_context('talk')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "GWMGsEDSzosM",
+   "metadata": {
+    "id": "GWMGsEDSzosM"
+   },
+   "source": [
+    "# Fitting psychometric functions for repeated measures\n",
+    "\n",
+    "```{warning}\n",
+    "Under construction.\n",
+    "```"
+   ]
+  }
+ ],
+ "metadata": {
+  "colab": {
+   "collapsed_sections": [],
+   "name": "psychophysiscs_groupLevel.ipynb",
+   "provenance": []
+  },
+  "kernelspec": {
+   "display_name": "Python 3.8.8 ('base')",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.8"
+  },
+  "vscode": {
+   "interpreter": {
+    "hash": "40d3a090f54c6569ab1632332b64b2c03c39dcf918b08424e98f38b5ae0af88f"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
