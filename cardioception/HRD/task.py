@@ -7,7 +7,6 @@ from typing import Optional, Tuple
 import numpy as np
 import pandas as pd
 import pkg_resources  # type: ignore
-from psychopy import core, event, sound, visual
 from systole.detection import ppg_peaks
 
 
@@ -28,6 +27,7 @@ def run(
         If `True`, will present a tutorial with 10 training trial with feedback
         and 5 trials with confidence rating.
     """
+    from psychopy import core, visual
 
     # Initialization of the Pulse Oximeter
     parameters["oxiTask"].setup().read(duration=1)
@@ -382,6 +382,7 @@ def trial(
         ratingEndTrigger, endTrigger : float
         Time stamp of key timepoints inside the trial.
     """
+    from psychopy import core, event, sound, visual
 
     # Print infos at each trial start
     print(f"Starting trial - Intensity: {alpha} - Modality: {modality}")
@@ -662,6 +663,9 @@ def trial(
 
 def waitInput(parameters: dict):
     """Wait for participant input before continue"""
+
+    from psychopy import core, event
+
     if parameters["device"] == "keyboard":
         while True:
             keys = event.getKeys()
@@ -693,6 +697,8 @@ def tutorial(parameters: dict):
         Task parameters.
 
     """
+
+    from psychopy import core, event, visual
 
     # Introduction
     intro = visual.TextStim(
@@ -967,7 +973,7 @@ def tutorial(parameters: dict):
 
 
 def responseDecision(
-    this_hr: sound.Sound,
+    this_hr,
     parameters: dict,
     feedback: bool,
     condition: str,
@@ -1004,6 +1010,8 @@ def responseDecision(
         `True` if the response provided was correct, `False` otherwise.
 
     """
+
+    from psychopy import core, event, visual
 
     print("...starting decision phase.")
 
@@ -1186,6 +1194,9 @@ def confidenceRatingTask(
         Parameters dictionary.
 
     """
+
+    from psychopy import core, visual
+
     print("...starting confidence rating.")
 
     # Initialise default values

@@ -24,7 +24,6 @@ jobs:
 
       - name: Build
         run: |
-          pip install six
           pip install .
           pip install -r requirements-docs.txt
           sphinx-build -b html docs/source docs/build/html

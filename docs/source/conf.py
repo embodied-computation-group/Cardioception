@@ -12,11 +12,9 @@
 #
 import time
 import sphinx_bootstrap_theme
-
-# -- Project information -----------------------------------------------------
-autodoc_mock_imports = ["psychopy"]
 import cardioception
 
+# -- Project information -----------------------------------------------------
 project = "cardioception"
 copyright = "2022-{}, Nicolas Legrand".format(time.strftime("%Y"))
 author = "Nicolas Legrand"

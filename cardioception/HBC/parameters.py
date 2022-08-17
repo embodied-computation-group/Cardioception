@@ -7,15 +7,14 @@ import numpy as np
 import pandas as pd
 import pkg_resources  # type: ignore
 import serial
-from psychopy import core, sound, visual
 from systole import serialSim
-from systole.recording import Oximeter, findOximeter
+from systole.recording import Oximeter
 
 
 def getParameters(
     participant: str = "Participant",
     session: str = "001",
-    serialPort: Optional[str] = None,
+    serialPort: str = "COM3",
     taskVersion: str = "Garfinkel",
     setup: str = "behavioral",
     screenNb: int = 0,
@@ -35,10 +34,8 @@ def getParameters(
         Screen number. Used to parametrize py:func:`psychopy.visual.Window`.
         Default is set to 0.
     serialPort: str
-        The USB port where the pulse oximeter is plugged. Should be written as
-        a string e.g., 'COM3', 'COM4'. If set to *None*, the pulse oximeter
-        will be automatically detected. using the
-        :py:func:`systole.recording.findOximeter()` function.
+        The USB port where the pulse oximeter is plugged. Should be written as a string
+        e.g. `"COM3"` for USB ports on Windows.
     session : int
         Session number. Default to '001'.
     setup : str
@@ -108,6 +105,9 @@ def getParameters(
     win : `psychopy.visual.window`
         The window in which to draw objects.
     """
+
+    from psychopy import sound, visual
+
     parameters: Dict[str, Any] = {}
     parameters["restPeriod"] = True
     parameters["restLength"] = 30
@@ -204,15 +204,6 @@ def getParameters(
 
     if setup == "behavioral":
         # PPG recording
-        if serialPort is None:
-            serialPort = findOximeter()
-            if serialPort is None:
-                print(
-                    "Cannot find the Pulse Oximeter automatically, please",
-                    " enter port reference in the GUI",
-                )
-                core.quit()
-
         port = serial.Serial(serialPort)
         parameters["oxiTask"] = Oximeter(
             serial=port, sfreq=75, add_channels=1, **systole_kw
