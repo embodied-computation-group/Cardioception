@@ -97,7 +97,36 @@
       
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
-    
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../measuring.html">
+  Theory
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="README.html">
+  Statistical analysis
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../cite.html">
+  Cite
+ </a>
+</li>
+
     
 </ul>
       </div>
@@ -205,12 +234,18 @@
               
               <article class="bd-article" role="main">
                 
-  <p><strong>Author</strong>: Nicolas Legrand <a class="reference external" href="mailto:nicolas&#46;legrand&#37;&#52;&#48;cfin&#46;au&#46;dk">nicolas<span>&#46;</span>legrand<span>&#64;</span>cfin<span>&#46;</span>au<span>&#46;</span>dk</a></p>
-<p>The PyMC model is adapted from https://github.com/pymc-devs/resources/blob/master/BCM/CaseStudies/PsychophysicalFunctions.ipynb</p>
+  <section id="fitting-a-psychometric-function-at-the-group-level">
+<span id="psychophysics-group-level"></span><h1>Fitting a psychometric function at the group level<a class="headerlink" href="#fitting-a-psychometric-function-at-the-group-level" title="Permalink to this headline">#</a></h1>
+<p>:::{post} Aug 17, 2022
+:tags: psychophysics, heart rate discrimination
+:category: modelling
+:author: Nicolas Legrand
+:::</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%%capture
 import sys
+
 if &#39;google.colab&#39; in sys.modules:
     ! pip install arviz
     ! pip install pymc
@@ -247,8 +282,6 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 </div>
-<section id="fitting-a-psychometric-function-at-the-group-level">
-<h1>Fitting a psychometric function at the group level<a class="headerlink" href="#fitting-a-psychometric-function-at-the-group-level" title="Permalink to this headline">#</a></h1>
 <p>In this example, we are going to fit a cummulative normal function to decision responses made during the Heart Rate Discrimination task. We will use the data from the <a class="reference external" href="https://www.biorxiv.org/content/10.1101/2021.02.18.431871v1">HRD method paper</a> (Legrand et al., 2021) and analyse the responses from all participants and infer group-level hyperpriors.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

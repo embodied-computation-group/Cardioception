@@ -52,6 +52,7 @@
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Measuring cardiac interoception" href="measuring.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="None">
   </head>
@@ -97,7 +98,36 @@
       
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
-    
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="measuring.html">
+  Theory
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="user_guide.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="examples/README.html">
+  Statistical analysis
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="cite.html">
+  Cite
+ </a>
+</li>
+
     
 </ul>
       </div>
@@ -152,9 +182,29 @@
     
     <div class="toc-item">
       
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
 
 <nav id="bd-toc-nav">
-    
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Cardioception
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#development">
+   Development
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#credit">
+   Credit
+  </a>
+ </li>
+</ul>
+
 </nav>
     </div>
     
@@ -179,10 +229,10 @@
 <img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/logo.png" align="left" alt="cardioception" height="230" HSPACE=30>
 <p>The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):</p>
 <ol class="arabic simple">
-<li><p>The <strong>Heartbeat counting task (HBC)</strong>, also known as the <strong>Heartbeat tracking task</strong>, developed by Rainer Schandry :cite:t:<code class="docutils literal notranslate"><span class="pre">1978:dale,1981:schandry</span></code>. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.</p></li>
-<li><p>The <strong>Heart Rate Discrimination task</strong> :cite:t:<code class="docutils literal notranslate"><span class="pre">2022:legrand</span></code> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see <em>Analyses</em> below), together with metacognitive efficiency.</p></li>
+<li><p>The <strong>Heartbeat counting task (HBC)</strong>, also known as the <strong>Heartbeat tracking task</strong>, developed by Rainer Schandry <span id="id1">[]</span>. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.</p></li>
+<li><p>The <strong>Heart Rate Discrimination task</strong> <span id="id2">[]</span> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see <em>Analyses</em> below), together with metacognitive efficiency.</p></li>
 </ol>
-<p>```{note} While having slightly similar names, the <strong>Heartbeat counting task (HBC)</strong> and the <strong>Heart Rate Discrimination task</strong> are different in term of implementation and the measures they provided and should not be conflated. The <strong>HBC</strong> task has been largely criticized (see the section How to measure cardiac interoception). We developped the cardioception package first to provide an open sourced version of this task, which was lacking, and easy support to record heart rate via cheap pulse oximetry via <a class="reference external" href="https://github.com/embodied-computation-group/systole">Systole</a>. In addition to that, we developped the <strong>HRD</strong> task as a new measure of cardiac interoception, grounding on a different reasonning and trying to control for the confounds other interoception tasks migh have :cite:t:<code class="docutils literal notranslate"><span class="pre">2022:legrand</span></code>.</p>
+<p>```{note} While having slightly similar names, the <strong>Heartbeat counting task (HBC)</strong> and the <strong>Heart Rate Discrimination task</strong> are different in term of implementation and the measures they provided and should not be conflated. The <strong>HBC</strong> task has been largely criticized (see the section How to measure cardiac interoception). We developped the cardioception package first to provide an open sourced version of this task, which was lacking, and easy support to record heart rate via cheap pulse oximetry via <a class="reference external" href="https://github.com/embodied-computation-group/systole">Systole</a>. In addition to that, we developped the <strong>HRD</strong> task as a new measure of cardiac interoception, grounding on a different reasonning and trying to control for the confounds other interoception tasks migh have <span id="id3">[]</span>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
 These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task use the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM &#39;soft-clip&#39; fingertip sensors](https://www.nonin.com/products/8000s/). This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...).
 
@@ -194,28 +244,20 @@ If you want to report a bug, you can open an issue on the [GitHub page](https://
 
 # References
 
-.. bibliography::
-
-# Development
-This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/) and [Micah Allen](https://micahallen.org/) from the [ECG group](https://the-ecg.org/).
-
-&lt;img src = &quot;https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/LabLogo.png&quot; height =&quot;100&quot;&gt;&lt;img src = &quot;https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/AU.png&quot; height =&quot;100&quot;&gt;
-
-# Credit
-Some icons used in the Figures or presented during the tasks were downloaded from [www.flaticon.com](www.flaticon.com).
-
-
-```{toctree}
----
-hidden:
-maxdepth: 3
----
-Theory &lt;measuring.md&gt;
-Guide &lt;user_guide.md&gt;
-API &lt;api.rst&gt;
-Statistical analysis &lt;examples/README.md&gt;
-Cite &lt;cite.md&gt;
+```{bibliography}
+:style: unsrt
 </pre></div>
+</div>
+</section>
+<section id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">#</a></h1>
+<p>This package was created and is maintained by <a class="reference external" href="https://legrandnico.github.io/">Nicolas Legrand</a> and <a class="reference external" href="https://micahallen.org/">Micah Allen</a> from the <a class="reference external" href="https://the-ecg.org/">ECG group</a>.</p>
+<p><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/LabLogo.png" height ="100"><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/AU.png" height ="100"></p>
+</section>
+<section id="credit">
+<h1>Credit<a class="headerlink" href="#credit" title="Permalink to this headline">#</a></h1>
+<p>Some icons used in the Figures or presented during the tasks were downloaded from <span class="xref myst">www.flaticon.com</span>.</p>
+<div class="toctree-wrapper compound">
 </div>
 </section>
 
@@ -227,6 +269,13 @@ Cite &lt;cite.md&gt;
               <footer class="bd-footer-article">
                   <!-- Previous / next buttons -->
 <div class='prev-next-area'>
+  <a class='right-next' id="next-link" href="measuring.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Measuring cardiac interoception</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
 </div>
               </footer>
               

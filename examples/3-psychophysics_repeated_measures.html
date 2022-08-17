@@ -97,7 +97,36 @@
       
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
-    
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../measuring.html">
+  Theory
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="README.html">
+  Statistical analysis
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../cite.html">
+  Cite
+ </a>
+</li>
+
     
 </ul>
       </div>
@@ -185,12 +214,22 @@
               
               <article class="bd-article" role="main">
                 
-  <p><strong>Author</strong>: Nicolas Legrand <a class="reference external" href="mailto:nicolas&#46;legrand&#37;&#52;&#48;cfin&#46;au&#46;dk">nicolas<span>&#46;</span>legrand<span>&#64;</span>cfin<span>&#46;</span>au<span>&#46;</span>dk</a></p>
-<p>The model is adapted from https://github.com/pymc-devs/resources/blob/master/BCM/CaseStudies/PsychophysicalFunctions.ipynb</p>
+  <section id="fitting-psychometric-functions-for-repeated-measures">
+<span id="psychophysics-repeated-measures"></span><h1>Fitting psychometric functions for repeated measures<a class="headerlink" href="#fitting-psychometric-functions-for-repeated-measures" title="Permalink to this headline">#</a></h1>
+<p>:::{post} Aug 17, 2022
+:tags: psychophysics, heart rate discrimination
+:category: modelling
+:author: Nicolas Legrand
+:::</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Under construction.</p>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%%capture
 import sys
+
 if &#39;google.colab&#39; in sys.modules:
     ! pip install arviz
     ! pip install pymc
@@ -200,7 +239,8 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">aesara.tensor</span> <span class="k">as</span> <span class="nn">at</span>
+<span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -208,7 +248,6 @@ if &#39;google.colab&#39; in sys.modules:
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
 
 <span class="kn">import</span> <span class="nn">pymc</span> <span class="k">as</span> <span class="nn">pm</span>
-<span class="kn">import</span> <span class="nn">aesara.tensor</span> <span class="k">as</span> <span class="nn">at</span>
 
 <span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s1">&#39;talk&#39;</span><span class="p">)</span>
 </pre></div>
@@ -218,20 +257,14 @@ if &#39;google.colab&#39; in sys.modules:
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
 <span class="nn">Input In [2],</span> in <span class="ni">&lt;cell line: 1&gt;</span><span class="nt">()</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">aesara.tensor</span> <span class="k">as</span> <span class="nn">at</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;arviz&#39;
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;aesara&#39;
 </pre></div>
 </div>
 </div>
-</div>
-<section id="fitting-psychometric-functions-for-repeated-measures">
-<h1>Fitting psychometric functions for repeated measures<a class="headerlink" href="#fitting-psychometric-functions-for-repeated-measures" title="Permalink to this headline">#</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Under construction.</p>
 </div>
 </section>
 

@@ -2,14 +2,18 @@
   "cells": [
     {
       "cell_type": "markdown",
-      "id": "1t8qlBkOKjvT",
+      "id": "GWMGsEDSzosM",
       "metadata": {
-        "id": "1t8qlBkOKjvT"
+        "id": "GWMGsEDSzosM"
       },
       "source": [
-        "**Author**: Nicolas Legrand <nicolas.legrand@cfin.au.dk>\n",
-        "\n",
-        "The PyMC model is adapted from https://github.com/pymc-devs/resources/blob/master/BCM/CaseStudies/PsychophysicalFunctions.ipynb\n"
+        "(psychophysics_group_level)=\n",
+        "# Fitting a psychometric function at the group level\n",
+        ":::{post} Aug 17, 2022\n",
+        ":tags: psychophysics, heart rate discrimination\n",
+        ":category: modelling\n",
+        ":author: Nicolas Legrand\n",
+        ":::"
       ]
     },
     {
@@ -23,6 +27,7 @@
       "source": [
         "%%capture\n",
         "import sys\n",
+        "\n",
         "if 'google.colab' in sys.modules:\n",
         "    ! pip install arviz\n",
         "    ! pip install pymc"
@@ -48,16 +53,6 @@
         "import pymc as pm\n",
         "\n",
         "sns.set_context('talk')"
-      ]
-    },
-    {
-      "cell_type": "markdown",
-      "id": "GWMGsEDSzosM",
-      "metadata": {
-        "id": "GWMGsEDSzosM"
-      },
-      "source": [
-        "# Fitting a psychometric function at the group level"
       ]
     },
     {
