@@ -11,15 +11,16 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import time
-
 import sphinx_bootstrap_theme
 
 # -- Project information -----------------------------------------------------
+autodoc_mock_imports = ["psychopy"]
+import cardioception
 
 project = "cardioception"
 copyright = "2022-{}, Nicolas Legrand".format(time.strftime("%Y"))
 author = "Nicolas Legrand"
-release = "0.4.3"
+release = cardioception.__version__
 
 
 image_scrapers = ("matplotlib",)
