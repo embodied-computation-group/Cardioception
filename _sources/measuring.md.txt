@@ -1,12 +1,14 @@
 # Measuring cardiac interoception
 
-Cardiac interoception has been largely investigated using the heartbeat counting task (also known as the heartbeat tracking task) that was formally introduced more than 40 years ago :cite:t:`1981:schandry`. This task comes with several variants that can concern task instruction, experimental design or the scores derived to measure cardiac interoceptive accuracy and metacognition. Here, we describe the heartbeat counting task together with the heart rate discrimination task, that was recently proposed :cite:t:`2022:legrand` and is also implemented in [cardioception](https://github.com/embodied-computation-group/Cardioception).
+Cardiac interoception has been largely investigated using the heartbeat counting task (also known as the heartbeat tracking task) that was formally introduced more than 40 years ago {cite:p}`1981:schandry`. This task comes with several variants that can concern task instruction, experimental design or the scores derived to measure cardiac interoceptive accuracy and metacognition. Here, we describe the heartbeat counting task together with the heart rate discrimination task, that was recently proposed {cite:p}`2022:legrand` and is also implemented in [cardioception](https://github.com/embodied-computation-group/Cardioception).
 
 ## The Heart Beat Counting task
 
-This task cardiac measures interoception by asking participants to count their heartbeats for a given period. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.
+In the classic "heartbeat counting task" {cite:p}`1981:schandry,1978:dale` participants attend to their heartbeats in intervals of various lengths and are asked to count the number of heartbeats they can effectively feels during this period. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats. In the original version {cite:p}`1981:schandry`, the task started with a resting period of 60 seconds and consisted of three estimation session (25, 35, and 45 seconds) interleaved with resting periods of 30 seconds.
 
 ![hbc](https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/HeartBeatCounting.png)
+
+By default, [Cardioception](https://github.com/embodied-computation-group/Cardioception) implements the version used in recent publications {cite:p}`2013:hart` in which a training trial of 20 seconds is proposed, after which the 6 experimental trials of different time windows (25, 30, 35,40, 45 and 50s) occurred in a randomized order. The trial length, the condition (`'Rest'`, `'Count'`, `'Training'`), and the randomization can be controlled in the parameters dictionary. This behavior can be controlled using the `"taskVersion"` parameter.
 
 ### Instructions
 
@@ -18,7 +20,7 @@ Without manually checking can you silently count each heartbeat you feel in your
 
 ### Score
 
-Many variants of the *interoceptive accuracy* score have been proposed, here we implemented and use the one that we considered to be the more widely used, following the formula proposed by Hart et al. :cite:t:`2013:hart` as follows:
+Many variants of the *interoceptive accuracy* score have been proposed, here we implemented and use the one that we considered to be the more widely used, following the formula proposed by Hart et al. {cite:p}`2013:hart` as follows:
 
 ```{math}
    Accuracy = 1-\frac{\left | N_{real} - N_{reported} \right |}{\frac{N_{real} + N_{reported}}{2}}
@@ -28,7 +30,7 @@ After each counting response, the participant is prompted to rate their subjecti
 
 ## The Heart Rate Discrimination task
 
-The **Heart Rate Discrimination Task** :cite:t:`2022:legrand` implements an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline, together with metacognitive efficiency.
+The **Heart Rate Discrimination Task** {cite:p}`2022:legrand` implements an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline, together with metacognitive efficiency.
 
 ![hrd](https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/HeartRateDiscrimination.png)
 
@@ -48,11 +50,11 @@ This procedure uses Kontsevich and Tyler's (1999) psi-method to estimate the poi
 
 ## Discussion
 
-The validity and reliability of the heartbeat counting task (HBC, also called heartbeat tracking task) as a measure of cardiac interoceptive accuracy has been discussed during the last years and it is acknowledged that the scores derived from this task are difficult to interpret concerning interoceptive abilities :cite:t:`2022:ferentzi`. It has been documented that the HBC task is poorly related to actual heartbeat detection :cite:t:`2020:desmedt`, is confounded by fundamental mathematical issues :cite:t:`2018:zamariola`, is unable to distinguish subjective from physiological confounds :cite:t:`1996:ring`, is unable to distinguish true interoceptors from non-interoceptors, and most crucially cannot, by design, distinguish cardiac accuracy (hit rate) from response bias. Furthermore, the task is also ill-suited to the estimation of metacognition variables, as there are extremely few trials and no overall control of accuracy (see :cite:t:`2014:fleming` for details on how metacognition should be measured).
+The validity and reliability of the heartbeat counting task (HBC, also called heartbeat tracking task) as a measure of cardiac interoceptive accuracy has been discussed during the last years and it is acknowledged that the scores derived from this task are difficult to interpret concerning interoceptive abilities {cite:p}`2022:ferentzi`. It has been documented that the HBC task is poorly related to actual heartbeat detection {cite:p}`2020:desmedt`, is confounded by fundamental mathematical issues {cite:p}`2018:zamariola`, is unable to distinguish subjective from physiological confounds {cite:p}`1996:ring`, is unable to distinguish true interoceptors from non-interoceptors, and most crucially cannot, by design, distinguish cardiac accuracy (hit rate) from response bias. Furthermore, the task is also ill-suited to the estimation of metacognition variables, as there are extremely few trials and no overall control of accuracy (see {cite:p}`2014:fleming` for details on how metacognition should be measured).
 
 Based on these observations, we considered that *cardiac interoceptive accuracy* is a too multifaceted concept and too much confounded by other psychological factors to be measured precisely in the lab without directly manipulating the cardiac signal (i.e. changing and/or systematically observing different cardiac frequencies). It is indeed not possible to know if a participant is correct when reporting heartbeats counts because he/she has good interoceptive accuracy, or because he/she is simply lucky to have prior cardiac beliefs that are aligned with the physiological signal, at least for the time of the experience.
 
-With the heart rate discrimination task (HRD), we proposed to change the focus and the way we measure cardioception. If cardiac interoceptive accuracy cannot be precisely estimated because it is confounded by cardiac beliefs, we can however measure these beliefs in a very precise and rigorous manner using methods from psychophysics. In addition to that, because we test decisions from the participant many times (the recommended number of trials in the HRD task is 40 per condition minimum), we can estimate metacognitive efficiency more robustly using *meta-d'* :cite:t:`2014:fleming`.
+With the heart rate discrimination task (HRD), we proposed to change the focus and the way we measure cardioception. If cardiac interoceptive accuracy cannot be precisely estimated because it is confounded by cardiac beliefs, we can however measure these beliefs in a very precise and rigorous manner using methods from psychophysics. In addition to that, because we test decisions from the participant many times (the recommended number of trials in the HRD task is 40 per condition minimum), we can estimate metacognitive efficiency more robustly using *meta-d'* {cite:p}`2014:fleming`.
 
 ## References
 

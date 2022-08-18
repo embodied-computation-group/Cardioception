@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Installation &#8212; cardioception 0.4.3 documentation</title>
+    <title>User guide &#8212; cardioception 0.4.3 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -48,11 +48,11 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="_static/togglebutton.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0/dist/embed-amd.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API" href="api.html" />
+    <link rel="next" title="Tasks" href="api.html" />
     <link rel="prev" title="Measuring cardiac interoception" href="measuring.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="None">
@@ -107,13 +107,13 @@
 
 <li class="toctree-l1 current active nav-item">
  <a class="current reference internal nav-link" href="#">
-  Installation
+  Guide
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="api.html">
-  API
+  Tasks
  </a>
 </li>
 
@@ -202,58 +202,53 @@
 
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#installation">
    Installation
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-the-python-package-index">
+     Using the Python Package Index
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#downloading-the-zip-file">
+     Downloading the ZIP file
+    </a>
+   </li>
+  </ul>
  </li>
- <li class="toc-h1 nav-item toc-entry">
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#dependencies">
    Dependencies
   </a>
  </li>
- <li class="toc-h1 nav-item toc-entry">
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#physiological-recording">
    Physiological recording
   </a>
  </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#run-the-tasks">
-   Run the tasks
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#running-the-tasks">
+   Running the tasks
   </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#using-a-script">
      Using a script
     </a>
    </li>
-   <li class="toc-h2 nav-item toc-entry">
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#creating-a-shortcut-windows">
      Creating a shortcut (Windows)
     </a>
    </li>
   </ul>
  </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#tasks">
-   Tasks
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#the-heartbeat-counting-task">
-     The Heartbeat Counting task
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#the-heart-rate-discrimination-task">
-     The Heart Rate Discrimination task
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#creating-reports">
-   Creating reports
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#creating-html-reports">
+   Creating HTML reports
   </a>
  </li>
 </ul>
@@ -275,24 +270,32 @@
               
               <article class="bd-article" role="main">
                 
-  <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">#</a></h1>
-<p><strong>Using the Python Package Index</strong></p>
-<ul class="simple">
-<li><p>The most recent version can be installed uing:
-<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cardioception</span></code></p></li>
-<li><p>The current development branch can be installed using
-<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/embodied-computation-group/Cardioception.git</span></code></p></li>
+  <section id="user-guide">
+<h1>User guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">#</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">#</a></h2>
+<section id="using-the-python-package-index">
+<h3>Using the Python Package Index<a class="headerlink" href="#using-the-python-package-index" title="Permalink to this headline">#</a></h3>
+<ul>
+<li><p>The most recent version can be installed uing:</p>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cardioception</span></code></p>
+</li>
+<li><p>The current development branch can be installed using</p>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/embodied-computation-group/Cardioception.git</span></code></p>
+</li>
 </ul>
-<p><strong>Downloading the ZIP file</strong></p>
+</section>
+<section id="downloading-the-zip-file">
+<h3>Downloading the ZIP file<a class="headerlink" href="#downloading-the-zip-file" title="Permalink to this headline">#</a></h3>
 <img src="./images/downloadZIP.png" align="left" alt="metadPy" height="200" HSPACE=30>
 <p>You can also download the most recent version by downloading the repository as a .zip file.</p>
 <p>After extracting the content of the file, the package can be installed via the command line by running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code>. Note that this command should be executed when your terminal run inside the extracted folder. You can navigate through your local folder using the command <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">[path</span> <span class="pre">to</span> <span class="pre">your</span> <span class="pre">folder]</span></code>.</p>
 <br clear="left"/>
 </section>
+</section>
 <section id="dependencies">
-<h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">#</a></h1>
-<p>Cardioception has been tested with Python 3.7. We recommend to use the last install of Anaconda for Python 3.7 or latest (see https://www.anaconda.com/products/individual#download-section).</p>
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">#</a></h2>
+<p>Cardioception has been tested with Python 3.7. We recommend to use the last install of Anaconda for Python 3.7 or latest (see <a class="reference external" href="https://www.anaconda.com/products/individual#download-section">this link</a>).</p>
 <p>Make sure that you have the following packages installed and up to date before running cardioception:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.psychopy.org/">psychopy</a> can be installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">psychopy</span></code>.</p></li>
@@ -313,12 +316,14 @@
 <li><p><a class="reference external" href="https://pingouin-stats.org/">pingouin</a> (&gt;=0.3.10)</p></li>
 <li><p><a class="reference external" href="https://github.com/LegrandNico/metadPy">metadPy</a> (&gt;=0.01)</p></li>
 </ul>
-<p><strong>NOTE</strong>
-The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles.</p>
+</div>
 <p>Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 160 Mo). These files will be removed if you uninstall the package using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">uninstall</span> <span class="pre">cardioception</span></code>.</p>
 </section>
 <section id="physiological-recording">
-<h1>Physiological recording<a class="headerlink" href="#physiological-recording" title="Permalink to this headline">#</a></h1>
+<h2>Physiological recording<a class="headerlink" href="#physiological-recording" title="Permalink to this headline">#</a></h2>
 <p>Both the Heartbeat counting task (HBC) and the heart rate discrimination task (HRD) require access to physiological recording device during the task to estimate the heart rate or count the number of heartbeats in a given time window. Cardioception natively supports:</p>
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a></p></li>
@@ -326,11 +331,11 @@ The version provided here are the ones used when testing and runing cardioceptio
 </ul>
 <p>The package can easily be extended and integrate other recording devices by providing another recording class that will interface with your own devices (ECG, pulse oximeters, or any king of recording that will offer precise estimation of the cardiac frequency).</p>
 </section>
-<section id="run-the-tasks">
-<h1>Run the tasks<a class="headerlink" href="#run-the-tasks" title="Permalink to this headline">#</a></h1>
+<section id="running-the-tasks">
+<h2>Running the tasks<a class="headerlink" href="#running-the-tasks" title="Permalink to this headline">#</a></h2>
 <p>Each task contains a <code class="docutils literal notranslate"><span class="pre">parameters</span></code> and a <code class="docutils literal notranslate"><span class="pre">task</span></code> submodule describing the experimental parameters and the Psychopy script respectively. Several changes and adaptation can be parametrized just by passing arguments to the parameters functions. Please refer to the API documentation for details.</p>
 <section id="using-a-script">
-<h2>Using a script<a class="headerlink" href="#using-a-script" title="Permalink to this headline">#</a></h2>
+<h3>Using a script<a class="headerlink" href="#using-a-script" title="Permalink to this headline">#</a></h3>
 <p>Once the package has been installed, you can run the task (e.g. here the Heart rate Discrimination task) using the following code snippet:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cardioception.HRD.parameters</span> <span class="kn">import</span> <span class="n">getParameters</span>
 <span class="kn">from</span> <span class="nn">cardioception.HRD</span> <span class="kn">import</span> <span class="n">task</span>
@@ -350,32 +355,18 @@ The version provided here are the ones used when testing and runing cardioceptio
 <p>We provide standard scripts in the <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers">wrappers</a> folder that can be adapted to your needs. We recommend copying this script in your local task folder if you want to parametrize it to fit your needs. The tasks can then easily be executed by running the corresponding wrapper file (e.g in a terminal).</p>
 </section>
 <section id="creating-a-shortcut-windows">
-<h2>Creating a shortcut (Windows)<a class="headerlink" href="#creating-a-shortcut-windows" title="Permalink to this headline">#</a></h2>
+<h3>Creating a shortcut (Windows)<a class="headerlink" href="#creating-a-shortcut-windows" title="Permalink to this headline">#</a></h3>
 <p>Once you have adapted the scripts, you can create a shortcut (e.g in the Desktop) so the task can be executed just by clicking on it without any coding or command lines interactions.</p>
 <p>If you are using Windows, you can simply create a <code class="docutils literal notranslate"><span class="pre">.bat</span></code> file containing the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">call</span> <span class="p">[</span><span class="n">path</span> <span class="n">to</span> <span class="n">your</span> <span class="n">environment</span> <span class="o">*/</span><span class="n">conda</span><span class="o">.</span><span class="n">bat</span><span class="p">]</span> <span class="n">activate</span>
-<span class="p">[</span><span class="n">path</span> <span class="n">to</span> <span class="n">your</span> <span class="n">local</span> <span class="o">*/</span><span class="n">python</span><span class="o">.</span><span class="n">exe</span><span class="p">]</span> <span class="p">[</span><span class="n">path</span> <span class="n">to</span> <span class="n">your</span> <span class="n">wrapper</span> <span class="o">*/</span><span class="n">hrd</span><span class="o">.</span><span class="n">py</span><span class="p">]</span>
-<span class="n">pause</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>call <span class="o">[</span>path to your environment */conda.bat<span class="o">]</span> activate
+<span class="o">[</span>path to your <span class="nb">local</span> */python.exe<span class="o">]</span> <span class="o">[</span>path to your wrapper */hrd.py<span class="o">]</span>
+pause
 </pre></div>
 </div>
 </section>
 </section>
-<section id="tasks">
-<h1>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">#</a></h1>
-<section id="the-heartbeat-counting-task">
-<h2>The Heartbeat Counting task<a class="headerlink" href="#the-heartbeat-counting-task" title="Permalink to this headline">#</a></h2>
-<img src= "./images/HeartBeatCounting.png">
-<p>This module is an implementation of the classic “heartbeat counting task” (HCT)<sup>1,2</sup> in which participants attend to their heartbeats in intervals of various lengths. Afterward, the participant indicates the number of counted heartbeats, and a score is computed to represent their accuracy. In the original version<sup>1</sup>, the task started with a resting period of 60 seconds and consisted of three estimation session (25, 35, and 45 seconds) interleaved with resting periods of 30 seconds in the following order:</p>
-<p>By default, this task implements the version used in recent publications <sup>4, 5</sup> in which a training trial of 20 seconds is proposed, after which the 6 experimental trials of different time windows (25, 30, 35,40, 45 and 50s) occurred in a randomized order. The trial length, the condition (‘Rest’, ‘Count’, ‘Training’), and the randomization can be controlled in the parameters dictionary.</p>
-</section>
-<section id="the-heart-rate-discrimination-task">
-<h2>The Heart Rate Discrimination task<a class="headerlink" href="#the-heart-rate-discrimination-task" title="Permalink to this headline">#</a></h2>
-<img src= "./images/HeartRateDiscrimination.png">
-<p>This task implements an adaptive psychophysical procedure for estimating participants’ ability to discriminate their heart rate. On each trial, participants attend to their heartbeat sensations for five seconds and estimate their average heart rate. Immediately following this period, a cardiac feedback stimulus of 5 tones is played at a particular BPM frequency. The frequency is determined as their estimated average BPM plus or minus an intensity value that is updated by an adaptive staircase procedure (up/down or psi).</p>
-</section>
-</section>
-<section id="creating-reports">
-<h1>Creating reports<a class="headerlink" href="#creating-reports" title="Permalink to this headline">#</a></h1>
+<section id="creating-html-reports">
+<h2>Creating HTML reports<a class="headerlink" href="#creating-html-reports" title="Permalink to this headline">#</a></h2>
 <p>The results are saved in the <code class="docutils literal notranslate"><span class="pre">'resultPath'</span></code> folder defined in the parameters dictionary. For each task, we provide a comprehensive notebook detailing the main results, quality checks, and basic preprocessing steps. You can automatically generate the HTML reports using the following code snippet:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cardioception.reports</span> <span class="kn">import</span> <span class="n">report</span>
 
@@ -406,6 +397,7 @@ The version provided here are the ones used when testing and runing cardioceptio
 </tbody>
 </table>
 </section>
+</section>
 
 
               </article>
@@ -425,7 +417,7 @@ The version provided here are the ones used when testing and runing cardioceptio
   <a class='right-next' id="next-link" href="api.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">API</p>
+      <p class="prev-next-title">Tasks</p>
   </div>
   <i class="fas fa-angle-right"></i>
   </a>
