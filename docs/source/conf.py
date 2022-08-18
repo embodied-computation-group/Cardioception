@@ -11,8 +11,9 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import time
-import sphinx_bootstrap_theme
+
 import cardioception
+import sphinx_bootstrap_theme
 
 # -- Project information -----------------------------------------------------
 project = "cardioception"
