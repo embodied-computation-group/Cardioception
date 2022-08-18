@@ -17,8 +17,9 @@ def run(
     parameters : dict
         Task parameters.
     tutorial : bool
-        If `True`, will present a tutorial with 10 training trial with feedback
-        and 5 trials with confidence rating.
+        If `True`, will present a tutorial with 10 training trial with feedback and 5
+        trials with confidence rating.
+
     """
 
     from psychopy import core, visual

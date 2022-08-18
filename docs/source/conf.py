@@ -51,6 +51,8 @@ extensions = [
 ]
 
 bibtex_bibfiles = ['refs.bib']
+bibtex_reference_style = "author_year"
+bibtex_default_style = "unsrt"
 
 panels_add_bootstrap_css = False
 
@@ -107,7 +109,7 @@ html_theme_options = {
     "logo": {
         "text": "Cardioception",
     },
-    "search_bar_position": "navbar",
+    "navbar_end": ["navbar-icon-links.html", "search-field.html"]
 }
 
 html_sidebars = {"**": []}

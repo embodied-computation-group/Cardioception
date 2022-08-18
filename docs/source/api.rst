@@ -1,7 +1,13 @@
 .. _api_ref:
 
+.. currentmodule:: cardioception
+
+
 .. contents:: Table of Contents
    :depth: 2
+
+API
++++
 
 Tasks
 -----

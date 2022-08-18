@@ -14,7 +14,7 @@
 
 ### Downloading the ZIP file
 
-<img src="./images/downloadZIP.png" align="left" alt="metadPy" height="200" HSPACE=30>
+<img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source//images/downloadZIP.png" align="left" alt="download_zip" height="200" HSPACE=30>
 
 You can also download the most recent version by downloading the repository as a .zip file.
 
@@ -115,10 +115,3 @@ report(resultPath, reportPath, task='HRD')
 ```
 
 This code will generate the HTML reports for the Heart Rate Discrimination task in the `reportPath` folder using the results files located in `resultPath`. This will require [papermill](https://papermill.readthedocs.io/en/latest/).
-
-You can also analyze the results in [Google Colab](https://colab.research.google.com/) using one of the following link and upload the content of your result folder.
-
-| Notebook | Colab | nbViewer |
-| --- | ---| --- |
-| Heartbeat Counting task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb) | [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb)
-| Heart Rate Discrimination task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb) | [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb)
