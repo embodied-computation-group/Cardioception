@@ -9,3 +9,6 @@ myst-nb>=0.16.0
 sphinx==4.4.0
 numpydoc>=1.4.0
 myst-parser
+pymc
+aesara
+arviz

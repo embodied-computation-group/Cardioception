@@ -54,6 +54,8 @@ bibtex_bibfiles = ['refs.bib']
 bibtex_reference_style = "author_year"
 bibtex_default_style = "unsrt"
 
+myst_enable_extensions = ["dollarmath"]
+
 panels_add_bootstrap_css = False
 
 # Generate the API documentation when building
