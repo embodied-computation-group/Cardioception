@@ -1,0 +1,792 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Heart Rate Discrimination task - Summary results &#8212; cardioception 0.4.3 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/thebelab-helper.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="shortcut icon" href="../../_static/logo_small.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Fitting a psychometric function at the subject level" href="../psychophysics/1-psychophysics_subject_level.html" />
+    <link rel="prev" title="Heartbeat Counting task - Summary results" href="HeartBeatCounting.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="None">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    <img src="../../_static/logo_small.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/logo_small.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+    <p class="title logo__title">Cardioception</p>
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../measuring.html">
+  Theory
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide.html">
+  Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../stats.html">
+  Statistical analysis
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../cite.html">
+  Cite
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../references.html">
+  References
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/embodied-computation-group/Cardioception" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/visceral_mind" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://pypi.org/project/Cardioception/" rel="noopener" target="_blank" title="Pypi"><span><i class="fas fa-box"></i></span>
+            <label class="sr-only">Pypi</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<div class="sidebar-primary col-12 col-md-1 col-xl-2 bd-sidebar no-sidebar"></div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-md-block col-md-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Heart Rate Discrimination task - Summary results
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#response-time">
+   Response time
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#metacognition">
+   Metacognition
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#psychophysics">
+   Psychophysics
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#staircases">
+     Staircases
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#psi">
+       Psi
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#psychometric-function">
+   Psychometric function
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pulse-oximeter">
+   Pulse oximeter
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#visualization-of-ppg-signal">
+     Visualization of PPG signal
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#heart-rate-summary-statistics">
+     Heart rate - Summary statistics
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#save-dataframe">
+   Save dataframe
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-8">
+              
+              <article class="bd-article" role="main">
+                
+  <p>Author: Nicolas Legrand <a class="reference external" href="mailto:nicolas&#46;legrand&#37;&#52;&#48;cfin&#46;au&#46;dk">nicolas<span>&#46;</span>legrand<span>&#64;</span>cfin<span>&#46;</span>au<span>&#46;</span>dk</a></p>
+<section id="heart-rate-discrimination-task-summary-results">
+<span id="hrd-template"></span><h1>Heart Rate Discrimination task - Summary results<a class="headerlink" href="#heart-rate-discrimination-task-summary-results" title="Permalink to this headline">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%%capture
+import sys
+
+if &#39;google.colab&#39; in sys.modules:
+  ! pip install git+https://github.com/embodied-computation-group/metadPy.git
+  ! pip install systole
+  ! pip install pingouin
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pingouin</span> <span class="k">as</span> <span class="nn">pg</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">from</span> <span class="nn">metadPy</span> <span class="kn">import</span> <span class="n">sdt</span>
+<span class="kn">from</span> <span class="nn">metadPy.plotting</span> <span class="kn">import</span> <span class="n">plot_confidence</span>
+<span class="kn">from</span> <span class="nn">metadPy.utils</span> <span class="kn">import</span> <span class="n">discreteRatings</span><span class="p">,</span> <span class="n">trials2counts</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">systole.detection</span> <span class="kn">import</span> <span class="n">ppg_peaks</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s1">&#39;talk&#39;</span><span class="p">)</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="nn">Input In [2],</span> in <span class="ni">&lt;cell line: 5&gt;</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="ne">----&gt; </span><span class="mi">5</span> <span class="kn">import</span> <span class="nn">pingouin</span> <span class="k">as</span> <span class="nn">pg</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="kn">from</span> <span class="nn">metadPy</span> <span class="kn">import</span> <span class="n">sdt</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;pingouin&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>This notebook introduces basic analysis steps, plots and quality check for the Heart Rate Discrimination task. The current version use data from a young and healthy participant tested with the default task parameters implemented in the launcher.py file (80 trials per condition, 30 using a 1-Up/1-Down staircase and 50 using the Psi method.</p>
+<p>The target directory is defined by the <code class="docutils literal notranslate"><span class="pre">path</span></code> variable and should include the following files: <code class="docutils literal notranslate"><span class="pre">final.txt</span></code> (the behavioural data), <code class="docutils literal notranslate"><span class="pre">Intero_posterior.npy</span></code> and <code class="docutils literal notranslate"><span class="pre">Extero_posterior.npy</span></code> (the posterior estimates) and <code class="docutils literal notranslate"><span class="pre">signal.txt</span></code> (the PPG signal time series during the interoception trials).</p>
+<p><strong>Import data</strong></p>
+<div class="cell tag_parameters docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the result and report folders - This should be adapted to you own settings</span>
+<span class="n">resultPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;HRD&quot;</span><span class="p">)</span>
+<span class="n">reportPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="s2">&quot;reports&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Logs dataframe</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">resultPath</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*final.txt&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">)</span>
+
+<span class="c1"># History of posteriors distribution</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">interoPost</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">resultPath</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*Intero_posterior.npy&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">interoPost</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">exteroPost</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">resultPath</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*Extero_posterior.npy&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">exteroPost</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># PPG signal</span>
+<span class="n">signal_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">resultPath</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*signal.txt&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">)</span>
+<span class="n">signal_df</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal_df</span><span class="p">))</span><span class="o">/</span><span class="mi">1000</span> <span class="c1"># Create time vector</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="response-time">
+<h1>Response time<a class="headerlink" href="#response-time" title="Permalink to this headline">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">palette</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#b55d60&#39;</span><span class="p">,</span> <span class="s1">&#39;#5f9e6e&#39;</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">title</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;DecisionRT&#39;</span><span class="p">,</span> <span class="s1">&#39;ConfidenceRT&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Decision&#39;</span><span class="p">,</span> <span class="s1">&#39;Confidence&#39;</span><span class="p">]):</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;Modality&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;ResponseCorrect&#39;</span><span class="p">,</span>
+                <span class="n">palette</span><span class="o">=</span><span class="n">palette</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">.15</span><span class="p">,</span> <span class="n">notch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;Modality&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;ResponseCorrect&#39;</span><span class="p">,</span>
+                  <span class="n">dodge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">palette</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.6</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Response Time (s)&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend</span><span class="p">()</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">(</span><span class="n">trim</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Incorrect&#39;</span><span class="p">,</span> <span class="s1">&#39;Correct&#39;</span><span class="p">],</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mf">.5</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7fab7024a8e0&gt;
+</pre></div>
+</div>
+<img alt="../../_images/d5ebb9afee11dda63367e603ddb69fc69eb3b7e9f97ea26a200e23435b75b6cb.png" src="../../_images/d5ebb9afee11dda63367e603ddb69fc69eb3b7e9f97ea26a200e23435b75b6cb.png" />
+</div>
+</div>
+<p>Response time distribution for the decision and the confidence rating phases for correct (red) and incorrect (green) responses.</p>
+</section>
+<section id="metacognition">
+<h1>Metacognition<a class="headerlink" href="#metacognition" title="Permalink to this headline">#</a></h1>
+<p>SDT estimate for decision 1 perforamces (d’ and criterion)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">cond</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s1">&#39;Intero&#39;</span><span class="p">,</span> <span class="s1">&#39;Extero&#39;</span><span class="p">]):</span>
+    <span class="n">this_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="n">cond</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">this_df</span><span class="p">[</span><span class="s1">&#39;Stimuli&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">responseBPM</span> <span class="o">&gt;</span> <span class="n">this_df</span><span class="o">.</span><span class="n">listenBPM</span><span class="p">)</span>
+      <span class="n">this_df</span><span class="p">[</span><span class="s1">&#39;Responses&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s1">&#39;More&#39;</span><span class="p">)</span>
+
+      <span class="n">hit</span><span class="p">,</span> <span class="n">miss</span><span class="p">,</span> <span class="n">fa</span><span class="p">,</span> <span class="n">cr</span> <span class="o">=</span> <span class="n">this_df</span><span class="o">.</span><span class="n">scores</span><span class="p">()</span>
+      <span class="n">hr</span><span class="p">,</span> <span class="n">far</span> <span class="o">=</span> <span class="n">sdt</span><span class="o">.</span><span class="n">rates</span><span class="p">(</span><span class="n">hits</span><span class="o">=</span><span class="n">hit</span><span class="p">,</span> <span class="n">misses</span><span class="o">=</span><span class="n">miss</span><span class="p">,</span> <span class="n">fas</span><span class="o">=</span><span class="n">fa</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">cr</span><span class="p">)</span>
+      <span class="n">d</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">sdt</span><span class="o">.</span><span class="n">dprime</span><span class="p">(</span><span class="n">hit_rate</span><span class="o">=</span><span class="n">hr</span><span class="p">,</span> <span class="n">fa_rate</span><span class="o">=</span><span class="n">far</span><span class="p">),</span> <span class="n">sdt</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span><span class="n">hit_rate</span><span class="o">=</span><span class="n">hr</span><span class="p">,</span> <span class="n">fa_rate</span><span class="o">=</span><span class="n">far</span><span class="p">)</span>
+      
+      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Condition: </span><span class="si">{</span><span class="n">cond</span><span class="si">}</span><span class="s1"> - d-prime: </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s1"> - criterion: </span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Condition: Intero - d-prime: 1.38023349795524 - criterion: 0.4602326313983878
+Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">cond</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s1">&#39;Intero&#39;</span><span class="p">,</span> <span class="s1">&#39;Extero&#39;</span><span class="p">]):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">this_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="n">cond</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">RatingProvided</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">this_df</span> <span class="o">=</span> <span class="n">this_df</span><span class="p">[</span><span class="o">~</span><span class="n">this_df</span><span class="o">.</span><span class="n">Confidence</span><span class="o">.</span><span class="n">isnull</span><span class="p">()]</span>
+        <span class="n">new_confidence</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">discreteRatings</span><span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Confidence</span><span class="p">)</span>
+        <span class="n">this_df</span><span class="p">[</span><span class="s1">&#39;Confidence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_confidence</span>
+        <span class="n">this_df</span><span class="p">[</span><span class="s1">&#39;Stimuli&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+        <span class="n">this_df</span><span class="p">[</span><span class="s1">&#39;Responses&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s1">&#39;More&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+        <span class="n">nR_S1</span><span class="p">,</span> <span class="n">nR_S2</span> <span class="o">=</span> <span class="n">trials2counts</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">this_df</span><span class="p">)</span>
+        <span class="n">plot_confidence</span><span class="p">(</span><span class="n">nR_S1</span><span class="p">,</span> <span class="n">nR_S2</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cond</span><span class="si">}</span><span class="s1">ception&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Invalid ratings&#39;</span><span class="p">)</span>
+        <span class="n">this_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="n">cond</span><span class="p">]</span>
+        <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">this_df</span><span class="p">[</span><span class="n">this_df</span><span class="o">.</span><span class="n">ResponseCorrect</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">Confidence</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#5f9e6e&quot;</span><span class="p">,)</span>
+        <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">this_df</span><span class="p">[</span><span class="n">this_df</span><span class="o">.</span><span class="n">ResponseCorrect</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">Confidence</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#b55d60&quot;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cond</span><span class="si">}</span><span class="s1">ception&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/1b6794fd379d2a6404cd35f873abbd73e75329e9931890ec6ab9f3594aba5eab.png" src="../../_images/1b6794fd379d2a6404cd35f873abbd73e75329e9931890ec6ab9f3594aba5eab.png" />
+</div>
+</div>
+<p>Distribution of confidence ratings for correct (green) and incorrect (red) trials. Overlapping distribution suggests that the subjective confidence in the decision was not predictive of decision performances.</p>
+</section>
+<section id="psychophysics">
+<h1>Psychophysics<a class="headerlink" href="#psychophysics" title="Permalink to this headline">#</a></h1>
+<p>Distribution of the intensities values.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">cond</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s1">&#39;Intero&#39;</span><span class="p">,</span> <span class="s1">&#39;Extero&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;#c44e52&#39;</span><span class="p">,</span> <span class="s1">&#39;#4c72b0&#39;</span><span class="p">]):</span>
+    <span class="n">this_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="n">cond</span><span class="p">]</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Alpha</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">40.5</span><span class="p">,</span> <span class="mf">40.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">histtype</span><span class="o">=</span><span class="s1">&#39;stepfilled&#39;</span><span class="p">,</span>
+             <span class="n">ec</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">cond</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.6</span><span class="p">)</span>
+<span class="n">axs</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Distribution of the tested intensities values&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Intensity (BPM)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">(</span><span class="n">trim</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/069ebb3174cd640929fbfb630e7c608d43e990fc8c2a24cb8c97a958b62e3697.png" src="../../_images/069ebb3174cd640929fbfb630e7c608d43e990fc8c2a24cb8c97a958b62e3697.png" />
+</div>
+</div>
+<section id="staircases">
+<h2>Staircases<a class="headerlink" href="#staircases" title="Permalink to this headline">#</a></h2>
+<section id="psi">
+<h3>Psi<a class="headerlink" href="#psi" title="Permalink to this headline">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">==</span> <span class="s1">&#39;psi&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Plot confidence interval for each staircase</span>
+    <span class="k">def</span> <span class="nf">ci</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">.025</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> \
+               <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">.975</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">stair</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">modality</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> 
+                                 <span class="p">[</span><span class="n">interoPost</span><span class="p">,</span> <span class="n">exteroPost</span><span class="p">],</span> 
+                                 <span class="p">[</span><span class="s1">&#39;#c44e52&#39;</span><span class="p">,</span> <span class="s1">&#39;#4c72b0&#39;</span><span class="p">],</span>
+                                <span class="p">[</span><span class="s1">&#39;Intero&#39;</span><span class="p">,</span> <span class="s1">&#39;Extero&#39;</span><span class="p">]):</span>
+            <span class="n">this_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="n">modality</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">!=</span> <span class="s1">&#39;UpDown&#39;</span><span class="p">)]</span>
+            <span class="n">ciUp</span><span class="p">,</span> <span class="n">ciLow</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">stair</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">up</span><span class="p">,</span> <span class="n">low</span> <span class="o">=</span> <span class="n">ci</span><span class="p">(</span><span class="n">stair</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">2</span><span class="p">)[</span><span class="n">t</span><span class="p">])</span>
+                <span class="n">rg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">50.5</span><span class="p">,</span> <span class="mf">50.5</span><span class="p">)</span>
+                <span class="n">ciUp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rg</span><span class="p">[</span><span class="n">up</span><span class="p">])</span>
+                <span class="n">ciLow</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rg</span><span class="p">[</span><span class="n">low</span><span class="p">])</span>
+
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_df</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ciUp</span><span class="p">)),</span>
+                                <span class="n">y1</span><span class="o">=</span><span class="n">ciLow</span><span class="p">,</span>
+                                <span class="n">y2</span><span class="o">=</span><span class="n">ciUp</span><span class="p">,</span>
+                                <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+
+    <span class="c1"># Staircase traces</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">modality</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Intero&#39;</span><span class="p">,</span> <span class="s1">&#39;Extero&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;#c44e52&#39;</span><span class="p">,</span> <span class="s1">&#39;#4c72b0&#39;</span><span class="p">]):</span>
+        <span class="n">this_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="n">modality</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">!=</span> <span class="s1">&#39;UpDown&#39;</span><span class="p">)]</span>
+
+        <span class="c1"># Show UpDown staircase traces</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_df</span><span class="p">))[</span><span class="n">this_df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">==</span> <span class="s1">&#39;high&#39;</span><span class="p">],</span> 
+                        <span class="n">this_df</span><span class="o">.</span><span class="n">Alpha</span><span class="p">[</span><span class="n">this_df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">==</span> <span class="s1">&#39;high&#39;</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_df</span><span class="p">))[</span><span class="n">this_df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">==</span> <span class="s1">&#39;low&#39;</span><span class="p">],</span> 
+                        <span class="n">this_df</span><span class="o">.</span><span class="n">Alpha</span><span class="p">[</span><span class="n">this_df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">==</span> <span class="s1">&#39;low&#39;</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Use different colors for psi and catch trials</span>
+        <span class="k">for</span> <span class="n">trialCond</span><span class="p">,</span> <span class="n">pointCol</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s1">&#39;psi&#39;</span><span class="p">,</span> <span class="s1">&#39;psiCatchTrial&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">col</span><span class="p">,</span> <span class="s1">&#39;gray&#39;</span><span class="p">]):</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_df</span><span class="p">))[(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s1">&#39;More&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">==</span> <span class="n">trialCond</span><span class="p">)],</span> 
+                        <span class="n">this_df</span><span class="o">.</span><span class="n">Alpha</span><span class="p">[(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s1">&#39;More&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">==</span> <span class="n">trialCond</span><span class="p">)],</span> 
+                        <span class="n">pointCol</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">markeredgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">cond</span><span class="p">)</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_df</span><span class="p">))[(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s1">&#39;Less&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">==</span> <span class="n">trialCond</span><span class="p">)],</span>
+                        <span class="n">this_df</span><span class="o">.</span><span class="n">Alpha</span><span class="p">[(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s1">&#39;Less&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">==</span> <span class="n">trialCond</span><span class="p">)],</span> 
+                        <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">markeredgecolor</span><span class="o">=</span><span class="n">pointCol</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">modality</span><span class="p">)</span>
+
+        <span class="c1"># Psi trials</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">this_df</span><span class="p">))[</span><span class="n">this_df</span><span class="o">.</span><span class="n">TrialType</span><span class="o">==</span><span class="s1">&#39;psi&#39;</span><span class="p">],</span>
+                    <span class="n">this_df</span><span class="p">[</span><span class="n">this_df</span><span class="o">.</span><span class="n">TrialType</span><span class="o">==</span><span class="s1">&#39;psi&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">EstimatedThreshold</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+        <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;More&#39;</span><span class="p">,</span> <span class="s1">&#39;Less&#39;</span><span class="p">],</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Decision&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Intensity ($\Delta$ BPM)&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Trials&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">52</span><span class="p">,</span> <span class="mi">52</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">modality</span><span class="o">+</span><span class="s1">&#39;ception&#39;</span><span class="p">)</span>
+        <span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">(</span><span class="n">trim</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/c4a83ecf697db8a05636ce9d47978c75e392adb03029798d6992dafd70c3a753.png" src="../../_images/c4a83ecf697db8a05636ce9d47978c75e392adb03029798d6992dafd70c3a753.png" />
+</div>
+</div>
+<p>This figure represents the evolution of threshold estimate across trials for the Interoception and Exteroception condition. Shaded areas represent the 95% confidence interval of the threshold estimate by Psi. For each condition, the first 30 trials (connected with dashed lines) were allocated to an Up/Down method (2 interleaved staircases starting a -40.5 or 40 respectively). The intensities and responses were included in the Psi staircase to maximize the amount of information included. The remaining 50 trials were monitored by the Psi staircase only. This dual estimation was implemented to estimate the reliability of the estimation of threshold using an up/down procedure, as compared to a longer psi procedure.</p>
+</section>
+</section>
+</section>
+<section id="psychometric-function">
+<h1>Psychometric function<a class="headerlink" href="#psychometric-function" title="Permalink to this headline">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s1">&#39;talk&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">modality</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">[</span><span class="s1">&#39;Extero&#39;</span><span class="p">,</span> <span class="s1">&#39;Intero&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;#4c72b0&#39;</span><span class="p">,</span> <span class="s1">&#39;#c44e52&#39;</span><span class="p">]):</span>
+    
+    <span class="n">this_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="n">modality</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">TrialType</span> <span class="o">==</span> <span class="s1">&#39;psi&#39;</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">this_df</span><span class="o">.</span><span class="n">EstimatedThreshold</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">this_df</span><span class="o">.</span><span class="n">EstimatedSlope</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># Plot Psi estimate of psychometric function</span>
+        <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> 
+                <span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">s</span><span class="p">)),</span>
+                <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">modality</span><span class="p">)</span>
+        <span class="c1"># Plot threshold</span>
+        <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.5</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1"># Plot data points</span>
+        <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">intensity</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Alpha</span><span class="o">.</span><span class="n">unique</span><span class="p">())):</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">this_df</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">==</span> <span class="n">intensity</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s1">&#39;More&#39;</span><span class="p">))</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">==</span> <span class="n">intensity</span><span class="p">)</span>
+            <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">intensity</span><span class="p">,</span> <span class="n">resp</span><span class="o">/</span><span class="n">total</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> 
+                     <span class="n">markeredgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="n">total</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;P$_{(Response = More|Intensity)}$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Intensity ($\Delta$ BPM)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/60e9b0bd07e351426f256bc900107744ec7d8afd9eb0c70610ab35f9f8ba7a3a.png" src="../../_images/60e9b0bd07e351426f256bc900107744ec7d8afd9eb0c70610ab35f9f8ba7a3a.png" />
+</div>
+</div>
+<p>Psychometric functions fitted using the estimated threshold and slope from the final trial on each condition. The size of the circles reflects the proportion of responses for each intensity level.</p>
+</section>
+<section id="pulse-oximeter">
+<h1>Pulse oximeter<a class="headerlink" href="#pulse-oximeter" title="Permalink to this headline">#</a></h1>
+<section id="visualization-of-ppg-signal">
+<h2>Visualization of PPG signal<a class="headerlink" href="#visualization-of-ppg-signal" title="Permalink to this headline">#</a></h2>
+<p>This interactive graph shows the PPG signal recorded at each interoceptive trial. Blue and red time series represent different trials of 6 seconds each. In each trial, the 5 last seconds were used to estimate the average heart rate of the participant, the first second was included to help peak detection algorithm initialization.</p>
+<p>Bad trials are represented with shaded area. A trial was marked as bad and removed if one of the two conditions was met:</p>
+<ul class="simple">
+<li><p>Contain a RR interval marked as an outlier. Outliers were detected using the MAD rule on all RR intervals in the recording.</p></li>
+<li><p>The standard deviation of the RR interval inside the trial is larger than 5.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">drop</span><span class="p">,</span> <span class="n">bpm_std</span><span class="p">,</span> <span class="n">bpm_df</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>
+<span class="n">clean_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">clean_df</span><span class="p">[</span><span class="s1">&#39;HeartRateOutlier&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clean_df</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">signal_df</span><span class="o">.</span><span class="n">nTrial</span><span class="o">.</span><span class="n">unique</span><span class="p">()):</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;#c44e52&#39;</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;#4c72b0&#39;</span>
+    <span class="n">this_df</span> <span class="o">=</span> <span class="n">signal_df</span><span class="p">[</span><span class="n">signal_df</span><span class="o">.</span><span class="n">nTrial</span><span class="o">==</span><span class="n">trial</span><span class="p">]</span>  <span class="c1"># Downsample to save memory</span>
+    
+    <span class="n">signal</span><span class="p">,</span> <span class="n">peaks</span> <span class="o">=</span> <span class="n">ppg_peaks</span><span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">signal</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">bpm</span> <span class="o">=</span> <span class="mi">60000</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    
+    <span class="n">bpm_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">bpm_df</span><span class="p">,</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;bpm&#39;</span><span class="p">:</span> <span class="n">bpm</span><span class="p">,</span> <span class="s1">&#39;nEpoch&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span> <span class="s1">&#39;nTrial&#39;</span><span class="p">:</span> <span class="n">trial</span><span class="p">})</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+<span class="c1"># Check for outliers in the absolute value of RR intervals </span>
+<span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bpm_df</span><span class="o">.</span><span class="n">nEpoch</span><span class="p">[</span><span class="n">pg</span><span class="o">.</span><span class="n">madmedianrule</span><span class="p">(</span><span class="n">bpm_df</span><span class="o">.</span><span class="n">bpm</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span>
+                <span class="n">bpm_df</span><span class="o">.</span><span class="n">nTrial</span><span class="p">[</span><span class="n">pg</span><span class="o">.</span><span class="n">madmedianrule</span><span class="p">(</span><span class="n">bpm_df</span><span class="o">.</span><span class="n">bpm</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())]</span><span class="o">.</span><span class="n">unique</span><span class="p">()):</span>
+    <span class="n">drop</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="n">clean_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;HeartRateOutlier&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># Check for outliers in the standard deviation values of RR intervals </span>
+<span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">bpm_df</span><span class="o">.</span><span class="n">nTrial</span><span class="o">.</span><span class="n">nunique</span><span class="p">())[</span><span class="n">pg</span><span class="o">.</span><span class="n">madmedianrule</span><span class="p">(</span><span class="n">bpm_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;nTrial&#39;</span><span class="p">,</span> <span class="s1">&#39;nEpoch&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">bpm</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())],</span>
+                <span class="n">bpm_df</span><span class="o">.</span><span class="n">nTrial</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="n">pg</span><span class="o">.</span><span class="n">madmedianrule</span><span class="p">(</span><span class="n">bpm_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;nTrial&#39;</span><span class="p">,</span> <span class="s1">&#39;nEpoch&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">bpm</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())]):</span>
+    <span class="k">if</span> <span class="n">e</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">drop</span><span class="p">:</span>
+        <span class="n">drop</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">clean_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;HeartRateOutlier&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">meanBPM</span><span class="p">,</span> <span class="n">stdBPM</span><span class="p">,</span> <span class="n">rangeBPM</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">signal_df</span><span class="o">.</span><span class="n">nTrial</span><span class="o">.</span><span class="n">unique</span><span class="p">()):</span>
+    
+    <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;#3a5799&#39;</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;#3bb0ac&#39;</span>
+    <span class="n">this_df</span> <span class="o">=</span> <span class="n">signal_df</span><span class="p">[</span><span class="n">signal_df</span><span class="o">.</span><span class="n">nTrial</span><span class="o">==</span><span class="n">trial</span><span class="p">]</span>  <span class="c1"># Downsample to save memory</span>
+    
+    <span class="c1"># Mark as outlier if relevant</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">drop</span><span class="p">:</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">this_df</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">this_df</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+    
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Time</span><span class="p">,</span> <span class="n">this_df</span><span class="o">.</span><span class="n">signal</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;PPG&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
+
+    <span class="c1"># Peaks detection</span>
+    <span class="n">signal</span><span class="p">,</span> <span class="n">peaks</span> <span class="o">=</span> <span class="n">ppg_peaks</span><span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">signal</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">bpm</span> <span class="o">=</span> <span class="mi">60000</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">bpm</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">bpm</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="n">bpm</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">bpm</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">meanBPM</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">stdBPM</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">rangeBPM</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="c1"># Plot instantaneous heart rate</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]],</span> 
+               <span class="mi">60000</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span>
+              <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time (s)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;PPG level (a.u.)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Heart rate (BPM)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;PPG signal recorded during interoceptive condition (5 seconds each)&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/fc5377ca96103fc04a6aa6460139aa2476dfc57fa24a55655124dc61ab2df85d.png" src="../../_images/fc5377ca96103fc04a6aa6460139aa2476dfc57fa24a55655124dc61ab2df85d.png" />
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Here we are only representing the <strong>interoception</strong> trials, as the quality of the PPG recording will not affect the exteroception condition.</p>
+</div>
+</section>
+<section id="heart-rate-summary-statistics">
+<h2>Heart rate - Summary statistics<a class="headerlink" href="#heart-rate-summary-statistics" title="Permalink to this headline">#</a></h2>
+<p>This figure show the evolution of the average and standard deviation of the instantaneous heart rate across time. An instantaneous frequnecy was derived between each peak detected in the PPG signal (also known as pulse-to-pulse intervals, or pseudo RR intervals). Rapid increase or decrease of the heart rate frequency can lead to larger standard deviation, and less accurate estimation of the average heart rate.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s1">&#39;talk&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">meanBPM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">meanBPM</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">drop</span><span class="p">))</span>
+<span class="n">stdBPM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">stdBPM</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">drop</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="p">[</span><span class="n">meanBPM</span><span class="p">,</span> <span class="n">stdBPM</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;#b55d60&#39;</span><span class="p">,</span> <span class="s1">&#39;#5f9e6e&#39;</span><span class="p">]):</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.6</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.6</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Mean BPM&#39;</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;STD BPM&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Trials&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;BPM&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/21f9ef6ce426b4a2f9186d743eb9d5ab49fea215b24b2ebdb3fada68609df929.png" src="../../_images/21f9ef6ce426b4a2f9186d743eb9d5ab49fea215b24b2ebdb3fada68609df929.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="save-dataframe">
+<h1>Save dataframe<a class="headerlink" href="#save-dataframe" title="Permalink to this headline">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">clean_df</span><span class="p">[</span><span class="s2">&quot;HeartRateOutlier&quot;</span><span class="p">][</span><span class="n">clean_df</span><span class="o">.</span><span class="n">Modality</span><span class="o">==</span><span class="s2">&quot;Intero&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s1"> Interoception trials and </span><span class="si">{</span><span class="n">clean_df</span><span class="p">[</span><span class="s2">&quot;HeartRateOutlier&quot;</span><span class="p">][</span><span class="n">clean_df</span><span class="o">.</span><span class="n">Modality</span><span class="o">==</span><span class="s2">&quot;Extero&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s1"> exteroception trials were dropped after trial rejection based on heart rate outliers.&#39;</span><span class="p">)</span>
+
+<span class="c1"># clean_df.to_csv(Path(reportPath, &quot;preprocessed.txt&quot;), index=False)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4 Interoception trials and 0 exteroception trials were dropped after trial rejection based on heart rate outliers.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+
+
+              </article>
+              
+
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="HeartBeatCounting.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Heartbeat Counting task - Summary results</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="../psychophysics/1-psychophysics_subject_level.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Fitting a psychometric function at the subject level</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022-2022, Nicolas Legrand.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

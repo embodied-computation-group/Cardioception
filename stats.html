@@ -48,13 +48,13 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="_static/togglebutton.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0/dist/embed-amd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <link rel="shortcut icon" href="_static/logo_small.svg"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Fitting a psychometric function at the subject level" href="examples/1-psychophysics_subject_level.html" />
-    <link rel="prev" title="Tasks" href="api.html" />
+    <link rel="next" title="Heartbeat Counting task - Summary results" href="examples/templates/HeartBeatCounting.html" />
+    <link rel="prev" title="API" href="api.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="None">
   </head>
@@ -114,7 +114,7 @@
 
 <li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="api.html">
-  Tasks
+  API
  </a>
 </li>
 
@@ -130,6 +130,12 @@
  </a>
 </li>
 
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="references.html">
+  References
+ </a>
+</li>
+
     
 </ul>
       </div>
@@ -137,14 +143,6 @@
     </div>
 
     <div id="navbar-end">
-      
-      <div class="navbar-end-item">
-        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
       
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
@@ -161,6 +159,13 @@
             <label class="sr-only">Pypi</label></a>
         </li>
       </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
       </div>
       
     </div>
@@ -191,8 +196,13 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#psychophysics">
-   Psychophysics
+  <a class="reference internal nav-link" href="#report-templates">
+   Report templates
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bayesian-modelling-of-psychophysics">
+   Bayesian modelling of psychophysics
   </a>
  </li>
 </ul>
@@ -216,11 +226,49 @@
                 
   <section id="statistical-analysis">
 <h1>Statistical analysis<a class="headerlink" href="#statistical-analysis" title="Permalink to this headline">#</a></h1>
-<p>This section show how data from the heart rate discrimination task can be analyzed and modelled.</p>
-<section id="psychophysics">
-<h2>Psychophysics<a class="headerlink" href="#psychophysics" title="Permalink to this headline">#</a></h2>
+<p>This section show how data from the heart rate discrimination task can be analyzed and modelled. You can navigate the notebooks by clicking on the links or run it interactively in <a class="reference external" href="https://colab.research.google.com/">Google Colab</a> using the badges, and updload your own data.</p>
+<section id="report-templates">
+<h2>Report templates<a class="headerlink" href="#report-templates" title="Permalink to this headline">#</a></h2>
 <div class="toctree-wrapper compound">
 </div>
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Notebook</p></th>
+<th class="head"><p>Colab</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="examples/templates/HeartBeatCounting.html#hbc-template"><span class="std std-ref">Heartbeat Counting task - Summary results</span></a></p></td>
+<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/templates/HeartBeatCounting.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#hrd-template"><span class="std std-ref">Heart Rate Discrimination task - Summary results</span></a></p></td>
+<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/templates/HeartRateDiscrimination.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="bayesian-modelling-of-psychophysics">
+<h2>Bayesian modelling of psychophysics<a class="headerlink" href="#bayesian-modelling-of-psychophysics" title="Permalink to this headline">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Notebook</p></th>
+<th class="head"><p>Colab</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#psychophysics-subject-level"><span class="std std-ref">Fitting a psychometric function at the subject level</span></a></p></td>
+<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#psychophysics-group-level"><span class="std std-ref">Fitting a psychometric function at the group level</span></a></p></td>
+<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="examples/psychophysics/3-psychophysics_repeated_measures.html#psychophysics-repeated-measures"><span class="std std-ref">Fitting psychometric functions for repeated measures</span></a></p></td>
+<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/3-psychophysics_repeated_measures.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 
@@ -236,13 +284,13 @@
       <i class="fas fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">Tasks</p>
+          <p class="prev-next-title">API</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="examples/1-psychophysics_subject_level.html" title="next page">
+  <a class='right-next' id="next-link" href="examples/templates/HeartBeatCounting.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">Fitting a psychometric function at the subject level</p>
+      <p class="prev-next-title">Heartbeat Counting task - Summary results</p>
   </div>
   <i class="fas fa-angle-right"></i>
   </a>

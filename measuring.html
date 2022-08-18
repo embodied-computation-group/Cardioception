@@ -48,7 +48,7 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="_static/togglebutton.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0/dist/embed-amd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="shortcut icon" href="_static/logo_small.svg"/>
@@ -115,7 +115,7 @@
 
 <li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="api.html">
-  Tasks
+  API
  </a>
 </li>
 
@@ -131,6 +131,12 @@
  </a>
 </li>
 
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="references.html">
+  References
+ </a>
+</li>
+
     
 </ul>
       </div>
@@ -138,14 +144,6 @@
     </div>
 
     <div id="navbar-end">
-      
-      <div class="navbar-end-item">
-        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
       
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
@@ -162,6 +160,13 @@
             <label class="sr-only">Pypi</label></a>
         </li>
       </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
       </div>
       
     </div>
@@ -237,11 +242,6 @@
    Discussion
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#references">
-   References
-  </a>
- </li>
 </ul>
 
 </nav>
@@ -263,12 +263,12 @@
                 
   <section id="measuring-cardiac-interoception">
 <h1>Measuring cardiac interoception<a class="headerlink" href="#measuring-cardiac-interoception" title="Permalink to this headline">#</a></h1>
-<p>Cardiac interoception has been largely investigated using the heartbeat counting task (also known as the heartbeat tracking task) that was formally introduced more than 40 years ago <a class="footnote-reference brackets" href="#footcite-1981-schandry" id="id1">1</a>. This task comes with several variants that can concern task instruction, experimental design or the scores derived to measure cardiac interoceptive accuracy and metacognition. Here, we describe the heartbeat counting task together with the heart rate discrimination task, that was recently proposed <a class="footnote-reference brackets" href="#footcite-2022-legrand" id="id2">2</a> and is also implemented in <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception">cardioception</a>.</p>
+<p>Cardiac interoception has been largely investigated using the heartbeat counting task (also known as the heartbeat tracking task) that was formally introduced more than 40 years ago <span id="id1">[<a class="reference internal" href="references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x, doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>]</span>. This task comes with several variants that can concern task instruction, experimental design or the scores derived to measure cardiac interoceptive accuracy and metacognition. Here, we describe the heartbeat counting task together with the heart rate discrimination task, that was recently proposed <span id="id2">[<a class="reference internal" href="references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span> and is also implemented in <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception">cardioception</a>.</p>
 <section id="the-heart-beat-counting-task">
 <h2>The Heart Beat Counting task<a class="headerlink" href="#the-heart-beat-counting-task" title="Permalink to this headline">#</a></h2>
-<p>In the classic “heartbeat counting task” <a class="footnote-reference brackets" href="#footcite-1981-schandry" id="id3">1</a><a class="footnote-reference brackets" href="#footcite-1978-dale" id="id4">3</a> participants attend to their heartbeats in intervals of various lengths and are asked to count the number of heartbeats they can effectively feels during this period. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats. In the original version <a class="footnote-reference brackets" href="#footcite-1981-schandry" id="id5">1</a>, the task started with a resting period of 60 seconds and consisted of three estimation session (25, 35, and 45 seconds) interleaved with resting periods of 30 seconds.</p>
+<p>In the classic “heartbeat counting task” <span id="id3">[<a class="reference internal" href="references.html#id2" title="Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. Perceptual and Motor Skills, 47(1):79-85, 1978. PMID: 704264. URL: https://doi.org/10.2466/pms.1978.47.1.79, arXiv:https://doi.org/10.2466/pms.1978.47.1.79, doi:10.2466/pms.1978.47.1.79.">Dale and Anderson, 1978</a>, <a class="reference internal" href="references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x, doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>]</span> participants attend to their heartbeats in intervals of various lengths and are asked to count the number of heartbeats they can effectively feels during this period. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats. In the original version <span id="id4">[<a class="reference internal" href="references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x, doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>]</span>, the task started with a resting period of 60 seconds and consisted of three estimation session (25, 35, and 45 seconds) interleaved with resting periods of 30 seconds.</p>
 <p><img alt="hbc" src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/HeartBeatCounting.png" /></p>
-<p>By default, <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception">Cardioception</a> implements the version used in recent publications <a class="footnote-reference brackets" href="#footcite-2013-hart" id="id6">4</a> in which a training trial of 20 seconds is proposed, after which the 6 experimental trials of different time windows (25, 30, 35,40, 45 and 50s) occurred in a randomized order. The trial length, the condition (<code class="docutils literal notranslate"><span class="pre">'Rest'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Count'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Training'</span></code>), and the randomization can be controlled in the parameters dictionary. This behavior can be controlled using the <code class="docutils literal notranslate"><span class="pre">&quot;taskVersion&quot;</span></code> parameter.</p>
+<p>By default, <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception">Cardioception</a> implements the version used in recent publications <span id="id5">[<a class="reference internal" href="references.html#id5" title="Nova Hart, John McGowan, Ludovico Minati, and Hugo D. Critchley. Emotional regulation and bodily sensation: interoceptive awareness is intact in borderline personality disorder. Journal of Personality Disorders, 27(4):506-518, 2013. PMID: 22928847. URL: https://doi.org/10.1521/pedi_2012_26_049, arXiv:https://doi.org/10.1521/pedi_2012_26_049, doi:10.1521/pedi\_2012\_26\_049.">Hart <em>et al.</em>, 2013</a>]</span> in which a training trial of 20 seconds is proposed, after which the 6 experimental trials of different time windows (25, 30, 35,40, 45 and 50s) occurred in a randomized order. The trial length, the condition (<code class="docutils literal notranslate"><span class="pre">'Rest'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Count'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Training'</span></code>), and the randomization can be controlled in the parameters dictionary. This behavior can be controlled using the <code class="docutils literal notranslate"><span class="pre">&quot;taskVersion&quot;</span></code> parameter.</p>
 <section id="instructions">
 <h3>Instructions<a class="headerlink" href="#instructions" title="Permalink to this headline">#</a></h3>
 <p>The instructions are the following:</p>
@@ -278,7 +278,7 @@
 </section>
 <section id="score">
 <h3>Score<a class="headerlink" href="#score" title="Permalink to this headline">#</a></h3>
-<p>Many variants of the <em>interoceptive accuracy</em> score have been proposed, here we implemented and use the one that we considered to be the more widely used, following the formula proposed by Hart et al. <a class="footnote-reference brackets" href="#footcite-2013-hart" id="id7">4</a> as follows:</p>
+<p>Many variants of the <em>interoceptive accuracy</em> score have been proposed, here we implemented and use the one that we considered to be the more widely used, following the formula proposed by Hart et al. <span id="id6">[<a class="reference internal" href="references.html#id5" title="Nova Hart, John McGowan, Ludovico Minati, and Hugo D. Critchley. Emotional regulation and bodily sensation: interoceptive awareness is intact in borderline personality disorder. Journal of Personality Disorders, 27(4):506-518, 2013. PMID: 22928847. URL: https://doi.org/10.1521/pedi_2012_26_049, arXiv:https://doi.org/10.1521/pedi_2012_26_049, doi:10.1521/pedi\_2012\_26\_049.">Hart <em>et al.</em>, 2013</a>]</span> as follows:</p>
 <div class="math notranslate nohighlight">
 \[   Accuracy = 1-\frac{\left | N_{real} - N_{reported} \right |}{\frac{N_{real} + N_{reported}}{2}}\]</div>
 <p>After each counting response, the participant is prompted to rate their subjective confidence (from 0 to 100), used to calculate “interoceptive awareness”, i.e. the relationship of confidence and accuracy. Total task runtime using default settings is approximately <strong>4 minutes</strong>.</p>
@@ -286,7 +286,7 @@
 </section>
 <section id="the-heart-rate-discrimination-task">
 <h2>The Heart Rate Discrimination task<a class="headerlink" href="#the-heart-rate-discrimination-task" title="Permalink to this headline">#</a></h2>
-<p>The <strong>Heart Rate Discrimination Task</strong> <a class="footnote-reference brackets" href="#footcite-2022-legrand" id="id8">2</a> implements an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline, together with metacognitive efficiency.</p>
+<p>The <strong>Heart Rate Discrimination Task</strong> <span id="id7">[<a class="reference internal" href="references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span> implements an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline, together with metacognitive efficiency.</p>
 <p><img alt="hrd" src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/HeartRateDiscrimination.png" /></p>
 <section id="staircases">
 <h3>Staircases<a class="headerlink" href="#staircases" title="Permalink to this headline">#</a></h3>
@@ -304,13 +304,9 @@
 </section>
 <section id="discussion">
 <h2>Discussion<a class="headerlink" href="#discussion" title="Permalink to this headline">#</a></h2>
-<p>The validity and reliability of the heartbeat counting task (HBC, also called heartbeat tracking task) as a measure of cardiac interoceptive accuracy has been discussed during the last years and it is acknowledged that the scores derived from this task are difficult to interpret concerning interoceptive abilities <a class="footnote-reference brackets" href="#footcite-2022-ferentzi" id="id9">5</a>. It has been documented that the HBC task is poorly related to actual heartbeat detection <a class="footnote-reference brackets" href="#footcite-2020-desmedt" id="id10">6</a>, is confounded by fundamental mathematical issues <a class="footnote-reference brackets" href="#footcite-2018-zamariola" id="id11">7</a>, is unable to distinguish subjective from physiological confounds <a class="footnote-reference brackets" href="#footcite-1996-ring" id="id12">8</a>, is unable to distinguish true interoceptors from non-interoceptors, and most crucially cannot, by design, distinguish cardiac accuracy (hit rate) from response bias. Furthermore, the task is also ill-suited to the estimation of metacognition variables, as there are extremely few trials and no overall control of accuracy (see <a class="footnote-reference brackets" href="#footcite-2014-fleming" id="id13">9</a> for details on how metacognition should be measured).</p>
+<p>The validity and reliability of the heartbeat counting task (HBC, also called heartbeat tracking task) as a measure of cardiac interoceptive accuracy has been discussed during the last years and it is acknowledged that the scores derived from this task are difficult to interpret concerning interoceptive abilities <span id="id8">[<a class="reference internal" href="references.html#id6" title="Eszter Ferentzi, Oliver Wilhelm, and Ferenc Köteles. What counts when heartbeats are counted. Trends in Cognitive Sciences, 2022. URL: https://www.sciencedirect.com/science/article/pii/S1364661322001668, doi:https://doi.org/10.1016/j.tics.2022.07.009.">Ferentzi <em>et al.</em>, 2022</a>]</span>. It has been documented that the HBC task is poorly related to actual heartbeat detection <span id="id9">[<a class="reference internal" href="references.html#id7" title="Olivier Desmedt, Olivier Corneille, Olivier Luminet, Jennifer Murphy, Geoffrey Bird, and Pierre Maurage. Contribution of time estimation and knowledge to heartbeat counting task performance under original and adapted instructions. Biological Psychology, 154:107904, 2020. URL: https://www.sciencedirect.com/science/article/pii/S0301051120300648, doi:https://doi.org/10.1016/j.biopsycho.2020.107904.">Desmedt <em>et al.</em>, 2020</a>]</span>, is confounded by fundamental mathematical issues <span id="id10">[<a class="reference internal" href="references.html#id8" title="Giorgia Zamariola, Pierre Maurage, Olivier Luminet, and Olivier Corneille. Interoceptive accuracy scores from the heartbeat counting task are problematic: evidence from simple bivariate correlations. Biological Psychology, 137:12-17, 2018. URL: https://www.sciencedirect.com/science/article/pii/S0301051118303739, doi:https://doi.org/10.1016/j.biopsycho.2018.06.006.">Zamariola <em>et al.</em>, 2018</a>]</span>, is unable to distinguish subjective from physiological confounds <span id="id11">[<a class="reference internal" href="references.html#id9" title="CHRISTOPHER RING and JASPER BRENER. Influence of beliefs about heart rate and actual heart rate on heartbeat counting. Psychophysiology, 33(5):541-546, 1996. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1996.tb02430.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1996.tb02430.x, doi:https://doi.org/10.1111/j.1469-8986.1996.tb02430.x.">RING and BRENER, 1996</a>]</span>, is unable to distinguish true interoceptors from non-interoceptors, and most crucially cannot, by design, distinguish cardiac accuracy (hit rate) from response bias. Furthermore, the task is also ill-suited to the estimation of metacognition variables, as there are extremely few trials and no overall control of accuracy (see <span id="id12">[<a class="reference internal" href="references.html#id10" title="Stephen M. Fleming and Hakwan C. Lau. How to measure metacognition. Frontiers in Human Neuroscience, 2014. URL: https://www.frontiersin.org/articles/10.3389/fnhum.2014.00443, doi:10.3389/fnhum.2014.00443.">Fleming and Lau, 2014</a>]</span> for details on how metacognition should be measured).</p>
 <p>Based on these observations, we considered that <em>cardiac interoceptive accuracy</em> is a too multifaceted concept and too much confounded by other psychological factors to be measured precisely in the lab without directly manipulating the cardiac signal (i.e. changing and/or systematically observing different cardiac frequencies). It is indeed not possible to know if a participant is correct when reporting heartbeats counts because he/she has good interoceptive accuracy, or because he/she is simply lucky to have prior cardiac beliefs that are aligned with the physiological signal, at least for the time of the experience.</p>
-<p>With the heart rate discrimination task (HRD), we proposed to change the focus and the way we measure cardioception. If cardiac interoceptive accuracy cannot be precisely estimated because it is confounded by cardiac beliefs, we can however measure these beliefs in a very precise and rigorous manner using methods from psychophysics. In addition to that, because we test decisions from the participant many times (the recommended number of trials in the HRD task is 40 per condition minimum), we can estimate metacognitive efficiency more robustly using <em>meta-d’</em> <a class="footnote-reference brackets" href="#footcite-2014-fleming" id="id14">9</a>.</p>
-</section>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">#</a></h2>
-<hr class="footnotes docutils" />
+<p>With the heart rate discrimination task (HRD), we proposed to change the focus and the way we measure cardioception. If cardiac interoceptive accuracy cannot be precisely estimated because it is confounded by cardiac beliefs, we can however measure these beliefs in a very precise and rigorous manner using methods from psychophysics. In addition to that, because we test decisions from the participant many times (the recommended number of trials in the HRD task is 40 per condition minimum), we can estimate metacognitive efficiency more robustly using <em>meta-d’</em> <span id="id13">[<a class="reference internal" href="references.html#id10" title="Stephen M. Fleming and Hakwan C. Lau. How to measure metacognition. Frontiers in Human Neuroscience, 2014. URL: https://www.frontiersin.org/articles/10.3389/fnhum.2014.00443, doi:10.3389/fnhum.2014.00443.">Fleming and Lau, 2014</a>]</span>.</p>
 </section>
 </section>
 
