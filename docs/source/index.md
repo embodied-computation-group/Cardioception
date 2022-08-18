@@ -8,11 +8,11 @@
 
 The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):
 
-1. The **Heartbeat counting task (HBC)**, also known as the **Heartbeat tracking task**, developed by Rainer Schandry {cite:p}`1978:dale,1981:schandry`. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.
-2. The **Heart Rate Discrimination task** {cite:p}`2022:legrand` implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see *Analyses* below), together with metacognitive efficiency.
+1. The **Heartbeat counting task (HBC)**, also known as the **Heartbeat tracking task**, developed by Rainer Schandry {footcite:p}`1978:dale,1981:schandry`. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.
+2. The **Heart Rate Discrimination task** {footcite:p}`2022:legrand` implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see *Analyses* below), together with metacognitive efficiency.
 
 ```{note}
-While having slightly similar names, the **Heartbeat counting task (HBC)** and the **Heart Rate Discrimination task** are different in term of implementation and the measures they provided and should not be conflated. The **HBC** task has been largely criticized (see the section How to measure cardiac interoception). We developped the cardioception package first to provide an open sourced version of this task, which was lacking, and easy support to record heart rate via cheap pulse oximetry via [Systole](https://github.com/embodied-computation-group/systole). In addition to that, we developped the **HRD** task as a new measure of cardiac interoception, grounding on a different reasonning and trying to control for the confounds other interoception tasks migh have {cite:p}`2022:legrand`.
+While having slightly similar names, the **Heartbeat counting task (HBC)** and the **Heart Rate Discrimination task** are different in term of implementation and the measures they provided and should not be conflated. We developped the cardioception package first to provide an open sourced version of the *HBC*, which was lacking, with easy support to record heart rate via cheap pulse oximetry via [Systole](https://github.com/embodied-computation-group/systole). In addition to that, we developped the **HRD** task as a new measure of cardiac interoception {footcite:p}`2022:legrand`, grounding on a different reasonning and trying to control for the confounds other interoception tasks migh have.
 
 ```
 
@@ -26,7 +26,7 @@ If you want to report a bug, you can open an issue on the [GitHub page](https://
 
 # References
 
-```{bibliography}
+```{footbibliography}
 :style: unsrt
 ```
 
@@ -48,6 +48,6 @@ maxdepth: 3
 Theory <measuring.md>
 Guide <user_guide.md>
 API <api.rst>
-Statistical analysis <examples/README.md>
+Statistical analysis <stats.md>
 Cite <cite.md>
 ```

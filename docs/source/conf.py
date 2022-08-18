@@ -107,14 +107,16 @@ html_theme_options = {
     "logo": {
         "text": "Cardioception",
     },
+    "search_bar_position": "navbar",
 }
 
-html_sidebars = {"index": []}
+html_sidebars = {"**": []}
 
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
 ]
-html_logo = "images/logo.png"
+html_logo = "images/logo_small.svg"
+html_favicon = "images/logo_small.svg"
 
 
 def setup(app):
