@@ -1,5 +1,7 @@
 .. _api_ref:
 
+.. contents:: Table of Contents
+   :depth: 2
 
 Tasks
 -----
