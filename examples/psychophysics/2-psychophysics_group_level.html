@@ -261,114 +261,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="nn">Input In [2],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">aesara.tensor</span> <span class="k">as</span> <span class="nn">at</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.9.13</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.9</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">arviz</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">32</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">     </span><span class="mi">26</span>         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">29</span> <span class="n">_log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="s2">&quot;arviz&quot;</span><span class="p">)</span>
-<span class="ne">---&gt; </span><span class="mi">32</span> <span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="g g-Whitespace">     </span><span class="mi">33</span> <span class="kn">from</span> <span class="nn">.plots</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="g g-Whitespace">     </span><span class="mi">34</span> <span class="kn">from</span> <span class="nn">.plots.backends</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.9.13</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.9</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">arviz</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="sd">&quot;&quot;&quot;Code for loading and manipulating data structures.&quot;&quot;&quot;</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">CoordSpec</span><span class="p">,</span> <span class="n">DimSpec</span><span class="p">,</span> <span class="n">dict_to_dataset</span><span class="p">,</span> <span class="n">numpy_to_data_array</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">from</span> <span class="nn">.converters</span> <span class="kn">import</span> <span class="n">convert_to_dataset</span><span class="p">,</span> <span class="n">convert_to_inference_data</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">from</span> <span class="nn">.datasets</span> <span class="kn">import</span> <span class="n">clear_data_home</span><span class="p">,</span> <span class="n">list_datasets</span><span class="p">,</span> <span class="n">load_arviz_data</span>
-
-<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.9.13</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.9</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">arviz</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">base</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">11</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="kn">import</span> <span class="nn">pkg_resources</span>
-<span class="ne">---&gt; </span><span class="mi">11</span> <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
-<span class="g g-Whitespace">     </span><span class="mi">13</span> <span class="k">try</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">14</span>     <span class="kn">import</span> <span class="nn">ujson</span> <span class="k">as</span> <span class="nn">json</span>
-
-<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.9.13</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.9</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">xarray</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">testing</span><span class="p">,</span> <span class="n">tutorial</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">from</span> <span class="nn">.backends.api</span> <span class="kn">import</span> <span class="p">(</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">load_dataarray</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">load_dataset</span><span class="p">,</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">save_mfdataset</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span> <span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="kn">from</span> <span class="nn">.backends.rasterio_</span> <span class="kn">import</span> <span class="n">open_rasterio</span>
-
-<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.9.13</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.9</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">xarray</span><span class="o">/</span><span class="n">testing</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="ne">----&gt; </span><span class="mi">9</span> <span class="kn">from</span> <span class="nn">xarray.core</span> <span class="kn">import</span> <span class="n">duck_array_ops</span><span class="p">,</span> <span class="n">formatting</span><span class="p">,</span> <span class="n">utils</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="kn">from</span> <span class="nn">xarray.core.dataarray</span> <span class="kn">import</span> <span class="n">DataArray</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="kn">from</span> <span class="nn">xarray.core.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
-
-<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.9.13</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.9</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">xarray</span><span class="o">/</span><span class="n">core</span><span class="o">/</span><span class="n">duck_array_ops</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">26</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">     </span><span class="mi">23</span> <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">take</span><span class="p">,</span> <span class="n">tensordot</span><span class="p">,</span> <span class="n">transpose</span><span class="p">,</span> <span class="n">unravel_index</span>  <span class="c1"># noqa</span>
-<span class="g g-Whitespace">     </span><span class="mi">24</span> <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">where</span> <span class="k">as</span> <span class="n">_where</span>
-<span class="ne">---&gt; </span><span class="mi">26</span> <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">dask_array_compat</span><span class="p">,</span> <span class="n">dask_array_ops</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">,</span> <span class="n">npcompat</span><span class="p">,</span> <span class="n">nputils</span>
-<span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="kn">from</span> <span class="nn">.nputils</span> <span class="kn">import</span> <span class="n">nanfirst</span><span class="p">,</span> <span class="n">nanlast</span>
-<span class="g g-Whitespace">     </span><span class="mi">28</span> <span class="kn">from</span> <span class="nn">.pycompat</span> <span class="kn">import</span> <span class="n">cupy_array_type</span><span class="p">,</span> <span class="n">dask_array_type</span><span class="p">,</span> <span class="n">is_duck_dask_array</span>
-
-<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.9.13</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.9</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">xarray</span><span class="o">/</span><span class="n">core</span><span class="o">/</span><span class="n">npcompat</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">72</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">     </span><span class="mi">49</span>     <span class="kn">from</span> <span class="nn">numpy.typing._dtype_like</span> <span class="kn">import</span> <span class="n">_DTypeLikeNested</span><span class="p">,</span> <span class="n">_ShapeLike</span><span class="p">,</span> <span class="n">_SupportsDType</span>
-<span class="g g-Whitespace">     </span><span class="mi">51</span>     <span class="c1"># Xarray requires a Mapping[Hashable, dtype] in many places which</span>
-<span class="g g-Whitespace">     </span><span class="mi">52</span>     <span class="c1"># conflics with numpys own DTypeLike (with dtypes for fields).</span>
-<span class="g g-Whitespace">     </span><span class="mi">53</span>     <span class="c1"># https://numpy.org/devdocs/reference/typing.html#numpy.typing.DTypeLike</span>
-<span class="g g-Whitespace">     </span><span class="mi">54</span>     <span class="c1"># This is a copy of this DTypeLike that allows only non-Mapping dtypes.</span>
-<span class="g g-Whitespace">     </span><span class="mi">55</span>     <span class="n">DTypeLikeSave</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
-<span class="g g-Whitespace">     </span><span class="mi">56</span>         <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">57</span>         <span class="c1"># default data type (float64)</span>
-<span class="g g-Whitespace">     </span><span class="mi">58</span>         <span class="kc">None</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">59</span>         <span class="c1"># array-scalar types and generic types</span>
-<span class="g g-Whitespace">     </span><span class="mi">60</span>         <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-<span class="g g-Whitespace">     </span><span class="mi">61</span>         <span class="c1"># character codes, type strings or comma-separated fields, e.g., &#39;float64&#39;</span>
-<span class="g g-Whitespace">     </span><span class="mi">62</span>         <span class="nb">str</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">63</span>         <span class="c1"># (flexible_dtype, itemsize)</span>
-<span class="g g-Whitespace">     </span><span class="mi">64</span>         <span class="n">Tuple</span><span class="p">[</span><span class="n">_DTypeLikeNested</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-<span class="g g-Whitespace">     </span><span class="mi">65</span>         <span class="c1"># (fixed_dtype, shape)</span>
-<span class="g g-Whitespace">     </span><span class="mi">66</span>         <span class="n">Tuple</span><span class="p">[</span><span class="n">_DTypeLikeNested</span><span class="p">,</span> <span class="n">_ShapeLike</span><span class="p">],</span>
-<span class="g g-Whitespace">     </span><span class="mi">67</span>         <span class="c1"># (base_dtype, new_dtype)</span>
-<span class="g g-Whitespace">     </span><span class="mi">68</span>         <span class="n">Tuple</span><span class="p">[</span><span class="n">_DTypeLikeNested</span><span class="p">,</span> <span class="n">_DTypeLikeNested</span><span class="p">],</span>
-<span class="g g-Whitespace">     </span><span class="mi">69</span>         <span class="c1"># because numpy does the same?</span>
-<span class="g g-Whitespace">     </span><span class="mi">70</span>         <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-<span class="g g-Whitespace">     </span><span class="mi">71</span>         <span class="c1"># anything with a dtype attribute</span>
-<span class="ne">---&gt; </span><span class="mi">72</span>         <span class="n">_SupportsDType</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">],</span>
-<span class="g g-Whitespace">     </span><span class="mi">73</span>     <span class="p">]</span>
-<span class="g g-Whitespace">     </span><span class="mi">74</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">75</span>     <span class="c1"># fall back for numpy &lt; 1.20, ArrayLike adapted from numpy.typing._array_like</span>
-<span class="g g-Whitespace">     </span><span class="mi">76</span>     <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.13/x64/lib/python3.9/typing.py:277,</span> in <span class="ni">_tp_cache.&lt;locals&gt;.decorator.&lt;locals&gt;.inner</span><span class="nt">(*args, **kwds)</span>
-<span class="g g-Whitespace">    </span><span class="mi">275</span> <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">276</span>     <span class="k">pass</span>  <span class="c1"># All real errors (not unhashable args) are raised below.</span>
-<span class="ne">--&gt; </span><span class="mi">277</span> <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.13/x64/lib/python3.9/typing.py:1004,</span> in <span class="ni">Generic.__class_getitem__</span><span class="nt">(cls, params)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1000</span>         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1001</span>             <span class="sa">f</span><span class="s2">&quot;Parameters to </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">[...] must all be unique&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1002</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1003</span>     <span class="c1"># Subscripting a regular Generic subclass.</span>
-<span class="ne">-&gt; </span><span class="mi">1004</span>     <span class="n">_check_generic</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__parameters__</span><span class="p">))</span>
-<span class="g g-Whitespace">   </span><span class="mi">1005</span> <span class="k">return</span> <span class="n">_GenericAlias</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.13/x64/lib/python3.9/site-packages/typing_extensions.py:92,</span> in <span class="ni">_check_generic</span><span class="nt">(cls, parameters, elen)</span>
-<span class="g g-Whitespace">     </span><span class="mi">88</span> <span class="sd">&quot;&quot;&quot;Check correct count for parameters of a generic cls (internal helper).</span>
-<span class="g g-Whitespace">     </span><span class="mi">89</span><span class="sd"> This gives a nice error message in case of count mismatch.</span>
-<span class="g g-Whitespace">     </span><span class="mi">90</span><span class="sd"> &quot;&quot;&quot;</span>
-<span class="g g-Whitespace">     </span><span class="mi">91</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">elen</span><span class="p">:</span>
-<span class="ne">---&gt; </span><span class="mi">92</span>     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2"> is not a generic class&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">93</span> <span class="k">if</span> <span class="n">elen</span> <span class="ow">is</span> <span class="n">_marker</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">94</span>     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__parameters__&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parameters__</span><span class="p">:</span>
-
-<span class="ne">TypeError</span>: &lt;class &#39;numpy.typing._dtype_like._SupportsDType&#39;&gt; is not a generic class
-</pre></div>
-</div>
-</div>
 </div>
 <p>In this example, we are going to fit a cummulative normal function to decision responses made during the Heart Rate Discrimination task. We will use the data from the <a class="reference external" href="https://www.biorxiv.org/content/10.1101/2021.02.18.431871v1">HRD method paper</a> <span id="id1">[<a class="reference internal" href="../../references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span> and analyse the responses from all participants and infer group-level hyperpriors.</p>
 <div class="cell docutils container">
@@ -723,29 +615,39 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Auto-assigning NUTS sampler...
-Initializing NUTS using jitter+adapt_diag...
-Multiprocess sampling (4 chains in 4 jobs)
-NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Initializing NUTS using jitter+adapt_diag...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Multiprocess sampling (4 chains in 4 jobs)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 </pre></div>
 </div>
 <div class="output text_html">
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div><div class="output text_html">
     <div>
-        <style>
-            /* Turns off some styling */
-            progress {
-                /* gets rid of default border in Firefox and Opera. */
-                border: none;
-                /* Needs to be in here for Safari polyfill so background images work as expected. */
-                background-size: auto;
-            }
-            .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-                background: #F44336;
-            }
-        </style>
       <progress value='8000' class='' max='8000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [8000/8000 01:03<00:00 Sampling 4 chains, 0 divergences]
+      100.00% [8000/8000 03:18&lt;00:00 Sampling 4 chains, 0 divergences]
     </div>
-    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 65 seconds.
+    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 201 seconds.
 </pre></div>
 </div>
 </div>
@@ -757,7 +659,7 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/75d760ec89ecd352865955d3a0bdcc2cd7cf89f05b6b3df48ca6e23b66739217.png" src="../../_images/75d760ec89ecd352865955d3a0bdcc2cd7cf89f05b6b3df48ca6e23b66739217.png" />
+<img alt="../../_images/64df75df8b26ed9003ea4791a5db3e3748cf2e1dd7ebbba383accfb947587cd3.png" src="../../_images/64df75df8b26ed9003ea4791a5db3e3748cf2e1dd7ebbba383accfb947587cd3.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -800,26 +702,26 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
   <tbody>
     <tr>
       <th>mu_alpha</th>
-      <td>0.214</td>
-      <td>0.244</td>
-      <td>-0.263</td>
-      <td>0.655</td>
+      <td>0.218</td>
+      <td>0.230</td>
+      <td>-0.208</td>
+      <td>0.647</td>
       <td>0.004</td>
       <td>0.003</td>
-      <td>4608.0</td>
-      <td>3150.0</td>
+      <td>4262.0</td>
+      <td>2927.0</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>mu_beta</th>
-      <td>7.915</td>
-      <td>0.238</td>
-      <td>7.453</td>
-      <td>8.343</td>
-      <td>0.005</td>
+      <td>7.925</td>
+      <td>0.231</td>
+      <td>7.486</td>
+      <td>8.340</td>
+      <td>0.004</td>
       <td>0.003</td>
-      <td>2510.0</td>
-      <td>2725.0</td>
+      <td>2737.0</td>
+      <td>3078.0</td>
       <td>1.0</td>
     </tr>
   </tbody>
@@ -837,7 +739,7 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:title={&#39;center&#39;:&#39;mu_alpha&#39;}&gt;
 </pre></div>
 </div>
-<img alt="../../_images/f7783ceb6ab77f631ab9bdb3497f11569894fbcbfd8217eb57b24f2c763164ba.png" src="../../_images/f7783ceb6ab77f631ab9bdb3497f11569894fbcbfd8217eb57b24f2c763164ba.png" />
+<img alt="../../_images/f1595e52f8402f89fdef1e24ca280ffa0f3e6cb82701655e17b09862dcf517e7.png" src="../../_images/f1595e52f8402f89fdef1e24ca280ffa0f3e6cb82701655e17b09862dcf517e7.png" />
 </div>
 </div>
 </section>
@@ -882,7 +784,7 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5f6cd89f392a747ff5799ea8b36fcabb4d0d054fe2df370591bef079263f7871.png" src="../../_images/5f6cd89f392a747ff5799ea8b36fcabb4d0d054fe2df370591bef079263f7871.png" />
+<img alt="../../_images/78f14b91830b295cccce468eb6f57c5b3347df8c01b908b80df1c8bc5ab52d08.png" src="../../_images/78f14b91830b295cccce468eb6f57c5b3347df8c01b908b80df1c8bc5ab52d08.png" />
 </div>
 </div>
 </section>
