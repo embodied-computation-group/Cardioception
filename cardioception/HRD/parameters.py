@@ -10,7 +10,7 @@ import serial
 from systole import serialSim
 from systole.recording import Oximeter
 
-from cardioception.HRD.languages import danish, danish_children, english
+from cardioception.HRD.languages import danish, danish_children, english, french
 
 
 def getParameters(
@@ -51,7 +51,7 @@ def getParameters(
         If *True*, activate full screen mode.
     language : str
         The language used for the instruction. Can be `"english"`, `"danish"` or
-        `"danish_children"` (a slightly simplified danish version).
+        `"danish_children"` (a slightly simplified danish version), or `"french"`.
     nBreaking : int
         Number of trials to run before the break.
     nStaircase : int
@@ -396,6 +396,10 @@ def getParameters(
         )
     elif language == "danish_children":
         parameters["texts"] = danish_children(
+            device=device, setup=setup, exteroception=exteroception
+        )
+    elif language == "french":
+        parameters["texts"] = french(
             device=device, setup=setup, exteroception=exteroception
         )
 
