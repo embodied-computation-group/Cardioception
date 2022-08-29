@@ -354,7 +354,8 @@ Ellers kan du fortsætte til opgaven."""
 
     return texts
 
-def french(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
+
+def french(device: str, setup: str, exteroception: bool) -> Dict[str, Collection[str]]:
     """Create the text dictionary with instruction in french
 
     Parameters
@@ -371,7 +372,11 @@ def french(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
     texts : dict
 
     """
-    btnext = "appuyez sur la barre espace" if device == "keyboard" else "cliquez sur la souris"
+    btnext = (
+        "appuyez sur la barre espace"
+        if device == "keyboard"
+        else "cliquez sur la souris"
+    )
     texts = {
         "done": "Vous avez terminé la tâche. Merci pour votre participation.",
         "slower": "Plus lent",
@@ -396,9 +401,13 @@ def french(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
     }
 
     if device == "keyboard":
-        texts["responseText"] = "Appuyez sur la flèche vers le BAS pour plus lent - vers le HAUT pour plus rapide."
+        texts[
+            "responseText"
+        ] = "Appuyez sur la flèche vers le BAS pour plus lent - vers le HAUT pour plus rapide."
     elif device == "mouse":
-        texts["responseText"] = "Appuyez sur le clic GAUCHE pour plus lent - clic DROIT pour plus rapide."
+        texts[
+            "responseText"
+        ] = "Appuyez sur le clic GAUCHE pour plus lent - clic DROIT pour plus rapide."
 
     texts[
         "Tutorial1"
