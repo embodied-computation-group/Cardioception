@@ -353,3 +353,124 @@ Det andet sæt af bib-lyde vil ALTID være langsommere eller hurtigere end det f
 Ellers kan du fortsætte til opgaven."""
 
     return texts
+
+def french(device: str, setup: str, exteroception: bool) -> Dict[str, str]:
+    """Create the text dictionary with instruction in french
+
+    Parameters
+    ----------
+    device : str
+        Can be `"keyboard"` or `"mouse"`.
+    setup : str
+        The experimental setup. Can be `"behavioral"` or `"test"`.
+    exteroception : bool
+        If `True`, the task includes and exteroceptive control condition.
+
+    Returns
+    -------
+    texts : dict
+
+    """
+    btnext = "appuyez sur la barre espace" if device == "keyboard" else "cliquez sur la souris"
+    texts = {
+        "done": "Vous avez terminé la tâche. Merci pour votre participation.",
+        "slower": "Plus lent",
+        "faster": "Plus rapide",
+        "checkOximeter": "Assurez-vous que l'oxymètre est bien attaché à votre doigt.",
+        "stayStill": "Veuillez ne pas bouger pendant l'enregistrement",
+        "tooLate": "Trop tard",
+        "correctResponse": "Correct",
+        "incorrectResponse": "Faux",
+        "VASlabels": ["Incertain", "Tout à fait sûr"],
+        "textHeartListening": "Ecoutez votre coeur",
+        "textToneListening": "Ecoutez les sons",
+        "textTaskStart": "La tâche va débuter, tenez-vous prêt.",
+        "textBreaks": f"Pause. Vous pouvez vous reposer aussi longtemps que vous le souhaitez. Simplement {btnext} quand vous désirez rependre la tâche.",
+        "textNext": f"S'il vous plaît {btnext} pour continuer",
+        "textWaitTrigger": "Attendez pour le déclencheur IRMf...",
+        "Decision": {
+            "Intero": """Est-ce que ces sons sont plus rapides ou plus lents que votre coeur?""",
+            "Extero": """Est-ce que ces sons sont plus rapides ou plus lents que les précédents?""",
+        },
+        "Confidence": """Etes-vous sûr de votre choix?""",
+    }
+
+    if device == "keyboard":
+        texts["responseText"] = "Appuyez sur la flèche vers le BAS pour plus lent - vers le HAUT pour plus rapide."
+    elif device == "mouse":
+        texts["responseText"] = "Appuyez sur le clic GAUCHE pour plus lent - clic DROIT pour plus rapide."
+
+    texts[
+        "Tutorial1"
+    ] = """Durant cette tâche, nous allons enregistrer vos pulsations et jouer des sons basés sur votre rythme cardiaque.
+
+Vous serez uniquement autorisés à vous concentrer sur vos sensations internes de vos battements cardiaques, mais ne mesurez pas votre rythme cardiaque par d'autres moyens (ex. vérification du pouls au poignet ou au cou).
+        """
+    texts[
+        "pulseTutorial1"
+    ] = "Veuillez placer l'oxymètre de pouls sur votre index. Utilisez votre main non-dominante comme illustré sur ce schéma."
+
+    texts[
+        "pulseTutorial2"
+    ] = "Si vous pouvez sentir vos battements de coeur quand vous portez l'oxymètre de pouls sur votre index, essayez de le placer sur un autre doigt."
+
+    texts[
+        "pulseTutorial3"
+    ] = "Vous pouvez essayer différentes configurations jusqu'à ce que vous trouviez le doigt qui provoque le moins de sensations de battements cardiaques."
+
+    texts[
+        "pulseTutorial4"
+    ] = "Veuillez entrer le numéro du doigt correspondant au doigt sur lequel vous avez décidé de placer l'oxymètre de pouls."
+
+    texts[
+        "Tutorial2"
+    ] = "Quand vous voyez cette icône, essayez de vous concentrer sur vos battements cardiaques durant 5 secondes. Essayez de ne pas bouger, car nous enregistrons votre pouls durant cette période."
+
+    moreResp = "flèche vers le HAUT" if device == "keyboard" else "clic DROIT"
+    lessResp = "flèche vers le BAS" if device == "keyboard" else "clic GAUCHE"
+    texts[
+        "Tutorial3_icon"
+    ] = """Après cette période d'écoute du coeur, vous verrez la même icône and entendrez une série de bips."""
+    texts[
+        "Tutorial3_responses"
+    ] = f"""Aussi rapidement et précisément possible, vous écouterez ces bips et déciderez s'ils sont plus rapides ({moreResp}) ou plus lents ({lessResp}) que votre propre rythme cardiaque.
+
+Les bips seront TOUJOURS plus lents ou plus rapides que votre coeur. Veuillez faire une estimation, même si vous n'est pas sûr."""
+
+    if exteroception is True:
+        texts[
+            "Tutorial3bis"
+        ] = """Pour certains essais, au lieu de voir une icône de coeur, vous verrez une icône d'écoute. Vous devrez alors écouter une première série de bips, au lieu de votre coeur."""
+
+        texts[
+            "Tutorial3ter"
+        ] = f"""Après ce premier bip, vous verrez l'icône de réponse apparaître, et une seconde série de bip sera joué.
+
+Aussi rapidement et précisément possible, vous entendrez ces bips et déciderez s'ils sont plus rapides ({moreResp}) ou plus lents ({lessResp}) que la première série de bips.
+
+La seconde série de bips sera TOUJOURS plus lente ou rapide que la première série. Veuillez faire une estimation, même si vous n'êtes pas sûr."""
+
+    texts[
+        "Tutorial4"
+    ] = """Une fois que vous avez donné votre réponse, il vous sera également demandé d'estimer votre degré de confiance dans votre réponse.
+
+Ici, le score maximum (100) signifie que vous êtes totalement certain de votre choix, et le score minimum (0) signifie que vous devinez.
+
+Vous devez utiliser la souris pour sélectionner votre score"""
+
+    texts[
+        "Tutorial5"
+    ] = """Cette séquence sera répétée durant la tâche.
+
+Par moment la tâche peut être très difficile ; la différence entre votre propre rythme cardiaque et les bips présentés peut être très petite.
+
+Cela signifie que vous devez essayer d'utiliser toute la longueur de l'échelle de confiance pour refléter votre incertitude subjective sur chaque essai.
+
+Comme la difficulté de la tâche évolue avec le temps, il est rare que vous soyez totalement confiant ou totalement incertain."""
+
+    texts[
+        "Tutorial6"
+    ] = """Ceci conclut le tutoriel. Si vous avez des questions, veuillez les poser maintenant à l'expérimentateur.
+Sinon, vous pouvez continuer avec la tâche principale."""
+
+    return texts
