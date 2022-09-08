@@ -111,7 +111,6 @@ html_theme_options = {
     "logo": {
         "text": "Cardioception",
     },
-    "navbar_end": ["navbar-icon-links.html", "search-field.html"]
 }
 
 html_sidebars = {"**": []}

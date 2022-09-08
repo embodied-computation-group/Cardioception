@@ -42,13 +42,12 @@ def getParameters(
     Parameters
     ----------
     device : str
-        Select how the participant provide responses. Can be 'mouse' or
-        'keyboard'.
+        Select how the participant provide responses. Can be `'mouse'` or `'keyboard'`.
     exteroception : bool
-        If *True*, an exteroceptive condition with be interleaved with the
-        interoceptive condition (either block or randomized design).
+        If `True`, an exteroceptive condition with be interleaved with the interoceptive
+        condition (either block or randomized design).
     fullscr : bool
-        If *True*, activate full screen mode.
+        If `True`, activate full screen mode.
     language : str
         The language used for the instruction. Can be `"english"`, `"danish"` or
         `"danish_children"` (a slightly simplified danish version), or `"french"`.
@@ -62,14 +61,14 @@ def getParameters(
     participant : str
         Subject ID. Default is 'Participant'.
     catchTrials : float
-        Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with
-        some jitter) to control for range of stimuli presented. The default is
-        `0.0` (no catch trials). If not `0.0`, recomended value is `0.2`.
-    resultPath : str or None
+        Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with some
+        jitter) to control for range of stimuli presented. Default to `0.0` (no catch
+        trials). If not `0.0`, recomended value is `0.2`.
+    resultPath : str | None
         Where to save the results.
     screenNb : int
-        Screen number. Used to parametrize py:func:`psychopy.visual.Window`.
-        Default is set to 0.
+        Screen number. Used to parametrize py:func:`psychopy.visual.Window`. Defaults
+        to `0`.
     serialPort: str
         The USB port where the pulse oximeter is plugged. Should be written as a string
         e.g. `"COM3"` for USB ports on Windows.
@@ -102,11 +101,11 @@ def getParameters(
         fixed at `0.25`.
     labelsRating : list
         The labels of the confidence rating scale.
-    lambdaExtero : 3d numpy array
-        Posterior estimate of the psychophysics function parameters (slope and
+    lambdaExtero : np.ndarray
+        (3d) Posterior estimate of the psychophysics function parameters (slope and
         threshold) across trials for the exteroceptive condition.
-    lambdaIntero : 3d numpy array
-        Posterior estimate of the psychophysics function parameters (slope and
+    lambdaIntero : np.ndarray
+        (3d) Posterior estimate of the psychophysics function parameters (slope and
         threshold) across trials for the interoceptive condition.
     listenLogo, heartLogo : Psychopy visual instance
         Image used for the inference and recording phases, respectively.
@@ -135,7 +134,7 @@ def getParameters(
         Subject ID. Default is 'Participant'.
     path : str
         The task working directory.
-    resultPath : str or None
+    resultPath : str | None
         Where to save the results.
     serial : PySerial instance
         The serial port used to record the PPG activity.
@@ -167,29 +166,28 @@ def getParameters(
         Dictionary {str, callable or None}. The function will be executed
         before the corresponding trial sequence. The default values are
         `None` (no trigger sent).
-            * `"trialStart"`
-            * `"trialStop"`
-            * `"listeningStart"`
-            * `"listeningStop"`
-            * `"decisionStart"`
-            * `"decisionStop"`
-            * `"confidenceStart"`
-            * `"confidenceStop"`
+        - `"trialStart"`
+        - `"trialStop"`
+        - `"listeningStart"`
+        - `"listeningStop"`
+        - `"decisionStart"`
+        - `"decisionStop"`
+        - `"confidenceStart"`
+        - `"confidenceStop"`
     win : `psychopy.visual.window`
         The window in which to draw objects.
 
     Notes
     -----
-    When using the `behavioral` setup, triggers will be sent to the PPG
-    recording. The trigger channel is coding for different events during
-    the task as follows:
-        * Trial start: 1
-        * recording trigger: 2
-        * sound trigger : 3
-        * rating trigger: 4
-        * end trigger: 5
-    All these events, except trial start, have also their time stamps
-    encoded in the behavioral results data frame.
+    When using the `behavioral` setup, triggers will be sent to the PPG  recording. The
+    trigger channel is coding for different events during the task as follows:
+    - Trial start: 1
+    - recording trigger: 2
+    - sound trigger : 3
+    - rating trigger: 4
+    - end trigger: 5
+    All these events, except trial start, have also their time stamps encoded in the
+    behavioral results data frame.
 
     """
     from psychopy import data, event, visual
