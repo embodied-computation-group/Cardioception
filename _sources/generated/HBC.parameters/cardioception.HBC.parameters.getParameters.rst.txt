@@ -1,0 +1,6 @@
+﻿cardioception.HBC.parameters.getParameters
+==========================================
+
+.. currentmodule:: cardioception.HBC.parameters
+
+.. autofunction:: getParameters

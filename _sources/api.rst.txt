@@ -23,6 +23,8 @@ Parameters
 .. autosummary::
    :toctree: generated/HBC.parameters
 
+    getParameters
+
 Scripts
 *******
 
@@ -30,6 +32,11 @@ Scripts
 
 .. autosummary::
    :toctree: generated/HBC.task
+    
+    run
+    trial
+    tutorial
+    rest
 
 Heart Rate Discrimination task
 ==============================
@@ -39,8 +46,12 @@ Parameters
 
 .. currentmodule:: cardioception.HRD.parameters
 
+.. _parameters:
+
 .. autosummary::
    :toctree: generated/HRD.parameters
+
+    getParameters
 
 Scripts
 *******
@@ -50,10 +61,34 @@ Scripts
 .. autosummary::
    :toctree: generated/HRD.task
 
+    run
+    trial
+    waitInput
+    tutorial
+    responseDecision
+    confidenceRatingTask
+
+Languages
+*********
+
+.. currentmodule:: cardioception.HRD.languages
+
+.. autosummary::
+   :toctree: generated/HRD.languages
+
+    english
+    danish
+    danish_children
+    french
+
 Reports
 -------
 
 .. currentmodule:: cardioception.reports
 
+.. _reports:
+
 .. autosummary::
    :toctree: generated/reports
+
+    report

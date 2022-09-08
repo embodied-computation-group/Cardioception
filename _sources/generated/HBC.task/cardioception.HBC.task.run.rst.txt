@@ -1,0 +1,6 @@
+﻿cardioception.HBC.task.run
+==========================
+
+.. currentmodule:: cardioception.HBC.task
+
+.. autofunction:: run

@@ -1,0 +1,6 @@
+﻿cardioception.HRD.languages.danish
+==================================
+
+.. currentmodule:: cardioception.HRD.languages
+
+.. autofunction:: danish

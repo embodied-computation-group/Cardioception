@@ -1,0 +1,6 @@
+﻿cardioception.HRD.task.waitInput
+================================
+
+.. currentmodule:: cardioception.HRD.task
+
+.. autofunction:: waitInput

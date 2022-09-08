@@ -1,0 +1,1018 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cardioception.HBC.task &#8212; cardioception 0.4.3 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/thebelab-helper.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cardioception/HBC/task';</script>
+    <link rel="shortcut icon" href="../../../_static/logo_small.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="None">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/logo_small.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/logo_small.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+    <p class="title logo__title">Cardioception</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../measuring.html">
+                        Measuring cardiac interoception
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide.html">
+                        User guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../api.html">
+                        API
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../stats.html">
+                        Statistical analysis
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../cite.html">
+                        How to cite?
+                    </a>
+                </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../references.html">
+                        References
+                    </a>
+                </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank"><span><i class="fas fa-box"></i></span>
+            <label class="sr-only">Pypi</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../measuring.html">
+                        Measuring cardiac interoception
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide.html">
+                        User guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../api.html">
+                        API
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../stats.html">
+                        Statistical analysis
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../cite.html">
+                        How to cite?
+                    </a>
+                </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../references.html">
+                        References
+                    </a>
+                </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank"><span><i class="fas fa-box"></i></span>
+            <label class="sr-only">Pypi</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for cardioception.HBC.task</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Author: Nicolas Legrand &lt;nicolas.legrand@cfin.au.dk&gt;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../generated/HBC.task/cardioception.HBC.task.run.html#cardioception.HBC.task.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">runTutorial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run the entire task sequence.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        Task parameters.</span>
+<span class="sd">    tutorial : bool</span>
+<span class="sd">        If `True`, will present a tutorial with 10 training trial with feedback and 5</span>
+<span class="sd">        trials with confidence rating.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">psychopy</span> <span class="kn">import</span> <span class="n">core</span><span class="p">,</span> <span class="n">visual</span>
+
+    <span class="c1"># Run tutorial</span>
+    <span class="k">if</span> <span class="n">runTutorial</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">tutorial</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+    <span class="c1"># Rest</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restPeriod&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">rest</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restLength&quot;</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">nTrial</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;conditions&quot;</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;times&quot;</span><span class="p">],</span>
+        <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;conditions&quot;</span><span class="p">])),</span>
+    <span class="p">):</span>
+
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;trialStart&quot;</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
+
+        <span class="n">nCount</span><span class="p">,</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span> <span class="o">=</span> <span class="n">trial</span><span class="p">(</span>
+            <span class="n">condition</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">nTrial</span><span class="p">,</span> <span class="n">parameters</span>
+        <span class="p">)</span>
+
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;trialStop&quot;</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
+
+        <span class="c1"># Store results in a DataFrame</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;results_df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;results_df&quot;</span><span class="p">],</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;nTrial&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">nTrial</span><span class="p">],</span>
+                        <span class="s2">&quot;Reported&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">nCount</span><span class="p">],</span>
+                        <span class="s2">&quot;Condition&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">condition</span><span class="p">],</span>
+                        <span class="s2">&quot;Duration&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">duration</span><span class="p">],</span>
+                        <span class="s2">&quot;Confidence&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">confidence</span><span class="p">],</span>
+                        <span class="s2">&quot;ConfidenceRT&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">confidenceRT</span><span class="p">],</span>
+                    <span class="p">}</span>
+                <span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Save the results at each iteration</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;results_df&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span>
+            <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+            <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;participant&quot;</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span>
+            <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">,</span>
+            <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Save results</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;results_df&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span>
+        <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+        <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;participant&quot;</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span>
+        <span class="o">+</span> <span class="s2">&quot;_final.txt&quot;</span><span class="p">,</span>
+        <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># End of the task</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;You have completed the task. Thank you for your participation.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">end</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="trial"><a class="viewcode-back" href="../../../generated/HBC.task/cardioception.HBC.task.trial.html#cardioception.HBC.task.trial">[docs]</a><span class="k">def</span> <span class="nf">trial</span><span class="p">(</span>
+    <span class="n">condition</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">nTrial</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Run one trial.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    condition : str</span>
+<span class="sd">        The trial condition, can be `&quot;Rest&quot;` or `&quot;Count&quot;`.</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        The lenght of the recording (in seconds).</span>
+<span class="sd">    ntrial : int</span>
+<span class="sd">        Trial number.</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        Task parameters.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    nCount : int</span>
+<span class="sd">        The number of heartbeat estimated by the participant.</span>
+<span class="sd">    confidence : int</span>
+<span class="sd">        The confidence in the estimation of the heartbeat provided by the</span>
+<span class="sd">        participant.</span>
+<span class="sd">    confidenceRT : float</span>
+<span class="sd">        The response time to provide confidence rating.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">psychopy</span> <span class="kn">import</span> <span class="n">core</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">visual</span>
+
+    <span class="c1"># Initialize default values</span>
+    <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">nCounts</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Ask the participant to press &#39;Space&#39; (default) to start the trial</span>
+    <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Press space to continue&quot;</span>
+    <span class="p">)</span>
+    <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Show instructions</span>
+    <span class="k">if</span> <span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Rest&quot;</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Rest&quot;</span><span class="p">],</span>
+            <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Count&quot;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Training&quot;</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Count&quot;</span><span class="p">],</span>
+            <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;heartLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+    <span class="c1"># Wait for a beat to start the task</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">waitBeat</span><span class="p">()</span>
+    <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c1"># Sound signaling trial start</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Count&quot;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Training&quot;</span><span class="p">):</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">readInWaiting</span><span class="p">()</span>
+        <span class="c1"># Add event marker</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s2">&quot;Channel_0&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;noteStart&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;listeningStart&quot;</span><span class="p">]</span>
+        <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Record for a desired time length</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Sound signaling trial stop</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Count&quot;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Training&quot;</span><span class="p">):</span>
+        <span class="c1"># Add event marker</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">readInWaiting</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s2">&quot;Channel_0&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;noteStop&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;listeningStop&quot;</span><span class="p">]</span>
+        <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">readInWaiting</span><span class="p">()</span>
+
+    <span class="c1"># Hide instructions</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+    <span class="c1"># Save recording</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span>
+        <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+        <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;participant&quot;</span><span class="p">]</span>
+        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nTrial</span><span class="p">)</span>
+        <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nTrial</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1">###############################</span>
+    <span class="c1"># Record participant estimation</span>
+    <span class="c1">###############################</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Count&quot;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Training&quot;</span><span class="p">):</span>
+        <span class="c1"># Ask the participant to press &#39;Space&#39; (default) to start the trial</span>
+        <span class="n">messageCount</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+            <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;nCount&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">messageCount</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;decisionStart&quot;</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
+
+        <span class="n">nCounts</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+            <span class="c1"># Record new key</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span>
+                <span class="n">keyList</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s2">&quot;escape&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;backspace&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;return&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;2&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;3&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;4&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;5&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;6&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;7&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;8&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;9&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;num_1&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;num_2&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;num_3&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;num_4&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;num_5&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;num_6&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;num_7&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;num_8&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;num_9&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;num_0&quot;</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;escape&quot;</span><span class="p">:</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">getKeys</span><span class="p">()</span>
+                <span class="k">if</span> <span class="s2">&quot;escape&quot;</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;User abort&quot;</span><span class="p">)</span>
+                    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="n">core</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;backspace&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">nCounts</span><span class="p">:</span>
+                    <span class="n">nCounts</span> <span class="o">=</span> <span class="n">nCounts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;return&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">nCounts</span><span class="p">):</span>
+                    <span class="n">messageError</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+                        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+                        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+                        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+                        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;You should only provide numbers&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">messageError</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+                    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+                    <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">nCounts</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="n">messageError</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+                        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+                        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+                        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+                        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;You should provide numbers&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">messageError</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+                    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+                    <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="n">nCounts</span> <span class="o">+=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()][</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Show the text on the screen</span>
+            <span class="n">recordedText</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span> <span class="n">text</span><span class="o">=</span><span class="n">nCounts</span>
+            <span class="p">)</span>
+            <span class="n">recordedText</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">messageCount</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;decisionStop&quot;</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
+
+        <span class="c1">##############</span>
+        <span class="c1"># Rating scale</span>
+        <span class="c1">##############</span>
+        <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;rating&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">markerStart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;confScale&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;confScale&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="n">ratingScale</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">RatingScale</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+                <span class="n">low</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;confScale&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">high</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;confScale&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">noMouse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">labels</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;labelsRating&quot;</span><span class="p">],</span>
+                <span class="n">acceptKeys</span><span class="o">=</span><span class="s2">&quot;down&quot;</span><span class="p">,</span>
+                <span class="n">markerStart</span><span class="o">=</span><span class="n">markerStart</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+                <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;confidence&quot;</span><span class="p">],</span>
+                <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;confidenceStart&quot;</span><span class="p">]</span>
+            <span class="k">while</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">noResponse</span><span class="p">:</span>
+                <span class="n">message</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+                <span class="n">ratingScale</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <span class="n">confidence</span> <span class="o">=</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">getRating</span><span class="p">()</span>
+            <span class="n">confidenceRT</span> <span class="o">=</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">getRT</span><span class="p">()</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;confidenceStop&quot;</span><span class="p">]</span>
+
+    <span class="n">finalCount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nCounts</span><span class="p">)</span> <span class="k">if</span> <span class="n">nCounts</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">finalCount</span><span class="p">,</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span></div>
+
+
+<div class="viewcode-block" id="tutorial"><a class="viewcode-back" href="../../../generated/HBC.task/cardioception.HBC.task.tutorial.html#cardioception.HBC.task.tutorial">[docs]</a><span class="k">def</span> <span class="nf">tutorial</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run tutorial for the Heartbeat Counting Task.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        Task parameters.</span>
+<span class="sd">    win : `psychopy.visual.window` or None</span>
+<span class="sd">        The window in which to draw objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">psychopy</span> <span class="kn">import</span> <span class="n">event</span><span class="p">,</span> <span class="n">visual</span>
+
+    <span class="c1"># Tutorial 1</span>
+    <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial1&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Tutorial 2</span>
+    <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial2&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;heartLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Tutorial 3</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;taskVersion&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Shandry&quot;</span><span class="p">:</span>
+
+        <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+            <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial3&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+            <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+            <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Tutorial 4</span>
+    <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial4&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Tutorial 5</span>
+    <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial5&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Tutorial 6</span>
+    <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial6&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Tutorial 7</span>
+    <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial7&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Tutorial 8</span>
+    <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial8&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Practice trial</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">trial</span><span class="p">(</span><span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="c1"># Tutorial 9</span>
+    <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial9&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="rest"><a class="viewcode-back" href="../../../generated/HBC.task/cardioception.HBC.task.rest.html#cardioception.HBC.task.rest">[docs]</a><span class="k">def</span> <span class="nf">rest</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run a resting state period for heart rate variability before running the Heart</span>
+<span class="sd">    Beat Counting Task.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        Task parameters.</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration or the recording (seconds).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">psychopy</span> <span class="kn">import</span> <span class="n">visual</span>
+
+    <span class="c1"># Show the resting state instructions</span>
+    <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+        <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Calibrating... Please sit quietly&quot;</span> <span class="s2">&quot; until the end of the recording.&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+    <span class="c1"># Record PPG signal</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
+
+    <span class="c1"># Save recording</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;participant&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_Rest&quot;</span>
+    <span class="p">)</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022-2022, Nicolas Legrand.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

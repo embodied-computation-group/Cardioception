@@ -1,0 +1,6 @@
+﻿cardioception.HRD.task.tutorial
+===============================
+
+.. currentmodule:: cardioception.HRD.task
+
+.. autofunction:: tutorial

@@ -1,0 +1,6 @@
+﻿cardioception.HRD.languages.french
+==================================
+
+.. currentmodule:: cardioception.HRD.languages
+
+.. autofunction:: french

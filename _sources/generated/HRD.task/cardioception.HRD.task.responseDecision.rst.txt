@@ -1,0 +1,6 @@
+﻿cardioception.HRD.task.responseDecision
+=======================================
+
+.. currentmodule:: cardioception.HRD.task
+
+.. autofunction:: responseDecision
