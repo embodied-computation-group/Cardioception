@@ -1,4 +1,4 @@
-# Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>
+# Author: Nicolas Legrand <nicolas.legrand@cas.au.dk>
 # Adapted from: https://stackoverflow.com/questions/33879523/python-how-can-i-generate-a-wav-file-with-beeps
 # This script generates the BPM stimuli (wav files) used by the task.
 # Not called by the actual task, but included for reproducibility.

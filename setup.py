@@ -12,7 +12,7 @@ LONG_DESCRIPTION = """Measuring interoceptive performance with Psychopy.
 
 DISTNAME = "cardioception"
 MAINTAINER = "Nicolas Legrand"
-MAINTAINER_EMAIL = "nicolas.legrand@cfin.au.dk"
+MAINTAINER_EMAIL = "nicolas.legrand@cas.au.dk"
 VERSION = "0.4.3"
 
 INSTALL_REQUIRES = [
