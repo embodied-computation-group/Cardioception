@@ -3,14 +3,26 @@
 import os
 import unittest
 from unittest import TestCase
-
+import pandas as pd
+from pathlib import Path
 import cardioception
-from cardioception.reports import report
+from cardioception.reports import report, preprocessing
 
 
 class TestHRD(TestCase):
+    def test_preprocessing(self):
+        """Test the preprocessing function"""
+        # load the main result data frame
+        results = pd.read_csv(Path(
+            Path(cardioception.__file__).parent, "notebooks", "data", "HRD", "HRD_final.txt"
+        )
+        )
+
+        preprocessing(results=results)
+
+
     def test_report(self):
-        """Test parameters function"""
+        """Test the report function"""
 
         #####
         # HRD

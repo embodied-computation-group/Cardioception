@@ -92,3 +92,4 @@ Reports
    :toctree: generated/reports
 
     report
+    preprocessing
