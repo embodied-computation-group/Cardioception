@@ -5,11 +5,9 @@ import subprocess
 from os import PathLike
 from typing import Optional, Union
 
-import arviz as az
 import numpy as np
 import pandas as pd
 import pkg_resources  # type: ignore
-from papermill import execute_notebook
 
 
 def cumulative_normal(x, alpha, beta):
@@ -72,6 +70,7 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
 
 
     """
+    import arviz as az
     import pymc as pm
     from metadpy import bayesian, sdt
     from metadPy.utils import discreteRatings
@@ -228,6 +227,8 @@ def report(result_path: str, report_path: Optional[str] = None, task: str = "HRD
         The task ("HRD" or "HBC"), by default "HRD".
 
     """
+    from papermill import execute_notebook
+
     if report_path is None:
         report_path = result_path
     temp_notebook = os.path.join(report_path, "temp.ipynb")
