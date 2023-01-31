@@ -24,10 +24,10 @@ jobs:
 
       - name: Build
         run: |
-          pip install --upgrade pip
           pip install psychopy==2020.1.2
-          pip install .
+          pip install -r requirements.txt
           pip install -r requirements-docs.txt
+          pip install .
           sphinx-build -b html docs/source docs/build/html
 
       - name: Deploy 🚀
