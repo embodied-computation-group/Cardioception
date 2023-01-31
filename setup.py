@@ -22,15 +22,10 @@ INSTALL_REQUIRES = [
 
 PACKAGES = [
     "cardioception",
-    "cardioception.HBC",
-    "cardioception.HRD",
-    "cardioception.notebooks",
 ]
 
 try:
     from setuptools import setup
-
-    _has_setuptools = True
 except ImportError:
     from distutils.core import setup
 

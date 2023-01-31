@@ -24,7 +24,6 @@ jobs:
 
       - name: Build
         run: |
-          pip install git+https://github.com/embodied-computation-group/systole.git@dev
           pip install psychopy==2020.1.2
           pip install .
           pip install -r requirements-docs.txt
