@@ -166,14 +166,14 @@ def getParameters(
         Dictionary {str, callable or None}. The function will be executed
         before the corresponding trial sequence. The default values are
         `None` (no trigger sent).
-        - `"trialStart"`
-        - `"trialStop"`
-        - `"listeningStart"`
-        - `"listeningStop"`
-        - `"decisionStart"`
-        - `"decisionStop"`
-        - `"confidenceStart"`
-        - `"confidenceStop"`
+        * `"trialStart"`
+        * `"trialStop"`
+        * `"listeningStart"`
+        * `"listeningStop"`
+        * `"decisionStart"`
+        * `"decisionStop"`
+        * `"confidenceStart"`
+        * `"confidenceStop"`
     win : `psychopy.visual.window`
         The window in which to draw objects.
 

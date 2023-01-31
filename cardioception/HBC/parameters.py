@@ -73,7 +73,7 @@ def getParameters(
     restLogo : `psychopy.visual.ImageStim`
         Image presented during resting conditions.
     restPeriod : bool
-        If *True*, a resting period will be proposed before the task.
+        If `True`, a resting period will be proposed before the task.
     resultPath : str
         The subject result directory.
     screenNb : int
@@ -92,20 +92,20 @@ def getParameters(
         Dictionary {str, callable or None}. The function will be executed
         before the corresponding trial sequence. The default values are
         `None` (no trigger sent).
-            * `"trialStart"`
-            * `"trialStop"`
-            * `"listeningStart"`
-            * `"listeningStop"`
-            * `"decisionStart"`
-            * `"decisionStop"`
-            * `"confidenceStart"`
-            * `"confidenceStop"`
+        * `"trialStart"`
+        * `"trialStop"`
+        * `"listeningStart"`
+        * `"listeningStop"`
+        * `"decisionStart"`
+        * `"decisionStop"`
+        * `"confidenceStart"`
+        * `"confidenceStop"`
     times : 1d array-like of int
         Length of trials, in seconds.
     win : `psychopy.visual.window`
         The window in which to draw objects.
-    """
 
+    """
     from psychopy import sound, visual
 
     parameters: Dict[str, Any] = {}

@@ -68,7 +68,6 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
         interoceptive beliefs. Biological Psychology, 108239.
         https://doi.org/10.1016/j.biopsycho.2021.108239
 
-
     """
     import arviz as az
     import pymc as pm
