@@ -4,9 +4,10 @@
 
 # Cardioception
 
-<img src="/images/logo.png" align="left" alt="metadPy" height="230" HSPACE=30>
+<img src="/images/logo.png" align="left" alt="cardioception" height="230" HSPACE=30>
 
 The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):
+
 1. The **Heartbeat counting task** developed by Rainer Schandry<sup>1,2</sup>. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.
 2. The **Heart Rate Discrimination Task** <sup>3</sup> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see *Analyses* below), together with metacognitive efficiency.
 
@@ -18,26 +19,28 @@ The documentation can be found under the following [link](https://embodied-compu
 
 If you are using cardioception in a publication we ask you to cite the following paper:
 
->Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., &amp; Allen, M. (2021). The Heart Rate Discrimination Task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 108239. https://doi.org/10.1016/j.biopsycho.2021.108239 
+>Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., &amp; Allen, M. (2021). The Heart Rate Discrimination Task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 108239. <https://doi.org/10.1016/j.biopsycho.2021.108239>
 
 If you are using [systole](https://systole-docs.github.io/) to interact with your recording device (this is the default behavior in cardioception), you might also cite the following reference:
 
-> Legrand et al., (2022). Systole: A python package for cardiac signal synchrony and analysis. Journal of Open Source Software, 7(69), 3832, https://doi.org/10.21105/joss.03832
+> Legrand et al., (2022). Systole: A python package for cardiac signal synchrony and analysis. Journal of Open Source Software, 7(69), 3832, <https://doi.org/10.21105/joss.03832>
 
 ## Looking for help?
 
 If you have questions regarding the tasks, want to report a bug or discuss data analysis, please ask on our public [![Gitter](https://badges.gitter.im/Cardioception/community.svg)](https://gitter.im/Cardioception/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge).
 
 # Installation
+
 **Using the Python Package Index**
+
 * The most recent version can be installed uing:
     `pip install cardioception`
-* The current development branch can be installed using 
+* The current development branch can be installed using
   `pip install git+https://github.com/embodied-computation-group/Cardioception.git`
 
 **Downloading the ZIP file**
 
-<img src="/images/downloadZIP.png" align="left" alt="metadPy" height="200" HSPACE=30>
+<img src="/images/downloadZIP.png" align="left" alt="download" height="200" HSPACE=30>
 
 You can also download the most recent version by downloading the repository as a .zip file.
 
@@ -47,7 +50,7 @@ After extracting the content of the file, the package can be installed via the c
 
 ## Dependencies
 
-Cardioception has been tested with Python 3.7. We recommend to use the last install of Anaconda for Python 3.7 or latest (see https://www.anaconda.com/products/individual#download-section).
+Cardioception has been tested with Python 3.7. We recommend to use the last install of Anaconda for Python 3.7 or latest (see <https://www.anaconda.com/products/individual#download-section>).
 
 Make sure that you have the following packages installed and up to date before running cardioception:
 
@@ -68,18 +71,20 @@ In addition, some function for HTML reports will require:
 * [matplotlib](https://matplotlib.org/) (>=3.3.3)
 * [seaborn](https://seaborn.pydata.org/) (>=0.11.1)
 * [pingouin](https://pingouin-stats.org/) (>=0.3.10)
-* [metadPy](https://github.com/LegrandNico/metadPy) (>=0.01)
+* [metadpy](https://github.com/Embodi3dComputationGroup/metadpy) (>=0.01)
 
 **NOTE**
-The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles. 
+The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles.
 
 Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 160 Mo). These files will be removed if you uninstall the package using `pip uninstall cardioception`.
 
 # Package modularity
+
 ## Physiological recording
 
 Both the Heartbeat counting task (HBC) and the heart rate discrimination task (HRD) require access to physiological recording device during the task to estimate the heart rate or count the number of heartbeats in a given time window. Cardioception natively supports:
-* The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/) 
+
+* The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/)
 * Remote Data Access (RDA) via BrainVision Recorder together with [Brain product ExG amplifier](https://www.brainproducts.com/>).
 
 The package can easily be extended and integrate other recording devices by providing another recording class that will interface with your own devices (ECG, pulse oximeters, or any king of recording that will offer precise estimation of the cardiac frequency).
@@ -172,18 +177,21 @@ More advanced subject and group-level Bayesian modeling approaches are described
 | Fitting the psychometric function (single subject) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/1-psychophysics_subject_level.ipynb?flush_cache=true) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/1-psychophysics_subject_level.ipynb?flush_cache=true)
 | Fitting the psychometric function (group level) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/2-psychophysics_group_level.ipynb?flush_cache=true) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/2-psychophysics_group_level.ipynb?flush_cache=true)
 | Fitting the psychometric function (repeated measures) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/3-repeated_measures.ipynb?flush_cache=true) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/3-repeated_measures.ipynb?flush_cache=true)
+
 # References
 
-1. Dale, A., & Anderson, D. (1978). Information Variables in Voluntary Control and Classical Conditioning of Heart Rate: Field Dependence and Heart-Rate Perception. Perceptual and Motor Skills, 47(1), 79–85. https://doi.org/10.2466/pms.1978.47.1.79
-2. Schandry, R. (1981). Heart Beat Perception and Emotional Experience. Psychophysiology, 18(4), 483–488. https://doi.org/10.1111/j.1469-8986.1981.tb02486.x
-3. Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., & Allen, M. (2022). The heart rate discrimination task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. In Biological Psychology (Vol. 168, p. 108239). Elsevier BV. https://doi.org/10.1016/j.biopsycho.2021.108239
-4. Leganes-Fonteneau, M., Cheang, Y., Lam, Y., Garfinkel, S., & Duka, T. (2019). Interoceptive awareness is associated with acute alcohol-induced changes in subjective effects. Pharmacology Biochemistry and Behavior, 181, 69–76. https://doi.org/10.1016/j.pbb.2019.03.007
-5. Hart, N., McGowan, J., Minati, L., & Critchley, H. D. (2013). Emotional Regulation and Bodily Sensation: Interoceptive Awareness Is Intact in Borderline Personality Disorder. Journal of Personality Disorders, 27(4), 506–518. https://doi.org/10.1521/pedi_2012_26_049
+1. Dale, A., & Anderson, D. (1978). Information Variables in Voluntary Control and Classical Conditioning of Heart Rate: Field Dependence and Heart-Rate Perception. Perceptual and Motor Skills, 47(1), 79–85. <https://doi.org/10.2466/pms.1978.47.1.79>
+2. Schandry, R. (1981). Heart Beat Perception and Emotional Experience. Psychophysiology, 18(4), 483–488. <https://doi.org/10.1111/j.1469-8986.1981.tb02486.x>
+3. Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., & Allen, M. (2022). The heart rate discrimination task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. In Biological Psychology (Vol. 168, p. 108239). Elsevier BV. <https://doi.org/10.1016/j.biopsycho.2021.108239>
+4. Leganes-Fonteneau, M., Cheang, Y., Lam, Y., Garfinkel, S., & Duka, T. (2019). Interoceptive awareness is associated with acute alcohol-induced changes in subjective effects. Pharmacology Biochemistry and Behavior, 181, 69–76. <https://doi.org/10.1016/j.pbb.2019.03.007>
+5. Hart, N., McGowan, J., Minati, L., & Critchley, H. D. (2013). Emotional Regulation and Bodily Sensation: Interoceptive Awareness Is Intact in Borderline Personality Disorder. Journal of Personality Disorders, 27(4), 506–518. <https://doi.org/10.1521/pedi_2012_26_049>
 
 # Development
+
 This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/) and [Micah Allen](https://micahallen.org/) from the [ECG group](https://the-ecg.org/).
 
 <img src = "images/LabLogo.png" height ="100"><img src = "images/AU.png" height ="100">
 
 # Credit
+
 Some icons used in the Figures or presented during the tasks were downloaded from **Flaticon** [www.flaticon.com](www.flaticon.com).
