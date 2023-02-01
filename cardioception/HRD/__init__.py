@@ -1,3 +1,4 @@
+from .languages import danish, danish_children, english, french
 from .parameters import getParameters
 from .task import (
     confidenceRatingTask,
@@ -16,4 +17,8 @@ __all__ = [
     "trial",
     "tutorial",
     "waitInput",
+    "english",
+    "danish",
+    "danish_children",
+    "french",
 ]

@@ -1,10 +1,17 @@
 # Copyright (C) 2020 Nicolas Legrand
 import os
+import codecs
+from setuptools import find_packages, setup
 
+PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
+REQUIREMENTS_FILE = os.path.join(PROJECT_ROOT, "requirements.txt")
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
+def get_requirements():
+    with codecs.open(REQUIREMENTS_FILE) as buff:
+        return buff.read().splitlines()
 
 DESCRIPTION = "Cardioception Python Package"
 LONG_DESCRIPTION = """Measuring interoceptive performance with Psychopy.
@@ -14,25 +21,6 @@ DISTNAME = "cardioception"
 MAINTAINER = "Nicolas Legrand"
 MAINTAINER_EMAIL = "nicolas.legrand@cas.au.dk"
 VERSION = "0.4.3"
-
-INSTALL_REQUIRES = [
-    "systole>=0.2.2",
-    "psychopy>=2020.1.2",
-]
-
-PACKAGES = [
-    "cardioception",
-    "cardioception.HBC",
-    "cardioception.HRD",
-    "cardioception.notebooks",
-]
-
-try:
-    from setuptools import setup
-
-    _has_setuptools = True
-except ImportError:
-    from distutils.core import setup
 
 if __name__ == "__main__":
 
@@ -46,9 +34,9 @@ if __name__ == "__main__":
         long_description=LONG_DESCRIPTION,
         license=read("LICENSE"),
         version=VERSION,
-        install_requires=INSTALL_REQUIRES,
+        install_requires=get_requirements(),
         include_package_data=True,
-        packages=PACKAGES,
+        packages=find_packages(),
         package_data={
             "cardioception.HBC": ["*.wav", "*.png"],
             "cardioception.HRD": ["*.wav", "*.png"],
