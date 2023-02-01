@@ -1,55 +1,47 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Heartbeat Counting task - Summary results &#8212; cardioception 0.4.3 documentation</title>
-  <script>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/thebelab-helper.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/templates/HeartBeatCounting';</script>
     <link rel="shortcut icon" href="../../_static/logo_small.svg"/>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -57,11 +49,15 @@
     <link rel="next" title="Heart Rate Discrimination task - Summary results" href="HeartRateDiscrimination.html" />
     <link rel="prev" title="Statistical analysis" href="../../stats.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="None">
+  <meta name="docsearch:language" content="en">
   </head>
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   
   <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
@@ -77,7 +73,7 @@
     <div class="search-button__search-container">
       
 <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
+  <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
@@ -87,7 +83,7 @@
   
   <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fas fa-bars"></span>
+      <span class="fa-solid fa-bars"></span>
   </label>
   <div id="navbar-start">
     
@@ -127,39 +123,39 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../../measuring.html">
-                        Measuring cardiac interoception
-                    </a>
-                </li>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../measuring.html">
+                        Theory
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide.html">
-                        User guide
-                    </a>
-                </li>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../user_guide.html">
+                        Guide
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../api.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api.html">
                         API
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../../stats.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../stats.html">
                         Statistical analysis
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../cite.html">
-                        How to cite?
-                    </a>
-                </li>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../cite.html">
+                        Cite
+                      </a>
+                    </li>
                 
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -167,11 +163,11 @@
                 </button>
                 <div class="dropdown-menu">
                     
-                <li class="nav-item">
-                    <a class="nav-link" href="../../references.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../references.html">
                         References
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
                 </div>
             </div>
@@ -183,19 +179,21 @@
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-      </div>
+        </div>
+      
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -207,7 +205,8 @@
           
           
           
-          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -217,7 +216,8 @@
           
           
           
-          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+          
+          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
         <li class="nav-item">
@@ -227,7 +227,8 @@
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank"><span><i class="fas fa-box"></i></span>
+          
+          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-box"></i></span>
             <label class="sr-only">Pypi</label></a>
         </li>
       </ul>
@@ -238,15 +239,17 @@
 
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-  </div>
+    </div>
+  
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fas fa-outdent"></span>
+      <span class="fa-solid fa-outdent"></span>
   </label>
   
 
@@ -272,39 +275,39 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../../measuring.html">
-                        Measuring cardiac interoception
-                    </a>
-                </li>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../measuring.html">
+                        Theory
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide.html">
-                        User guide
-                    </a>
-                </li>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../user_guide.html">
+                        Guide
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../api.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api.html">
                         API
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../../stats.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../stats.html">
                         Statistical analysis
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../cite.html">
-                        How to cite?
-                    </a>
-                </li>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../cite.html">
+                        Cite
+                      </a>
+                    </li>
                 
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -312,11 +315,11 @@
                 </button>
                 <div class="dropdown-menu">
                     
-                <li class="nav-item">
-                    <a class="nav-link" href="../../references.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../references.html">
                         References
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
                 </div>
             </div>
@@ -333,11 +336,11 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -349,7 +352,8 @@
           
           
           
-          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -359,7 +363,8 @@
           
           
           
-          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+          
+          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
         <li class="nav-item">
@@ -369,7 +374,8 @@
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank"><span><i class="fas fa-box"></i></span>
+          
+          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-box"></i></span>
             <label class="sr-only">Pypi</label></a>
         </li>
       </ul>
@@ -387,8 +393,11 @@
     </div>
   </div>
 
+  
+  <div id="rtd-footer-container"></div>
+
       </div>
-      <main class="bd-main">
+      <main id="main-content" class="bd-main">
         
         
         <div class="bd-content">
@@ -402,7 +411,7 @@
             <article class="bd-article" role="main">
               
   <section class="tex2jax_ignore mathjax_ignore" id="heartbeat-counting-task-summary-results">
-<span id="hbc-template"></span><h1>Heartbeat Counting task - Summary results<a class="headerlink" href="#heartbeat-counting-task-summary-results" title="Permalink to this headline">#</a></h1>
+<span id="hbc-template"></span><h1>Heartbeat Counting task - Summary results<a class="headerlink" href="#heartbeat-counting-task-summary-results" title="Permalink to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
@@ -557,13 +566,13 @@
 </div>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="heartbeats-and-artefacts-detection">
-<h1>Heartbeats and artefacts detection<a class="headerlink" href="#heartbeats-and-artefacts-detection" title="Permalink to this headline">#</a></h1>
+<h1>Heartbeats and artefacts detection<a class="headerlink" href="#heartbeats-and-artefacts-detection" title="Permalink to this heading">#</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This section reports the raw PPG signal together with the peaks detected. The instantaneous heart rate frequency (R-R intervals) is derived and represented below each PPG time series. Artefacts in the RR time series are detected using the method described in <span id="id1">[<a class="reference internal" href="../../references.html#id11" title="Jukka A. Lipponen and Mika P. Tarvainen. A robust algorithm for heart rate variability time series artefact correction using novel beat classification. Journal of Medical Engineering &amp; Technology, 43(3):173-181, 2019. PMID: 31314618. URL: https://doi.org/10.1080/03091902.2019.1640306, arXiv:https://doi.org/10.1080/03091902.2019.1640306, doi:10.1080/03091902.2019.1640306.">Lipponen and Tarvainen, 2019</a>]</span>. The shaded areas represent the pre-recording and post-recording period. Heartbeat detected inside these intervals are automatically removed.</p>
 </div>
 <section id="loop-across-trials">
-<h2>Loop across trials<a class="headerlink" href="#loop-across-trials" title="Permalink to this headline">#</a></h2>
+<h2>Loop across trials<a class="headerlink" href="#loop-across-trials" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">counts</span> <span class="o">=</span> <span class="p">[]</span>
@@ -619,38 +628,38 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Analyzing trial number 1
 </pre></div>
 </div>
-<img alt="../../_images/026a37832901cd09b1a35f5fdf2755d0823b4c21ba3ab78516e7a0f19dbdea8e.png" src="../../_images/026a37832901cd09b1a35f5fdf2755d0823b4c21ba3ab78516e7a0f19dbdea8e.png" />
-<img alt="../../_images/d830f76e41f161441bd1c8c1b68f78194442f239817964e50b1c561c9e19d3b2.png" src="../../_images/d830f76e41f161441bd1c8c1b68f78194442f239817964e50b1c561c9e19d3b2.png" />
+<img alt="../../_images/1e6ab517dc4ad1cb08d6c41827ae1aae1237f0d959f4b802b49461702bcd4072.png" src="../../_images/1e6ab517dc4ad1cb08d6c41827ae1aae1237f0d959f4b802b49461702bcd4072.png" />
+<img alt="../../_images/29be2bb82927d1248966f1d3287470fad6ae6ec310411fc408cfd5982374d066.png" src="../../_images/29be2bb82927d1248966f1d3287470fad6ae6ec310411fc408cfd5982374d066.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Reported: 36 beats ; Detected : 40 beats
 Analyzing trial number 2
 </pre></div>
 </div>
-<img alt="../../_images/561adcbd6920583f0078a9af92248acdfac2a57b4cd61d1e778afdd0bda17349.png" src="../../_images/561adcbd6920583f0078a9af92248acdfac2a57b4cd61d1e778afdd0bda17349.png" />
-<img alt="../../_images/f6af3444ed852082341c06336af39539e72a7a2e1222c21c3b042631951d9e30.png" src="../../_images/f6af3444ed852082341c06336af39539e72a7a2e1222c21c3b042631951d9e30.png" />
+<img alt="../../_images/99736778636e582a0e8ea8ff0fb74cb1ea6350b36d43e3e8f99b5a409ae01182.png" src="../../_images/99736778636e582a0e8ea8ff0fb74cb1ea6350b36d43e3e8f99b5a409ae01182.png" />
+<img alt="../../_images/801e3a6661fbcd0ab72995b8ef35c5328bc27af4beece5bdebcc3fc4d1402fea.png" src="../../_images/801e3a6661fbcd0ab72995b8ef35c5328bc27af4beece5bdebcc3fc4d1402fea.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Reported: 27 beats ; Detected : 30 beats
 Analyzing trial number 3
 </pre></div>
 </div>
-<img alt="../../_images/884e23e954f901aa0cadb8d4f7ad695ed484c3560d77e9b755e49005c1225615.png" src="../../_images/884e23e954f901aa0cadb8d4f7ad695ed484c3560d77e9b755e49005c1225615.png" />
-<img alt="../../_images/25be21d60ecba3c490ecb8bb4680cbd21dfcc0e5612e964572882430ef463091.png" src="../../_images/25be21d60ecba3c490ecb8bb4680cbd21dfcc0e5612e964572882430ef463091.png" />
+<img alt="../../_images/68e181dbf1cefafaa65f03ea2379b9b61903e324ef525992aee1f15d39ce5ddb.png" src="../../_images/68e181dbf1cefafaa65f03ea2379b9b61903e324ef525992aee1f15d39ce5ddb.png" />
+<img alt="../../_images/688d94cd87fae48811b809e32e89a3df2f59c90813a41cb83c1154e259da5b03.png" src="../../_images/688d94cd87fae48811b809e32e89a3df2f59c90813a41cb83c1154e259da5b03.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Reported: 29 beats ; Detected : 36 beats
 Analyzing trial number 4
 </pre></div>
 </div>
-<img alt="../../_images/cca035eeb37e4a6cd701c6c3dd40781dfdce1bcb84dd794a4ce9272dcc0a9bb1.png" src="../../_images/cca035eeb37e4a6cd701c6c3dd40781dfdce1bcb84dd794a4ce9272dcc0a9bb1.png" />
-<img alt="../../_images/3653daaed8c76ca205cf0e87b4521aed541fad3431b601eff262858a103b3ff8.png" src="../../_images/3653daaed8c76ca205cf0e87b4521aed541fad3431b601eff262858a103b3ff8.png" />
+<img alt="../../_images/ad96d7ff42417880cbe797b724d44a6f6c9e0cd992e9bdfea4410de115358cd7.png" src="../../_images/ad96d7ff42417880cbe797b724d44a6f6c9e0cd992e9bdfea4410de115358cd7.png" />
+<img alt="../../_images/44ad723c99ed3615fdb7862915a1f058b7a4eba05def0b8ba04356ec67eb3eed.png" src="../../_images/44ad723c99ed3615fdb7862915a1f058b7a4eba05def0b8ba04356ec67eb3eed.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Reported: 39 beats ; Detected : 46 beats
 Analyzing trial number 5
 </pre></div>
 </div>
-<img alt="../../_images/dbb2715a3d5003109dc98f0aab383de1a598e788ecc494dfed6ec0171326cb53.png" src="../../_images/dbb2715a3d5003109dc98f0aab383de1a598e788ecc494dfed6ec0171326cb53.png" />
-<img alt="../../_images/2c8ec6c4a891213ce8a9d638dba869ea9943c81b2d493a957840e694c5143733.png" src="../../_images/2c8ec6c4a891213ce8a9d638dba869ea9943c81b2d493a957840e694c5143733.png" />
+<img alt="../../_images/0a937780b650fd33d8ac69a191516489775f7e474e7c3190a4de1dae375b23e4.png" src="../../_images/0a937780b650fd33d8ac69a191516489775f7e474e7c3190a4de1dae375b23e4.png" />
+<img alt="../../_images/6cdc29a3179a10d3be6ad1b1ec431b1af05e5b73339a221379786194877773fb.png" src="../../_images/6cdc29a3179a10d3be6ad1b1ec431b1af05e5b73339a221379786194877773fb.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Reported: 47 beats ; Detected : 51 beats
 Analyzing trial number 6
 </pre></div>
 </div>
-<img alt="../../_images/3b6ff959c4fcdcd35fbd5f7e2f2caf0750751f33f5d4f27accf3770b8a694a72.png" src="../../_images/3b6ff959c4fcdcd35fbd5f7e2f2caf0750751f33f5d4f27accf3770b8a694a72.png" />
-<img alt="../../_images/7501dfb43fb00e94df3f0cc8bff4a347bb6de3bdbab7804f1cdd02c30c4c5125.png" src="../../_images/7501dfb43fb00e94df3f0cc8bff4a347bb6de3bdbab7804f1cdd02c30c4c5125.png" />
+<img alt="../../_images/bce472697bf439438d0f4b626f3e33cb4ab84d1fdfa37331264dd88bd4940b9e.png" src="../../_images/bce472697bf439438d0f4b626f3e33cb4ab84d1fdfa37331264dd88bd4940b9e.png" />
+<img alt="../../_images/0f10786c82672cc27b97bb8ad0cdb65efe8f7c5d717cd5263c62bd1d3d1b5b9a.png" src="../../_images/0f10786c82672cc27b97bb8ad0cdb65efe8f7c5d717cd5263c62bd1d3d1b5b9a.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Reported: 23 beats ; Detected : 25 beats
 </pre></div>
 </div>
@@ -658,7 +667,7 @@ Analyzing trial number 6
 </div>
 </section>
 <section id="save-reults">
-<h2>Save reults<a class="headerlink" href="#save-reults" title="Permalink to this headline">#</a></h2>
+<h2>Save reults<a class="headerlink" href="#save-reults" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add heartbeat counts and compute accuracy score</span>
@@ -794,7 +803,7 @@ Analyzing trial number 6
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
   <a class='left-prev' id="prev-link" href="../../stats.html" title="previous page">
-      <i class="fas fa-angle-left"></i>
+      <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
           <p class="prev-next-title">Statistical analysis</p>
@@ -805,7 +814,7 @@ Analyzing trial number 6
       <p class="prev-next-subtitle">next</p>
       <p class="prev-next-title">Heart Rate Discrimination task - Summary results</p>
   </div>
-  <i class="fas fa-angle-right"></i>
+  <i class="fa-solid fa-angle-right"></i>
   </a>
 </div>
             </footer>
@@ -819,7 +828,7 @@ Analyzing trial number 6
 <div class="toc-item">
   
 <div class="tocsection onthispage">
-    <i class="fas fa-list"></i> On this page
+    <i class="fa-solid fa-list"></i> On this page
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
@@ -852,13 +861,18 @@ Analyzing trial number 6
 
 <div class="toc-item">
   
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
 </div>
 
 <div class="toc-item">
   
 <div class="tocsection sourcelink">
     <a href="../../_sources/examples/templates/HeartBeatCounting.ipynb.txt">
-        <i class="fas fa-file-alt"></i> Show Source
+        <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
 </div>
 
@@ -881,7 +895,8 @@ Analyzing trial number 6
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
 
   <footer class="bd-footer"><div class="bd-footer__inner container">
   
@@ -889,16 +904,26 @@ Analyzing trial number 6
     
 <p class="copyright">
 
-    &copy; Copyright 2022-2022, Nicolas Legrand.<br>
+    &copy; Copyright 2022-2023, Nicolas Legrand.<br>
 
 </p>
 
   </div>
   
   <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
 </p>
 
   </div>
