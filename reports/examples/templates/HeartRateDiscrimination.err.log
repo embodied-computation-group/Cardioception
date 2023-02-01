@@ -23,9 +23,9 @@ import numpy as np
 import pandas as pd
 import pingouin as pg
 import seaborn as sns
-from metadPy import sdt
-from metadPy.plotting import plot_confidence
-from metadPy.utils import discreteRatings, trials2counts
+from metadpy import sdt
+from metadpy.plotting import plot_confidence
+from metadpy.utils import discreteRatings, trials2counts
 from scipy.stats import norm
 from systole.detection import ppg_peaks
 
@@ -38,10 +38,10 @@ sns.set_context('talk')
 Cell [0;32mIn[2], line 7[0m
 [1;32m      5[0m [38;5;28;01mimport[39;00m [38;5;21;01mpingouin[39;00m [38;5;28;01mas[39;00m [38;5;21;01mpg[39;00m
 [1;32m      6[0m [38;5;28;01mimport[39;00m [38;5;21;01mseaborn[39;00m [38;5;28;01mas[39;00m [38;5;21;01msns[39;00m
-[0;32m----> 7[0m [38;5;28;01mfrom[39;00m [38;5;21;01mmetadPy[39;00m [38;5;28;01mimport[39;00m sdt
-[1;32m      8[0m [38;5;28;01mfrom[39;00m [38;5;21;01mmetadPy[39;00m[38;5;21;01m.[39;00m[38;5;21;01mplotting[39;00m [38;5;28;01mimport[39;00m plot_confidence
-[1;32m      9[0m [38;5;28;01mfrom[39;00m [38;5;21;01mmetadPy[39;00m[38;5;21;01m.[39;00m[38;5;21;01mutils[39;00m [38;5;28;01mimport[39;00m discreteRatings, trials2counts
+[0;32m----> 7[0m [38;5;28;01mfrom[39;00m [38;5;21;01mmetadpy[39;00m [38;5;28;01mimport[39;00m sdt
+[1;32m      8[0m [38;5;28;01mfrom[39;00m [38;5;21;01mmetadpy[39;00m[38;5;21;01m.[39;00m[38;5;21;01mplotting[39;00m [38;5;28;01mimport[39;00m plot_confidence
+[1;32m      9[0m [38;5;28;01mfrom[39;00m [38;5;21;01mmetadpy[39;00m[38;5;21;01m.[39;00m[38;5;21;01mutils[39;00m [38;5;28;01mimport[39;00m discreteRatings, trials2counts
 
-[0;31mModuleNotFoundError[0m: No module named 'metadPy'
-ModuleNotFoundError: No module named 'metadPy'
+[0;31mModuleNotFoundError[0m: No module named 'metadpy'
+ModuleNotFoundError: No module named 'metadpy'
 

@@ -31,7 +31,7 @@
         "import sys\n",
         "\n",
         "if 'google.colab' in sys.modules:\n",
-        "  ! pip install git+https://github.com/embodied-computation-group/metadPy.git\n",
+        "  ! pip install git+https://github.com/embodied-computation-group/metadpy.git\n",
         "  ! pip install systole\n",
         "  ! pip install pingouin"
       ]
@@ -50,9 +50,9 @@
         "import pandas as pd\n",
         "import pingouin as pg\n",
         "import seaborn as sns\n",
-        "from metadPy import sdt\n",
-        "from metadPy.plotting import plot_confidence\n",
-        "from metadPy.utils import discreteRatings, trials2counts\n",
+        "from metadpy import sdt\n",
+        "from metadpy.plotting import plot_confidence\n",
+        "from metadpy.utils import discreteRatings, trials2counts\n",
         "from scipy.stats import norm\n",
         "from systole.detection import ppg_peaks\n",
         "\n",

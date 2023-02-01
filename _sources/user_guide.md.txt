@@ -45,7 +45,7 @@ In addition, some function for HTML reports will require:
 * [matplotlib](https://matplotlib.org/) (>=3.3.3)
 * [seaborn](https://seaborn.pydata.org/) (>=0.11.1)
 * [pingouin](https://pingouin-stats.org/) (>=0.3.10)
-* [metadPy](https://github.com/LegrandNico/metadPy) (>=0.01)
+* [metadpy](https://github.com/EmbodiedComputationGroup/metadpy) (>=0.01)
 
 ```{note}
 The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles. 
