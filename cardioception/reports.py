@@ -72,7 +72,7 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
     import arviz as az
     import pymc as pm
     from metadpy import bayesian, sdt
-    from metadPy.utils import discreteRatings
+    from metadpy.utils import discreteRatings
 
     # read the input file if only the path was provided
     if not isinstance(results, pd.DataFrame):
