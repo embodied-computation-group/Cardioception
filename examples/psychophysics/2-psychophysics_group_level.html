@@ -48,7 +48,7 @@
     <link rel="shortcut icon" href="../../_static/logo_small.svg"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Fitting psychometric functions for repeated measures" href="3-psychophysics_repeated_measures.html" />
+    <link rel="next" title="How to cite?" href="../../cite.html" />
     <link rel="prev" title="Fitting a psychometric function at the subject level" href="1-psychophysics_subject_level.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
@@ -414,43 +414,30 @@
               
   <section class="tex2jax_ignore mathjax_ignore" id="fitting-a-psychometric-function-at-the-group-level">
 <span id="psychophysics-group-level"></span><h1>Fitting a psychometric function at the group level<a class="headerlink" href="#fitting-a-psychometric-function-at-the-group-level" title="Permalink to this heading">#</a></h1>
+<p>Author: Nicolas Legrand <a class="reference external" href="mailto:nicolas&#46;legrand&#37;&#52;&#48;cfin&#46;au&#46;dk">nicolas<span>&#46;</span>legrand<span>&#64;</span>cfin<span>&#46;</span>au<span>&#46;</span>dk</a></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%%capture
+import sys
 
-<span class="k">if</span> <span class="s1">&#39;google.colab&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
-    <span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="n">arviz</span>
-    <span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="n">pymc</span>
+if &#39;google.colab&#39; in sys.modules:
+    !pip install arviz, pymc
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">aesara.tensor</span> <span class="k">as</span> <span class="nn">at</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytensor.tensor</span> <span class="k">as</span> <span class="nn">pt</span>
 <span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
-
 <span class="kn">import</span> <span class="nn">pymc</span> <span class="k">as</span> <span class="nn">pm</span>
 
 <span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s1">&#39;talk&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">aesara.tensor</span> <span class="k">as</span> <span class="nn">at</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;aesara&#39;
 </pre></div>
 </div>
 </div>
@@ -717,7 +704,7 @@
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="model">
 <h1>Model<a class="headerlink" href="#model" title="Permalink to this heading">#</a></h1>
-<img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/psychophysics_group_level.png" align = 'left' alt="drawing" width="300"/>
+<p>The model is defined as follows:</p>
 <div class="math notranslate nohighlight">
 \[ r_{i} \sim \mathcal{Binomial}(\theta_{i},n_{i})\]</div>
 <div class="math notranslate nohighlight">
@@ -735,12 +722,12 @@
 <div class="math notranslate nohighlight">
 \[ \sigma_{\beta} \sim  |\mathcal{Normal}(0, 100)|\]</div>
 <p>Where <span class="math notranslate nohighlight">\(erf\)</span> is the <a class="reference external" href="https://en.wikipedia.org/wiki/Error_function">error functions</a>, and <span class="math notranslate nohighlight">\(\Phi\)</span> is the cumulative normal function with threshold <span class="math notranslate nohighlight">\(\alpha\)</span> and slope <span class="math notranslate nohighlight">\(\beta\)</span>.</p>
-<p>We create our own PyMC3 compatible cumulative normal distribution function here.</p>
+<p>We create our own cumulative normal distribution function here using pytensor.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">cumulative_normal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
     <span class="c1"># Cumulative distribution function for the standard normal distribution</span>
-    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">at</span><span class="o">.</span><span class="n">erf</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">at</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">pt</span><span class="o">.</span><span class="n">erf</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">pt</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -753,24 +740,24 @@
 
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sub</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">this_df</span><span class="o">.</span><span class="n">Subject</span><span class="o">.</span><span class="n">unique</span><span class="p">()):</span>
 
-  <span class="n">sub_df</span> <span class="o">=</span> <span class="n">this_df</span><span class="p">[</span><span class="n">this_df</span><span class="o">.</span><span class="n">Subject</span><span class="o">==</span><span class="n">sub</span><span class="p">]</span>
+    <span class="n">sub_df</span> <span class="o">=</span> <span class="n">this_df</span><span class="p">[</span><span class="n">this_df</span><span class="o">.</span><span class="n">Subject</span><span class="o">==</span><span class="n">sub</span><span class="p">]</span>
 
-  <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">163</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">163</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">163</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">163</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">163</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">163</span><span class="p">)</span>
 
-  <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">intensity</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">40.5</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)):</span>
-      <span class="n">x</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">intensity</span>
-      <span class="n">n</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sub_df</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">==</span> <span class="n">intensity</span><span class="p">)</span>
-      <span class="n">r</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">sub_df</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">==</span> <span class="n">intensity</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">sub_df</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s2">&quot;More&quot;</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">intensity</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">40.5</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)):</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">intensity</span>
+        <span class="n">n</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sub_df</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">==</span> <span class="n">intensity</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">sub_df</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">==</span> <span class="n">intensity</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">sub_df</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s2">&quot;More&quot;</span><span class="p">))</span>
 
-  <span class="c1"># remove no responses trials</span>
-  <span class="n">validmask</span> <span class="o">=</span> <span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span>
-  <span class="n">xij</span><span class="p">,</span> <span class="n">nij</span><span class="p">,</span> <span class="n">rij</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">validmask</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="n">validmask</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="n">validmask</span><span class="p">]</span>
-  <span class="n">sub_vec</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">xij</span><span class="p">)</span>
+    <span class="c1"># remove no responses trials</span>
+    <span class="n">validmask</span> <span class="o">=</span> <span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span>
+    <span class="n">xij</span><span class="p">,</span> <span class="n">nij</span><span class="p">,</span> <span class="n">rij</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">validmask</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="n">validmask</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="n">validmask</span><span class="p">]</span>
+    <span class="n">sub_vec</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">xij</span><span class="p">)</span>
 
-  <span class="n">x_total</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">xij</span><span class="p">)</span>
-  <span class="n">n_total</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">nij</span><span class="p">)</span>
-  <span class="n">r_total</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">rij</span><span class="p">)</span>
-  <span class="n">sub_total</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">sub_vec</span><span class="p">)</span>
+    <span class="n">x_total</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">xij</span><span class="p">)</span>
+    <span class="n">n_total</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">nij</span><span class="p">)</span>
+    <span class="n">r_total</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">rij</span><span class="p">)</span>
+    <span class="n">sub_total</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">sub_vec</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -794,6 +781,55 @@
     <span class="p">)</span>
 
     <span class="n">rij_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Binomial</span><span class="p">(</span><span class="s2">&quot;rij&quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">thetaij</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_total</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="n">r_total</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pm</span><span class="o">.</span><span class="n">model_to_graphviz</span><span class="p">(</span><span class="n">group_psychophysics</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="nn">File /opt/hostedtoolcache/Python/3.9.16/x64/lib/python3.9/site-packages/pymc/model_graph.py:248,</span> in <span class="ni">ModelGraph.make_graph</span><span class="nt">(self, var_names, formatting)</span>
+<span class="g g-Whitespace">    </span><span class="mi">247</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">248</span>     <span class="kn">import</span> <span class="nn">graphviz</span>
+<span class="g g-Whitespace">    </span><span class="mi">249</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;graphviz&#39;
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">pm</span><span class="o">.</span><span class="n">model_to_graphviz</span><span class="p">(</span><span class="n">group_psychophysics</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.9.16/x64/lib/python3.9/site-packages/pymc/model_graph.py:457,</span> in <span class="ni">model_to_graphviz</span><span class="nt">(model, var_names, formatting)</span>
+<span class="g g-Whitespace">    </span><span class="mi">451</span>     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">452</span>         <span class="s2">&quot;Formattings other than &#39;plain&#39; are currently not supported.&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">453</span>         <span class="ne">UserWarning</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">454</span>         <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">455</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">456</span> <span class="n">model</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">modelcontext</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">457</span> <span class="k">return</span> <span class="n">ModelGraph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">make_graph</span><span class="p">(</span><span class="n">var_names</span><span class="o">=</span><span class="n">var_names</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="n">formatting</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.9.16/x64/lib/python3.9/site-packages/pymc/model_graph.py:250,</span> in <span class="ni">ModelGraph.make_graph</span><span class="nt">(self, var_names, formatting)</span>
+<span class="g g-Whitespace">    </span><span class="mi">248</span>     <span class="kn">import</span> <span class="nn">graphviz</span>
+<span class="g g-Whitespace">    </span><span class="mi">249</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">250</span>     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">251</span>         <span class="s2">&quot;This function requires the python library graphviz, along with binaries. &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">252</span>         <span class="s2">&quot;The easiest way to install all of this is by running</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">253</span>         <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">conda install -c conda-forge python-graphviz&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">254</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">255</span> <span class="n">graph</span> <span class="o">=</span> <span class="n">graphviz</span><span class="o">.</span><span class="n">Digraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">256</span> <span class="k">for</span> <span class="n">plate_label</span><span class="p">,</span> <span class="n">all_var_names</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plates</span><span class="p">(</span><span class="n">var_names</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+<span class="ne">ImportError</span>: This function requires the python library graphviz, along with binaries. The easiest way to install all of this is by running
+
+	<span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">python</span><span class="o">-</span><span class="n">graphviz</span>
 </pre></div>
 </div>
 </div>
@@ -828,9 +864,9 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
             }
         </style>
       <progress value='8000' class='' max='8000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [8000/8000 01:03<00:00 Sampling 4 chains, 0 divergences]
+      100.00% [8000/8000 00:41<00:00 Sampling 4 chains, 0 divergences]
     </div>
-    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 65 seconds.
+    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 42 seconds.
 </pre></div>
 </div>
 </div>
@@ -842,7 +878,7 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/75d760ec89ecd352865955d3a0bdcc2cd7cf89f05b6b3df48ca6e23b66739217.png" src="../../_images/75d760ec89ecd352865955d3a0bdcc2cd7cf89f05b6b3df48ca6e23b66739217.png" />
+<img alt="../../_images/8f131fc10ab66897d45bc119ff367c983d3b798f1b98097c6eb938d0679f03f7.png" src="../../_images/8f131fc10ab66897d45bc119ff367c983d3b798f1b98097c6eb938d0679f03f7.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -885,33 +921,35 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
   <tbody>
     <tr>
       <th>mu_alpha</th>
-      <td>0.214</td>
-      <td>0.244</td>
-      <td>-0.263</td>
-      <td>0.655</td>
-      <td>0.004</td>
+      <td>0.211</td>
+      <td>0.240</td>
+      <td>-0.230</td>
+      <td>0.664</td>
       <td>0.003</td>
-      <td>4608.0</td>
-      <td>3150.0</td>
+      <td>0.003</td>
+      <td>4933.0</td>
+      <td>3442.0</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>mu_beta</th>
-      <td>7.915</td>
-      <td>0.238</td>
-      <td>7.453</td>
-      <td>8.343</td>
-      <td>0.005</td>
+      <td>7.930</td>
+      <td>0.236</td>
+      <td>7.494</td>
+      <td>8.366</td>
+      <td>0.004</td>
       <td>0.003</td>
-      <td>2510.0</td>
-      <td>2725.0</td>
+      <td>3051.0</td>
+      <td>2882.0</td>
       <td>1.0</td>
     </tr>
   </tbody>
 </table>
 </div></div></div>
 </div>
-<p><strong>Interpretation</strong>: Here, <span class="math notranslate nohighlight">\(\alpha\)</span> refers to the threshold value (also the point of subjective equality for this design). We can observe that the group of participants has an average threshold very close to 0 and a slope of 7, which is relatively small in this context and indicate a precise decision process. A higher value means lower precision. By looking at the posterior density of the threshold (<span class="math notranslate nohighlight">\(\alpha\)</span>), we can see that the 94% highest density interval (HDI) includes 0, suggesting that we have good evidence that no bias can be observed at the group tlevel for the exteroceptive condition.</p>
+<div class="highlight-{hint}Here, notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">az</span><span class="o">.</span><span class="n">plot_posterior</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_alpha&quot;</span><span class="p">])</span>
@@ -919,10 +957,10 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:title={&#39;center&#39;:&#39;mu_alpha&#39;}&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot: title={&#39;center&#39;: &#39;mu_alpha&#39;}&gt;
 </pre></div>
 </div>
-<img alt="../../_images/f7783ceb6ab77f631ab9bdb3497f11569894fbcbfd8217eb57b24f2c763164ba.png" src="../../_images/f7783ceb6ab77f631ab9bdb3497f11569894fbcbfd8217eb57b24f2c763164ba.png" />
+<img alt="../../_images/7d1f5c9d3b002f97156b10c3d00d2566f1650d4167fe7f1327b13cc77526a29d.png" src="../../_images/7d1f5c9d3b002f97156b10c3d00d2566f1650d4167fe7f1327b13cc77526a29d.png" />
 </div>
 </div>
 </section>
@@ -943,9 +981,11 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 
 <span class="c1"># Draw some sample from the traces</span>
 <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">alpha_samples</span><span class="p">,</span> <span class="n">beta_samples</span><span class="p">):</span>
-  <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> 
-          <span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">b</span><span class="p">)),</span>
-          <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.05</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> 
+        <span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">b</span><span class="p">)),</span>
+        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.05</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span>
+    <span class="p">)</span>
 
 <span class="c1"># Plot psychometric function with average parameters</span>
 <span class="n">slope</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_beta&quot;</span><span class="p">])[</span><span class="s1">&#39;mean&#39;</span><span class="p">][</span><span class="s1">&#39;mu_beta&#39;</span><span class="p">]</span>
@@ -967,7 +1007,7 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5f6cd89f392a747ff5799ea8b36fcabb4d0d054fe2df370591bef079263f7871.png" src="../../_images/5f6cd89f392a747ff5799ea8b36fcabb4d0d054fe2df370591bef079263f7871.png" />
+<img alt="../../_images/ed9ec9cdca02727b5dc93696ac78ff3c6bcfd7df90cb27a3fd070ffdd8c0eb33.png" src="../../_images/ed9ec9cdca02727b5dc93696ac78ff3c6bcfd7df90cb27a3fd070ffdd8c0eb33.png" />
 </div>
 </div>
 </section>
@@ -987,10 +1027,10 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
           <p class="prev-next-title">Fitting a psychometric function at the subject level</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="3-psychophysics_repeated_measures.html" title="next page">
+  <a class='right-next' id="next-link" href="../../cite.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">Fitting psychometric functions for repeated measures</p>
+      <p class="prev-next-title">How to cite?</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>

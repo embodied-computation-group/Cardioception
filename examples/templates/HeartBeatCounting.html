@@ -412,16 +412,23 @@
               
   <section class="tex2jax_ignore mathjax_ignore" id="heartbeat-counting-task-summary-results">
 <span id="hbc-template"></span><h1>Heartbeat Counting task - Summary results<a class="headerlink" href="#heartbeat-counting-task-summary-results" title="Permalink to this heading">#</a></h1>
-<div class="cell docutils container">
+<p>Author: Nicolas Legrand <a class="reference external" href="mailto:nicolas&#46;legrand&#37;&#52;&#48;cfin&#46;au&#46;dk">nicolas<span>&#46;</span>legrand<span>&#64;</span>cfin<span>&#46;</span>au<span>&#46;</span>dk</a></p>
+<div class="cell tag_hide-cell docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell content</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%%capture
+import sys
 
-<span class="k">if</span> <span class="s1">&#39;google.colab&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
-  <span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="n">systole</span>
+if &#39;google.colab&#39; in sys.modules:
+    !pip install systole, metadpy
 </pre></div>
 </div>
 </div>
+</details>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -569,7 +576,7 @@
 <h1>Heartbeats and artefacts detection<a class="headerlink" href="#heartbeats-and-artefacts-detection" title="Permalink to this heading">#</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This section reports the raw PPG signal together with the peaks detected. The instantaneous heart rate frequency (R-R intervals) is derived and represented below each PPG time series. Artefacts in the RR time series are detected using the method described in <span id="id1">[<a class="reference internal" href="../../references.html#id11" title="Jukka A. Lipponen and Mika P. Tarvainen. A robust algorithm for heart rate variability time series artefact correction using novel beat classification. Journal of Medical Engineering &amp; Technology, 43(3):173-181, 2019. PMID: 31314618. URL: https://doi.org/10.1080/03091902.2019.1640306, arXiv:https://doi.org/10.1080/03091902.2019.1640306, doi:10.1080/03091902.2019.1640306.">Lipponen and Tarvainen, 2019</a>]</span>. The shaded areas represent the pre-recording and post-recording period. Heartbeat detected inside these intervals are automatically removed.</p>
+<p>This section reports the raw PPG signal together with the peaks detected. The instantaneous heart rate frequency (R-R intervals) is derived and represented below each PPG time series. Artefacts in the RR time series are detected using the method described in <span id="id1">[<a class="reference internal" href="../../references.html#id11" title="Jukka A. Lipponen and Mika P. Tarvainen. A robust algorithm for heart rate variability time series artefact correction using novel beat classification. Journal of Medical Engineering &amp; Technology, 43(3):173-181, 2019. PMID: 31314618. URL: https://doi.org/10.1080/03091902.2019.1640306, arXiv:https://doi.org/10.1080/03091902.2019.1640306, doi:10.1080/03091902.2019.1640306.">Lipponen and Tarvainen, 2019</a>]</span>. The shaded areas represent the pre-recording and post-recording period. Heartbeats detected inside these intervals are automatically removed.</p>
 </div>
 <section id="loop-across-trials">
 <h2>Loop across trials<a class="headerlink" href="#loop-across-trials" title="Permalink to this heading">#</a></h2>
@@ -785,7 +792,7 @@ Analyzing trial number 6
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save the final result in the result folder</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Uncomment this to save the final result</span>
 <span class="c1">#df.to_csv(Path(resultPath, &#39;processed.txt&#39;))</span>
 </pre></div>
 </div>

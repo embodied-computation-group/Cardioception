@@ -412,9 +412,40 @@
               
   <section class="tex2jax_ignore mathjax_ignore" id="statistical-analysis">
 <h1>Statistical analysis<a class="headerlink" href="#statistical-analysis" title="Permalink to this heading">#</a></h1>
-<p>This section show how data from the heart rate discrimination task can be analyzed and modelled. You can navigate the notebooks by clicking on the links or run it interactively in <a class="reference external" href="https://colab.research.google.com/">Google Colab</a> using the badges, and updload your own data.</p>
+<section id="using-the-preprocessing-function">
+<h2>Using the preprocessing function<a class="headerlink" href="#using-the-preprocessing-function" title="Permalink to this heading">#</a></h2>
+<p>The :py:mod:<code class="docutils literal notranslate"><span class="pre">cardioception.reports</span></code> module includes a function :py:mod:<code class="docutils literal notranslate"><span class="pre">cardioception.reports.preprocessing</span></code> that automates the analysis and extraction of behavioural variables from the main outputs saved by the task. The function only requires the <code class="docutils literal notranslate"><span class="pre">final.txt</span></code> data frame (either the Pandas data frame or simply a path to the file) that is saved in each subject folder and will return a summary data frame containing the response time, the psychometric parameter estimated by the Psi algorithm and Bayesian inference as well as SDT measures and metacognitive efficiency (meta-d prime). This approach is the most straightforward to extract relevant parameters using default settings that will fit most users’ needs.</p>
+<p>This script exemplifies how this function can be used to extract summary statistics from a result folder. It is assumed that the script is in a folder that contains the <code class="docutils literal notranslate"><span class="pre">data</span></code> folder in which the main outputs of the task are saved. You may addapt the following script to fit your needs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">cardioception.reports</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+
+<span class="n">data_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span>  <span class="c1"># path to the data folder</span>
+<span class="n">summary_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>  <span class="c1"># creat an empty summary data frame</span>
+
+<span class="c1"># for each file found in the result folder, do the preprocessing </span>
+<span class="c1"># and save in the summary dataframe</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_folder</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">):</span>
+
+    <span class="c1"># all the preprocessing happens here</span>
+    <span class="c1"># the input is a file name at it returns a summary dataframe</span>
+    <span class="n">results_df</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    
+    <span class="c1"># log additional info about the participant</span>
+    <span class="c1"># considering that the first 3 digits are the participant ID</span>
+    <span class="n">results_df</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="c1"># concatenate everything in a result data frame</span>
+    <span class="n">summary_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">summary_df</span><span class="p">,</span> <span class="n">results_df</span><span class="p">])</span>
+
+<span class="c1"># save in the current working directory</span>
+<span class="n">summary_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;results.tsv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="report-templates">
 <h2>Report templates<a class="headerlink" href="#report-templates" title="Permalink to this heading">#</a></h2>
+<p>Here, you will find the report templates used to produce the HTML reports when calling the :py:fun:<code class="docutils literal notranslate"><span class="pre">cardioception.reports.report</span></code> function. We provide one for the Heart Rate Discrimination task and one for the Heart Beat Counting task. You can navigate the notebooks by clicking on the links or run it interactively in <a class="reference external" href="https://colab.research.google.com/">Google Colab</a> using the badges, and upload your own data. Visualizing the data this way is recommended to assess the quality of the PPG recording or the general performance of the participant during the tasks.</p>
 <div class="toctree-wrapper compound">
 </div>
 <table class="table">
@@ -435,6 +466,7 @@
 </section>
 <section id="bayesian-modelling-of-psychophysics">
 <h2>Bayesian modelling of psychophysics<a class="headerlink" href="#bayesian-modelling-of-psychophysics" title="Permalink to this heading">#</a></h2>
+<p>These notebooks provide a more detailled introduction to the Bayesian modelling of the psychometric functions to estimate threshold and slope offline (as opposed to the online estimation performed by the Psi staircase). The models are implemented in PyMC, the code can easily be adapted to fit different modelling needs (e.g. group comparison, repeated measure…).</p>
 <div class="toctree-wrapper compound">
 </div>
 <table class="table">
@@ -449,9 +481,6 @@
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#psychophysics-group-level"><span class="std std-ref">Fitting a psychometric function at the group level</span></a></p></td>
 <td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="examples/psychophysics/3-psychophysics_repeated_measures.html#psychophysics-repeated-measures"><span class="std std-ref">Fitting psychometric functions for repeated measures</span></a></p></td>
-<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/3-psychophysics_repeated_measures.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -496,6 +525,11 @@
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#using-the-preprocessing-function">
+   Using the preprocessing function
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#report-templates">
    Report templates

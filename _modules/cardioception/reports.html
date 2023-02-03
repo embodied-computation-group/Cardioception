@@ -443,7 +443,9 @@
 <span class="sd">    estimating the metacognitive sensitivity meta-d&#39; (`bayesian_dprime`,</span>
 <span class="sd">    `bayesian_criterion`, `bayesian_meta_d`, `bayesian_m_ratio`). The dprime and</span>
 <span class="sd">    criterion can vary between the two methods. It is recommended to use the estimates</span>
-<span class="sd">    consistently.</span>
+<span class="sd">    consistently. Before the estimation of SDT and metacognitive metrics, the function</span>
+<span class="sd">    ensure that at least 5 valid trials of each signal are present, otherwise returns</span>
+<span class="sd">    `None`.</span>
 
 <span class="sd">    When using this function for analysing results from the Heart Rate Discrimination</span>
 <span class="sd">    task, the following packages should be credited: Systole [1]_, metadpy [2]_ and</span>
@@ -463,8 +465,7 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function will require [PyMC](https://github.com/pymc-devs/pymc) (&gt;= 5.0) and</span>
-<span class="sd">    [metadpy](https://github.com/embodied-computation-group/metadpy) (&gt;=0.1.0) to work</span>
-<span class="sd">    correctly.</span>
+<span class="sd">    [metadpy](https://github.com/embodied-computation-group/metadpy) (&gt;=0.1.0).</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -511,54 +512,70 @@
             <span class="p">)</span>
             <span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Responses&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_modality</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s2">&quot;More&quot;</span>
 
-            <span class="n">hit</span><span class="p">,</span> <span class="n">miss</span><span class="p">,</span> <span class="n">fa</span><span class="p">,</span> <span class="n">cr</span> <span class="o">=</span> <span class="n">this_modality</span><span class="o">.</span><span class="n">scores</span><span class="p">()</span>
-            <span class="n">hr</span><span class="p">,</span> <span class="n">far</span> <span class="o">=</span> <span class="n">sdt</span><span class="o">.</span><span class="n">rates</span><span class="p">(</span><span class="n">hits</span><span class="o">=</span><span class="n">hit</span><span class="p">,</span> <span class="n">misses</span><span class="o">=</span><span class="n">miss</span><span class="p">,</span> <span class="n">fas</span><span class="o">=</span><span class="n">fa</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">cr</span><span class="p">)</span>
-            <span class="n">d</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">sdt</span><span class="o">.</span><span class="n">dprime</span><span class="p">(</span><span class="n">hit_rate</span><span class="o">=</span><span class="n">hr</span><span class="p">,</span> <span class="n">fa_rate</span><span class="o">=</span><span class="n">far</span><span class="p">),</span> <span class="n">sdt</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span>
-                <span class="n">hit_rate</span><span class="o">=</span><span class="n">hr</span><span class="p">,</span> <span class="n">fa_rate</span><span class="o">=</span><span class="n">far</span>
-            <span class="p">)</span>
+            <span class="c1"># check that both signals have at least 5 valid trials each</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span>
+                <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span>
+            <span class="p">):</span>
+
+                <span class="n">hit</span><span class="p">,</span> <span class="n">miss</span><span class="p">,</span> <span class="n">fa</span><span class="p">,</span> <span class="n">cr</span> <span class="o">=</span> <span class="n">this_modality</span><span class="o">.</span><span class="n">scores</span><span class="p">()</span>
+                <span class="n">hr</span><span class="p">,</span> <span class="n">far</span> <span class="o">=</span> <span class="n">sdt</span><span class="o">.</span><span class="n">rates</span><span class="p">(</span><span class="n">hits</span><span class="o">=</span><span class="n">hit</span><span class="p">,</span> <span class="n">misses</span><span class="o">=</span><span class="n">miss</span><span class="p">,</span> <span class="n">fas</span><span class="o">=</span><span class="n">fa</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">cr</span><span class="p">)</span>
+                <span class="n">d</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">sdt</span><span class="o">.</span><span class="n">dprime</span><span class="p">(</span><span class="n">hit_rate</span><span class="o">=</span><span class="n">hr</span><span class="p">,</span> <span class="n">fa_rate</span><span class="o">=</span><span class="n">far</span><span class="p">),</span> <span class="n">sdt</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span>
+                    <span class="n">hit_rate</span><span class="o">=</span><span class="n">hr</span><span class="p">,</span> <span class="n">fa_rate</span><span class="o">=</span><span class="n">far</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="kc">None</span><span class="p">,</span>
+                    <span class="kc">None</span><span class="p">,</span>
+                <span class="p">)</span>
 
             <span class="c1"># metacognitive sensitivity</span>
             <span class="c1"># -------------------------</span>
+            <span class="p">(</span>
+                <span class="n">bayesian_dprime</span><span class="p">,</span>
+                <span class="n">bayesian_criterion</span><span class="p">,</span>
+                <span class="n">bayesian_meta_d</span><span class="p">,</span>
+                <span class="n">bayesian_m_ratio</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
             <span class="n">this_modality</span> <span class="o">=</span> <span class="n">this_modality</span><span class="p">[</span>
                 <span class="o">~</span><span class="n">this_modality</span><span class="o">.</span><span class="n">Confidence</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
-            <span class="p">]</span>  <span class="c1"># Drop trials with NaN in confidence rating</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Drop trials with NaN in confidence rating</span>
             <span class="n">this_modality</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;Accuracy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Responses&quot;</span><span class="p">]</span>
-            <span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Responses&quot;</span><span class="p">])</span>
+                <span class="p">(</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Responses&quot;</span><span class="p">])</span>
+                <span class="o">|</span> <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Responses&quot;</span><span class="p">])</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">new_ratings</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">discreteRatings</span><span class="p">(</span>
-                    <span class="n">this_modality</span><span class="o">.</span><span class="n">Confidence</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
-                <span class="p">)</span>
-                <span class="n">this_modality</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;discrete_confidence&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_ratings</span>
+            <span class="c1"># check that both signals have at least 5 valid trials each</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span>
+                <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span>
+            <span class="p">):</span>
 
-                <span class="n">metad</span> <span class="o">=</span> <span class="n">bayesian</span><span class="o">.</span><span class="n">hmetad</span><span class="p">(</span>
-                    <span class="n">data</span><span class="o">=</span><span class="n">this_modality</span><span class="p">,</span>
-                    <span class="n">stimuli</span><span class="o">=</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">,</span>
-                    <span class="n">accuracy</span><span class="o">=</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">,</span>
-                    <span class="n">confidence</span><span class="o">=</span><span class="s2">&quot;discrete_confidence&quot;</span><span class="p">,</span>
-                    <span class="n">nRatings</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-                    <span class="n">output</span><span class="o">=</span><span class="s2">&quot;dataframe&quot;</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">bayesian_dprime</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">bayesian_criterion</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">bayesian_meta_d</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;meta_d&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">bayesian_m_ratio</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;m_ratio&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Cannot discretize ratings for modaliti: </span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s2">. &quot;</span>
-                        <span class="s2">&quot;The metacognitive efficiency will not be reported.&quot;</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">new_ratings</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">discreteRatings</span><span class="p">(</span>
+                        <span class="n">this_modality</span><span class="o">.</span><span class="n">Confidence</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
                     <span class="p">)</span>
-                <span class="p">)</span>
+                    <span class="n">this_modality</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;discrete_confidence&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_ratings</span>
 
-                <span class="p">(</span>
-                    <span class="n">bayesian_dprime</span><span class="p">,</span>
-                    <span class="n">bayesian_criterion</span><span class="p">,</span>
-                    <span class="n">bayesian_meta_d</span><span class="p">,</span>
-                    <span class="n">bayesian_m_ratio</span><span class="p">,</span>
-                <span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">metad</span> <span class="o">=</span> <span class="n">bayesian</span><span class="o">.</span><span class="n">hmetad</span><span class="p">(</span>
+                        <span class="n">data</span><span class="o">=</span><span class="n">this_modality</span><span class="p">,</span>
+                        <span class="n">stimuli</span><span class="o">=</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">,</span>
+                        <span class="n">accuracy</span><span class="o">=</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">,</span>
+                        <span class="n">confidence</span><span class="o">=</span><span class="s2">&quot;discrete_confidence&quot;</span><span class="p">,</span>
+                        <span class="n">nRatings</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                        <span class="n">output</span><span class="o">=</span><span class="s2">&quot;dataframe&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">bayesian_dprime</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">bayesian_criterion</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">bayesian_meta_d</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;meta_d&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">bayesian_m_ratio</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;m_ratio&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Cannot discretize ratings for modality: </span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s2">. &quot;</span>
+                            <span class="s2">&quot;The metacognitive efficiency will not be reported.&quot;</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
 
             <span class="c1"># bayesian psychophysics</span>
             <span class="c1"># ----------------------</span>

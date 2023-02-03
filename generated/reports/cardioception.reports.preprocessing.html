@@ -428,7 +428,9 @@ which is not the case for the Psi values.</p>
 estimating the metacognitive sensitivity meta-d’ (<cite>bayesian_dprime</cite>,
 <cite>bayesian_criterion</cite>, <cite>bayesian_meta_d</cite>, <cite>bayesian_m_ratio</cite>). The dprime and
 criterion can vary between the two methods. It is recommended to use the estimates
-consistently.</p>
+consistently. Before the estimation of SDT and metacognitive metrics, the function
+ensure that at least 5 valid trials of each signal are present, otherwise returns
+<cite>None</cite>.</p>
 <p>When using this function for analysing results from the Heart Rate Discrimination
 task, the following packages should be credited: Systole <a class="reference internal" href="#r38706a2da669-1" id="id1">[1]</a>, metadpy <a class="reference internal" href="#r38706a2da669-2" id="id2">[2]</a> and
 cardioception <a class="reference internal" href="#r38706a2da669-3" id="id3">[3]</a>.</p>
@@ -449,8 +451,7 @@ exteroception if the two conditions were used.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>This function will require [PyMC](<a class="github reference external" href="https://github.com/pymc-devs/pymc">pymc-devs/pymc</a>) (&gt;= 5.0) and
-[metadpy](<a class="github reference external" href="https://github.com/embodied-computation-group/metadpy">embodied-computation-group/metadpy</a>) (&gt;=0.1.0) to work
-correctly.</p>
+[metadpy](<a class="github reference external" href="https://github.com/embodied-computation-group/metadpy">embodied-computation-group/metadpy</a>) (&gt;=0.1.0).</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r38706a2da669-1" role="doc-biblioentry">
