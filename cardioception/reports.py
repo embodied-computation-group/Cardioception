@@ -3,6 +3,7 @@
 import os
 import subprocess
 from os import PathLike
+from pathlib import Path
 from typing import Optional, Union
 
 import numpy as np
@@ -247,8 +248,8 @@ def report(result_path: str, report_path: Optional[str] = None, task: str = "HRD
 
     if report_path is None:
         report_path = result_path
-    temp_notebook = os.path.join(report_path, "temp.ipynb")
-    htmlreport = os.path.join(report_path, f"{task}_report.html")
+    temp_notebook = Path(report_path, "temp.ipynb")
+    htmlreport = Path(report_path, f"{task}_report.html")
 
     if task == "HRD":
         template = "HeartRateDiscrimination.ipynb"
@@ -258,11 +259,11 @@ def report(result_path: str, report_path: Optional[str] = None, task: str = "HRD
     execute_notebook(
         pkg_resources.resource_filename("cardioception.notebooks", template),
         temp_notebook,
-        parameters=dict(resultPath=result_path, reportPath=report_path),
+        parameters=dict(resultPath=str(result_path), reportPath=str(report_path)),
     )
     command = (
         "jupyter nbconvert --to html --execute "
         + f"--TemplateExporter.exclude_input=True {temp_notebook} --output {htmlreport}"
     )
-    subprocess.call(command)
+    subprocess.call(command, shell=True)
     os.remove(temp_notebook)
