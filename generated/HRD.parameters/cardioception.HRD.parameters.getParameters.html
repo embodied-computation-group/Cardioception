@@ -422,13 +422,12 @@ flexibility and modularity to task. In many cases, unique versions of the
 task (e.g., with or without confidence ratings or choice feedback) can be
 created simply by changing these parameters, with no further interaction
 with the underlying task code.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
+<dd class="field-odd"><dl>
 <dt><strong>device</strong><span class="classifier">str</span></dt><dd><p>Select how the participant provide responses. Can be <cite>‘mouse’</cite> or <cite>‘keyboard’</cite>.</p>
 </dd>
-<dt><strong>exteroception</strong><span class="classifier">bool</span></dt><dd><p>If <cite>True</cite>, an exteroceptive condition with be interleaved with the interoceptive
-condition (either block or randomized design).</p>
+<dt><strong>exteroception</strong><span class="classifier">bool</span></dt><dd><p>If <cite>True</cite>, the task will include an exteroceptive (half of the trials).</p>
 </dd>
 <dt><strong>fullscr</strong><span class="classifier">bool</span></dt><dd><p>If <cite>True</cite>, activate full screen mode.</p>
 </dd>
@@ -440,7 +439,14 @@ condition (either block or randomized design).</p>
 <dt><strong>nStaircase</strong><span class="classifier">int</span></dt><dd><p>Number of staircase to use per condition (exteroceptive and
 interoceptive).</p>
 </dd>
-<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>Number of trials to run (UpDown + psi staircase).</p>
+<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run (UpDown and psi staircase).
+.. note:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This number indicates the total number of trials that will be presented
+during the experiment. If `nTrials=50` and `exteroception=False`, the task
+contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,
+the task contains 25 interoceptive trials and 25 exteroceptive trials.
+</pre></div>
+</div>
 </dd>
 <dt><strong>participant</strong><span class="classifier">str</span></dt><dd><p>Subject ID. Default is ‘Participant’.</p>
 </dd>
@@ -491,6 +497,8 @@ behavioral results data frame.</p>
 </dd>
 <dt><strong>HRcutOff</strong><span class="classifier">list</span></dt><dd><p>Cut off for extreme heart rate values during recording.</p>
 </dd>
+<dt><strong>ExteroCondition</strong><span class="classifier">bool</span></dt><dd><p>If <cite>True</cite>, the task includes an exteroceptive (half of the trials).</p>
+</dd>
 <dt><strong>isi</strong><span class="classifier">tuple</span></dt><dd><p>Range of the inter-stimulus interval (seconds). Should be in the form of (low,
 high). At each trial the value is generated using a uniform distribution
 between these two values. Default is set to <cite>(0.25, 0.25)</cite> so the value is
@@ -524,8 +532,14 @@ confidence rating).</p>
 <dt><strong>nFinger</strong><span class="classifier">str or None</span></dt><dd><p>The finger number (“1”, “2”, “3”, “4” or “5”) where the participant
 decided to place the pulse oximeter (if relevant).</p>
 </dd>
-<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trial to run in each condition, interoception and
-exteroception (if selected).</p>
+<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run (UpDown and psi staircase).
+.. note:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This number indicates the total number of trials that will be presented
+during the experiment. If `nTrials=50` and `exteroception=False`, the task
+contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,
+the task contains 25 interoceptive trials and 25 exteroceptive trials.
+</pre></div>
+</div>
 </dd>
 <dt><strong>participant</strong><span class="classifier">str</span></dt><dd><p>Subject ID. Default is ‘Participant’.</p>
 </dd>

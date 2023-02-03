@@ -454,8 +454,7 @@
 <span class="sd">    device : str</span>
 <span class="sd">        Select how the participant provide responses. Can be `&#39;mouse&#39;` or `&#39;keyboard&#39;`.</span>
 <span class="sd">    exteroception : bool</span>
-<span class="sd">        If `True`, an exteroceptive condition with be interleaved with the interoceptive</span>
-<span class="sd">        condition (either block or randomized design).</span>
+<span class="sd">        If `True`, the task will include an exteroceptive (half of the trials).</span>
 <span class="sd">    fullscr : bool</span>
 <span class="sd">        If `True`, activate full screen mode.</span>
 <span class="sd">    language : str</span>
@@ -467,7 +466,12 @@
 <span class="sd">        Number of staircase to use per condition (exteroceptive and</span>
 <span class="sd">        interoceptive).</span>
 <span class="sd">    nTrials : int</span>
-<span class="sd">        Number of trials to run (UpDown + psi staircase).</span>
+<span class="sd">        The number of trials to run (UpDown and psi staircase).</span>
+<span class="sd">        .. note::</span>
+<span class="sd">           This number indicates the total number of trials that will be presented</span>
+<span class="sd">           during the experiment. If `nTrials=50` and `exteroception=False`, the task</span>
+<span class="sd">           contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,</span>
+<span class="sd">           the task contains 25 interoceptive trials and 25 exteroceptive trials.</span>
 <span class="sd">    participant : str</span>
 <span class="sd">        Subject ID. Default is &#39;Participant&#39;.</span>
 <span class="sd">    catchTrials : float</span>
@@ -504,6 +508,8 @@
 <span class="sd">        `&quot;mouse&quot;`.</span>
 <span class="sd">    HRcutOff : list</span>
 <span class="sd">        Cut off for extreme heart rate values during recording.</span>
+<span class="sd">    ExteroCondition : bool</span>
+<span class="sd">        If `True`, the task includes an exteroceptive (half of the trials).</span>
 <span class="sd">    isi : tuple</span>
 <span class="sd">        Range of the inter-stimulus interval (seconds). Should be in the form of (low,</span>
 <span class="sd">        high). At each trial the value is generated using a uniform distribution</span>
@@ -538,8 +544,12 @@
 <span class="sd">        The finger number (&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot; or &quot;5&quot;) where the participant</span>
 <span class="sd">        decided to place the pulse oximeter (if relevant).</span>
 <span class="sd">    nTrials : int</span>
-<span class="sd">        The number of trial to run in each condition, interoception and</span>
-<span class="sd">        exteroception (if selected).</span>
+<span class="sd">        The number of trials to run (UpDown and psi staircase).</span>
+<span class="sd">        .. note::</span>
+<span class="sd">           This number indicates the total number of trials that will be presented</span>
+<span class="sd">           during the experiment. If `nTrials=50` and `exteroception=False`, the task</span>
+<span class="sd">           contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,</span>
+<span class="sd">           the task contains 25 interoceptive trials and 25 exteroceptive trials.</span>
 <span class="sd">    participant : str</span>
 <span class="sd">        Subject ID. Default is &#39;Participant&#39;.</span>
 <span class="sd">    path : str</span>
