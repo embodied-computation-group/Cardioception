@@ -785,47 +785,7 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.16/x64/lib/python3.9/site-packages/pymc/model_graph.py:248,</span> in <span class="ni">ModelGraph.make_graph</span><span class="nt">(self, var_names, formatting)</span>
-<span class="g g-Whitespace">    </span><span class="mi">247</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">248</span>     <span class="kn">import</span> <span class="nn">graphviz</span>
-<span class="g g-Whitespace">    </span><span class="mi">249</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;graphviz&#39;
-
-<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
-
-<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">pm</span><span class="o">.</span><span class="n">model_to_graphviz</span><span class="p">(</span><span class="n">subject_psychophysics</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.16/x64/lib/python3.9/site-packages/pymc/model_graph.py:457,</span> in <span class="ni">model_to_graphviz</span><span class="nt">(model, var_names, formatting)</span>
-<span class="g g-Whitespace">    </span><span class="mi">451</span>     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">452</span>         <span class="s2">&quot;Formattings other than &#39;plain&#39; are currently not supported.&quot;</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">453</span>         <span class="ne">UserWarning</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">454</span>         <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">455</span>     <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">456</span> <span class="n">model</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">modelcontext</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">457</span> <span class="k">return</span> <span class="n">ModelGraph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">make_graph</span><span class="p">(</span><span class="n">var_names</span><span class="o">=</span><span class="n">var_names</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="n">formatting</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.16/x64/lib/python3.9/site-packages/pymc/model_graph.py:250,</span> in <span class="ni">ModelGraph.make_graph</span><span class="nt">(self, var_names, formatting)</span>
-<span class="g g-Whitespace">    </span><span class="mi">248</span>     <span class="kn">import</span> <span class="nn">graphviz</span>
-<span class="g g-Whitespace">    </span><span class="mi">249</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">250</span>     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">251</span>         <span class="s2">&quot;This function requires the python library graphviz, along with binaries. &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">252</span>         <span class="s2">&quot;The easiest way to install all of this is by running</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">253</span>         <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">conda install -c conda-forge python-graphviz&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">254</span>     <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">255</span> <span class="n">graph</span> <span class="o">=</span> <span class="n">graphviz</span><span class="o">.</span><span class="n">Digraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">256</span> <span class="k">for</span> <span class="n">plate_label</span><span class="p">,</span> <span class="n">all_var_names</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plates</span><span class="p">(</span><span class="n">var_names</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
-<span class="ne">ImportError</span>: This function requires the python library graphviz, along with binaries. The easiest way to install all of this is by running
-
-	<span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">python</span><span class="o">-</span><span class="n">graphviz</span>
-</pre></div>
-</div>
-</div>
+<img alt="../../_images/3ac06ad7e3faadee219f67f728b7272815946f85eb2bcd236728dd24e566f9ba.svg" src="../../_images/3ac06ad7e3faadee219f67f728b7272815946f85eb2bcd236728dd24e566f9ba.svg" /></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -836,29 +796,39 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 <div class="cell_output docutils container">
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Auto-assigning NUTS sampler...
-Initializing NUTS using jitter+adapt_diag...
-Multiprocess sampling (4 chains in 4 jobs)
-NUTS: [alpha, beta]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Initializing NUTS using jitter+adapt_diag...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Multiprocess sampling (4 chains in 4 jobs)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>NUTS: [alpha, beta]
 </pre></div>
 </div>
 <div class="output text_html">
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div><div class="output text_html">
     <div>
-        <style>
-            /* Turns off some styling */
-            progress {
-                /* gets rid of default border in Firefox and Opera. */
-                border: none;
-                /* Needs to be in here for Safari polyfill so background images work as expected. */
-                background-size: auto;
-            }
-            .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-                background: #F44336;
-            }
-        </style>
       <progress value='8000' class='' max='8000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [8000/8000 00:01<00:00 Sampling 4 chains, 0 divergences]
+      100.00% [8000/8000 00:03&lt;00:00 Sampling 4 chains, 0 divergences]
     </div>
-    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 2 seconds.
+    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 4 seconds.
 </pre></div>
 </div>
 </div>
@@ -870,7 +840,7 @@ NUTS: [alpha, beta]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c6defe807180223180a33a27ced19e5da9829a12d5b321cf978a17533f44bb7c.png" src="../../_images/c6defe807180223180a33a27ced19e5da9829a12d5b321cf978a17533f44bb7c.png" />
+<img alt="../../_images/da12be5de696ba8c6b2d1658d3dc02546212fabcdb47802c393505faa1cd347d.png" src="../../_images/da12be5de696ba8c6b2d1658d3dc02546212fabcdb47802c393505faa1cd347d.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -913,26 +883,26 @@ NUTS: [alpha, beta]
   <tbody>
     <tr>
       <th>alpha</th>
-      <td>2.226</td>
-      <td>1.586</td>
-      <td>-0.849</td>
-      <td>5.13</td>
-      <td>0.028</td>
-      <td>0.021</td>
-      <td>3299.0</td>
-      <td>2010.0</td>
+      <td>2.206</td>
+      <td>1.594</td>
+      <td>-0.836</td>
+      <td>5.175</td>
+      <td>0.027</td>
+      <td>0.020</td>
+      <td>3608.0</td>
+      <td>2658.0</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>beta</th>
-      <td>7.555</td>
-      <td>1.905</td>
-      <td>4.517</td>
-      <td>10.96</td>
-      <td>0.035</td>
-      <td>0.026</td>
-      <td>3139.0</td>
-      <td>2591.0</td>
+      <td>7.448</td>
+      <td>1.811</td>
+      <td>4.421</td>
+      <td>10.812</td>
+      <td>0.033</td>
+      <td>0.024</td>
+      <td>3208.0</td>
+      <td>2578.0</td>
       <td>1.0</td>
     </tr>
   </tbody>
@@ -989,7 +959,7 @@ NUTS: [alpha, beta]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c8b5260bbb7cb03df0c54e68bb60f5dbce707624dc70bc11fd243b79097d6b29.png" src="../../_images/c8b5260bbb7cb03df0c54e68bb60f5dbce707624dc70bc11fd243b79097d6b29.png" />
+<img alt="../../_images/793ba372d7d89811382f45ed444232de6190044b232fb8e24c32a18974e4e5d2.png" src="../../_images/793ba372d7d89811382f45ed444232de6190044b232fb8e24c32a18974e4e5d2.png" />
 </div>
 </div>
 </section>
