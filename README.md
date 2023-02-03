@@ -48,8 +48,7 @@ This will create a new `cardioception` environment that you can later activate u
 
   `conda activate cardioception`
 
-```{note} If you are using the shortcut method described bellow, you will have to activate the *cardioception* environment instead of the *base* one.
-```
+Note: If you are using the shortcut method described bellow, you will have to activate the *cardioception* environment instead of the *base* one.
 
 ## Dependencies
 
