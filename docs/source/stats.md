@@ -2,7 +2,7 @@
 
 ## Using the preprocessing function
 
-The {py:mod}`cardioception.reports` module includes a function {py:fun}`cardioception.reports.preprocessing` that automates the analysis and extraction of behavioural variables from the main outputs saved by the task. The function only requires the `final.txt` data frame (either the Pandas data frame or simply a path to the file) that is saved in each subject folder and will return a summary data frame containing the response time, the psychometric parameter estimated by the Psi algorithm and Bayesian inference as well as SDT measures and metacognitive efficiency (meta-d prime). This approach is the most straightforward to extract relevant parameters using default settings that will fit most users' needs.
+The reports module includes a [preprocessing function](cardioception.reports.preprocessing) that automates the analysis and extraction of behavioural variables from the main outputs saved by the task. The function only requires the `final.txt` data frame (either the Pandas data frame or simply a path to the file) that is saved in each subject folder and will return a summary data frame containing the response time, the psychometric parameter estimated by the Psi algorithm and Bayesian inference as well as SDT measures and metacognitive efficiency (meta-d prime). This approach is the most straightforward to extract relevant parameters using default settings that will fit most users' needs.
 
 This script exemplifies how this function can be used to extract summary statistics from a result folder. It is assumed that the script is in a folder that contains the `data` folder in which the main outputs of the task are saved. You may addapt the following script to fit your needs:
 
@@ -35,7 +35,7 @@ summary_df.to_csv("results.tsv", sep="\t", index=False)
 
 ## Report templates
 
-Here, you will find the report templates used to produce the HTML reports when calling the {py:fun}`cardioception.reports.report` function. We provide one for the Heart Rate Discrimination task and one for the Heart Beat Counting task. You can navigate the notebooks by clicking on the links or run it interactively in [Google Colab](https://colab.research.google.com/) using the badges, and upload your own data. Visualizing the data this way is recommended to assess the quality of the PPG recording or the general performance of the participant during the tasks.
+Here, you will find the report templates used to produce the HTML reports when calling the [report function](cardioception.reports.report) function. We provide one for the Heart Rate Discrimination task and one for the Heart Beat Counting task. You can navigate the notebooks by clicking on the links or run it interactively in [Google Colab](https://colab.research.google.com/) using the badges, and upload your own data. Visualizing the data this way is recommended to assess the quality of the PPG recording or the general performance of the participant during the tasks.
 
 ```{toctree}
 ---
