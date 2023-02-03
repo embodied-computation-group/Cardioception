@@ -24,11 +24,9 @@ jobs:
 
       - name: Build
         run: |
-          sudo apt-get install graphviz
+          conda install -c conda-forge python-graphviz
           pip install psychopy==2020.1.2
-          pip install -r requirements.txt
           pip install -r requirements-docs.txt
-          pip install .
           sphinx-build -b html docs/source docs/build/html
 
       - name: Deploy 🚀
