@@ -1,0 +1,10 @@
+name: cardioception
+dependencies:
+  - python=3.9
+  - pip
+  - conda-forge::pywinhook=1.6.2
+  - pip:
+    - bokeh==2.4.3
+    - systole==0.2.4
+    - psychopy==2022.2.5
+    - cardioception

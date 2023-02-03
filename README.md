@@ -31,22 +31,25 @@ If you have questions regarding the tasks, want to report a bug or discuss data 
 
 # Installation
 
-**Using the Python Package Index**
+## Using the Python Package Index
 
 * The most recent version can be installed uing:
     `pip install cardioception`
 * The current development branch can be installed using
   `pip install git+https://github.com/embodied-computation-group/Cardioception.git`
 
-**Downloading the ZIP file**
+### Set up a conda environment
 
-<img src="/images/downloadZIP.png" align="left" alt="download" height="200" HSPACE=30>
+The task can be installed in a new environment using the `environment.yml` file that you can find at the root of the directory. Using the Anaconda prompt, you can create a new environment with:
 
-You can also download the most recent version by downloading the repository as a .zip file.
+  `conda env create -f environment.yml`
 
-After extracting the content of the file, the package can be installed via the command line by running `pip install .`. Note that this command should be executed when your terminal run inside the extracted folder. You can navigate through your local folder using the command `cd [path to your folder]`.
+This will create a new `cardioception` environment that you can later activate using:
 
-<br clear="left"/>
+  `conda activate cardioception`
+
+```{note} If you are using the shortcut method described bellow, you will have to activate the *cardioception* environment instead of the *base* one.
+```
 
 ## Dependencies
 
@@ -55,12 +58,11 @@ Cardioception has been tested with Python 3.7. We recommend to use the last inst
 Make sure that you have the following packages installed and up to date before running cardioception:
 
 * [psychopy](https://www.psychopy.org/) can be installed with `pip install psychopy`.
-
 * [systole](https://systole-docs.github.io/) can be installed with `pip install systole`.
 
 The other main dependencies are:
 
-* [numpy](https://numpy.org/) (>=1.19.4)
+* [numpy](https://numpy.org/) (>=1.18,<=1.23)
 * [scipy](https://www.scipy.org/) (>=1.3.0)
 * [pandas](https://pandas.pydata.org/) (>=1.0.3)
 * [pyserial](https://pypi.org/project/pyserial/) (>=3.4)
@@ -71,7 +73,8 @@ In addition, some function for HTML reports will require:
 * [matplotlib](https://matplotlib.org/) (>=3.3.3)
 * [seaborn](https://seaborn.pydata.org/) (>=0.11.1)
 * [pingouin](https://pingouin-stats.org/) (>=0.3.10)
-* [metadpy](https://github.com/Embodi3dComputationGroup/metadpy) (>=0.01)
+* [metadpy](https://github.com/Embodi3dComputationGroup/metadpy) (>=0.1.0)
+* [pymc](https://www.pymc.io/welcome.html) (>=5.0)
 
 **NOTE**
 The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles.
@@ -174,9 +177,8 @@ More advanced subject and group-level Bayesian modeling approaches are described
 
 | Notebook | Colab | nbViewer |
 | --- | ---| --- |
-| Fitting the psychometric function (single subject) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/1-psychophysics_subject_level.ipynb?flush_cache=true) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/1-psychophysics_subject_level.ipynb?flush_cache=true)
-| Fitting the psychometric function (group level) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/2-psychophysics_group_level.ipynb?flush_cache=true) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/2-psychophysics_group_level.ipynb?flush_cache=true)
-| Fitting the psychometric function (repeated measures) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/3-repeated_measures.ipynb?flush_cache=true) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/3-repeated_measures.ipynb?flush_cache=true)
+| Fitting the psychometric function (single subject) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb)
+| Fitting the psychometric function (group level) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb)
 
 # References
 
