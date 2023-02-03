@@ -459,8 +459,17 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ensure that the paths are pathlib instance in case they are passed through cardioception.reports.report</span>
+<span class="n">resultPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultPath</span><span class="p">)</span>
+<span class="n">reportPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">reportPath</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Search files ending with &quot;final.txt&quot; - This is the main data frame that is saved at the end of the task</span>
-<span class="n">results_df</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;HBC&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*final.txt&#39;</span><span class="p">)]</span>
+<span class="n">results_df</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultPath</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*final.txt&#39;</span><span class="p">)]</span>
 </pre></div>
 </div>
 </div>
@@ -565,7 +574,7 @@ if &#39;google.colab&#39; in sys.modules:
 <span class="n">ppg</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
     <span class="n">ppg</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;HBC&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;*_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">.npy&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">resultPath</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;*_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">.npy&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">)</span>
 </pre></div>
 </div>

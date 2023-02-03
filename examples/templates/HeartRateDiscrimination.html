@@ -478,28 +478,37 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ensure that the paths are pathlib instance in case they are passed through cardioception.reports.report</span>
+<span class="n">resultPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultPath</span><span class="p">)</span>
+<span class="n">reportPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">reportPath</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Logs dataframe</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-    <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">resultPath</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*final.txt&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultPath</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*final.txt&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
     <span class="p">)</span>
 
 <span class="c1"># History of posteriors distribution</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">interoPost</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">resultPath</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*Intero_posterior.npy&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultPath</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*Intero_posterior.npy&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">)</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="n">interoPost</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">exteroPost</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">resultPath</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*Extero_posterior.npy&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultPath</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*Extero_posterior.npy&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">)</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="n">exteroPost</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># PPG signal</span>
 <span class="n">signal_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-    <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">resultPath</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*signal.txt&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">resultPath</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*signal.txt&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
     <span class="p">)</span>
 <span class="n">signal_df</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal_df</span><span class="p">))</span><span class="o">/</span><span class="mi">1000</span> <span class="c1"># Create time vector</span>
 </pre></div>
@@ -531,10 +540,10 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7ff4b4d8edf0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7efcf4935eb0&gt;
 </pre></div>
 </div>
-<img alt="../../_images/d1b6ee2a6b9e5a6516a65b04f332aa0203571ceb7271f589a6d5b1577fef803a.png" src="../../_images/d1b6ee2a6b9e5a6516a65b04f332aa0203571ceb7271f589a6d5b1577fef803a.png" />
+<img alt="../../_images/681971437bae430d44fedafff71a9ec028bc7991ef8c17e2449a4a06225abcaa.png" src="../../_images/681971437bae430d44fedafff71a9ec028bc7991ef8c17e2449a4a06225abcaa.png" />
 </div>
 </div>
 <p>Response time distribution for the decision and the confidence rating phases for correct (red) and incorrect (green) responses.</p>
