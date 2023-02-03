@@ -8,5 +8,3 @@ include cardioception/HRD/Images/*
 include cardioception/HRD/Sounds/*
 include cardioception/HBC/Images/*
 include cardioception/HBC/Sounds/*
-include cardioception/notebooks/data/HBC/*
-include cardioception/notebooks/data/HRD/*

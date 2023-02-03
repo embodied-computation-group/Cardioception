@@ -5,19 +5,16 @@ import unittest
 from unittest import TestCase
 import pandas as pd
 from pathlib import Path
-import cardioception
 from cardioception.reports import report, preprocessing
 
 
-class TestHRD(TestCase):
+class TestReports(TestCase):
     def test_preprocessing(self):
         """Test the preprocessing function"""
         # load the main result data frame
-        results = pd.read_csv(Path(
-            Path(cardioception.__file__).parent, "notebooks", "data", "HRD", "HRD_final.txt"
-        )
-        )
-
+        results = pd.read_csv(
+            "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/examples/templates/data/HRD/HRD_final.txt"
+            )
         preprocessing(results=results)
 
 
@@ -27,30 +24,18 @@ class TestHRD(TestCase):
         #####
         # HRD
         #####
-        hrd_resultsPath = os.path.join(
-            os.path.dirname(cardioception.__file__), "notebooks", "data", "HRD"
-        )
-
-        hrd_reportPath = os.path.join(
-            os.path.dirname(cardioception.__file__), "notebooks", "data", "HRD"
-        )
-        report(resultPath=hrd_resultsPath, reportPath=hrd_reportPath)
-
-        os.remove(os.path.join(hrd_reportPath, "HRD_report.html"))
+        hrd_results_path = Path(Path.cwd(), "docs", "source", "examples", "templates", "data", "HRD")
+        hrd_report_path = Path.cwd()
+        report(result_path=hrd_results_path, report_path=hrd_report_path)
+        #os.remove(Path(hrd_report_path, "HRD_report.html"))
 
         #####
         # HBC
         #####
-        hbc_resultsPath = os.path.join(
-            os.path.dirname(cardioception.__file__), "notebooks", "data", "HBC"
-        )
-
-        hbc_reportPath = os.path.join(
-            os.path.dirname(cardioception.__file__), "notebooks", "data", "HBC"
-        )
-        report(resultPath=hbc_resultsPath, reportPath=hbc_reportPath, task="HBC")
-
-        os.remove(os.path.join(hbc_reportPath, "HBC_report.html"))
+        hbc_results_path = Path(Path.cwd(), "docs", "source", "examples", "templates", "data", "HBC")
+        hbc_report_path = Path.cwd()
+        report(result_path=hbc_results_path, report_path=hbc_report_path, task="HBC")
+        #os.remove(Path(hbc_report_path, "HBC_report.html"))
 
 
 if __name__ == "__main__":
