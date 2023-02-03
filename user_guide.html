@@ -420,17 +420,21 @@
 <li><p>The most recent version can be installed uing:</p>
 <p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cardioception</span></code></p>
 </li>
-<li><p>The current development branch can be installed using</p>
+<li><p>The current development branch can be installed using:</p>
 <p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/embodied-computation-group/Cardioception.git</span></code></p>
 </li>
 </ul>
 </section>
-<section id="downloading-the-zip-file">
-<h3>Downloading the ZIP file<a class="headerlink" href="#downloading-the-zip-file" title="Permalink to this heading">#</a></h3>
-<img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source//images/downloadZIP.png" align="left" alt="download_zip" height="200" HSPACE=30>
-<p>You can also download the most recent version by downloading the repository as a .zip file.</p>
-<p>After extracting the content of the file, the package can be installed via the command line by running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code>. Note that this command should be executed when your terminal run inside the extracted folder. You can navigate through your local folder using the command <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">[path</span> <span class="pre">to</span> <span class="pre">your</span> <span class="pre">folder]</span></code>.</p>
-<br clear="left"/>
+<section id="set-up-a-conda-environment">
+<h3>Set up a conda environment<a class="headerlink" href="#set-up-a-conda-environment" title="Permalink to this heading">#</a></h3>
+<p>The task can be installed in a new environment using the <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> file that you can find at the root of the directory. Using the Anaconda prompt, you can create a new environment with:</p>
+<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span> <span class="pre">-f</span> <span class="pre">environment.yml</span></code></p>
+<p>This will create a new <code class="docutils literal notranslate"><span class="pre">cardioception</span></code> environment that you can later activate using:</p>
+<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">cardioception</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are using the shortcut method described bellow, you will have to activate the <em>cardioception</em> environment instead of the <em>base</em> one.</p>
+</div>
 </section>
 </section>
 <section id="dependencies">
@@ -443,7 +447,7 @@
 </ul>
 <p>The other main dependencies are:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://numpy.org/">numpy</a> (&gt;=1.19.4)</p></li>
+<li><p><a class="reference external" href="https://numpy.org/">numpy</a> (&gt;=1.18,&lt;=1.23)</p></li>
 <li><p><a class="reference external" href="https://www.scipy.org/">scipy</a> (&gt;=1.3.0)</p></li>
 <li><p><a class="reference external" href="https://pandas.pydata.org/">pandas</a> (&gt;=1.0.3)</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/pyserial/">pyserial</a> (&gt;=3.4)</p></li>
@@ -454,7 +458,8 @@
 <li><p><a class="reference external" href="https://matplotlib.org/">matplotlib</a> (&gt;=3.3.3)</p></li>
 <li><p><a class="reference external" href="https://seaborn.pydata.org/">seaborn</a> (&gt;=0.11.1)</p></li>
 <li><p><a class="reference external" href="https://pingouin-stats.org/">pingouin</a> (&gt;=0.3.10)</p></li>
-<li><p><a class="reference external" href="https://github.com/EmbodiedComputationGroup/metadpy">metadpy</a> (&gt;=0.01)</p></li>
+<li><p><a class="reference external" href="https://github.com/EmbodiedComputationGroup/metadpy">metadpy</a> (&gt;=0.1.0)</p></li>
+<li><p><a class="reference external" href="https://www.pymc.io/welcome.html">pymc</a> (&gt;=5.0)</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -569,8 +574,8 @@ pause
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#downloading-the-zip-file">
-     Downloading the ZIP file
+    <a class="reference internal nav-link" href="#set-up-a-conda-environment">
+     Set up a conda environment
     </a>
    </li>
   </ul>

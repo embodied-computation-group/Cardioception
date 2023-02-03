@@ -8,19 +8,22 @@
 
   `pip install cardioception`
 
-* The current development branch can be installed using
+* The current development branch can be installed using:
 
   `pip install git+https://github.com/embodied-computation-group/Cardioception.git`
 
-### Downloading the ZIP file
+### Set up a conda environment
 
-<img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source//images/downloadZIP.png" align="left" alt="download_zip" height="200" HSPACE=30>
+The task can be installed in a new environment using the `environment.yml` file that you can find at the root of the directory. Using the Anaconda prompt, you can create a new environment with:
 
-You can also download the most recent version by downloading the repository as a .zip file.
+  `conda env create -f environment.yml`
 
-After extracting the content of the file, the package can be installed via the command line by running `pip install .`. Note that this command should be executed when your terminal run inside the extracted folder. You can navigate through your local folder using the command `cd [path to your folder]`.
+This will create a new `cardioception` environment that you can later activate using:
 
-<br clear="left"/>
+  `conda activate cardioception`
+
+```{note} If you are using the shortcut method described bellow, you will have to activate the *cardioception* environment instead of the *base* one.
+```
 
 ## Dependencies
 
@@ -29,12 +32,11 @@ Cardioception has been tested with Python 3.7. We recommend to use the last inst
 Make sure that you have the following packages installed and up to date before running cardioception:
 
 * [psychopy](https://www.psychopy.org/) can be installed with `pip install psychopy`.
-
 * [systole](https://systole-docs.github.io/) can be installed with `pip install systole`.
 
 The other main dependencies are:
 
-* [numpy](https://numpy.org/) (>=1.19.4)
+* [numpy](https://numpy.org/) (>=1.18,<=1.23)
 * [scipy](https://www.scipy.org/) (>=1.3.0)
 * [pandas](https://pandas.pydata.org/) (>=1.0.3)
 * [pyserial](https://pypi.org/project/pyserial/) (>=3.4)
@@ -45,7 +47,8 @@ In addition, some function for HTML reports will require:
 * [matplotlib](https://matplotlib.org/) (>=3.3.3)
 * [seaborn](https://seaborn.pydata.org/) (>=0.11.1)
 * [pingouin](https://pingouin-stats.org/) (>=0.3.10)
-* [metadpy](https://github.com/EmbodiedComputationGroup/metadpy) (>=0.01)
+* [metadpy](https://github.com/EmbodiedComputationGroup/metadpy) (>=0.1.0)
+* [pymc](https://www.pymc.io/welcome.html) (>=5.0)
 
 ```{note}
 The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles. 
