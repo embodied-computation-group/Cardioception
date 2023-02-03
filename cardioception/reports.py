@@ -33,7 +33,9 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
     estimating the metacognitive sensitivity meta-d' (`bayesian_dprime`,
     `bayesian_criterion`, `bayesian_meta_d`, `bayesian_m_ratio`). The dprime and
     criterion can vary between the two methods. It is recommended to use the estimates
-    consistently.
+    consistently. Before the estimation of SDT and metacognitive metrics, the function
+    ensure that at least 5 valid trials of each signal are present, otherwise returns
+    `None`.
 
     When using this function for analysing results from the Heart Rate Discrimination
     task, the following packages should be credited: Systole [1]_, metadpy [2]_ and
@@ -53,8 +55,7 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
     Notes
     -----
     This function will require [PyMC](https://github.com/pymc-devs/pymc) (>= 5.0) and
-    [metadpy](https://github.com/embodied-computation-group/metadpy) (>=0.1.0) to work
-    correctly.
+    [metadpy](https://github.com/embodied-computation-group/metadpy) (>=0.1.0).
 
     References
     ----------
@@ -101,54 +102,70 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
             )
             this_modality["Responses"] = this_modality.Decision == "More"
 
-            hit, miss, fa, cr = this_modality.scores()
-            hr, far = sdt.rates(hits=hit, misses=miss, fas=fa, crs=cr)
-            d, c = sdt.dprime(hit_rate=hr, fa_rate=far), sdt.criterion(
-                hit_rate=hr, fa_rate=far
-            )
+            # check that both signals have at least 5 valid trials each
+            if (this_modality["Stimuli"].sum() > 5) & (
+                (~this_modality["Stimuli"]).sum() > 5
+            ):
+
+                hit, miss, fa, cr = this_modality.scores()
+                hr, far = sdt.rates(hits=hit, misses=miss, fas=fa, crs=cr)
+                d, c = sdt.dprime(hit_rate=hr, fa_rate=far), sdt.criterion(
+                    hit_rate=hr, fa_rate=far
+                )
+            else:
+                d, c, = (
+                    None,
+                    None,
+                )
 
             # metacognitive sensitivity
             # -------------------------
+            (
+                bayesian_dprime,
+                bayesian_criterion,
+                bayesian_meta_d,
+                bayesian_m_ratio,
+            ) = (None, None, None, None)
+
             this_modality = this_modality[
                 ~this_modality.Confidence.isna()
-            ]  # Drop trials with NaN in confidence rating
+            ].copy()  # Drop trials with NaN in confidence rating
             this_modality.loc[:, "Accuracy"] = (
-                this_modality["Stimuli"] & this_modality["Responses"]
-            ) | (~this_modality["Stimuli"] & ~this_modality["Responses"])
+                (this_modality["Stimuli"] & this_modality["Responses"])
+                | (~this_modality["Stimuli"] & ~this_modality["Responses"])
+            ).copy()
 
-            try:
-                new_ratings, _ = discreteRatings(
-                    this_modality.Confidence.to_numpy(), verbose=False
-                )
-                this_modality.loc[:, "discrete_confidence"] = new_ratings
+            # check that both signals have at least 5 valid trials each
+            if (this_modality["Stimuli"].sum() > 5) & (
+                (~this_modality["Stimuli"]).sum() > 5
+            ):
 
-                metad = bayesian.hmetad(
-                    data=this_modality,
-                    stimuli="Stimuli",
-                    accuracy="Accuracy",
-                    confidence="discrete_confidence",
-                    nRatings=4,
-                    output="dataframe",
-                )
-                bayesian_dprime = metad["d"].values[0]
-                bayesian_criterion = metad["c"].values[0]
-                bayesian_meta_d = metad["meta_d"].values[0]
-                bayesian_m_ratio = metad["m_ratio"].values[0]
-
-            except ValueError:
-                print(
-                    (
-                        f"Cannot discretize ratings for modaliti: {modality}. "
-                        "The metacognitive efficiency will not be reported."
+                try:
+                    new_ratings, _ = discreteRatings(
+                        this_modality.Confidence.to_numpy(), verbose=False
                     )
-                )
+                    this_modality.loc[:, "discrete_confidence"] = new_ratings
 
-                (
-                    bayesian_dprime,
-                    bayesian_criterion,
-                    bayesian_meta_d,
-                    bayesian_m_ratio,
-                ) = (None, None, None, None)
+                    metad = bayesian.hmetad(
+                        data=this_modality,
+                        stimuli="Stimuli",
+                        accuracy="Accuracy",
+                        confidence="discrete_confidence",
+                        nRatings=4,
+                        output="dataframe",
+                    )
+                    bayesian_dprime = metad["d"].values[0]
+                    bayesian_criterion = metad["c"].values[0]
+                    bayesian_meta_d = metad["meta_d"].values[0]
+                    bayesian_m_ratio = metad["m_ratio"].values[0]
+
+                except ValueError:
+                    print(
+                        (
+                            f"Cannot discretize ratings for modality: {modality}. "
+                            "The metacognitive efficiency will not be reported."
+                        )
+                    )
 
             # bayesian psychophysics
             # ----------------------
