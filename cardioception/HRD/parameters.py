@@ -44,8 +44,7 @@ def getParameters(
     device : str
         Select how the participant provide responses. Can be `'mouse'` or `'keyboard'`.
     exteroception : bool
-        If `True`, an exteroceptive condition with be interleaved with the interoceptive
-        condition (either block or randomized design).
+        If `True`, the task will include an exteroceptive (half of the trials).
     fullscr : bool
         If `True`, activate full screen mode.
     language : str
@@ -57,7 +56,12 @@ def getParameters(
         Number of staircase to use per condition (exteroceptive and
         interoceptive).
     nTrials : int
-        Number of trials to run (UpDown + psi staircase).
+        The number of trials to run (UpDown and psi staircase).
+        .. note::
+           This number indicates the total number of trials that will be presented
+           during the experiment. If `nTrials=50` and `exteroception=False`, the task
+           contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,
+           the task contains 25 interoceptive trials and 25 exteroceptive trials.
     participant : str
         Subject ID. Default is 'Participant'.
     catchTrials : float
@@ -94,6 +98,8 @@ def getParameters(
         `"mouse"`.
     HRcutOff : list
         Cut off for extreme heart rate values during recording.
+    ExteroCondition : bool
+        If `True`, the task includes an exteroceptive (half of the trials).
     isi : tuple
         Range of the inter-stimulus interval (seconds). Should be in the form of (low,
         high). At each trial the value is generated using a uniform distribution
@@ -128,8 +134,12 @@ def getParameters(
         The finger number ("1", "2", "3", "4" or "5") where the participant
         decided to place the pulse oximeter (if relevant).
     nTrials : int
-        The number of trial to run in each condition, interoception and
-        exteroception (if selected).
+        The number of trials to run (UpDown and psi staircase).
+        .. note::
+           This number indicates the total number of trials that will be presented
+           during the experiment. If `nTrials=50` and `exteroception=False`, the task
+           contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,
+           the task contains 25 interoceptive trials and 25 exteroceptive trials.
     participant : str
         Subject ID. Default is 'Participant'.
     path : str
