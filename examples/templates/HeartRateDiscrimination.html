@@ -449,20 +449,6 @@ if &#39;google.colab&#39; in sys.modules:
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">7</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span> <span class="nn">pingouin</span> <span class="k">as</span> <span class="nn">pg</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-<span class="ne">----&gt; </span><span class="mi">7</span> <span class="kn">from</span> <span class="nn">metadpy</span> <span class="kn">import</span> <span class="n">sdt</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="kn">from</span> <span class="nn">metadpy.plotting</span> <span class="kn">import</span> <span class="n">plot_confidence</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span> <span class="kn">from</span> <span class="nn">metadpy.utils</span> <span class="kn">import</span> <span class="n">discreteRatings</span><span class="p">,</span> <span class="n">trials2counts</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;metadpy&#39;
-</pre></div>
-</div>
-</div>
 </div>
 <p>This notebook introduces basic analysis steps, plots and quality check for the Heart Rate Discrimination task. The current version use data from a young and healthy participant tested with the default task parameters implemented in the launcher.py file (80 trials per condition, 30 using a 1-Up/1-Down staircase and 50 using the Psi method.</p>
 <p>The target directory is defined by the <code class="docutils literal notranslate"><span class="pre">path</span></code> variable and should include the following files: <code class="docutils literal notranslate"><span class="pre">final.txt</span></code> (the behavioural data), <code class="docutils literal notranslate"><span class="pre">Intero_posterior.npy</span></code> and <code class="docutils literal notranslate"><span class="pre">Extero_posterior.npy</span></code> (the posterior estimates) and <code class="docutils literal notranslate"><span class="pre">signal.txt</span></code> (the PPG signal time series during the interoception trials).</p>
@@ -540,10 +526,10 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7efcf4935eb0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f9410e1c6d0&gt;
 </pre></div>
 </div>
-<img alt="../../_images/681971437bae430d44fedafff71a9ec028bc7991ef8c17e2449a4a06225abcaa.png" src="../../_images/681971437bae430d44fedafff71a9ec028bc7991ef8c17e2449a4a06225abcaa.png" />
+<img alt="../../_images/1b8cfaa8bb4949144dd91fe14ddd75cc811780442cf6b7353a55e863e2ce90c9.png" src="../../_images/1b8cfaa8bb4949144dd91fe14ddd75cc811780442cf6b7353a55e863e2ce90c9.png" />
 </div>
 </div>
 <p>Response time distribution for the decision and the confidence rating phases for correct (red) and incorrect (green) responses.</p>
@@ -601,7 +587,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0f7fc5e0613312de67a02a7cba94f841d82647aa8ef4fba4dd7f28121b1039d2.png" src="../../_images/0f7fc5e0613312de67a02a7cba94f841d82647aa8ef4fba4dd7f28121b1039d2.png" />
+<img alt="../../_images/97fea7f111ab8c74c3fd2347e1f9b5e1a64d3101884654bde294dac7a79acecb.png" src="../../_images/97fea7f111ab8c74c3fd2347e1f9b5e1a64d3101884654bde294dac7a79acecb.png" />
 </div>
 </div>
 <p>Distribution of confidence ratings for correct (green) and incorrect (red) trials. Overlapping distribution suggests that the subjective confidence in the decision was not predictive of decision performances.</p>
@@ -626,7 +612,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c8398a5d573310c2c1e7b0134a4f89c02e317d69824a54580afbe7ceaa566f27.png" src="../../_images/c8398a5d573310c2c1e7b0134a4f89c02e317d69824a54580afbe7ceaa566f27.png" />
+<img alt="../../_images/f2d58d42bf173062fae6c98fdf7a7b8fe5d6287bb8ed9349e1c3c59bebe4bd07.png" src="../../_images/f2d58d42bf173062fae6c98fdf7a7b8fe5d6287bb8ed9349e1c3c59bebe4bd07.png" />
 </div>
 </div>
 <section id="staircases">
@@ -701,7 +687,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/8e9828216f3319324462ca30a34bd1e06087219ee6337f992166a215e852865e.png" src="../../_images/8e9828216f3319324462ca30a34bd1e06087219ee6337f992166a215e852865e.png" />
+<img alt="../../_images/07b7df74e1d5567f65300a12b6b10e92d5cf84ea51be76f9d9e87d6a657e662a.png" src="../../_images/07b7df74e1d5567f65300a12b6b10e92d5cf84ea51be76f9d9e87d6a657e662a.png" />
 </div>
 </div>
 <p>This figure represents the evolution of threshold estimate across trials for the Interoception and Exteroception condition. Shaded areas represent the 95% confidence interval of the threshold estimate by Psi. For each condition, the first 30 trials (connected with dashed lines) were allocated to an Up/Down method (2 interleaved staircases starting a -40.5 or 40 respectively). The intensities and responses were included in the Psi staircase to maximize the amount of information included. The remaining 50 trials were monitored by the Psi staircase only. This dual estimation was implemented to estimate the reliability of the estimation of threshold using an up/down procedure, as compared to a longer psi procedure.</p>
@@ -742,7 +728,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/edd553d60438fb1deed195f8b2f2261bb7dce0f949e7586421bcaf28600dd1bb.png" src="../../_images/edd553d60438fb1deed195f8b2f2261bb7dce0f949e7586421bcaf28600dd1bb.png" />
+<img alt="../../_images/1ff37fde5acf66633f48b923fbd390e8060790f539c41a4d1f4b52ca2d01e577.png" src="../../_images/1ff37fde5acf66633f48b923fbd390e8060790f539c41a4d1f4b52ca2d01e577.png" />
 </div>
 </div>
 <p>Psychometric functions fitted using the estimated threshold and slope from the final trial on each condition. The size of the circles reflects the proportion of responses for each intensity level.</p>
@@ -833,7 +819,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/62bbcaf841d152e1c65f7ba7a0b5e77971a02d4497c0037d872b8811ac64a166.png" src="../../_images/62bbcaf841d152e1c65f7ba7a0b5e77971a02d4497c0037d872b8811ac64a166.png" />
+<img alt="../../_images/7e63b1fe66fe99c9c500ec3f1f1e10c1c6909d71675bbf9998e5ed73c9c6e500.png" src="../../_images/7e63b1fe66fe99c9c500ec3f1f1e10c1c6909d71675bbf9998e5ed73c9c6e500.png" />
 </div>
 </div>
 <div class="admonition note">
@@ -862,7 +848,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/44cc7be89ed565b3ee4d8f13540fcc6e3e2a1892269ae29d67199826f30c606a.png" src="../../_images/44cc7be89ed565b3ee4d8f13540fcc6e3e2a1892269ae29d67199826f30c606a.png" />
+<img alt="../../_images/ddbe9f790563d4e3b1d67d5d6da5b4fea0741fde2bb0ff0b69fe17f779e632c0.png" src="../../_images/ddbe9f790563d4e3b1d67d5d6da5b4fea0741fde2bb0ff0b69fe17f779e632c0.png" />
 </div>
 </div>
 </section>
