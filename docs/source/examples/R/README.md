@@ -27,7 +27,8 @@ The organization of the project is as follows:
 ![](readme_figures/Concatenated.png)
 
 
-## If the user wants to run a baysian analysis on the data this can be done and you'll receive this plot
+## If the user wants to run a bayesian analysis on the data this can be done and you'll receive this plot
 
 ![](readme_figures/Bayseiananalysis.png)
 
+#### Note that this bayesian analysis is made on a different participant than the plots above
