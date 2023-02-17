@@ -31,4 +31,4 @@ The organization of the project is as follows:
 
 ![](readme_figures/Bayseiananalysis.png)
 
-#### Note that this bayesian analysis is made on a different participant than the composite plot above. Which is why there seems to be widely different values in the two plots
+#### Note that this bayesian analysis is made on a different participant than the composite plot above. Which is why there seems to be widely different values for the threshold and slope, in the two plots.
