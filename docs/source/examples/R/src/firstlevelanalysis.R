@@ -1,40 +1,21 @@
 #first level analysis
 
-#importing libraries
-pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot, grid)
-
-raincloud_theme = theme(
-  text = element_text(size = 10),
-  axis.title.x = element_text(size = 16),
-  axis.title.y = element_text(size = 16),
-  axis.text = element_text(size = 14),
-  axis.text.x = element_text(angle = 45, vjust = 0.5),
-  legend.title=element_text(size=16),
-  legend.text=element_text(size=16),
-  legend.position = "right",
-  plot.title = element_text(lineheight=.8, face="bold", size = 16),
-  panel.border = element_blank(),
-  panel.grid.minor = element_blank(),
-  panel.grid.major = element_blank(),
-  panel.background = element_blank(),
-  strip.background = element_rect(fill="white"),
-  strip.text.x = element_text(size = 16),
-  axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
-  axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))
 
 
+
+#get the helper functions
 source(file.path(working_directory,"src","helpers.R"))
 
-
-single_sub_analysis = function(df,interoPost = NA, exteroPost = NA, theme = raincloud_theme, bayesian = FALSE, model = NA){
+#the main function to run a single person analysis
+single_sub_analysis = function(df,interoPost = NA, exteroPost = NA, bayesian = FALSE, model = NA){
   
+  #check for NA's in the critical columns of the data:
   if(sum(is.na(df %>% select(ResponseMade, Decision,Confidence, ConfidenceRT, Confidence, Condition, listenBPM, responseBPM))) != 0){
-    
     n_NA = sum(is.na(df %>% select(ResponseMade, Decision,Confidence, ConfidenceRT, Confidence, Condition, listenBPM, responseBPM)))
-    print(paste("NA's will be dropped from the analysis ",n_NA," detected"))
+    print(paste("Number of NA's = ",n_NA," detected"))
   }
-  
-  df = df %>% drop_na(ResponseMade, Decision,Confidence, ConfidenceRT, Confidence, Condition, listenBPM, responseBPM)
+  #remove the NA's
+  df1 = df %>% drop_na(ResponseMade, Decision,Confidence, ConfidenceRT, Confidence, Condition, listenBPM, responseBPM)
   
   
   
@@ -45,74 +26,83 @@ single_sub_analysis = function(df,interoPost = NA, exteroPost = NA, theme = rain
     print("More than 2 modalities are not supported (yet)")
   }
   
+  #give the resulting dataframe (main subject results a random id)
   id = runif(1, min=1, max=1000)
-  
+  #make the data frame:
   resultsdata = data.frame(ids = rep(id, n_mod))
-
+  #create a folder to put the results:
   dir.create("results_sub")
+  
+  
+  #getting the plots from the help function
   
   reactiontimeplot = reaction_time_plot(df,3,0.4,n_mod)
   stat = reactiontimeplot[[2]]
+  
+  #append the main statistics from the reaction time plot to the resulting dataframe
   resultsdata = cbind(resultsdata, stat)
   
-  reactiontimeplot = reactiontimeplot[[1]]
-  reactiontimeplot = reactiontimeplot+guides(fill = "none")
-  
-  
+  #get the reaction time plot where we exclude the legends.
+  reactiontimeplot = reactiontimeplot[[1]]+guides(fill = "none")
+
+  #get the citerion and d' and the table:
   stat = sum_stat(df)
   
+  #append results
   resultsdata = cbind(resultsdata,stat[[2]])
   
-  confidenceplot = plot_confidence(df,n_mod)
+  #use the dataframe with removed NA's
+  #get confidence histogram plot
+  confidenceplot = plot_confidence(df1,n_mod)
   
+  #get mean accuracy
   results = get_mean_acc(df)
   
+  #append results
   resultsdata = cbind(resultsdata,results)
   
   
   
-  
+  #get the intensityplot and remove legends and title
   intensityplot = intensity_plot(df)
   intensityplot = intensityplot+guides(fill = "none")+ggtitle(" ")
   
-  
-  if(is.na(exteroPost[1]) == TRUE || is.na(interoPost) == TRUE){
+  #get interval plot:
+  if(is.na(exteroPost[1]) == TRUE && is.na(interoPost[1]) == TRUE){
     intervalplot = ggplot() + theme_void()
   }
-  if(is.na(exteroPost) == TRUE && is.na(interoPost) == FALSE){
+  if(is.na(exteroPost[1]) == TRUE && is.na(interoPost[1]) == FALSE){
     intervalplot = plot_interval(df,interoPost)
   }
-  if(is.na(exteroPost) == FALSE && is.na(interoPost) == TRUE){
+  if(is.na(exteroPost[1]) == FALSE && is.na(interoPost[1]) == TRUE){
     intervalplot = plot_interval(df,exteroPost)
   }
-  else{
+  if(is.na(exteroPost[1]) == FALSE && is.na(interoPost[1]) == FALSE){
     intervalplot = plot_interval(df,exteroPost,interoPost)
   }
 
-  
+  #get analysis plot (alpha vs probability of answering more)
   analysisplot = analysis_plot(df)
   stats = analysisplot[[2]]
+  
+  #append results of this plot
   resultsdata = cbind(resultsdata,stats)
   
-  analysisplot = analysisplot[[1]]
-  analysisplot = analysisplot+guides(fill = "none",linetype = "none",color = "none")
-  
-  
+  analysisplot = analysisplot[[1]]+guides(fill = "none",linetype = "none",color = "none")
+
+  #make the composit-plot with patchwork
   plot = (reactiontimeplot+confidenceplot)/(analysisplot+intensityplot+intervalplot)+plot_layout(nrow = 2)
   
+  #save the plot:
   ggsave("results_sub/resultplot_basic.png",plot, width = 4000, height = 2200, units = "px")
   
   
-  
+  #if the bayesian analysis is selected:
   if(bayesian == TRUE){
-    library(posterior)
-    library(rstan)
-    library(cmdstanr)
-    library(bayesplot)
-    
-    
+
     if(n_mod == 2){
       
+      #run bayesian analysis on Extero and Intero and append the statistics to the dataframe (resultsdata)
       baysextero = baysiananalysis(df,"Extero",model)
       stats = baysextero[[4]]
   
@@ -139,6 +129,7 @@ single_sub_analysis = function(df,interoPost = NA, exteroPost = NA, theme = rain
       patchwork::area(1, 4, 1, 4),
       patchwork::area(2,3,3,4)))
       
+      #save the figures
       ggsave("results_sub/resultplot_bayse_intero.png",baysplot_in, width = 4000, height = 2200, units = "px")
       ggsave("results_sub/resultplot_bayse_extero.png",baysplot_ex, width = 4000, height = 2200, units = "px")
       ggsave("results_sub/resultplot_bayse.png",baysplot, width = 4000, height = 2200, units = "px")
@@ -149,7 +140,7 @@ single_sub_analysis = function(df,interoPost = NA, exteroPost = NA, theme = rain
     if(n_mod == 1){
       bayse = baysiananalysis(df,as.character(unique(df$Modality)),model)
       stats = bayse[[4]]
-      
+      resultsdata = cbind(resultsdata,stats)
       
       baysplot=bayse[[1]]+bayse[[2]]+bayse[[3]]+plot_layout(design = c(
         patchwork::area(1, 1,1,1),
@@ -158,17 +149,21 @@ single_sub_analysis = function(df,interoPost = NA, exteroPost = NA, theme = rain
       ggsave("results_sub/resultplot_bayse.png",baysplot, width = 4000, height = 2200, units = "px")  
     }
     
-    
+    #delete all duplicate columns in the resulting dataframe
     resultsdata = resultsdata[!duplicated(as.list(resultsdata))]
+    #give it sensisble rownames:
     rownames(resultsdata) <- 1:nrow(resultsdata)
+    #save it
     write.csv(resultsdata, "results_sub/data.csv")
     
     return(list(rt_plot = reactiontimeplot,summary_stat = stat,conf_plot = confidenceplot,staircase_plot = intervalplot,histogram_plot = intensityplot,analysis_plot = analysisplot,concatenated_plot = plot, stats = resultsdata,bayesian_plot = baysplot))
     
     }
-  
+  #delete all duplicate columns in the resulting dataframe
   resultsdata = resultsdata[!duplicated(as.list(resultsdata))]
+  #give it sensisble rownames:
   rownames(resultsdata) <- 1:nrow(resultsdata)
+  #save it
   write.csv(resultsdata, "results_sub/data.csv")
   
   return(list(rt_plot = reactiontimeplot,summary_stat = stat, conf_plot = confidenceplot, staircase_plot = intervalplot,histogram_plot = intensityplot,analysis_plot = analysisplot, concatenated_plot = plot, stats = resultsdata))

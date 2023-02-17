@@ -1,8 +1,14 @@
 #helper functions:
 
+
+#function that makes the reaction time plot: 
+#Arguments:
+#df = dataframe
+#spacing_cond the spacing between the conditions in the plot
+#spacing_corr the spacing between the correct and incorrect trials
+#n_mod the number of modalities in the dataframe.
 reaction_time_plot = function(df, spacing_cond, spacing_corr, n_mod){
   #first plot of Reaction time on Modality, accuracy and whether it was the Decision or the confidence rating:
-  #first part is modifying the data frame: Removing Nan trials, making the data frame longer and then renaming variables.
   #spacing between the Intero and Extero:
   s = spacing_cond
   #space between the correct incorrect:
@@ -10,7 +16,7 @@ reaction_time_plot = function(df, spacing_cond, spacing_corr, n_mod){
   #colors
   col = c('#5f9e6e','#b55d60')
   
-  
+  #first part is modifying the data frame: Removing Nan trials, making the data frame longer and then renaming variables.
   df1 = df %>% 
     pivot_longer(cols = c(DecisionRT, ConfidenceRT)) %>% 
     rename(Responsetime = value) %>% 
@@ -36,7 +42,26 @@ reaction_time_plot = function(df, spacing_cond, spacing_corr, n_mod){
     scale_color_brewer(palette = "Spectral") +
     scale_fill_brewer(palette = "Spectral") +
     ylab(label = "Response Time (s)")+guides(color = "none", alpha = "none")+
-    xlab(label = "")+guides(fill=guide_legend(title=NULL))+scale_fill_manual(values = col)+scale_color_manual(values = col)+scale_x_continuous(breaks = c(s,s*2), labels = c("Extero","Intero"))+raincloud_theme
+    xlab(label = "")+guides(fill=guide_legend(title=NULL))+scale_fill_manual(values = col)+scale_color_manual(values = col)+scale_x_continuous(breaks = c(s,s*2), labels = c("Extero","Intero"))+
+    theme(
+      text = element_text(size = 10),
+      axis.title.x = element_text(size = 16),
+      axis.title.y = element_text(size = 16),
+      axis.text = element_text(size = 14),
+      axis.text.x = element_text(angle = 45, vjust = 0.5),
+      legend.title=element_text(size=16),
+      legend.text=element_text(size=16),
+      legend.position = "right",
+      plot.title = element_text(lineheight=.8, face="bold", size = 16),
+      panel.border = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.background = element_blank(),
+      strip.background = element_rect(fill="white"),
+      strip.text.x = element_text(size = 16),
+      axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
+      axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))
+  
   }
   else{
     plot = df1 %>%
@@ -53,7 +78,26 @@ reaction_time_plot = function(df, spacing_cond, spacing_corr, n_mod){
     scale_color_brewer(palette = "Spectral") +
     scale_fill_brewer(palette = "Spectral") +
     ylab(label = "Response Time (s)")+guides(color = "none", alpha = "none")+
-    xlab(label = "")+guides(fill=guide_legend(title=NULL))+scale_fill_manual(values = col)+scale_color_manual(values = col)+scale_x_continuous(breaks = c(s), labels = c(as.character(unique(df$Modality))))+raincloud_theme
+    xlab(label = "")+guides(fill=guide_legend(title=NULL))+scale_fill_manual(values = col)+scale_color_manual(values = col)+scale_x_continuous(breaks = c(s), labels = c(as.character(unique(df$Modality))))+
+      theme(
+        text = element_text(size = 10),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        axis.text = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, vjust = 0.5),
+        legend.title=element_text(size=16),
+        legend.text=element_text(size=16),
+        legend.position = "right",
+        plot.title = element_text(lineheight=.8, face="bold", size = 16),
+        panel.border = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.background = element_blank(),
+        strip.background = element_rect(fill="white"),
+        strip.text.x = element_text(size = 16),
+        axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
+        axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))
+    
   
     
   }
@@ -65,6 +109,8 @@ reaction_time_plot = function(df, spacing_cond, spacing_corr, n_mod){
 }
 
 
+
+#Function to get the summary statistics for a dataframe df:
 sum_stat = function(df){
   #getting d' and the criterion for both conditions
   df_stat = data.frame(NULL)
@@ -93,10 +139,12 @@ sum_stat = function(df){
     df_stat = rbind(df_stat,result)
     
   }
+  #renameing and making it to a format that makes sense in gttable
   df_stat = df_stat %>% rename(Criterion = c)
   rownames(df_stat) = c(unique(df$Modality))
   df_stat$condition = c(unique(df$Modality))
   
+  #retun the table and the critical data (d' and citerion)
   gttable = df_stat %>% gt(rowname_col = "condition") %>%  tab_header(
     title = md("**dprime and criterion for conditions**")) %>% tab_stubhead(label = md("**Condition**"))
   returns = list(gttable, df_stat)
@@ -105,7 +153,7 @@ sum_stat = function(df){
 }
 
 
-
+#function to make bins (equvilent of python (metadpy-version)
 discretebins = function(df, nbins){
   temp = list()
   out = list()
@@ -163,7 +211,7 @@ discretebins = function(df, nbins){
 }
 
 
-
+#copy function of metadpy trials2count
 trials2counts <- function(stimID, response, rating,nRatings, padAmount = 0,padCells=0){
   
   nR_S1 <- list()
@@ -220,7 +268,7 @@ trials2counts <- function(stimID, response, rating,nRatings, padAmount = 0,padCe
   return(newlist)
 }
 
-
+#helper function to get the Correct and incorrect proportion (in the bins)
 plot_conf = function(srs){
   
   if (length(srs[[1]]) !=length(srs[[2]])){
@@ -236,6 +284,7 @@ plot_conf = function(srs){
 }
 
 
+#helper function to reorganize a dataframe such that plot_confidence can make a histogram of the confidence ratings.
 get_df = function(df, modality){
   
   df = df %>% filter(Modality == modality) %>% mutate(ResponseCorrect = factor(ResponseCorrect, labels = c("Correct","Incorrect")), stimuli = as.numeric(Alpha > 0), Modality = as.factor(Modality), reponse = as.factor(as.numeric((Decision == "More")))) %>% ungroup()
@@ -253,6 +302,8 @@ get_df = function(df, modality){
   return(f)
 }
 
+
+#plotting the histogram of the confidence ratings.
 plot_confidence = function(df, n_mod){
   if(n_mod == 2){
     f = rbind(get_df(df,"Extero"),get_df(df,"Intero"))
@@ -275,6 +326,9 @@ plot_confidence = function(df, n_mod){
 
 
 
+
+
+#histogram plot of the intensities in the modalities.
 intensity_plot = function(df){
   
   #plotting Intensity as a fucntion of Modality
@@ -296,7 +350,7 @@ intensity_plot = function(df){
 }
 
 
-
+#function to get confidence intervals used in plot_intervals.
 ci = function(x){
   list = list(which(cumsum(x)/sum(x) > 0.025)[1],
               last(which(cumsum(x)/sum(x) < 0.975)))
@@ -424,10 +478,11 @@ plot_interval = function(df,exteroPost = NA,interoPost = NA){
 }
 
 
+#plot of the intensitiy vs the probability of answering "more".
 analysis_plot = function(df){
   
   #getting the estimatedthreshhold and estimated slope for each modality in the PSI triaLS
-  df = df %>% filter(TrialType == "psi", Decision != "NA") %>% group_by(Modality) %>% summarize(means = last(EstimatedThreshold),sds = last(EstimatedSlope)) %>% inner_join(df, by = "Modality") %>% ungroup()
+  df = df %>% filter(Decision != "NA") %>% group_by(Modality) %>% summarize(means = last(EstimatedThreshold),sds = last(EstimatedSlope)) %>% inner_join(df, by = "Modality") %>% ungroup()
   #making the curves for each modality based on the cumulative normal distribution
   dfq = df %>% filter(Modality == "Extero") %>% mutate(x = seq(-40,40,length.out = nrow(.)), y = pnorm(x,means,sds))%>% ungroup()
   dfqq = df %>% filter(Modality == "Intero") %>% mutate(x = seq(-40,40,length.out = nrow(.)), y = pnorm(x,means,sds))%>% ungroup()
@@ -435,19 +490,19 @@ analysis_plot = function(df){
   
   
   #making two data frames one that counts the number of responses in each intensity and morality and one that gives all possible combination of these
-  d1 = df %>% filter(TrialType == "psi", Decision != "NA", Decision == "More") %>% group_by(Alpha,Modality,Decision) %>% summarize(resp = n())
-  d2 = df %>% filter(TrialType == "psi", Decision != "NA", Decision == "More") %>% tidyr::expand(Modality,Alpha)
+  d1 = df %>% filter(Decision != "NA", Decision == "More") %>% group_by(Alpha,Modality,Decision) %>% summarize(resp = n())
+  d2 = df %>% filter(Decision != "NA", Decision == "More") %>% tidyr::expand(Modality,Alpha)
   #merging these two where we replace values that are not in the first dataframe (NA's) with 0's as group_by %>% summarize omits these vales from the dataframe
   f1 = full_join(d1,d2) %>% 
     replace_na(list(resp = 0))
   # same is then done for all responses (not only where the response was "more")
-  d3 = df %>% filter(TrialType == "psi", Decision != "NA") %>% group_by(Alpha,Modality) %>% summarize(total = n())
-  d4 = df %>% filter(TrialType == "psi", Decision != "NA") %>% tidyr::expand(Modality,Alpha)
+  d3 = df %>% filter(Decision != "NA") %>% group_by(Alpha,Modality) %>% summarize(total = n())
+  d4 = df %>% filter(Decision != "NA") %>% tidyr::expand(Modality,Alpha)
   f2 = full_join(d3,d4) %>% 
     replace_na(list(total = 0))
   #combing these two then gives a dataframe with both the total amount of answers and the amount of answers that was "more" the procent is then calculated.
   f = full_join(f1,f2) %>% 
-    replace_na(list(resp = 0)) %>% mutate(procent = resp/total)
+    replace_na(list(resp = 0)) %>% mutate(procent = resp/total, Decision = "More")
   
   
   #going from sd of normal distribution to slop on cumulative normal in the mean is just differentiating the cumulative normal:
@@ -465,15 +520,15 @@ analysis_plot = function(df){
     #lines that go from 0.5 on each graph to the Intensity
     geom_segment(aes(x = means, xend = means, y = 0, yend = 0.5,col = Modality), show.legend = FALSE)+
     #points at 0.5
-    geom_point(aes(x = means, y = 0.5,size = 10,col = Modality), show.legend = FALSE)+
+    geom_point(aes(x = means, y = 0.5,col = Modality),size = max(f$total,4), show.legend = FALSE)+
     #the functions
     geom_line(aes(x = x, y = y,col = Modality), linetype = "dashed")+
-    geom_text(data = data1, aes(x = -20, y = 0.75, label = paste("Threshold for ",unique(Modality), "is",round(unique(means),2)), col = Modality), show.legend = F)+
-    geom_text(data = data1, aes(x = -20, y = 0.70, label = paste("Slope for ",unique(Modality), "is",round((unique(sds)),2)), col = Modality), show.legend = F)+
-    geom_text(data = data2, aes(x = -20, y = 0.65, label = paste("Threshold for ",unique(Modality), "is",round(unique(means),2)), col = Modality), show.legend = F)+
-    geom_text(data = data2, aes(x = -20, y = 0.60, label = paste("Slope for ",unique(Modality), "is",round((unique(sds)),2)), col = Modality), show.legend = F)+
+    geom_text(data = data1, aes(x = -20, y = 0.75, label = paste("Threshold for ",unique(Modality), "is",round(unique(means),2)), col = Modality), show.legend = F,stat = "unique")+
+    geom_text(data = data1, aes(x = -20, y = 0.70, label = paste("Slope for ",unique(Modality), "is",round((unique(sds)),2)), col = Modality), show.legend = F,stat = "unique")+
+    geom_text(data = data2, aes(x = -20, y = 0.65, label = paste("Threshold for ",unique(Modality), "is",round(unique(means),2)), col = Modality), show.legend = F,stat = "unique")+
+    geom_text(data = data2, aes(x = -20, y = 0.60, label = paste("Slope for ",unique(Modality), "is",round((unique(sds)),2)), col = Modality), show.legend = F,stat = "unique")+
     #the points
-    geom_point(data = f, aes(x=Alpha, y = procent,size = total^3, alpha = 0.5,col = Modality), show.legend = FALSE)+
+    geom_point(data = f, aes(x=Alpha, y = procent, alpha = 0.5,col = Modality),size = f$total*5, show.legend = FALSE)+
     #cosmetics
     coord_cartesian(xlim = c(-40,40))+
     scale_size(range = c(0, 25))+
@@ -494,6 +549,9 @@ analysis_plot = function(df){
 }
 
 
+
+
+#helper function for the bayesian analysis.
 getdata = function(df){
   
   d1 = df %>% filter(Decision == "More") %>% group_by(Alpha, .drop = FALSE) %>% summarize(resp = n())
@@ -522,6 +580,9 @@ getdata = function(df){
 }
 
 
+
+#baysian analysis of the dataframe df with a given model
+
 bayseanalysis = function(df,model){
   
   
@@ -542,6 +603,8 @@ bayseanalysis = function(df,model){
 }
 
 
+#diagnostic function for the baysian model fit.
+
 diagnostics = function(fit, Modal){
   if (Modal == "Extero"){
     color_scheme_set("blue")
@@ -557,7 +620,10 @@ diagnostics = function(fit, Modal){
   return(list(chainplot, traceplot))
   }
   
-  
+
+
+
+#function to get plot draws of the joint posterior distribution of the fit (baysian model fit)
 plotdraws = function(data,fit, Modal){
   
   #make plot as with brms:
@@ -608,6 +674,7 @@ plotdraws = function(data,fit, Modal){
 }
 
 
+#combining the bayesian analysis scripts to run a bayesian analysis with diagnostic checks and joint posterior draws.
 baysiananalysis = function(df,Modal, model){
   
   this_df = df %>% filter(Modality == Modal)%>% dplyr::select(Alpha, Decision)
@@ -628,6 +695,8 @@ baysiananalysis = function(df,Modal, model){
 
 
 
+
+#function to get mean accuracy
 get_mean_acc = function(df){
   results = df %>% group_by(Modality) %>% summarize(mean_confidence = mean(Confidence, na.rm =T)) %>% rename(condition = Modality)
   correct = df %>% group_by(Modality,ResponseCorrect) %>% summarize(n = as.numeric(n())) %>% filter(ResponseCorrect == 1)%>% rename(condition = Modality)
@@ -642,3 +711,97 @@ get_mean_acc = function(df){
   
   return(df1)
 }
+
+
+
+
+#helper function to fit hierachical bayesian analysis with mixed effects (work in progress)
+
+getdata2 = function(df){
+  
+  d1 = df %>% filter(Decision == "More") %>% group_by(Alpha,Modality,Subject, .drop = FALSE) %>% summarize(resp = n())
+  d2 = df %>% filter(Decision == "More") %>% tidyr::expand(Alpha,Modality,Subject)
+  
+  f1 = full_join(d1,d2) %>% 
+    replace_na(list(resp = 0))
+  
+  #responses in total:
+  
+  d3 = df %>% group_by(Alpha,Modality,Subject) %>% summarize(total = n())
+  d4 = df %>% tidyr::expand(Alpha,Modality,Subject)
+  
+  f2 = full_join(d3,d4) %>% 
+    replace_na(list(total = 0))
+  
+  #merging the two
+  f = full_join(f1,f2) %>% 
+    replace_na(list(resp = 0))
+  
+  f$procent = f$resp/f$total
+  
+  
+  return(f)
+  
+}
+
+
+
+
+#diagnositics for hieraical model 
+
+diagnostics_group = function(model){
+  color_scheme_set("green")
+  rhat_vals <- rhat(thest)
+  mcmc_rhat_data(rhat_vals)
+  rhat = mcmc_rhat(rhat_vals) + theme_bw()
+  neff_vals <- neff_ratio(thest)
+  mcmc_neff_data(neff_vals)
+  neff = mcmc_neff(neff_vals)  + theme_bw()
+  
+  return(list(rhat = rhat, neff = neff))
+}
+
+
+
+
+
+#plotting of subject level results for hierachical model
+
+plot_randomeffects = function(model, data,nsub = 12, ncol = 4){
+  #make plots such that there are 12 individuals in each plot:
+  nsubs = length(unique(data$Subject))
+  nplots = ceiling(nsubs/12)
+  
+  f = getdata2(data)
+  
+  #getting the expectations of the posterior so we can plot it.
+  qq = data %>% add_epred_draws(model)
+  
+  #getting the mean of the expectation so we have a reference point in the plot
+  summarized = qq %>% group_by(Alpha,Subject,Modality) %>% summarize(mean = mean(.epred), sd = sd(.epred))
+  
+  plots = list()
+  #plotting
+  for (i in 1:nplots){
+    plot = data %>% filter(Subject %in% unique(data$Subject)[(nsub*i-11):(nsub*i)]) %>% 
+      add_epred_draws(model,ndraws = 100) %>%
+      ggplot(aes(x = Alpha, y = .epred, col = Modality))+
+      geom_line(aes(group = interaction(Modality, .draw), col= Modality), alpha = 1/20)+
+      geom_point(data = f%>% filter(Subject %in% unique(data$Subject)[(nsub*i-11):(nsub*i)]), aes(x=Alpha, y = procent,size = total^3, alpha = 0.5,col = Modality), show.legend = FALSE)+
+      coord_cartesian(xlim = c(-45,45))+
+      scale_size(range = c(0, 15))+
+      theme(legend.title = element_blank())+
+      ylab(label = "P(Response = More | Intensity)")+
+      xlab(expression(paste("Intensity  (",Delta,"BPM)")))+
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            panel.background = element_blank(), axis.line = element_line(colour = "black"),legend.position = "none")+
+      scale_x_continuous(breaks = seq(-40,40,by = 10))+
+      geom_line(data = summarized%>% filter(Subject %in% unique(data$Subject)[(nsub*i-11):(nsub*i)]), aes(x = Alpha, y = mean, col = Modality), linewidth = 1.2)+
+      scale_color_manual(values = c("#4c72b0", "#c44e52"))+
+      facet_wrap(~Subject, ncol = ncol)
+    
+    plots[[i]] = plot
+  }
+  return(plots)
+}
+

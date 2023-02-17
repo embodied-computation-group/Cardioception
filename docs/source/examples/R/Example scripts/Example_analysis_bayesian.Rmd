@@ -9,7 +9,7 @@ output: html_document
 ## **Here we show how to perform a bayesian analysis on the data after it has been collected which is very similar to the "simple" analysis**
 
 ```{r message=FALSE}
-pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot, grid,reticulate,cmdstanr)
+pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot, grid,reticulate,cmdstanr,posterior,rstan,bayesplot)
 np <- import("numpy")
 ```
 
@@ -26,6 +26,7 @@ df = read_csv(file.path(working_directory,"data","subject1","HRD_final.txt"))
 interoPost = np$load(file.path(working_directory,"data","subject1","Intero_posterior.npy"))
 
 exteroPost = np$load(file.path(working_directory,"data","subject1","Extero_posterior.npy"))
+
 ```
 
 
@@ -41,9 +42,11 @@ source(file.path(working_directory,"src", "firstlevelanalysis.R"))
 #### df is the raw data frame, interoPost and exteroPost are the posterior distrubtions for each condition (if applicable). bayesian is a boolean flag, if set to TRUE, it'll run posthoc Bayesian threshold analysis, FALSE means to skip it. Note that to run this Bayesian analysis you'll need to install cmdstan and rstan. And to specify the stan model to run on the data see the exmaple_analysis_bayesian to do this note that the function drops NAs from the critical columns by default!
 
 ```{r message=FALSE, results='hide',warning=FALSE}
+df = read_csv('https://github.com/embodied-computation-group/CardioceptionPaper/raw/main/data/Del2_merged.txt') %>% filter(Subject == "sub_0019" & Modality == "Extero")
+
 model = cmdstan_model(file.path(working_directory,"src","first_model.stan"))
 
-results = single_sub_analysis(df, interoPost = interoPost, exteroPost = exteroPost, bayesian = T,model = model)
+results = single_sub_analysis(df, interoPost = NA, exteroPost = NA, bayesian = T,model = model)
 ```
 
 #### The results list now also contains a new index called bayesian_plot. This is a list of either 1 or 3 plots. There'll be 1 if you only have one Modality and 3 if you have two (Extero and Intero). Here there is 3 plots Lets look at them individually:
