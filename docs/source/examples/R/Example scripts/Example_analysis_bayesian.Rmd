@@ -64,6 +64,7 @@ results$bayesian_plot[[2]]
 #### And the combined plot can be found in the last index
 ```{r, fig.height=8,fig.width=14}
 results$bayesian_plot[[3]]
+
 ```
 
 
