@@ -9,25 +9,21 @@ output:
 
 ### **importing libraries**
 ```{r message=FALSE}
-pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot, grid,reticulate)
+pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot, grid,reticulate, here)
 np <- import("numpy")
 ```
 
 
 ### **Reading in the data, here the working diectory has be where the exmaple scripts are located**
 ```{r message=FALSE}
-#getting the working directory which has to be the folder that contains the folders "data" and "src".
-
-working_directory = "C:/Users/au645332/Documents/R-implementation-of-HRD"
-
 #This line reads in a subject result file:
-df = read_csv(file.path(working_directory,"data","subject1","HRD_final.txt"))
+df = read_csv("https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/examples/templates/data/HRD/HRD_final.txt")
 
 #These next lines read in the psi posterior distributions for each modality. 
 #These will be saved with names depending on your conditions, so modify as needed. 
-interoPost = np$load(file.path(working_directory,"data","subject1","Intero_posterior.npy"))
+interoPost = np$load(here("docs","source","examples","templates","data","HRD","Intero_posterior.npy"))
 
-exteroPost = np$load(file.path(working_directory,"data","subject1","Extero_posterior.npy"))
+exteroPost = np$load(here("docs","source","examples","templates","data","HRD","Extero_posterior.npy"))
 ```
 
 
@@ -36,7 +32,8 @@ exteroPost = np$load(file.path(working_directory,"data","subject1","Extero_poste
 
 ```{r message=FALSE, results='hide',warning=FALSE}
 #loading the functions to do the analysis:
-source(file.path(working_directory,"src", "firstlevelanalysis.R"))
+
+source(here("docs","source","examples","R","src","firstlevelanalysis.R"))
 ```
 
 #### This next function takes the raw data .txt file plus the posterior distributions for each staircase condition (e.g., extero vs intero).
@@ -73,7 +70,7 @@ results$concatenated_plot
 ### Making an analysis on each subject in a nested directory with a folder for each subject is easy you just give this function the path to where the subject folders are:
 
 ```{r message=FALSE, fig.show='hide', results='hide', warning=FALSE}
-path_to_data = file.path(working_directory,"data")
+path_to_data = here("docs","source","examples","R","data")
 
 data = study_analysis(path = path_to_data, bayesian = FALSE, model = NA)
 ```

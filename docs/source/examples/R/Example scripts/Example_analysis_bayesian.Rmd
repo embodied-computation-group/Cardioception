@@ -23,18 +23,12 @@ working_directory = "/home/jespere/R-implementation-of-HRD"
 psychophysics_df = read_csv('https://github.com/embodied-computation-group/CardioceptionPaper/raw/main/data/Del2_merged.txt')
 df = psychophysics_df %>% filter(Subject == "sub_0019")
 
-#These next lines read in the psi posterior distributions for each modality. 
-#These will be saved with names depending on your conditions, so modify as needed. 
-interoPost = np$load(file.path(working_directory,"data","subject1","Intero_posterior.npy"))
-
-exteroPost = np$load(file.path(working_directory,"data","subject1","Extero_posterior.npy"))
-
 ```
 
 
 ```{r message=FALSE, results='hide',warning=FALSE}
 #loading the functions to do the analysis:
-source(file.path(working_directory,"src", "firstlevelanalysis.R"))
+source(here("docs","source","examples","R","src","firstlevelanalysis.R"))
 ```
 
 #### Here is the only difference where we set byesian equal to T (TRUE) and specify the model. Here the model is a predefined stan model that is inside the src folder called first_model.stan
@@ -44,9 +38,9 @@ source(file.path(working_directory,"src", "firstlevelanalysis.R"))
 #### df is the raw data frame, interoPost and exteroPost are the posterior distrubtions for each condition (if applicable). bayesian is a boolean flag, if set to TRUE, it'll run posthoc Bayesian threshold analysis, FALSE means to skip it. Note that to run this Bayesian analysis you'll need to install cmdstan and rstan. And to specify the stan model to run on the data see the exmaple_analysis_bayesian to do this note that the function drops NAs from the critical columns by default!
 
 ```{r message=FALSE, results='hide',warning=FALSE}
-model = cmdstan_model(file.path(working_directory,"src","first_model.stan"))
+model = cmdstan_model(here("docs","source","examples","R","src","first_model.stan"))
 
-results = single_sub_analysis(df, interoPost = interoPost, exteroPost = exteroPost, bayesian = T,model = model)
+results = single_sub_analysis(df, interoPost = NA, exteroPost = NA, bayesian = T,model = model)
 ```
 
 #### The results list now also contains a new index called bayesian_plot. This is a list of either 1 or 3 plots. There'll be 1 if you only have one Modality and 3 if you have two (Extero and Intero). Here there is 3 plots Lets look at them individually:
@@ -71,7 +65,7 @@ results$bayesian_plot[[3]]
 ### And ofcause this can be run through several subjects like the "simple" analysis:
 #### here we use the data from the "simple" / non bayesian approach: 
 ```{r message=FALSE, fig.show='hide', results='hide', warning=FALSE}
-path_to_data = file.path(working_directory,"data")
+path_to_data = here("docs","source","examples","R","data")
 
 data = study_analysis(path = path_to_data, bayesian = T,model)
 ```

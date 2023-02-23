@@ -4,7 +4,7 @@
 
 
 #get the helper functions
-source(file.path(working_directory,"src","helpers.R"))
+source(here("docs","source","examples","R","src","helpers.R"))
 
 #the main function to run a single person analysis
 single_sub_analysis = function(df,interoPost = NA, exteroPost = NA, bayesian = FALSE, model = NA){
@@ -32,7 +32,6 @@ single_sub_analysis = function(df,interoPost = NA, exteroPost = NA, bayesian = F
   resultsdata = data.frame(ids = rep(id, n_mod))
   #create a folder to put the results:
   dir.create("results_sub")
-  
   
   #getting the plots from the help function
   
@@ -170,15 +169,6 @@ single_sub_analysis = function(df,interoPost = NA, exteroPost = NA, bayesian = F
 }
   
   
-
-
-
-
-
-
-
-
-
 
 
   
