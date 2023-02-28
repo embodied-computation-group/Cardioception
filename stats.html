@@ -470,36 +470,47 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="statistical-analysis">
 <h1>Statistical analysis<a class="headerlink" href="#statistical-analysis" title="Permalink to this heading">#</a></h1>
-<section id="using-the-preprocessing-function">
-<h2>Using the preprocessing function<a class="headerlink" href="#using-the-preprocessing-function" title="Permalink to this heading">#</a></h2>
+<section id="using-r">
+<h2>Using R<a class="headerlink" href="#using-r" title="Permalink to this heading">#</a></h2>
+<p>If you want to use R to analyse your data, you can find R/Stan scripts with example notebooks in <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/tree/master/docs/source/examples/R">this folder</a>.</p>
+</section>
+<section id="using-python">
+<h2>Using Python<a class="headerlink" href="#using-python" title="Permalink to this heading">#</a></h2>
+<p>If you want to use Python to analyse your data, the package include two functions (<a class="reference internal" href="generated/reports/cardioception.reports.preprocessing.html#cardioception.reports.preprocessing" title="cardioception.reports.preprocessing"><span class="xref myst py py-func">preprocessing</span></a> and <a class="reference internal" href="generated/reports/cardioception.reports.report.html#cardioception.reports.report" title="cardioception.reports.report"><span class="xref myst py py-func">report</span></a>) that can help automate the analyse of large datasets obtained with the Heart Rate Discrimination task. We also provide notebooks detailling specific parts of the data analysis and Bayesian modelling of psychophysics (see below).</p>
+<section id="behavioural-summary-using-the-preprocessing-function">
+<h3>Behavioural summary using the preprocessing function<a class="headerlink" href="#behavioural-summary-using-the-preprocessing-function" title="Permalink to this heading">#</a></h3>
 <p>The reports module includes a <a class="reference internal" href="generated/reports/cardioception.reports.preprocessing.html#cardioception.reports.preprocessing" title="cardioception.reports.preprocessing"><span class="xref myst py py-func">preprocessing function</span></a> that automates the analysis and extraction of behavioural variables from the main outputs saved by the task. The function only requires the <code class="docutils literal notranslate"><span class="pre">final.txt</span></code> data frame (either the Pandas data frame or simply a path to the file) that is saved in each subject folder and will return a summary data frame containing the response time, the psychometric parameter estimated by the Psi algorithm and Bayesian inference as well as SDT measures and metacognitive efficiency (meta-d prime). This approach is the most straightforward to extract relevant parameters using default settings that will fit most users’ needs.</p>
-<p>This script exemplifies how this function can be used to extract summary statistics from a result folder. It is assumed that the script is in a folder that contains the <code class="docutils literal notranslate"><span class="pre">data</span></code> folder in which the main outputs of the task are saved. You may addapt the following script to fit your needs:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">cardioception.reports</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+<p>This script exemplifies how this function can be used to extract summary statistics from a result folder. It is assumed that the following script is in a folder that contains the <code class="docutils literal notranslate"><span class="pre">data</span></code> folder with sub-folders <code class="docutils literal notranslate"><span class="pre">sub-01</span></code>, <code class="docutils literal notranslate"><span class="pre">sub-02</span></code> for each participant in which the main outputs of the task are stored. The HTML reports will be saved in the <code class="docutils literal notranslate"><span class="pre">reports</span></code> folder.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">cardioception.reports</span> <span class="kn">import</span> <span class="n">report</span>
 
 <span class="n">data_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span>  <span class="c1"># path to the data folder</span>
-<span class="n">summary_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>  <span class="c1"># creat an empty summary data frame</span>
 
-<span class="c1"># for each file found in the result folder, do the preprocessing </span>
-<span class="c1"># and save in the summary dataframe</span>
-<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_folder</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">):</span>
+<span class="c1"># for each file found in the result folder, create the HTML report</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_folder</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
 
     <span class="c1"># all the preprocessing happens here</span>
     <span class="c1"># the input is a file name at it returns a summary dataframe</span>
-    <span class="n">results_df</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    
-    <span class="c1"># log additional info about the participant</span>
-    <span class="c1"># considering that the first 3 digits are the participant ID</span>
-    <span class="n">results_df</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
-
-    <span class="c1"># concatenate everything in a result data frame</span>
-    <span class="n">summary_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">summary_df</span><span class="p">,</span> <span class="n">results_df</span><span class="p">])</span>
-
-<span class="c1"># save in the current working directory</span>
-<span class="n">summary_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;results.tsv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">results_df</span> <span class="o">=</span> <span class="n">report</span><span class="p">(</span><span class="n">result_path</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">report_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">data_folder</span><span class="p">,</span> <span class="s2">&quot;reports&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
+</section>
+<section id="html-reports-using-the-report-function">
+<h3>HTML reports using the report function<a class="headerlink" href="#html-reports-using-the-report-function" title="Permalink to this heading">#</a></h3>
+<p>Using a similar approach, the <a class="reference internal" href="generated/reports/cardioception.reports.report.html#cardioception.reports.report" title="cardioception.reports.report"><span class="xref myst py py-func">report function</span></a> that automates the production of HTML reports that are generated using the templates below. The function will require more files than the previous one, especially as this time the PPG signal is being anaysed. Using the HTML reports is an important step of the data quality checks, especially for the quality of the PPG recording. Here, we will assume that the following script is in a folder that contains the <code class="docutils literal notranslate"><span class="pre">data</span></code> folder in which the main outputs of the tasks (either the Heart Rate Discrimination task or the Heartbeats Detection task) are stored.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">cardioception.reports</span> <span class="kn">import</span> <span class="n">report</span>
+
+<span class="n">data_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span>  <span class="c1"># path to the data folder</span>
+
+<span class="c1"># for each folder, create the HTML report from the files it contains</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_folder</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+
+    <span class="c1"># this command runs the notebook and convert it into HTML</span>
+    <span class="n">results_df</span> <span class="o">=</span> <span class="n">report</span><span class="p">(</span><span class="n">result_path</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">report_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">data_folder</span><span class="p">,</span> <span class="s2">&quot;reports&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="report-templates">
 <h2>Report templates<a class="headerlink" href="#report-templates" title="Permalink to this heading">#</a></h2>
@@ -586,7 +597,12 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-preprocessing-function">Using the preprocessing function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-r">Using R</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-python">Using Python</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behavioural-summary-using-the-preprocessing-function">Behavioural summary using the preprocessing function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#html-reports-using-the-report-function">HTML reports using the report function</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#report-templates">Report templates</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-modelling-of-psychophysics">Bayesian modelling of psychophysics</a></li>
 </ul>

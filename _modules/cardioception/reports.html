@@ -696,15 +696,17 @@ document.write(`
     <span class="k">return</span> <span class="n">summary_df</span></div>
 
 
-<div class="viewcode-block" id="report"><a class="viewcode-back" href="../../generated/reports/cardioception.reports.report.html#cardioception.reports.report">[docs]</a><span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="n">result_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">report_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;HRD&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="report"><a class="viewcode-back" href="../../generated/reports/cardioception.reports.report.html#cardioception.reports.report">[docs]</a><span class="k">def</span> <span class="nf">report</span><span class="p">(</span>
+    <span class="n">result_path</span><span class="p">:</span> <span class="n">PathLike</span><span class="p">,</span> <span class="n">report_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;HRD&quot;</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;From the results folders, create HTML reports of behavioural and physiological</span>
 <span class="sd">    data.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    resultPath : str</span>
+<span class="sd">    resultPath : PathLike</span>
 <span class="sd">        Path variable. Where the results are stored (one participant only).</span>
-<span class="sd">    reportPath : Optional[str], optional</span>
+<span class="sd">    reportPath : PathLike, optional</span>
 <span class="sd">        Where the HTML report should be saved. If `None`, default will be in the</span>
 <span class="sd">        provided `resultPath`.</span>
 <span class="sd">    task : str, optional</span>
