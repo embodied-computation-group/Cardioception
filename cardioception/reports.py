@@ -229,15 +229,17 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
     return summary_df
 
 
-def report(result_path: str, report_path: Optional[str] = None, task: str = "HRD"):
+def report(
+    result_path: PathLike, report_path: Optional[PathLike] = None, task: str = "HRD"
+):
     """From the results folders, create HTML reports of behavioural and physiological
     data.
 
     Parameters
     ----------
-    resultPath : str
+    resultPath : PathLike
         Path variable. Where the results are stored (one participant only).
-    reportPath : Optional[str], optional
+    reportPath : PathLike, optional
         Where the HTML report should be saved. If `None`, default will be in the
         provided `resultPath`.
     task : str, optional
