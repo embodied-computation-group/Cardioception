@@ -16,7 +16,7 @@
     "id": "RS4nPf2SHuhG"
    },
    "source": [
-    "Author: Nicolas Legrand <nicolas.legrand@cfin.au.dk>"
+    "Author: Nicolas Legrand <nicolas.legrand@cas.au.dk>"
    ]
   },
   {
