@@ -12,3 +12,4 @@ pingouin
 bokeh==2.4.3
 graphviz
 metadpy>=0.0.1
+watermark
