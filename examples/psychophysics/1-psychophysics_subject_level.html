@@ -487,7 +487,7 @@ document.write(`
 import sys
 
 if &#39;google.colab&#39; in sys.modules:
-    !pip install arviz, pymc
+    !pip install --ignore-installed numpy==1.23.5 pymc==5.0.2 pytensor==2.9.1
 </pre></div>
 </div>
 </div>
@@ -846,7 +846,7 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/174b23371e4bb37e0d5452c2df0934e7601c77eea70b6aafb5ebae8bf3fe766f.svg" src="../../_images/174b23371e4bb37e0d5452c2df0934e7601c77eea70b6aafb5ebae8bf3fe766f.svg" /></div>
+<img alt="../../_images/a402eb9703d84cb03a50f661623b4db31100bcec7fec656d65b95a594ed0d416.svg" src="../../_images/a402eb9703d84cb03a50f661623b4db31100bcec7fec656d65b95a594ed0d416.svg" /></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -887,9 +887,9 @@ if &#39;google.colab&#39; in sys.modules:
 </div><div class="output text_html">
     <div>
       <progress value='8000' class='' max='8000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [8000/8000 00:07&lt;00:00 Sampling 4 chains, 0 divergences]
+      100.00% [8000/8000 00:04&lt;00:00 Sampling 4 chains, 0 divergences]
     </div>
-    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 7 seconds.
+    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 5 seconds.
 </pre></div>
 </div>
 </div>
@@ -901,7 +901,7 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/893ac37fe9766d2fd12f634ae57741672080133d4d5c150b854ad864f21bd5d9.png" src="../../_images/893ac37fe9766d2fd12f634ae57741672080133d4d5c150b854ad864f21bd5d9.png" />
+<img alt="../../_images/46feb36f976fecd0f12707de3e7af7a48a252776cec22236699edddafdeb1060.png" src="../../_images/46feb36f976fecd0f12707de3e7af7a48a252776cec22236699edddafdeb1060.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -944,26 +944,26 @@ if &#39;google.colab&#39; in sys.modules:
   <tbody>
     <tr>
       <th>alpha</th>
-      <td>2.244</td>
-      <td>1.538</td>
-      <td>-0.552</td>
-      <td>5.147</td>
-      <td>0.028</td>
+      <td>2.255</td>
+      <td>1.591</td>
+      <td>-0.728</td>
+      <td>5.332</td>
+      <td>0.027</td>
       <td>0.021</td>
-      <td>3096.0</td>
-      <td>2390.0</td>
+      <td>3629.0</td>
+      <td>2465.0</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>beta</th>
-      <td>7.451</td>
-      <td>1.875</td>
-      <td>4.519</td>
-      <td>10.985</td>
+      <td>7.524</td>
+      <td>1.936</td>
+      <td>4.564</td>
+      <td>11.125</td>
       <td>0.037</td>
-      <td>0.027</td>
-      <td>2762.0</td>
-      <td>2714.0</td>
+      <td>0.028</td>
+      <td>3170.0</td>
+      <td>2468.0</td>
       <td>1.0</td>
     </tr>
   </tbody>
@@ -1020,9 +1020,45 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c2d5700841076ba750df3d2e9155621290753cf143cc3af0cbb0900a81d06ed3.png" src="../../_images/c2d5700841076ba750df3d2e9155621290753cf143cc3af0cbb0900a81d06ed3.png" />
+<img alt="../../_images/7b94a72ab6437776a0fb97fa09e7551d9f50e459a53decf45e6dac2e64922a59.png" src="../../_images/7b94a72ab6437776a0fb97fa09e7551d9f50e459a53decf45e6dac2e64922a59.png" />
 </div>
 </div>
+<section id="system-configuration">
+<h2>System configuration<a class="headerlink" href="#system-configuration" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> watermark
+<span class="o">%</span><span class="k">watermark</span> -n -u -v -iv -w -p pymc,arviz,pytensor
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Last updated: Tue Feb 28 2023
+
+Python implementation: CPython
+Python version       : 3.9.16
+IPython version      : 8.11.0
+
+pymc    : 5.0.2
+arviz   : 0.15.0
+pytensor: 2.9.1
+
+matplotlib: 3.7.0
+arviz     : 0.15.0
+sys       : 3.9.16 (main, Dec  8 2022, 11:01:53) 
+[GCC 11.3.0]
+pymc      : 5.0.2
+seaborn   : 0.12.2
+pytensor  : 2.9.1
+pandas    : 1.5.3
+numpy     : 1.22.0
+
+Watermark: 2.3.1
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 
 
@@ -1068,7 +1104,10 @@ if &#39;google.colab&#39; in sys.modules:
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Fitting a psychometric function at the subject level</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#model">Model</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting">Plotting</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting">Plotting</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#system-configuration">System configuration</a></li>
+</ul>
+</li>
 </ul>
 
   </nav></div>

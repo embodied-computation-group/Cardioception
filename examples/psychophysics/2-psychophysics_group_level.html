@@ -482,7 +482,7 @@ document.write(`
 import sys
 
 if &#39;google.colab&#39; in sys.modules:
-    !pip install arviz, pymc
+    !pip install --ignore-installed numpy==1.23.5 pymc==5.0.2 pytensor==2.9.1
 </pre></div>
 </div>
 </div>
@@ -853,7 +853,7 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1634d9280044d6895ec4dfc2c23d2c6e21783979e59803be3133d7eded0f5dd8.svg" src="../../_images/1634d9280044d6895ec4dfc2c23d2c6e21783979e59803be3133d7eded0f5dd8.svg" /></div>
+<img alt="../../_images/83365465c9da00240fb006dde63166e9d3876cd7dd9d9f855c119ff8b7c14e4c.svg" src="../../_images/83365465c9da00240fb006dde63166e9d3876cd7dd9d9f855c119ff8b7c14e4c.svg" /></div>
 </div>
 <p>Sampling.</p>
 <div class="cell docutils container">
@@ -895,9 +895,9 @@ if &#39;google.colab&#39; in sys.modules:
 </div><div class="output text_html">
     <div>
       <progress value='8000' class='' max='8000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [8000/8000 03:22&lt;00:00 Sampling 4 chains, 0 divergences]
+      100.00% [8000/8000 03:23&lt;00:00 Sampling 4 chains, 0 divergences]
     </div>
-    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 203 seconds.
+    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 204 seconds.
 </pre></div>
 </div>
 </div>
@@ -909,7 +909,7 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1d85615eb596060c862316eadbb87db359d778e020a1a1e4924847db1c90ec7c.png" src="../../_images/1d85615eb596060c862316eadbb87db359d778e020a1a1e4924847db1c90ec7c.png" />
+<img alt="../../_images/d68cb68272488152bb0eef4f6a83a64a5c95a1cfef9174e9ec196e19a11f9fee.png" src="../../_images/d68cb68272488152bb0eef4f6a83a64a5c95a1cfef9174e9ec196e19a11f9fee.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -952,26 +952,26 @@ if &#39;google.colab&#39; in sys.modules:
   <tbody>
     <tr>
       <th>mu_alpha</th>
-      <td>0.215</td>
-      <td>0.237</td>
-      <td>-0.207</td>
-      <td>0.702</td>
+      <td>0.217</td>
+      <td>0.239</td>
+      <td>-0.238</td>
+      <td>0.659</td>
       <td>0.004</td>
       <td>0.003</td>
-      <td>4461.0</td>
-      <td>2903.0</td>
+      <td>3991.0</td>
+      <td>3110.0</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>mu_beta</th>
-      <td>7.933</td>
-      <td>0.234</td>
-      <td>7.506</td>
-      <td>8.385</td>
+      <td>7.921</td>
+      <td>0.226</td>
+      <td>7.500</td>
+      <td>8.346</td>
       <td>0.004</td>
       <td>0.003</td>
-      <td>3068.0</td>
-      <td>3367.0</td>
+      <td>2842.0</td>
+      <td>3145.0</td>
       <td>1.0</td>
     </tr>
   </tbody>
@@ -991,7 +991,7 @@ if &#39;google.colab&#39; in sys.modules:
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={&#39;center&#39;: &#39;mu_alpha&#39;}&gt;
 </pre></div>
 </div>
-<img alt="../../_images/48400e57db33c9d0985d721a2f8af76e1d4a4d33709bcbc9559099e27d985b5a.png" src="../../_images/48400e57db33c9d0985d721a2f8af76e1d4a4d33709bcbc9559099e27d985b5a.png" />
+<img alt="../../_images/b91f3af74288bc990c25f5703efdc3fff0ed8b0c2944e92494a5040fe91e880f.png" src="../../_images/b91f3af74288bc990c25f5703efdc3fff0ed8b0c2944e92494a5040fe91e880f.png" />
 </div>
 </div>
 </section>
@@ -1038,9 +1038,45 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3fce67240aeeb90d59b7d058471abb2b1d99931c7c6662d7b24c3c006ad2df4f.png" src="../../_images/3fce67240aeeb90d59b7d058471abb2b1d99931c7c6662d7b24c3c006ad2df4f.png" />
+<img alt="../../_images/3f6d6ea9aad09e920ecc2ba80daab2a850db2c66f4bc1196129a8447143e3109.png" src="../../_images/3f6d6ea9aad09e920ecc2ba80daab2a850db2c66f4bc1196129a8447143e3109.png" />
 </div>
 </div>
+<section id="system-configuration">
+<h2>System configuration<a class="headerlink" href="#system-configuration" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> watermark
+<span class="o">%</span><span class="k">watermark</span> -n -u -v -iv -w -p pymc,arviz,pytensor
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Last updated: Tue Feb 28 2023
+
+Python implementation: CPython
+Python version       : 3.9.16
+IPython version      : 8.11.0
+
+pymc    : 5.0.2
+arviz   : 0.15.0
+pytensor: 2.9.1
+
+pandas    : 1.5.3
+seaborn   : 0.12.2
+matplotlib: 3.7.0
+pymc      : 5.0.2
+arviz     : 0.15.0
+numpy     : 1.22.0
+pytensor  : 2.9.1
+sys       : 3.9.16 (main, Dec  8 2022, 11:01:53) 
+[GCC 11.3.0]
+
+Watermark: 2.3.1
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 
 
@@ -1086,7 +1122,10 @@ if &#39;google.colab&#39; in sys.modules:
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Fitting a psychometric function at the group level</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#model">Model</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting">Plotting</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting">Plotting</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#system-configuration">System configuration</a></li>
+</ul>
+</li>
 </ul>
 
   </nav></div>
