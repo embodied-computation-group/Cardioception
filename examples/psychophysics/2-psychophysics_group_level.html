@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -36,8 +36,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -478,17 +478,6 @@ document.write(`
 <p>Author: Nicolas Legrand <a class="reference external" href="mailto:nicolas&#46;legrand&#37;&#52;&#48;cas&#46;au&#46;dk">nicolas<span>&#46;</span>legrand<span>&#64;</span>cas<span>&#46;</span>au<span>&#46;</span>dk</a></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%%capture
-import sys
-
-if &#39;google.colab&#39; in sys.modules:
-    !pip install --ignore-installed numpy==1.23.5 pymc==5.0.2 pytensor==2.9.1
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytensor.tensor</span> <span class="k">as</span> <span class="nn">pt</span>
 <span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -853,7 +842,7 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/dfef6dd5fc43a20ac620dfbda9a868cd5f50a9fb4d9263ee2545c517a0045689.svg" src="../../_images/dfef6dd5fc43a20ac620dfbda9a868cd5f50a9fb4d9263ee2545c517a0045689.svg" /></div>
+<img alt="../../_images/f765e87526cf318419a933c73f80b9f081d0d14f9d3cac4e7bcc430511749c38.svg" src="../../_images/f765e87526cf318419a933c73f80b9f081d0d14f9d3cac4e7bcc430511749c38.svg" /></div>
 </div>
 <p>Sampling.</p>
 <div class="cell docutils container">
@@ -895,9 +884,13 @@ if &#39;google.colab&#39; in sys.modules:
 </div><div class="output text_html">
     <div>
       <progress value='8000' class='' max='8000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [8000/8000 03:31&lt;00:00 Sampling 4 chains, 0 divergences]
+      100.00% [8000/8000 02:53&lt;00:00 Sampling 4 chains, 0 divergences]
     </div>
-    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 211 seconds.
+    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 174 seconds.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.9.17/x64/lib/python3.9/site-packages/arviz/utils.py:184: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  numba_fn = numba.jit(**self.kwargs)(self.function)
 </pre></div>
 </div>
 </div>
@@ -909,7 +902,11 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/390ac902f588b30d405ffdb38efaa10889a9646fb4e3a3604e86598c4e3a25be.png" src="../../_images/390ac902f588b30d405ffdb38efaa10889a9646fb4e3a3604e86598c4e3a25be.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.9.17/x64/lib/python3.9/site-packages/arviz/utils.py:184: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  numba_fn = numba.jit(**self.kwargs)(self.function)
+</pre></div>
+</div>
+<img alt="../../_images/7b1157ae268a5de6617e880b12c8a050775403400f4367437a2c34be3beb40b2.png" src="../../_images/7b1157ae268a5de6617e880b12c8a050775403400f4367437a2c34be3beb40b2.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -952,26 +949,26 @@ if &#39;google.colab&#39; in sys.modules:
   <tbody>
     <tr>
       <th>mu_alpha</th>
-      <td>0.213</td>
-      <td>0.240</td>
-      <td>-0.211</td>
-      <td>0.693</td>
+      <td>0.224</td>
+      <td>0.244</td>
+      <td>-0.270</td>
+      <td>0.659</td>
       <td>0.004</td>
       <td>0.003</td>
-      <td>4398.0</td>
-      <td>3161.0</td>
+      <td>3939.0</td>
+      <td>2976.0</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>mu_beta</th>
-      <td>7.920</td>
-      <td>0.243</td>
-      <td>7.472</td>
-      <td>8.373</td>
-      <td>0.004</td>
+      <td>7.929</td>
+      <td>0.237</td>
+      <td>7.471</td>
+      <td>8.369</td>
+      <td>0.005</td>
       <td>0.003</td>
-      <td>2927.0</td>
-      <td>2572.0</td>
+      <td>2623.0</td>
+      <td>3108.0</td>
       <td>1.0</td>
     </tr>
   </tbody>
@@ -991,7 +988,7 @@ if &#39;google.colab&#39; in sys.modules:
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={&#39;center&#39;: &#39;mu_alpha&#39;}&gt;
 </pre></div>
 </div>
-<img alt="../../_images/1dd54df3ad69d049fc2c99cbf8209de7bf7fa0f0ac9fdfce56fad398d0e4147b.png" src="../../_images/1dd54df3ad69d049fc2c99cbf8209de7bf7fa0f0ac9fdfce56fad398d0e4147b.png" />
+<img alt="../../_images/c43109cdf4b9e0f1395709c939061f95bcfea029b9fd7fe23bef9dc4e722dd89.png" src="../../_images/c43109cdf4b9e0f1395709c939061f95bcfea029b9fd7fe23bef9dc4e722dd89.png" />
 </div>
 </div>
 </section>
@@ -1038,7 +1035,7 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1bc66fc371f9be6e58f300f0a4f6e5499c7def2e0614e9f25863b729e1ad7302.png" src="../../_images/1bc66fc371f9be6e58f300f0a4f6e5499c7def2e0614e9f25863b729e1ad7302.png" />
+<img alt="../../_images/a10a38114b6f7bb39c4ba68fd443ab05928fd05f482a580109349fdf41ed61fe.png" src="../../_images/a10a38114b6f7bb39c4ba68fd443ab05928fd05f482a580109349fdf41ed61fe.png" />
 </div>
 </div>
 <section id="system-configuration">
@@ -1051,27 +1048,25 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Last updated: Tue Feb 28 2023
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Last updated: Wed Jun 28 2023
 
 Python implementation: CPython
-Python version       : 3.9.16
-IPython version      : 8.11.0
+Python version       : 3.9.17
+IPython version      : 8.14.0
 
-pymc    : 5.0.2
-arviz   : 0.15.0
-pytensor: 2.9.1
+pymc    : 5.5.0
+arviz   : 0.15.1
+pytensor: 2.12.3
 
-matplotlib: 3.7.0
-arviz     : 0.15.0
-pandas    : 1.5.3
-pymc      : 5.0.2
-sys       : 3.9.16 (main, Dec  8 2022, 11:01:53) 
-[GCC 11.3.0]
+matplotlib: 3.7.1
 seaborn   : 0.12.2
+pymc      : 5.5.0
+arviz     : 0.15.1
 numpy     : 1.22.0
-pytensor  : 2.9.1
+pandas    : 2.0.2
+pytensor  : 2.12.3
 
-Watermark: 2.3.1
+Watermark: 2.4.2
 </pre></div>
 </div>
 </div>
@@ -1085,7 +1080,10 @@ Watermark: 2.3.1
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="1-psychophysics_subject_level.html"
@@ -1105,7 +1103,10 @@ Watermark: 2.3.1
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1143,7 +1144,7 @@ Watermark: 2.3.1
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -1151,8 +1152,8 @@ Watermark: 2.3.1
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1170,7 +1171,7 @@ Watermark: 2.3.1
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     <br/>
   </p>
 </div>
@@ -1181,7 +1182,7 @@ Watermark: 2.3.1
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
 </p></div>
       
     </div>

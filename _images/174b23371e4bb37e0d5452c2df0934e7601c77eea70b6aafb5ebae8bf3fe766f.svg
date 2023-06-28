@@ -23,7 +23,7 @@
 <text text-anchor="middle" x="53.74" y="-257.73" font-family="Times,serif" font-size="14.00">Uniform</text>
 </g>
 <!-- thetaij -->
-<g id="node3" class="node">
+<g id="node4" class="node">
 <title>thetaij</title>
 <polygon fill="none" stroke="black" points="181.74,-202.95 67.74,-202.95 67.74,-149.95 181.74,-149.95 181.74,-202.95"/>
 <text text-anchor="middle" x="124.74" y="-187.75" font-family="Times,serif" font-size="14.00">thetaij</text>
@@ -51,7 +51,7 @@
 <polygon fill="black" stroke="black" points="152.11,-209.25 143.4,-203.21 146.44,-213.36 152.11,-209.25"/>
 </g>
 <!-- rij -->
-<g id="node4" class="node">
+<g id="node3" class="node">
 <title>rij</title>
 <ellipse fill="lightgrey" stroke="black" cx="124.74" cy="-76.48" rx="56.64" ry="37.45"/>
 <text text-anchor="middle" x="124.74" y="-87.78" font-family="Times,serif" font-size="14.00">rij</text>
