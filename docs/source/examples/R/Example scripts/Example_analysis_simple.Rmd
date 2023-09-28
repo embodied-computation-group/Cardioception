@@ -45,7 +45,7 @@ source(here("docs","source","examples","R","src","firstlevelanalysis.R"))
 
 
 ```{r message=FALSE, results='hide',warning=FALSE}
-results = single_sub_analysis(df, interoPost = interoPost, exteroPost = exteroPost, bayesian = F, model = NA)
+results = single_sub_analysis(df, interoPost = interoPost, exteroPost = exteroPost, bayesian = F, model = NA, out = here::here("docs","source","examples","R"))
 
 ```
 
@@ -72,13 +72,15 @@ results$concatenated_plot
 ```{r message=FALSE, fig.show='hide', results='hide', warning=FALSE}
 path_to_data = here("docs","source","examples","R","data")
 
-data = study_analysis(path = path_to_data, bayesian = FALSE, model = NA)
+out = here::here("..")
+
+data = study_analysis(path = path_to_data, bayesian = FALSE, model = NA, folder = T, out = out)
 ```
 
 #### These lines of code will then produce a results folder in each subject folder with the composite plot for the simple and if specified the bayesian analysis. Crucially individial's data is also stored, but also a combined file dataframe in csv format will appear in the working directory called "resulting_dataframe.csv". here the combined data is stored.
 
 ```{r}
-read.csv("resulting_dataframe.csv") %>% select(-X)%>% head(4)
+read.csv(here("..","resulting_dataframe.csv")) %>% select(-X)%>% head(4)
 ```
 
 
