@@ -42,6 +42,7 @@ single_sub_analysis <- function(df, interoPost = NA, exteroPost = NA, bayesian =
     print(paste("Number of NA's = ", length(trials_missing), " detected in trials : "))
     print(as.character(trials_missing))
   }
+  
   # remove the NA's
   df1 <- df %>% filter(!nTrials %in% trials_missing)
   
@@ -53,23 +54,31 @@ single_sub_analysis <- function(df, interoPost = NA, exteroPost = NA, bayesian =
   if (n_mod > 2) {
     print("More than 2 modalities are not supported (yet)")
   }
+  
+  ## Checking for an ID column
   if (is.null(df$id[1])) {
     # give the resulting dataframe (main subject results a random id)
-    id <- round(runif(1, min = 1, max = 10000),0)
+    df$id <- round(runif(1, min = 1, max = 10000),0)
     # make the data frame:
-    resultsdata <- data.frame(ids = rep(id, n_mod))
+    resultsdata <- data.frame(ids = rep(df$id[1], n_mod))
   } else {
     resultsdata <- data.frame(ids = rep(df$id[1], n_mod))
   }
   
   output_dir = paste0(out,"/results_sub",resultsdata$id[1])
   #create an index for if the directory exists such that we dont overwrite files:
-  idx = round(runif(1,min = 1, max = 1000),0)
+  
+  
+  if(is.null(df$file[1])){
+    df$file = round(runif(1,min = 1, max = 1000),0)
+  }
+  
+  idx = df$file[1]
+  
   
   # create a folder to put the results:
   if(!dir.exists(output_dir)){
     dir.create(output_dir)
-    idx = ""
   }
   # getting the plots from the help function
   
@@ -227,7 +236,16 @@ study_analysis <- function(path, bayesian, model, folder = T, out) {
         print("To many text files with _final.txt")
       }
       
+      if(is.na(filelist[1])){
+        print(paste0("In the folder ", sub_folders[i], " there seems to be no _final.txt file this subject is therefore skipped"))
+        next
+      }
+      
       data <- read_csv(paste0(sub_folders[i],"/",filelist[1]))
+      
+      data$id = gsub("^\\D*(\\d+).*", "\\1", filelist)
+      file <- filelist
+      data$file = file
       
       numpy_filelist <- list.files(path =  paste0(sub_folders[i]),pattern = "*.npy")
       
@@ -255,17 +273,18 @@ study_analysis <- function(path, bayesian, model, folder = T, out) {
       
       liste <- single_sub_analysis(data, interoPost = interoPost, exteroPost = exteroPost, bayesian = bayesian, model = model, out = out)
       
-      combined_data <- rbind(combined_data, liste$stats)
+      combined_data <- rbind(combined_data, liste$stats %>% mutate(file = file))
+      
     }
     
     write.csv(combined_data, paste0(out,"/resulting_dataframe.csv"))
   } else {
     sub_files <- list.files(path = path, full.names = TRUE, recursive = FALSE, pattern = "*final.txt")
-    print(paste0("found ", length(sub_files), "files"))
+    print(paste0("found ", length(sub_files), " files"))
     
     combined_data <- data.frame()
     for (i in 1:length(sub_files)) {
-      print(i)
+      print(paste0("Analyzing number ", i))
       
       
       if (!is.character(sub_files[i])) {
@@ -275,6 +294,13 @@ study_analysis <- function(path, bayesian, model, folder = T, out) {
       data <- read_csv(sub_files[i])
       
       numpy_filelist <- list.files(pattern = "*.npy")
+      
+      
+      data$id = gsub("^\\D*(\\d+).*", "\\1", sub_files[i])
+
+      
+      file <- basename(sub_files[i])
+      data$file = file
       
       tryCatch(
         {
@@ -292,7 +318,7 @@ study_analysis <- function(path, bayesian, model, folder = T, out) {
       
       liste <- single_sub_analysis(data, interoPost = interoPost, exteroPost = exteroPost, bayesian = bayesian, model = model, out = out)
       
-      combined_data <- rbind(combined_data, liste$stats)
+      combined_data <- rbind(combined_data, liste$stats %>% mutate(file = file))
       write.csv(combined_data, paste0(out,"/resulting_dataframe.csv"))
       
     }
