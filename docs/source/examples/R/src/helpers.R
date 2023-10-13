@@ -667,7 +667,7 @@ bayseanalysis <- function(df, model) {
   fit <- mod$sample(
     data = data,
     chains = 4,
-    parallel_chains = 4, refresh = 500, iter_warmup = 2000, iter_sampling = 2000
+    parallel_chains = 4, refresh = 0, iter_warmup = 2000, iter_sampling = 2000
   )
 
 
