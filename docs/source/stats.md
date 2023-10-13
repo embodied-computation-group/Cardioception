@@ -2,7 +2,7 @@
 
 ## Using R
 
-If you want to use R to analyse your data, you can find R/Stan scripts with example notebooks in [this folder](https://github.com/embodied-computation-group/Cardioception/tree/master/docs/source/examples/R).
+If you want to use R to analyse your data, you can find R/Stan scripts with example notebooks in [this folder](https://github.com/LegrandNico/Cardioception/tree/master/docs/source/examples/R).
 
 ## Using Python
 
@@ -61,8 +61,8 @@ examples/templates/*
 
 | Notebook | Colab |
 | --- | ---|
-| {ref}`hbc_template` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/templates/HeartBeatCounting.ipynb)
-| {ref}`hrd_template` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/templates/HeartRateDiscrimination.ipynb)
+| {ref}`hbc_template` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LegrandNico/Cardioception/blob/master/docs/source/examples/templates/HeartBeatCounting.ipynb)
+| {ref}`hrd_template` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LegrandNico/Cardioception/blob/master/docs/source/examples/templates/HeartRateDiscrimination.ipynb)
 
 ## Bayesian modelling of psychophysics
 
@@ -80,5 +80,5 @@ examples/psychophysics/*
 
 | Notebook | Colab |
 | --- | ---|
-| {ref}`psychophysics_subject_level` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb)
-| {ref}`psychophysics_group_level` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb)
+| {ref}`psychophysics_subject_level` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LegrandNico/Cardioception/blob/master/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb)
+| {ref}`psychophysics_group_level` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LegrandNico/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb)

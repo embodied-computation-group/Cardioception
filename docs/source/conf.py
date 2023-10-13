@@ -92,7 +92,7 @@ html_theme_options = {
     "icon_links": [
         dict(
             name="GitHub",
-            url="https://github.com/embodied-computation-group/Cardioception",
+            url="https://github.com/LegrandNico/Cardioception",
             icon="fab fa-github-square",
         ),
         dict(

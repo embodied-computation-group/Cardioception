@@ -56,14 +56,14 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
     Notes
     -----
     This function will require [PyMC](https://github.com/pymc-devs/pymc) (>= 5.0) and
-    [metadpy](https://github.com/embodied-computation-group/metadpy) (>=0.1.0).
+    [metadpy](https://github.com/LegrandNico/metadpy) (>=0.1.0).
 
     References
     ----------
     .. [1] Legrand et al., (2022). Systole: A python package for cardiac signal
         synchrony and analysis. Journal of Open Source Software, 7(69), 3832,
         https://doi.org/10.21105/joss.03832
-    .. [2] https://github.com/embodied-computation-group/metadpy
+    .. [2] https://github.com/LegrandNico/metadpy
     .. [3] Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl,
         N., Vejlø, M., Fardo, F., & Allen, M. (2021). The Heart Rate Discrimination
         Task: A psychophysical method to estimate the accuracy and precision of

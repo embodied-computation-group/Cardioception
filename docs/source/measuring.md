@@ -1,14 +1,14 @@
 # Measuring cardiac interoception
 
-Cardiac interoception has been largely investigated using the heartbeat counting task (also known as the heartbeat tracking task) that was formally introduced more than 40 years ago {cite:p}`1981:schandry`. This task comes with several variants that can concern task instruction, experimental design or the scores derived to measure cardiac interoceptive accuracy and metacognition. Here, we describe the heartbeat counting task together with the heart rate discrimination task, that was recently proposed {cite:p}`2022:legrand` and is also implemented in [cardioception](https://github.com/embodied-computation-group/Cardioception).
+Cardiac interoception has been largely investigated using the heartbeat counting task (also known as the heartbeat tracking task) that was formally introduced more than 40 years ago {cite:p}`1981:schandry`. This task comes with several variants that can concern task instruction, experimental design or the scores derived to measure cardiac interoceptive accuracy and metacognition. Here, we describe the heartbeat counting task together with the heart rate discrimination task, that was recently proposed {cite:p}`2022:legrand` and is also implemented in [cardioception](https://github.com/LegrandNico/Cardioception).
 
 ## The Heart Beat Counting task
 
 In the classic "heartbeat counting task" {cite:p}`1981:schandry,1978:dale` participants attend to their heartbeats in intervals of various lengths and are asked to count the number of heartbeats they can effectively feels during this period. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats. In the original version {cite:p}`1981:schandry`, the task started with a resting period of 60 seconds and consisted of three estimation session (25, 35, and 45 seconds) interleaved with resting periods of 30 seconds.
 
-![hbc](https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/HeartBeatCounting.png)
+![hbc](https://raw.githubusercontent.com/LegrandNico/Cardioception/master/docs/source/images/HeartBeatCounting.png)
 
-By default, [Cardioception](https://github.com/embodied-computation-group/Cardioception) implements the version used in recent publications {cite:p}`2013:hart` in which a training trial of 20 seconds is proposed, after which the 6 experimental trials of different time windows (25, 30, 35,40, 45 and 50s) occurred in a randomized order. The trial length, the condition (`'Rest'`, `'Count'`, `'Training'`), and the randomization can be controlled in the parameters dictionary. This behavior can be controlled using the `"taskVersion"` parameter.
+By default, [Cardioception](https://github.com/LegrandNico/Cardioception) implements the version used in recent publications {cite:p}`2013:hart` in which a training trial of 20 seconds is proposed, after which the 6 experimental trials of different time windows (25, 30, 35,40, 45 and 50s) occurred in a randomized order. The trial length, the condition (`'Rest'`, `'Count'`, `'Training'`), and the randomization can be controlled in the parameters dictionary. This behavior can be controlled using the `"taskVersion"` parameter.
 
 ### Instructions
 
@@ -32,7 +32,7 @@ After each counting response, the participant is prompted to rate their subjecti
 
 The **Heart Rate Discrimination Task** {cite:p}`2022:legrand` implements an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline, together with metacognitive efficiency.
 
-![hrd](https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/HeartRateDiscrimination.png)
+![hrd](https://raw.githubusercontent.com/LegrandNico/Cardioception/master/docs/source/images/HeartRateDiscrimination.png)
 
 ### Staircases
 
