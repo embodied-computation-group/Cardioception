@@ -9,7 +9,7 @@ output: html_document
 # **Here we show how to perform a bayesian analysis on the data after it has been collected which is very similar to the "simple" analysis. Please see the "simple analysis before this!**
 
 ```{r message=FALSE}
-pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot, grid,reticulate,cmdstanr,posterior,rstan,bayesplot,here)
+pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot, grid,reticulate,cmdstanr,posterior,rstan,bayesplot,here,rmarkdown)
 np <- import("numpy")
 ```
 
@@ -18,7 +18,8 @@ np <- import("numpy")
 ```{r message=FALSE}
 #Here we read the same file as in the python notebook:
 psychophysics_df = read_csv('https://github.com/embodied-computation-group/CardioceptionPaper/raw/main/data/Del2_merged.txt')
-df = psychophysics_df %>% filter(Subject == "sub_0019")
+df = psychophysics_df %>% filter(Subject == "sub_0042")
+
 ```
 
 
@@ -37,7 +38,7 @@ model = cmdstan_model(here("docs","source","examples","R","src","first_model.sta
 results = single_sub_analysis(df, 
                               interoPost = NA, 
                               exteroPost = NA, 
-                              bayesian = T, 
+                              bayesian = F, 
                               model = model, 
                               out = here::here("docs","source","examples","R"))
 ```

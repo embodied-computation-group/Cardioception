@@ -21,7 +21,7 @@ reaction_time_plot <- function(df, spacing_cond, spacing_corr, n_mod) {
     pivot_longer(cols = c(DecisionRT, ConfidenceRT)) %>%
     rename(Responsetime = value) %>%
     mutate(
-      ResponseCorrect = factor(ResponseCorrect, labels = c("Incorrect", "Correct")),
+      ResponseCorrect = ifelse(ResponseCorrect == 0, "Incorrect", "Correct"),
       name = as.factor(name),
       name = factor(name, labels = c("Confidence", "Decision")),
       name = relevel(name, ref = "Decision"),
@@ -304,16 +304,20 @@ plot_conf <- function(srs) {
 get_df <- function(df, modality) {
   df <- df %>%
     filter(Modality == modality) %>%
-    mutate(ResponseCorrect = factor(ResponseCorrect, labels = c("Correct", "Incorrect")), stimuli = as.numeric(Alpha > 0), Modality = as.factor(Modality), reponse = as.factor(as.numeric((Decision == "More")))) %>%
+    mutate(ResponseCorrect = ifelse(ResponseCorrect == 1, "Correct", "InCorrect"),
+           stimuli = as.numeric(Alpha > 0),
+           Modality = as.factor(Modality),
+           reponse = as.factor(as.numeric((Decision == "More")))) %>%
     ungroup()
 
   df$Confidence_bin <- discretebins(df %>% filter(Modality == modality), 4)[[1]]
 
-  srs <- trials2counts(df$stimuli, df$reponse, df$Confidence_bin, 4)
+  srs <- trials2counts(stimID = df$stimuli, response = df$reponse,rating = df$Confidence_bin,nRatings = 4)
 
   conf <- plot_conf(srs)
 
-  f <- data.frame(Confidence_bin = 1:4, correct = conf[[1]], incorrect = conf[[2]]) %>% pivot_longer(cols = c("correct", "incorrect"), names_to = "ResponseCorrect", values_to = "procent")
+  f <- data.frame(Confidence_bin = 1:4, correct = conf[[1]], incorrect = conf[[2]]) %>% 
+    pivot_longer(cols = c("correct", "incorrect"), names_to = "ResponseCorrect", values_to = "procent")
 
   f$Modality <- modality
 
@@ -685,8 +689,8 @@ diagnostics <- function(fit, Modal) {
   }
 
   # diagnostics
-  chainplot <- bayesplot::mcmc_dens_chains(fit$draws(c("alpha", "beta")))
-  traceplot <- bayesplot::mcmc_trace(fit$draws(c("alpha", "beta")))
+  chainplot <- bayesplot::mcmc_dens_chains(fit$draws(c("alpha", "beta")))+theme_classic()
+  traceplot <- bayesplot::mcmc_trace(fit$draws(c("alpha", "beta")))+theme_classic()
 
   return(list(chainplot, traceplot))
 }
@@ -791,4 +795,134 @@ get_mean_acc <- function(df) {
   df1 <- inner_join(correct, results)
 
   return(df1)
+}
+
+
+get_AUC = function(df,bins){
+  
+  get_data = function(df, modality,bins){
+    
+    if(bins == T){
+      m1 = glm(ResponseCorrect ~ Confidence_bin, data = df %>% filter(Modality == modality), family = binomial(link = "logit"))  
+    }else{
+      m1 = glm(ResponseCorrect ~ Confidence, data = df %>% filter(Modality == modality), family = binomial(link = "logit"))  
+      
+    }
+    roc_con = pROC::roc(df %>% filter(Modality == modality) %>% .$ResponseCorrect , m1$fitted)
+    
+    auc = pROC::auc(roc_con)
+    
+    return(pROC::ggroc(roc_con)$data %>% mutate(Modality = modality, AUC = auc[[1]]))
+  }
+  get_AUROC = function(df, modality,bins){
+    
+      df <- df %>%
+        filter(Modality == modality) %>% 
+        mutate(stimuli = as.numeric(Alpha > 0), Modality = as.factor(Modality), reponse = as.factor(as.numeric((Decision == "More")))) %>%
+        ungroup()
+      
+      df$Confidence_bin <- discretebins(df, 4)[[1]]
+    
+      
+      model = get_data(df,modality, bins)
+
+      return(list(model = model,data = df))
+    }
+    
+  n_mod = length(unique(df$Modality))
+  
+  if(n_mod == 2){
+  int = get_AUROC(df, "Intero",bins)
+  ext = get_AUROC(df, "Extero",bins)
+  model = rbind(int$model,ext$model)
+  
+  flem_AUC_I = flemmings(df, "Intero")
+  flem_AUC_E = flemmings(df, "Extero")
+  
+  data = rbind(int$data,ext$data)
+
+  names = model %>% group_by(Modality)  %>% slice(1) %>% mutate(AUC = round(AUC,3))
+  }else{
+    int = get_AUROC(df, unique(df$Modality))
+    
+    model = rbind(int$model)
+    
+    data = rbind(int$data)
+    
+    names = model  %>% slice(1) %>% 
+      mutate(AUC = round(AUC,3))
+    
+  }
+
+    AUCplot = model %>% 
+      ggplot(aes(col = Modality, group = Modality))+
+      geom_line(aes(x=1-specificity, y = sensitivity))+
+      theme_classic()+
+    geom_text(data = names, aes(x = 0.5,y = 0.2, label = paste0("AUC = ",AUC)),check_overlap = TRUE,position = position_dodge(width = 1))+
+    {if(length(unique(df$Modality)) == 1 & unique(df$Modality)[1] == "Intero")scale_color_manual(values = "#c44e52")}+
+    {if(length(unique(df$Modality)) == 1 & unique(df$Modality)[1] == "Extero")scale_color_manual(values = "#4c72b0")}+
+    {if(length(unique(df$Modality)) == 2)scale_color_manual(values = c("#4c72b0","#c44e52"))}
+  
+  
+  conf_bins = data %>% group_by(Modality, Confidence_bin) %>% summarize(last = last(Confidence))
+  
+  pointsplot = df %>% 
+    ggplot()+
+    geom_jitter(aes(y = Confidence, x = as.factor(ResponseCorrect),col = Modality), width = 0.2)+
+    theme_classic()+xlab("Correct response")+
+    geom_hline(data = conf_bins, aes(yintercept = last, col = Modality))+
+    {if(length(unique(df$Modality)) == 1 & unique(df$Modality)[1] == "Intero")scale_color_manual(values = "#c44e52")}+
+    {if(length(unique(df$Modality)) == 1 & unique(df$Modality)[1] == "Extero")scale_color_manual(values = "#4c72b0")}+
+    {if(length(unique(df$Modality)) == 2)scale_color_manual(values = c("#4c72b0","#c44e52"))}
+  
+  pointsplot+AUCplot
+  
+  
+  data = names %>% 
+    dplyr::select(Modality, AUC) %>% 
+    rename(condition = Modality) %>%
+    cbind(flem_AUC = c(flem_AUC_E,flem_AUC_I))
+  
+return(list(plot = AUCplot,data = data))
+
+}
+
+
+flemmings = function(df, modality){
+  
+  df = df %>% filter(Modality == modality)
+  correct = df$ResponseCorrect
+  df$Confidence_bin <- discretebins(df, 4)[[1]]
+  conf = df$Confidence_bin
+
+  Nratings = 4
+  
+  i <- Nratings + 1
+  H2 <- numeric(Nratings)
+  FA2 <- numeric(Nratings)
+  
+  for (c in 1:Nratings) {
+    H2[i-1] <- sum(conf == c & correct) + 0.5
+    FA2[i-1] <- sum(conf == c & !correct) + 0.5
+    i <- i - 1
+  }
+  
+  H2 <- H2 / sum(H2)
+  FA2 <- FA2 / sum(FA2)
+  cum_H2 <- c(0, cumsum(H2))
+  cum_FA2 <- c(0, cumsum(FA2))
+  
+  i <- 1
+  k <- numeric(Nratings)
+  
+  for (c in 1:Nratings) {
+    k[i] <- (cum_H2[c + 1] - cum_FA2[c])^2 - (cum_H2[c] - cum_FA2[c + 1])^2
+    i <- i + 1
+  }
+  
+  auroc2 <- 0.5 + 0.25 * sum(k)
+  
+  # AUROC is stored in 'auroc2'
+  return(auroc2)
+  
 }

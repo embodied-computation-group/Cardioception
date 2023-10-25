@@ -137,8 +137,14 @@ single_sub_analysis <- function(df, interoPost = NA, exteroPost = NA, bayesian =
   
   analysisplot <- analysisplot[[1]] + guides(fill = "none", linetype = "none", color = "none")
   
+  
+  ### AUC
+  AUC_plot = get_AUC(df1,bins = T)$plot
+  resultsdata = cbind(resultsdata, get_AUC(df1,bins = T)$data)
+  
+  
   # make the composit-plot with patchwork
-  plot <- (reactiontimeplot + confidenceplot) / (analysisplot + intensityplot + intervalplot) + plot_layout(nrow = 2)
+  plot <- (reactiontimeplot + confidenceplot + AUC_plot) / (analysisplot + intensityplot + intervalplot) + plot_layout(nrow = 2)
   
   # save the plot:
   ggsave(paste0(output_dir,"/resultplot_basic",idx,".png"), plot, width = 4000, height = 2200, units = "px")
@@ -206,7 +212,7 @@ single_sub_analysis <- function(df, interoPost = NA, exteroPost = NA, bayesian =
     # save it
     write.csv(resultsdata, paste0(output_dir,"/data",idx,".csv"))
     
-    return(list(rt_plot = reactiontimeplot, summary_stat = stat, conf_plot = confidenceplot, staircase_plot = intervalplot, histogram_plot = intensityplot, analysis_plot = analysisplot, concatenated_plot = plot, stats = resultsdata, bayesian_plot = baysplot))
+    return(list(rt_plot = reactiontimeplot, summary_stat = stat, conf_plot = confidenceplot,AUC_plot = AUC_plot, staircase_plot = intervalplot, histogram_plot = intensityplot, analysis_plot = analysisplot, concatenated_plot = plot, stats = resultsdata, bayesian_plot = baysplot))
   }
   # delete all duplicate columns in the resulting dataframe
   resultsdata <- resultsdata[, !duplicated(colnames(resultsdata))]
@@ -215,7 +221,7 @@ single_sub_analysis <- function(df, interoPost = NA, exteroPost = NA, bayesian =
   # save it
   write.csv(resultsdata, paste0(output_dir,"/data",idx,".csv"))
   
-  return(list(rt_plot = reactiontimeplot, summary_stat = stat, conf_plot = confidenceplot, staircase_plot = intervalplot, histogram_plot = intensityplot, analysis_plot = analysisplot, concatenated_plot = plot, stats = resultsdata))
+  return(list(rt_plot = reactiontimeplot, summary_stat = stat, conf_plot = confidenceplot,AUC_plot = AUC_plot, staircase_plot = intervalplot, histogram_plot = intensityplot, analysis_plot = analysisplot, concatenated_plot = plot, stats = resultsdata))
 }
 
 

@@ -9,7 +9,7 @@ output:
 
 ## **importing libraries**
 ```{r message=FALSE}
-pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot, grid,reticulate, here)
+pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot, grid,reticulate, here,rmarkdown)
 np <- import("numpy")
 ```
 
