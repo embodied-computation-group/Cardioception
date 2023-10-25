@@ -139,8 +139,8 @@ single_sub_analysis <- function(df, interoPost = NA, exteroPost = NA, bayesian =
   
   
   ### AUC
-  AUC_plot = get_AUC(df1,bins = T)$plot
-  resultsdata = cbind(resultsdata, get_AUC(df1,bins = T)$data)
+  AUC_plot = get_AUC(df1,bins = T,flem = T)$plot
+  resultsdata = cbind(resultsdata, get_AUC(df1,bins = T, flem = T)$data)
   
   
   # make the composit-plot with patchwork

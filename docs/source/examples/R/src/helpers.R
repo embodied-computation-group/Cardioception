@@ -798,7 +798,7 @@ get_mean_acc <- function(df) {
 }
 
 
-get_AUC = function(df,bins){
+get_AUC = function(df,bins, flem){
   
   get_data = function(df, modality,bins){
     
@@ -877,11 +877,18 @@ get_AUC = function(df,bins){
   
   pointsplot+AUCplot
   
-  
-  data = names %>% 
+  if(flem == FALSE){
+    data = names %>% 
     dplyr::select(Modality, AUC) %>% 
-    rename(condition = Modality) %>%
-    cbind(flem_AUC = c(flem_AUC_E,flem_AUC_I))
+    rename(condition = Modality)
+  }
+  if(flem == TRUE){
+    data = names %>% 
+      dplyr::select(Modality) %>% 
+      rename(condition = Modality) %>% cbind(flem_AUC = c(flem_AUC_I,flem_AUC_E))
+  }
+  
+  
   
 return(list(plot = AUCplot,data = data))
 
