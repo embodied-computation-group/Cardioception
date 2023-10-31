@@ -17,7 +17,7 @@ np <- import("numpy")
 ### **Reading in the data, here the working diectory has be where the exmaple scripts are located**
 ```{r message=FALSE}
 #This line reads in a subject result file:
-df = read_csv("https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/examples/templates/data/HRD/HRD_final.txt")
+df = read_csv("https://raw.githubusercontent.com/LegrandNico/Cardioception/master/docs/source/examples/templates/data/HRD/HRD_final.txt")
 
 #These next lines read in the psi posterior distributions for each modality. 
 #These will be saved with names depending on your conditions, so modify as needed. 

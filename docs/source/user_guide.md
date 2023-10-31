@@ -10,7 +10,7 @@
 
 * The current development branch can be installed using:
 
-  `pip install git+https://github.com/embodied-computation-group/Cardioception.git`
+  `pip install git+https://github.com/LegrandNico/Cardioception.git`
 
 ### Set up a conda environment
 
@@ -90,7 +90,7 @@ parameters['win'].close()
 
 This minimal example will run the Heart Rate Discrimination task with a total of 10 trials using a Psi staircase.
 
-We provide standard scripts in the [wrappers](https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers) folder that can be adapted to your needs. We recommend copying this script in your local task folder if you want to parametrize it to fit your needs. The tasks can then easily be executed by running the corresponding wrapper file (e.g in a terminal).
+We provide standard scripts in the [wrappers](https://github.com/LegrandNico/Cardioception/tree/master/wrappers) folder that can be adapted to your needs. We recommend copying this script in your local task folder if you want to parametrize it to fit your needs. The tasks can then easily be executed by running the corresponding wrapper file (e.g in a terminal).
 
 ### Creating a shortcut (Windows)
 

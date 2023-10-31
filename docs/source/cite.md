@@ -1,6 +1,6 @@
 # How to cite?
 
-If you are using [Cardioception](https://github.com/embodied-computation-group/Cardioception) for your research, we ask you to cite the following paper in the final publication:
+If you are using [Cardioception](https://github.com/LegrandNico/Cardioception) for your research, we ask you to cite the following paper in the final publication:
 
 * Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., &amp; Allen, M. (2021). The Heart Rate Discrimination Task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 108239. <https://doi.org/10.1016/j.biopsycho.2021.108239>
 

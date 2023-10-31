@@ -33,146 +33,146 @@ def getParameters(
     """Create Heart Rate Discrimination task parameters.
 
     Many task parameters, aesthetics, and options are controlled by the
-    parameters dictonary defined herein. These are intended to provide
-    flexibility and modularity to task. In many cases, unique versions of the
+    parameters dictionary defined herein. These are intended to provide
+    flexibility and modularity to the task. In many cases, unique versions of the
     task (e.g., with or without confidence ratings or choice feedback) can be
     created simply by changing these parameters, with no further interaction
     with the underlying task code.
 
     Parameters
     ----------
-    device : str
-        Select how the participant provide responses. Can be `'mouse'` or `'keyboard'`.
-    exteroception : bool
+    device :
+        Select how the participant provides responses. Can be `'mouse'` or `'keyboard'`.
+    exteroception :
         If `True`, the task will include an exteroceptive (half of the trials).
-    fullscr : bool
-        If `True`, activate full screen mode.
-    language : str
+    fullscr :
+        If `True`, activate full-screen mode.
+    language :
         The language used for the instruction. Can be `"english"`, `"danish"` or
         `"danish_children"` (a slightly simplified danish version), or `"french"`.
-    nBreaking : int
+    nBreaking :
         Number of trials to run before the break.
-    nStaircase : int
-        Number of staircase to use per condition (exteroceptive and
+    nStaircase :
+        Number of staircases to use per condition (exteroceptive and
         interoceptive).
-    nTrials : int
+    nTrials :
         The number of trials to run (UpDown and psi staircase).
         .. note::
            This number indicates the total number of trials that will be presented
            during the experiment. If `nTrials=50` and `exteroception=False`, the task
            contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,
            the task contains 25 interoceptive trials and 25 exteroceptive trials.
-    participant : str
-        Subject ID. Default is 'Participant'.
-    catchTrials : float
+    participant :
+        Subject ID. The default is 'Participant'.
+    catchTrials :
         Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with some
-        jitter) to control for range of stimuli presented. Default to `0.0` (no catch
-        trials). If not `0.0`, recomended value is `0.2`.
-    resultPath : str | None
+        jitter) to control for a range of stimuli presented. Default to `0.0` (no catch
+        trials). If not `0.0`, recommended value is `0.2`.
+    resultPath :
         Where to save the results.
-    screenNb : int
+    screenNb :
         Screen number. Used to parametrize py:func:`psychopy.visual.Window`. Defaults
         to `0`.
-    serialPort: str
+    serialPort:
         The USB port where the pulse oximeter is plugged. Should be written as a string
         e.g. `"COM3"` for USB ports on Windows.
-    session : int
+    session :
         Session number. Default to '001'.
-    setup : str
-        Context of oximeter recording. `"ehavioral"` will record through a Nonin
-        pulse oximeter and `"test"` will use pre-recorded pulse time series (for
+    setup :
+        Context of oximeter recording. `"ehavioral"` will be recorded through a Nonin
+        pulse oximeter and `"test"` will use a pre-recorded pulse time series (for
         testing only).
-    stairType : str
-        Staircase type. Can be "psi" or "updown". Default set to "psi".
-    systole_kw : dict
+    stairType :
+        Staircase type. Can be "psi" or "updown". The default is set to "psi".
+    systole_kw :
         Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.
 
     Attributes
     ----------
-    allowedKeys : list of str
+    allowedKeys :
         The possible response keys.
-    confScale : list
+    confScale :
         The range of the confidence rating scale.
-    device : str
+    device :
         The device used for response and rating scale. Can be `"keyboard"` or
         `"mouse"`.
-    HRcutOff : list
+    HRcutOff :
         Cut off for extreme heart rate values during recording.
-    ExteroCondition : bool
+    ExteroCondition :
         If `True`, the task includes an exteroceptive (half of the trials).
-    isi : tuple
+    isi :
         Range of the inter-stimulus interval (seconds). Should be in the form of (low,
-        high). At each trial the value is generated using a uniform distribution
-        between these two values. Default is set to `(0.25, 0.25)` so the value is
+        high). At each trial, the value is generated using a uniform distribution
+        between these two values. The default is set to `(0.25, 0.25)` so the value is
         fixed at `0.25`.
-    labelsRating : list
+    labelsRating :
         The labels of the confidence rating scale.
-    lambdaExtero : np.ndarray
+    lambdaExtero :
         (3d) Posterior estimate of the psychophysics function parameters (slope and
         threshold) across trials for the exteroceptive condition.
-    lambdaIntero : np.ndarray
+    lambdaIntero :
         (3d) Posterior estimate of the psychophysics function parameters (slope and
         threshold) across trials for the interoceptive condition.
     listenLogo, heartLogo : Psychopy visual instance
         Image used for the inference and recording phases, respectively.
-    maxRatingTime : float
+    maxRatingTime :
         The maximum time for a confidence rating (in seconds).
-    minRatingTime : float
+    minRatingTime :
         The minimum time before a rating can be provided during the confidence
         rating (in seconds).
-    monitor : str
+    monitor :
         The monitor used to present the task (Psychopy parameter).
-    nBreaking : int
+    nBreaking :
         Number of trials to run before the break.
-    nConfidence : int
-        The number of trial with feedback during the tutorial phase (no
+    nConfidence :
+        The number of trials with feedback during the tutorial phase (no
         feedback).
-    nFeedback : int
-        The number of trial with feedback during the tutorial phase (no
+    nFeedback :
+        The number of trials with feedback during the tutorial phase (no
         confidence rating).
-    nFinger : str or None
+    nFinger :
         The finger number ("1", "2", "3", "4" or "5") where the participant
         decided to place the pulse oximeter (if relevant).
-    nTrials : int
+    nTrials :
         The number of trials to run (UpDown and psi staircase).
         .. note::
            This number indicates the total number of trials that will be presented
            during the experiment. If `nTrials=50` and `exteroception=False`, the task
            contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,
            the task contains 25 interoceptive trials and 25 exteroceptive trials.
-    participant : str
-        Subject ID. Default is 'Participant'.
-    path : str
+    participant :
+        Subject ID. The default is 'Participant'.
+    path :
         The task working directory.
-    resultPath : str | None
+    resultPath :
         Where to save the results.
-    serial : PySerial instance
-        The serial port used to record the PPG activity.
-    screenNb : int
-        The screen number (Psychopy parameter). Default set to 0.
-    signal_df : pandas.DataFrame instance
+    serial :
+        The serial port is used to record the PPG activity.
+    screenNb :
+        The screen number (Psychopy parameter). The default is set to 0.
+    signal_df :
         Dataframe where the pulse signal recorded during the interoception
         condition will be stored.
-    stairCase : dict
-        The staircase instances for 'psi' and 'UpDown'. Each entry contain
-        dictionary for 'Intero' and 'Extero conditions' (if relevant).
-    staircaseType : 1d array-like
+    stairCase :
+        The staircase instances for 'psi' and 'UpDown'. Each entry contains
+        a dictionary for 'Intero' and 'Extero conditions' (if relevant).
+    staircaseType :
         Vector indexing stairce type (`'UpDown'`, `'psi'`, `'psiCatchTrial'`).
-    startKey : str
-        The key to press to start the task and go to next steps.
-    respMax : float
+    startKey :
+        The key to press to start the task and go to the next steps.
+    respMax :
         The maximum time for decision (in seconds).
-    results : str
+    results :
         The result directory.
-    session : int
+    session :
         Session number. Default to '001'.
-    setup : str
+    setup :
         The context of recording. Can be `'behavioral'` or `'test'`.
-    texts : dict
+    texts :
         Long text elements.
-    textSize : float
-        Scalling parameter for text size.
-    triggers : dict
+    textSize :
+        Scaling parameter for text size.
+    triggers :
         Dictionary {str, callable or None}. The function will be executed
         before the corresponding trial sequence. The default values are
         `None` (no trigger sent).
@@ -184,7 +184,7 @@ def getParameters(
         * `"decisionStop"`
         * `"confidenceStart"`
         * `"confidenceStop"`
-    win : `psychopy.visual.window`
+    win :
         The window in which to draw objects.
 
     Notes
@@ -196,8 +196,8 @@ def getParameters(
     - sound trigger : 3
     - rating trigger: 4
     - end trigger: 5
-    All these events, except trial start, have also their time stamps encoded in the
-    behavioral results data frame.
+    All these events, except the trial start, have also their time stamps encoded in the
+    behavioural results data frame.
 
     """
     from psychopy import data, event, visual
@@ -284,7 +284,7 @@ def getParameters(
     # PsychoPy Staircase Handler Documentation for full options. By default,
     # the task implements a staircase using Psi method.
     # If UpDown is selected, 1 or 2 interleaved staircases are used (see
-    # options in parameters dictionary), one is initalized 'high' and the other
+    # options in parameters dictionary), one is initialized 'high' and the other
     # 'low'.
     parameters["stairCase"] = {}
 
