@@ -22,9 +22,9 @@ abstract = {Interoception - the physiological sense of our inner bodies - has ri
 }
 ```
 
-If you are also using [Systole](https://systole-docs.github.io/) to interact with your PPG recording device (this is the default setting in cardioception), and/or to analyze physiological recordings, you might also cite the following reference:
+If you are also using [Systole](https://embodied-computation-group.github.io/systole/index.html) to interact with your PPG recording device (this is the default setting in cardioception), and/or to analyze physiological recordings, you might also cite the following reference:
 
-* Legrand et al., (2022). Systole: A python package for cardiac signal synchrony and analysis. Journal of Open Source Software, 7(69), 3832, <https://doi.org/10.21105/joss.03832>
+* Legrand N., Allen, M., (2022). Systole: A python package for cardiac signal synchrony and analysis. Journal of Open Source Software, 7(69), 3832, <https://doi.org/10.21105/joss.03832>
 
 *In BibTeX format:*
 
