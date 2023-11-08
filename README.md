@@ -189,7 +189,7 @@ More advanced subject and group-level Bayesian modeling approaches are described
 
 # Development
 
-This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/) and [Micah Allen](https://the-ecg.org/people) and the [ECG group](https://the-ecg.org/).
+This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/), [Micah Allen](https://the-ecg.org/people), and the [ECG group](https://the-ecg.org/).
 
 <img src = "images/LabLogo.png" height ="100"><img src = "images/AU.png" height ="100">
 
