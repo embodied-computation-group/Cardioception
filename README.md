@@ -21,9 +21,9 @@ If you are using cardioception in a publication we ask you to cite the following
 
 >Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., &amp; Allen, M. (2021). The Heart Rate Discrimination Task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 108239. <https://doi.org/10.1016/j.biopsycho.2021.108239>
 
-If you are using [systole](https://systole-docs.github.io/) to interact with your recording device (this is the default behavior in cardioception), you might also cite the following reference:
+If you are using [systole](https://github.com/embodied-computation-group/systole) to interact with your recording device (this is the default behavior in cardioception), you might also cite the following reference:
 
-> Legrand et al., (2022). Systole: A python package for cardiac signal synchrony and analysis. Journal of Open Source Software, 7(69), 3832, <https://doi.org/10.21105/joss.03832>
+> Legrand, N. & Allen, M. (2022). Systole: A python package for cardiac signal synchrony and analysis. Journal of Open Source Software, 7(69), 3832, <https://doi.org/10.21105/joss.03832>
 
 ## Looking for help?
 
