@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>References &#8212; cardioception 0.4.4 documentation</title>
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -36,8 +36,9 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
@@ -60,6 +61,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -100,7 +110,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -110,13 +121,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="_static/logo_small.svg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="_static/logo_small.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="_static/logo_small.svg" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="_static/logo_small.svg" class="logo__image only-dark" alt=""/>`);</script>
   
   
     <p class="title logo__title">Cardioception</p>
@@ -124,7 +136,6 @@
 </a></div>
     
   </div>
-  
   
   <div class="col-lg-9 navbar-header-items">
     
@@ -173,20 +184,20 @@
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
                     More
                 </button>
-                <div class="dropdown-menu">
+                <ul id="pst-nav-more-links" class="dropdown-menu">
                     
                     <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
+                      <a class="nav-link dropdown-item nav-internal" href="#">
                         References
                       </a>
                     </li>
                 
-                </div>
-            </div>
+                </ul>
+            </li>
             
   </ul>
 </nav></div>
@@ -198,23 +209,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -230,8 +243,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -242,8 +255,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -254,8 +267,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box"></i></span>
-            <label class="sr-only">Pypi</label></a>
+          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
       
@@ -265,18 +278,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -339,20 +354,20 @@ document.write(`
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
                     More
                 </button>
-                <div class="dropdown-menu">
+                <ul id="pst-nav-more-links-2" class="dropdown-menu">
                     
                     <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
+                      <a class="nav-link dropdown-item nav-internal" href="#">
                         References
                       </a>
                     </li>
                 
-                </div>
-            </div>
+                </ul>
+            </li>
             
   </ul>
 </nav></div>
@@ -366,10 +381,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -385,8 +400,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -397,8 +412,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -409,8 +424,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box"></i></span>
-            <label class="sr-only">Pypi</label></a>
+          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
         
@@ -442,8 +457,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="index.html" class="nav-link" aria-label="Home">
@@ -470,55 +485,44 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="references">
 <h1>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h1>
 <div class="docutils container" id="id1">
-<div class="citation" id="id2" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<p>Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. <em>Perceptual and Motor Skills</em>, 47(1):79–85, 1978. PMID: 704264. URL: <a class="reference external" href="https://doi.org/10.2466/pms.1978.47.1.79">https://doi.org/10.2466/pms.1978.47.1.79</a>, <a class="reference external" href="https://arxiv.org/abs/https://doi.org/10.2466/pms.1978.47.1.79">arXiv:https://doi.org/10.2466/pms.1978.47.1.79</a>, <a class="reference external" href="https://doi.org/10.2466/pms.1978.47.1.79">doi:10.2466/pms.1978.47.1.79</a>.</p>
-</div>
-<div class="citation" id="id3" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
-<p>Rainer Schandry. Heart beat perception and emotional experience. <em>Psychophysiology</em>, 18(4):483–488, 1981. URL: <a class="reference external" href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x">https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x</a>, <a class="reference external" href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1111/j.1469-8986.1981.tb02486.x">doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x</a>.</p>
-</div>
-<div class="citation" id="id4" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
-<p>Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. <em>Biological Psychology</em>, 168:108239, 2022. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0301051121002325">https://www.sciencedirect.com/science/article/pii/S0301051121002325</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.biopsycho.2021.108239">doi:https://doi.org/10.1016/j.biopsycho.2021.108239</a>.</p>
-</div>
-<div class="citation" id="id5" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></span>
-<p>Nova Hart, John McGowan, Ludovico Minati, and Hugo D. Critchley. Emotional regulation and bodily sensation: interoceptive awareness is intact in borderline personality disorder. <em>Journal of Personality Disorders</em>, 27(4):506–518, 2013. PMID: 22928847. URL: <a class="reference external" href="https://doi.org/10.1521/pedi_2012_26_049">https://doi.org/10.1521/pedi_2012_26_049</a>, <a class="reference external" href="https://arxiv.org/abs/https://doi.org/10.1521/pedi_2012_26_049">arXiv:https://doi.org/10.1521/pedi_2012_26_049</a>, <a class="reference external" href="https://doi.org/10.1521/pedi\_2012\_26\_049">doi:10.1521/pedi\_2012\_26\_049</a>.</p>
-</div>
-<div class="citation" id="id13" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></span>
-<p>Tom N. Cornsweet. The staircase-method in psychophysics. <em>The American Journal of Psychology</em>, 75(3):485–491, 1962. URL: <a class="reference external" href="http://www.jstor.org/stable/1419876">http://www.jstor.org/stable/1419876</a> (visited on 2022-09-08).</p>
-</div>
-<div class="citation" id="id12" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></span>
-<p>Leonid L. Kontsevich and Christopher W. Tyler. Bayesian adaptive estimation of psychometric slope and threshold. <em>Vision Research</em>, 39(16):2729–2737, 1999. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0042698998002855">https://www.sciencedirect.com/science/article/pii/S0042698998002855</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/S0042-6989(98)00285-5">doi:https://doi.org/10.1016/S0042-6989(98)00285-5</a>.</p>
-</div>
-<div class="citation" id="id6" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></span>
-<p>Eszter Ferentzi, Oliver Wilhelm, and Ferenc Köteles. What counts when heartbeats are counted. <em>Trends in Cognitive Sciences</em>, 2022. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1364661322001668">https://www.sciencedirect.com/science/article/pii/S1364661322001668</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.tics.2022.07.009">doi:https://doi.org/10.1016/j.tics.2022.07.009</a>.</p>
-</div>
-<div class="citation" id="id7" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></span>
-<p>Olivier Desmedt, Olivier Corneille, Olivier Luminet, Jennifer Murphy, Geoffrey Bird, and Pierre Maurage. Contribution of time estimation and knowledge to heartbeat counting task performance under original and adapted instructions. <em>Biological Psychology</em>, 154:107904, 2020. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0301051120300648">https://www.sciencedirect.com/science/article/pii/S0301051120300648</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.biopsycho.2020.107904">doi:https://doi.org/10.1016/j.biopsycho.2020.107904</a>.</p>
-</div>
-<div class="citation" id="id8" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></span>
-<p>Giorgia Zamariola, Pierre Maurage, Olivier Luminet, and Olivier Corneille. Interoceptive accuracy scores from the heartbeat counting task are problematic: evidence from simple bivariate correlations. <em>Biological Psychology</em>, 137:12–17, 2018. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0301051118303739">https://www.sciencedirect.com/science/article/pii/S0301051118303739</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.biopsycho.2018.06.006">doi:https://doi.org/10.1016/j.biopsycho.2018.06.006</a>.</p>
-</div>
-<div class="citation" id="id9" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></span>
-<p>CHRISTOPHER RING and JASPER BRENER. Influence of beliefs about heart rate and actual heart rate on heartbeat counting. <em>Psychophysiology</em>, 33(5):541–546, 1996. URL: <a class="reference external" href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1996.tb02430.x">https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1996.tb02430.x</a>, <a class="reference external" href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1996.tb02430.x">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1996.tb02430.x</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1111/j.1469-8986.1996.tb02430.x">doi:https://doi.org/10.1111/j.1469-8986.1996.tb02430.x</a>.</p>
-</div>
-<div class="citation" id="id10" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></span>
-<p>Stephen M. Fleming and Hakwan C. Lau. How to measure metacognition. <em>Frontiers in Human Neuroscience</em>, 2014. URL: <a class="reference external" href="https://www.frontiersin.org/articles/10.3389/fnhum.2014.00443">https://www.frontiersin.org/articles/10.3389/fnhum.2014.00443</a>, <a class="reference external" href="https://doi.org/10.3389/fnhum.2014.00443">doi:10.3389/fnhum.2014.00443</a>.</p>
-</div>
-<div class="citation" id="id11" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>12<span class="fn-bracket">]</span></span>
-<p>Jukka A. Lipponen and Mika P. Tarvainen. A robust algorithm for heart rate variability time series artefact correction using novel beat classification. <em>Journal of Medical Engineering &amp; Technology</em>, 43(3):173–181, 2019. PMID: 31314618. URL: <a class="reference external" href="https://doi.org/10.1080/03091902.2019.1640306">https://doi.org/10.1080/03091902.2019.1640306</a>, <a class="reference external" href="https://arxiv.org/abs/https://doi.org/10.1080/03091902.2019.1640306">arXiv:https://doi.org/10.1080/03091902.2019.1640306</a>, <a class="reference external" href="https://doi.org/10.1080/03091902.2019.1640306">doi:10.1080/03091902.2019.1640306</a>.</p>
-</div>
-</div>
+<dl class="citation">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. <em>Perceptual and Motor Skills</em>, 47(1):79–85, 1978. PMID: 704264. URL: <a class="reference external" href="https://doi.org/10.2466/pms.1978.47.1.79">https://doi.org/10.2466/pms.1978.47.1.79</a>, <a class="reference external" href="https://arxiv.org/abs/https://doi.org/10.2466/pms.1978.47.1.79">arXiv:https://doi.org/10.2466/pms.1978.47.1.79</a>, <a class="reference external" href="https://doi.org/10.2466/pms.1978.47.1.79">doi:10.2466/pms.1978.47.1.79</a>.</p>
+</dd>
+<dt class="label" id="id3"><span class="brackets">2</span></dt>
+<dd><p>Rainer Schandry. Heart beat perception and emotional experience. <em>Psychophysiology</em>, 18(4):483–488, 1981. URL: <a class="reference external" href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x">https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x</a>, <a class="reference external" href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1111/j.1469-8986.1981.tb02486.x">doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x</a>.</p>
+</dd>
+<dt class="label" id="id4"><span class="brackets">3</span></dt>
+<dd><p>Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. <em>Biological Psychology</em>, 168:108239, 2022. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0301051121002325">https://www.sciencedirect.com/science/article/pii/S0301051121002325</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.biopsycho.2021.108239">doi:https://doi.org/10.1016/j.biopsycho.2021.108239</a>.</p>
+</dd>
+<dt class="label" id="id5"><span class="brackets">4</span></dt>
+<dd><p>Nova Hart, John McGowan, Ludovico Minati, and Hugo D. Critchley. Emotional regulation and bodily sensation: interoceptive awareness is intact in borderline personality disorder. <em>Journal of Personality Disorders</em>, 27(4):506–518, 2013. PMID: 22928847. URL: <a class="reference external" href="https://doi.org/10.1521/pedi_2012_26_049">https://doi.org/10.1521/pedi_2012_26_049</a>, <a class="reference external" href="https://arxiv.org/abs/https://doi.org/10.1521/pedi_2012_26_049">arXiv:https://doi.org/10.1521/pedi_2012_26_049</a>, <a class="reference external" href="https://doi.org/10.1521/pedi\_2012\_26\_049">doi:10.1521/pedi\_2012\_26\_049</a>.</p>
+</dd>
+<dt class="label" id="id13"><span class="brackets">5</span></dt>
+<dd><p>Tom N. Cornsweet. The staircase-method in psychophysics. <em>The American Journal of Psychology</em>, 75(3):485–491, 1962. URL: <a class="reference external" href="http://www.jstor.org/stable/1419876">http://www.jstor.org/stable/1419876</a> (visited on 2022-09-08).</p>
+</dd>
+<dt class="label" id="id12"><span class="brackets">6</span></dt>
+<dd><p>Leonid L. Kontsevich and Christopher W. Tyler. Bayesian adaptive estimation of psychometric slope and threshold. <em>Vision Research</em>, 39(16):2729–2737, 1999. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0042698998002855">https://www.sciencedirect.com/science/article/pii/S0042698998002855</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/S0042-6989(98)00285-5">doi:https://doi.org/10.1016/S0042-6989(98)00285-5</a>.</p>
+</dd>
+<dt class="label" id="id6"><span class="brackets">7</span></dt>
+<dd><p>Eszter Ferentzi, Oliver Wilhelm, and Ferenc Köteles. What counts when heartbeats are counted. <em>Trends in Cognitive Sciences</em>, 2022. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1364661322001668">https://www.sciencedirect.com/science/article/pii/S1364661322001668</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.tics.2022.07.009">doi:https://doi.org/10.1016/j.tics.2022.07.009</a>.</p>
+</dd>
+<dt class="label" id="id7"><span class="brackets">8</span></dt>
+<dd><p>Olivier Desmedt, Olivier Corneille, Olivier Luminet, Jennifer Murphy, Geoffrey Bird, and Pierre Maurage. Contribution of time estimation and knowledge to heartbeat counting task performance under original and adapted instructions. <em>Biological Psychology</em>, 154:107904, 2020. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0301051120300648">https://www.sciencedirect.com/science/article/pii/S0301051120300648</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.biopsycho.2020.107904">doi:https://doi.org/10.1016/j.biopsycho.2020.107904</a>.</p>
+</dd>
+<dt class="label" id="id8"><span class="brackets">9</span></dt>
+<dd><p>Giorgia Zamariola, Pierre Maurage, Olivier Luminet, and Olivier Corneille. Interoceptive accuracy scores from the heartbeat counting task are problematic: evidence from simple bivariate correlations. <em>Biological Psychology</em>, 137:12–17, 2018. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0301051118303739">https://www.sciencedirect.com/science/article/pii/S0301051118303739</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.biopsycho.2018.06.006">doi:https://doi.org/10.1016/j.biopsycho.2018.06.006</a>.</p>
+</dd>
+<dt class="label" id="id9"><span class="brackets">10</span></dt>
+<dd><p>CHRISTOPHER RING and JASPER BRENER. Influence of beliefs about heart rate and actual heart rate on heartbeat counting. <em>Psychophysiology</em>, 33(5):541–546, 1996. URL: <a class="reference external" href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1996.tb02430.x">https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1996.tb02430.x</a>, <a class="reference external" href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1996.tb02430.x">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1996.tb02430.x</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1111/j.1469-8986.1996.tb02430.x">doi:https://doi.org/10.1111/j.1469-8986.1996.tb02430.x</a>.</p>
+</dd>
+<dt class="label" id="id10"><span class="brackets">11</span></dt>
+<dd><p>Stephen M. Fleming and Hakwan C. Lau. How to measure metacognition. <em>Frontiers in Human Neuroscience</em>, 2014. URL: <a class="reference external" href="https://www.frontiersin.org/articles/10.3389/fnhum.2014.00443">https://www.frontiersin.org/articles/10.3389/fnhum.2014.00443</a>, <a class="reference external" href="https://doi.org/10.3389/fnhum.2014.00443">doi:10.3389/fnhum.2014.00443</a>.</p>
+</dd>
+<dt class="label" id="id11"><span class="brackets">12</span></dt>
+<dd><p>Jukka A. Lipponen and Mika P. Tarvainen. A robust algorithm for heart rate variability time series artefact correction using novel beat classification. <em>Journal of Medical Engineering &amp; Technology</em>, 43(3):173–181, 2019. PMID: 31314618. URL: <a class="reference external" href="https://doi.org/10.1080/03091902.2019.1640306">https://doi.org/10.1080/03091902.2019.1640306</a>, <a class="reference external" href="https://arxiv.org/abs/https://doi.org/10.1080/03091902.2019.1640306">arXiv:https://doi.org/10.1080/03091902.2019.1640306</a>, <a class="reference external" href="https://doi.org/10.1080/03091902.2019.1640306">doi:10.1080/03091902.2019.1640306</a>.</p>
+</dd>
+</dl>
 </div>
 </section>
 
@@ -527,11 +531,10 @@ document.write(`
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="cite.html"
@@ -542,10 +545,7 @@ document.write(`
         <p class="prev-next-title">How to cite?</p>
       </div>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -575,8 +575,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -586,7 +586,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2022-2023, Nicolas Legrand.
+      © Copyright 2019-2023, Micah Allen.
       <br/>
     
   </p>
@@ -602,10 +602,11 @@ document.write(`
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

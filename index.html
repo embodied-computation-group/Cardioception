@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Cardioception &#8212; cardioception 0.4.4 documentation</title>
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -36,8 +36,9 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
@@ -60,6 +61,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -100,7 +110,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -110,13 +121,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="_static/logo_small.svg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="_static/logo_small.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="_static/logo_small.svg" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="_static/logo_small.svg" class="logo__image only-dark" alt=""/>`);</script>
   
   
     <p class="title logo__title">Cardioception</p>
@@ -124,7 +136,6 @@
 </a></div>
     
   </div>
-  
   
   <div class="col-lg-9 navbar-header-items">
     
@@ -173,20 +184,20 @@
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
                     More
                 </button>
-                <div class="dropdown-menu">
+                <ul id="pst-nav-more-links" class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="references.html">
+                      <a class="nav-link dropdown-item nav-internal" href="references.html">
                         References
                       </a>
                     </li>
                 
-                </div>
-            </div>
+                </ul>
+            </li>
             
   </ul>
 </nav></div>
@@ -198,23 +209,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -230,8 +243,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -242,8 +255,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -254,8 +267,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box"></i></span>
-            <label class="sr-only">Pypi</label></a>
+          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
       
@@ -265,18 +278,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -339,20 +354,20 @@ document.write(`
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
                     More
                 </button>
-                <div class="dropdown-menu">
+                <ul id="pst-nav-more-links-2" class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="references.html">
+                      <a class="nav-link dropdown-item nav-internal" href="references.html">
                         References
                       </a>
                     </li>
                 
-                </div>
-            </div>
+                </ul>
+            </li>
             
   </ul>
 </nav></div>
@@ -366,10 +381,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -385,8 +400,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -397,8 +412,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -409,8 +424,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box"></i></span>
-            <label class="sr-only">Pypi</label></a>
+          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
         
@@ -448,14 +463,10 @@ document.write(`
 <img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/logo.png" align="left" alt="cardioception" height="230" HSPACE=30>
 <p>The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):</p>
 <ol class="arabic simple">
-<li><p>The <strong>Heartbeat counting task (HBC)</strong>, also known as the <strong>Heartbeat tracking task</strong>, developed by Rainer Schandry <span id="id1">[<a class="reference internal" href="references.html#id2" title="Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. Perceptual and Motor Skills, 47(1):79-85, 1978. PMID: 704264. URL: https://doi.org/10.2466/pms.1978.47.1.79, arXiv:https://doi.org/10.2466/pms.1978.47.1.79, doi:10.2466/pms.1978.47.1.79.">Dale and Anderson, 1978</a>, <a class="reference internal" href="references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x, doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>]</span>. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.</p></li>
+<li><p>The <strong>Heartbeat counting task (HBC)</strong>, also known as the <strong>Heartbeat tracking task</strong>, developed by Rainer Schandry <span id="id1">[<a class="reference internal" href="references.html#id2" title="Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. Perceptual and Motor Skills, 47(1):79-85, 1978. PMID: 704264. URL: https://doi.org/10.2466/pms.1978.47.1.79, arXiv:https://doi.org/10.2466/pms.1978.47.1.79, doi:10.2466/pms.1978.47.1.79.">Dale and Anderson, 1978</a>, <a class="reference internal" href="references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x, doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>]</span>. This task measures cardiac interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.</p></li>
 <li><p>The <strong>Heart Rate Discrimination task</strong> <span id="id2">[<a class="reference internal" href="references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see <em>Analyses</em> below), together with metacognitive efficiency.</p></li>
 </ol>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>While having slightly similar names, the <strong>Heartbeat counting task (HBC)</strong> and the <strong>Heart Rate Discrimination task</strong> are different in term of implementation and the measures they provided and should not be conflated. We developped the cardioception package first to provide an open sourced version of the <em>HBC</em>, which was lacking, with easy support to record heart rate via cheap pulse oximetry via <a class="reference external" href="https://github.com/embodied-computation-group/systole">Systole</a>. In addition to that, we developped the <strong>HRD</strong> task as a new measure of cardiac interoception <span id="id3">[<a class="reference internal" href="references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span>, grounding on a different reasonning and trying to control for the confounds other interoception tasks migh have.</p>
-</div>
-<p>These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task use the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>. This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI…).</p>
+<p>These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task uses the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>. This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI…).</p>
 <section id="looking-for-help">
 <h2>Looking for help?<a class="headerlink" href="#looking-for-help" title="Permalink to this heading">#</a></h2>
 <p>If you have questions regarding the tasks or want discuss data analysis, please ask on our public <a class="reference external" href="https://gitter.im/Cardioception/community?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge"><img alt="Gitter" src="https://badges.gitter.im/Cardioception/community.svg" /></a>.</p>
@@ -463,7 +474,7 @@ document.write(`
 </section>
 <section id="development">
 <h2>Development<a class="headerlink" href="#development" title="Permalink to this heading">#</a></h2>
-<p>This package was created and is maintained by <a class="reference external" href="https://legrandnico.github.io/">Nicolas Legrand</a> and <a class="reference external" href="https://micahallen.org/">Micah Allen</a> from the <a class="reference external" href="https://the-ecg.org/">ECG group</a>.</p>
+<p>This package was created and is maintained by <a class="reference external" href="https://legrandnico.github.io/">Nicolas Legrand</a>, <a class="reference external" href="https://the-ecg.org/people">Micah Allen</a>, and the <a class="reference external" href="https://the-ecg.org/">Embodied Computation Group</a>.</p>
 <p><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/LabLogo.png" height ="100"><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/AU.png" height ="100"></p>
 <div class="toctree-wrapper compound">
 </div>
@@ -475,11 +486,10 @@ document.write(`
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="right-next"
        href="measuring.html"
@@ -490,10 +500,7 @@ document.write(`
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -534,8 +541,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -545,7 +552,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2022-2023, Nicolas Legrand.
+      © Copyright 2019-2023, Micah Allen.
       <br/>
     
   </p>
@@ -561,10 +568,11 @@ document.write(`
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Heart Rate Discrimination task - Summary results &#8212; cardioception 0.4.4 documentation</title>
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -36,8 +36,9 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -61,6 +62,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -101,7 +111,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -111,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/logo_small.svg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/logo_small.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/logo_small.svg" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../../_static/logo_small.svg" class="logo__image only-dark" alt=""/>`);</script>
   
   
     <p class="title logo__title">Cardioception</p>
@@ -125,7 +137,6 @@
 </a></div>
     
   </div>
-  
   
   <div class="col-lg-9 navbar-header-items">
     
@@ -174,20 +185,20 @@
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
                     More
                 </button>
-                <div class="dropdown-menu">
+                <ul id="pst-nav-more-links" class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../references.html">
+                      <a class="nav-link dropdown-item nav-internal" href="../../references.html">
                         References
                       </a>
                     </li>
                 
-                </div>
-            </div>
+                </ul>
+            </li>
             
   </ul>
 </nav></div>
@@ -199,23 +210,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -231,8 +244,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -243,8 +256,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -255,8 +268,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box"></i></span>
-            <label class="sr-only">Pypi</label></a>
+          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
       
@@ -266,18 +279,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -340,20 +355,20 @@ document.write(`
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
                     More
                 </button>
-                <div class="dropdown-menu">
+                <ul id="pst-nav-more-links-2" class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../references.html">
+                      <a class="nav-link dropdown-item nav-internal" href="../../references.html">
                         References
                       </a>
                     </li>
                 
-                </div>
-            </div>
+                </ul>
+            </li>
             
   </ul>
 </nav></div>
@@ -367,10 +382,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -386,8 +401,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/embodied-computation-group/Cardioception" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -398,8 +413,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/visceral_mind" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -410,8 +425,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box"></i></span>
-            <label class="sr-only">Pypi</label></a>
+          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
         
@@ -443,8 +458,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../../index.html" class="nav-link" aria-label="Home">
@@ -454,7 +469,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../../stats.html" class="nav-link">Statistical analysis</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Heart Rate Discrimination task - Summary results</li>
+    <li class="breadcrumb-item active" aria-current="page">Heart Rate...</li>
   </ul>
 </nav>
 </div>
@@ -587,10 +602,10 @@ if &#39;google.colab&#39; in sys.modules:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f23c74b5820&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7fc97436e220&gt;
 </pre></div>
 </div>
-<img alt="../../_images/4ab5c6107e41282e212b305b856fcf3438c7b7c59844ed98655c52787953fa02.png" src="../../_images/4ab5c6107e41282e212b305b856fcf3438c7b7c59844ed98655c52787953fa02.png" />
+<img alt="../../_images/2fc630601df95ce1186c04fe482bfa45632522200436c584054cd9492d987d6c.png" src="../../_images/2fc630601df95ce1186c04fe482bfa45632522200436c584054cd9492d987d6c.png" />
 </div>
 </div>
 <p>Response time distribution for the decision and the confidence rating phases for correct (red) and incorrect (green) responses.</p>
@@ -648,7 +663,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ed50b7915a887ffbcadfd3e58d6260aa7505655d6c6d2b89a099f00c6da5f8f2.png" src="../../_images/ed50b7915a887ffbcadfd3e58d6260aa7505655d6c6d2b89a099f00c6da5f8f2.png" />
+<img alt="../../_images/38e00554894df48fc445bea5bf89e142f5c2462a3282143dcf2fd7e410c89b0c.png" src="../../_images/38e00554894df48fc445bea5bf89e142f5c2462a3282143dcf2fd7e410c89b0c.png" />
 </div>
 </div>
 <p>Distribution of confidence ratings for correct (green) and incorrect (red) trials. Overlapping distribution suggests that the subjective confidence in the decision was not predictive of decision performances.</p>
@@ -673,7 +688,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/92a1aed628d8314e4b7319ece80c321fec21cfa5d9dfc00713a42936fd01ac1e.png" src="../../_images/92a1aed628d8314e4b7319ece80c321fec21cfa5d9dfc00713a42936fd01ac1e.png" />
+<img alt="../../_images/67ebf33ffec58637549cf16178c935d9508af4d6976aefc47bb818c1461f9761.png" src="../../_images/67ebf33ffec58637549cf16178c935d9508af4d6976aefc47bb818c1461f9761.png" />
 </div>
 </div>
 <section id="staircases">
@@ -748,7 +763,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/56ba95a6eabba6a2e0b844adaefe4c4634a8975fdcc4547ca72738d3b82e63e5.png" src="../../_images/56ba95a6eabba6a2e0b844adaefe4c4634a8975fdcc4547ca72738d3b82e63e5.png" />
+<img alt="../../_images/0ffeea6aea498d4b9a3205df4bb431c5cbda01884ee1bc3e7027c2455887616c.png" src="../../_images/0ffeea6aea498d4b9a3205df4bb431c5cbda01884ee1bc3e7027c2455887616c.png" />
 </div>
 </div>
 <p>This figure represents the evolution of threshold estimate across trials for the Interoception and Exteroception condition. Shaded areas represent the 95% confidence interval of the threshold estimate by Psi. For each condition, the first 30 trials (connected with dashed lines) were allocated to an Up/Down method (2 interleaved staircases starting a -40.5 or 40 respectively). The intensities and responses were included in the Psi staircase to maximize the amount of information included. The remaining 50 trials were monitored by the Psi staircase only. This dual estimation was implemented to estimate the reliability of the estimation of threshold using an up/down procedure, as compared to a longer psi procedure.</p>
@@ -789,7 +804,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/801e169bee655057f6e974aea8aa7fc3b31ee2551fb22e0bb860be4747d4344f.png" src="../../_images/801e169bee655057f6e974aea8aa7fc3b31ee2551fb22e0bb860be4747d4344f.png" />
+<img alt="../../_images/9ec02fd3ecd8f2e352f416f0fdd6e09ed258e2ba83068b1e7326cf855898ef55.png" src="../../_images/9ec02fd3ecd8f2e352f416f0fdd6e09ed258e2ba83068b1e7326cf855898ef55.png" />
 </div>
 </div>
 <p>Psychometric functions fitted using the estimated threshold and slope from the final trial on each condition. The size of the circles reflects the proportion of responses for each intensity level.</p>
@@ -880,7 +895,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/937bec490d97e85b2340bb53bc0a2982ad395fafd445626e4eb0f36addb62d1e.png" src="../../_images/937bec490d97e85b2340bb53bc0a2982ad395fafd445626e4eb0f36addb62d1e.png" />
+<img alt="../../_images/680db5c3a43914fecf2842a6d08ca12521d5e0852f07a560fd110468eefe775f.png" src="../../_images/680db5c3a43914fecf2842a6d08ca12521d5e0852f07a560fd110468eefe775f.png" />
 </div>
 </div>
 <div class="admonition note">
@@ -909,7 +924,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/393acd442b8df23e91a003a009b3dae924b18b8dc8026083f4fd096cfdd759e5.png" src="../../_images/393acd442b8df23e91a003a009b3dae924b18b8dc8026083f4fd096cfdd759e5.png" />
+<img alt="../../_images/0ff495800efac2462f877bd921b0ab35d28411451332f6dca836cf2a96ce6be9.png" src="../../_images/0ff495800efac2462f877bd921b0ab35d28411451332f6dca836cf2a96ce6be9.png" />
 </div>
 </div>
 </section>
@@ -938,11 +953,10 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="HeartBeatCounting.html"
@@ -962,10 +976,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1022,8 +1033,8 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1033,7 +1044,7 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2022-2023, Nicolas Legrand.
+      © Copyright 2019-2023, Micah Allen.
       <br/>
     
   </p>
@@ -1049,10 +1060,11 @@ Condition: Extero - d-prime: 2.699085962223946 - criterion: 0.382121415010272
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

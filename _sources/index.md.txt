@@ -8,15 +8,10 @@
 
 The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):
 
-1. The **Heartbeat counting task (HBC)**, also known as the **Heartbeat tracking task**, developed by Rainer Schandry {cite:p}`1978:dale,1981:schandry`. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.
+1. The **Heartbeat counting task (HBC)**, also known as the **Heartbeat tracking task**, developed by Rainer Schandry {cite:p}`1978:dale,1981:schandry`. This task measures cardiac interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.
 2. The **Heart Rate Discrimination task** {cite:p}`2022:legrand` implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see *Analyses* below), together with metacognitive efficiency.
 
-```{note}
-While having slightly similar names, the **Heartbeat counting task (HBC)** and the **Heart Rate Discrimination task** are different in term of implementation and the measures they provided and should not be conflated. We developped the cardioception package first to provide an open sourced version of the *HBC*, which was lacking, with easy support to record heart rate via cheap pulse oximetry via [Systole](https://github.com/embodied-computation-group/systole). In addition to that, we developped the **HRD** task as a new measure of cardiac interoception {cite:p}`2022:legrand`, grounding on a different reasonning and trying to control for the confounds other interoception tasks migh have.
-
-```
-
-These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task use the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...).
+These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task uses the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...).
 
 ## Looking for help?
 
@@ -26,7 +21,7 @@ If you want to report a bug, you can open an issue on the [GitHub page](https://
 
 ## Development
 
-This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/) and [Micah Allen](https://micahallen.org/) from the [ECG group](https://the-ecg.org/).
+This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/), [Micah Allen](https://the-ecg.org/people), and the [Embodied Computation Group](https://the-ecg.org/).
 
 <img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/LabLogo.png" height ="100"><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/AU.png" height ="100">
 
