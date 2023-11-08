@@ -17,8 +17,8 @@ import sphinx_bootstrap_theme
 
 # -- Project information -----------------------------------------------------
 project = "cardioception"
-copyright = "2022-{}, Nicolas Legrand".format(time.strftime("%Y"))
-author = "Nicolas Legrand"
+copyright = "2019-{}, Micah Allen".format(time.strftime("%Y"))
+author = "Micah Allen"
 release = cardioception.__version__
 
 
