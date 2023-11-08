@@ -857,7 +857,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/487ed463066a32732c50d372cde65042d501a9d797137525b219c183a9c038d7.svg" src="../../_images/487ed463066a32732c50d372cde65042d501a9d797137525b219c183a9c038d7.svg" /></div>
+<img alt="../../_images/763ef7ce0789d00abcdcba7921c783fec0b3a2882112a45bd4b85441a04fa6ea.svg" src="../../_images/763ef7ce0789d00abcdcba7921c783fec0b3a2882112a45bd4b85441a04fa6ea.svg" /></div>
 </div>
 <p>Sampling.</p>
 <div class="cell docutils container">
@@ -899,179 +899,9 @@ document.write(`
 </div><div class="output text_html">
     <div>
       <progress value='8000' class='' max='8000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [8000/8000 03:42&lt;00:00 Sampling 4 chains, 0 divergences]
+      100.00% [8000/8000 03:06&lt;00:00 Sampling 4 chains, 0 divergences]
     </div>
-    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 223 seconds.
-</pre></div>
-</div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">with</span> <span class="n">group_psychophysics</span><span class="p">:</span>
-<span class="ne">----&gt; </span><span class="mi">2</span>     <span class="n">idata</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">chains</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cores</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/pymc/sampling/mcmc.py:827,</span> in <span class="ni">sample</span><span class="nt">(draws, tune, chains, cores, random_seed, progressbar, step, nuts_sampler, initvals, init, jitter_max_retries, n_init, trace, discard_tuned_samples, compute_convergence_checks, keep_warning_stat, return_inferencedata, idata_kwargs, nuts_sampler_kwargs, callback, mp_ctx, model, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">823</span> <span class="n">t_sampling</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start</span>
-<span class="g g-Whitespace">    </span><span class="mi">825</span> <span class="c1"># Packaging, validating and returning the result was extracted</span>
-<span class="g g-Whitespace">    </span><span class="mi">826</span> <span class="c1"># into a function to make it easier to test and refactor.</span>
-<span class="ne">--&gt; </span><span class="mi">827</span> <span class="k">return</span> <span class="n">_sample_return</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">828</span>     <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">829</span>     <span class="n">traces</span><span class="o">=</span><span class="n">traces</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">830</span>     <span class="n">tune</span><span class="o">=</span><span class="n">tune</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">831</span>     <span class="n">t_sampling</span><span class="o">=</span><span class="n">t_sampling</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">832</span>     <span class="n">discard_tuned_samples</span><span class="o">=</span><span class="n">discard_tuned_samples</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">833</span>     <span class="n">compute_convergence_checks</span><span class="o">=</span><span class="n">compute_convergence_checks</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">834</span>     <span class="n">return_inferencedata</span><span class="o">=</span><span class="n">return_inferencedata</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">835</span>     <span class="n">keep_warning_stat</span><span class="o">=</span><span class="n">keep_warning_stat</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">836</span>     <span class="n">idata_kwargs</span><span class="o">=</span><span class="n">idata_kwargs</span> <span class="ow">or</span> <span class="p">{},</span>
-<span class="g g-Whitespace">    </span><span class="mi">837</span>     <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">838</span> <span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/pymc/sampling/mcmc.py:898,</span> in <span class="ni">_sample_return</span><span class="nt">(run, traces, tune, t_sampling, discard_tuned_samples, compute_convergence_checks, return_inferencedata, keep_warning_stat, idata_kwargs, model)</span>
-<span class="g g-Whitespace">    </span><span class="mi">895</span> <span class="n">idata</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">to_inference_data</span><span class="p">(</span><span class="n">mtrace</span><span class="p">,</span> <span class="o">**</span><span class="n">ikwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">897</span> <span class="k">if</span> <span class="n">compute_convergence_checks</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">898</span>     <span class="n">warns</span> <span class="o">=</span> <span class="n">run_convergence_checks</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">899</span>     <span class="n">mtrace</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">_add_warnings</span><span class="p">(</span><span class="n">warns</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">900</span>     <span class="n">log_warnings</span><span class="p">(</span><span class="n">warns</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/pymc/stats/convergence.py:99,</span> in <span class="ni">run_convergence_checks</span><span class="nt">(idata, model)</span>
-<span class="g g-Whitespace">     </span><span class="mi">96</span>         <span class="n">varnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rv_name</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">98</span> <span class="n">ess</span> <span class="o">=</span> <span class="n">arviz</span><span class="o">.</span><span class="n">ess</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="n">varnames</span><span class="p">)</span>
-<span class="ne">---&gt; </span><span class="mi">99</span> <span class="n">rhat</span> <span class="o">=</span> <span class="n">arviz</span><span class="o">.</span><span class="n">rhat</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="n">varnames</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">101</span> <span class="n">warnings</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="nn">    102 rhat_max = max(val.max() for val</span> in <span class="ni">rhat.values</span><span class="nt">())</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/arviz/stats/diagnostics.py:337,</span> in <span class="ni">rhat</span><span class="nt">(data, var_names, method, dask_kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">335</span> <span class="n">ufunc_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ravel&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
-<span class="g g-Whitespace">    </span><span class="mi">336</span> <span class="n">func_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="ne">--&gt; </span><span class="mi">337</span> <span class="k">return</span> <span class="n">_wrap_xarray_ufunc</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">338</span>     <span class="n">rhat_func</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">339</span>     <span class="n">dataset</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">340</span>     <span class="n">ufunc_kwargs</span><span class="o">=</span><span class="n">ufunc_kwargs</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">341</span>     <span class="n">func_kwargs</span><span class="o">=</span><span class="n">func_kwargs</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">342</span>     <span class="n">dask_kwargs</span><span class="o">=</span><span class="n">dask_kwargs</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">343</span> <span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/arviz/utils.py:750,</span> in <span class="ni">conditional_dask.&lt;locals&gt;.wrapper</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">746</span> <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">747</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">749</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">Dask</span><span class="o">.</span><span class="n">dask_flag</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">750</span>         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">751</span>     <span class="n">user_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;dask_kwargs&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">752</span>     <span class="k">if</span> <span class="n">user_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/arviz/stats/stats_utils.py:236,</span> in <span class="ni">wrap_xarray_ufunc</span><span class="nt">(ufunc, ufunc_kwargs, func_args, func_kwargs, dask_kwargs, *datasets, **kwargs)</span>
-<span class="nn">    232 kwargs.setdefault(&quot;output_core_dims&quot;, tuple([] for _</span> in <span class="ni">range(ufunc_kwargs.get</span><span class="nt">(&quot;n_output&quot;, 1))))</span>
-<span class="g g-Whitespace">    </span><span class="mi">234</span> <span class="n">callable_ufunc</span> <span class="o">=</span> <span class="n">make_ufunc</span><span class="p">(</span><span class="n">ufunc</span><span class="p">,</span> <span class="o">**</span><span class="n">ufunc_kwargs</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">236</span> <span class="k">return</span> <span class="n">apply_ufunc</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">237</span>     <span class="n">callable_ufunc</span><span class="p">,</span> <span class="o">*</span><span class="n">datasets</span><span class="p">,</span> <span class="o">*</span><span class="n">func_args</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">func_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">dask_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="g g-Whitespace">    </span><span class="mi">238</span> <span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/xarray/core/computation.py:1249,</span> in <span class="ni">apply_ufunc</span><span class="nt">(func, input_core_dims, output_core_dims, exclude_dims, vectorize, join, dataset_join, dataset_fill_value, keep_attrs, kwargs, dask, output_dtypes, output_sizes, meta, dask_gufunc_kwargs, on_missing_core_dim, *args)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1247</span> <span class="c1"># feed datasets apply_variable_ufunc through apply_dataset_vfunc</span>
-<span class="g g-Whitespace">   </span><span class="mi">1248</span> <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="n">is_dict_like</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">):</span>
-<span class="ne">-&gt; </span><span class="mi">1249</span>     <span class="k">return</span> <span class="n">apply_dataset_vfunc</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1250</span>         <span class="n">variables_vfunc</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1251</span>         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1252</span>         <span class="n">signature</span><span class="o">=</span><span class="n">signature</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1253</span>         <span class="n">join</span><span class="o">=</span><span class="n">join</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1254</span>         <span class="n">exclude_dims</span><span class="o">=</span><span class="n">exclude_dims</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1255</span>         <span class="n">dataset_join</span><span class="o">=</span><span class="n">dataset_join</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1256</span>         <span class="n">fill_value</span><span class="o">=</span><span class="n">dataset_fill_value</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1257</span>         <span class="n">keep_attrs</span><span class="o">=</span><span class="n">keep_attrs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1258</span>         <span class="n">on_missing_core_dim</span><span class="o">=</span><span class="n">on_missing_core_dim</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1259</span>     <span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1260</span> <span class="c1"># feed DataArray apply_variable_ufunc through apply_dataarray_vfunc</span>
-<span class="g g-Whitespace">   </span><span class="mi">1261</span> <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">DataArray</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">):</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/xarray/core/computation.py:530,</span> in <span class="ni">apply_dataset_vfunc</span><span class="nt">(func, signature, join, dataset_join, fill_value, exclude_dims, keep_attrs, on_missing_core_dim, *args)</span>
-<span class="g g-Whitespace">    </span><span class="mi">525</span> <span class="n">list_of_coords</span><span class="p">,</span> <span class="n">list_of_indexes</span> <span class="o">=</span> <span class="n">build_output_coords_and_indexes</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">526</span>     <span class="n">args</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">exclude_dims</span><span class="p">,</span> <span class="n">combine_attrs</span><span class="o">=</span><span class="n">keep_attrs</span>
-<span class="g g-Whitespace">    </span><span class="mi">527</span> <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">528</span> <span class="n">args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="s2">&quot;data_vars&quot;</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">530</span> <span class="n">result_vars</span> <span class="o">=</span> <span class="n">apply_dict_of_variables_vfunc</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">531</span>     <span class="n">func</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">532</span>     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">533</span>     <span class="n">signature</span><span class="o">=</span><span class="n">signature</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">534</span>     <span class="n">join</span><span class="o">=</span><span class="n">dataset_join</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">535</span>     <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">536</span>     <span class="n">on_missing_core_dim</span><span class="o">=</span><span class="n">on_missing_core_dim</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">537</span> <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">539</span> <span class="n">out</span><span class="p">:</span> <span class="n">Dataset</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Dataset</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">540</span> <span class="k">if</span> <span class="n">signature</span><span class="o">.</span><span class="n">num_outputs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/xarray/core/computation.py:454,</span> in <span class="ni">apply_dict_of_variables_vfunc</span><span class="nt">(func, signature, join, fill_value, on_missing_core_dim, *args)</span>
-<span class="g g-Whitespace">    </span><span class="mi">452</span> <span class="n">core_dim_present</span> <span class="o">=</span> <span class="n">_check_core_dims</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">variable_args</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">453</span> <span class="k">if</span> <span class="n">core_dim_present</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">454</span>     <span class="n">result_vars</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">variable_args</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">455</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">456</span>     <span class="k">if</span> <span class="n">on_missing_core_dim</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/xarray/core/computation.py:821,</span> in <span class="ni">apply_variable_ufunc</span><span class="nt">(func, signature, exclude_dims, dask, output_dtypes, vectorize, keep_attrs, dask_gufunc_kwargs, *args)</span>
-<span class="g g-Whitespace">    </span><span class="mi">816</span>     <span class="k">if</span> <span class="n">vectorize</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">817</span>         <span class="n">func</span> <span class="o">=</span> <span class="n">_vectorize</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">818</span>             <span class="n">func</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">output_dtypes</span><span class="o">=</span><span class="n">output_dtypes</span><span class="p">,</span> <span class="n">exclude_dims</span><span class="o">=</span><span class="n">exclude_dims</span>
-<span class="g g-Whitespace">    </span><span class="mi">819</span>         <span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">821</span> <span class="n">result_data</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">input_data</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">823</span> <span class="k">if</span> <span class="n">signature</span><span class="o">.</span><span class="n">num_outputs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">824</span>     <span class="n">result_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">result_data</span><span class="p">,)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/arviz/stats/stats_utils.py:137,</span> in <span class="ni">make_ufunc.&lt;locals&gt;._ufunc</span><span class="nt">(out, out_shape, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">135</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndindex</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="n">n_dims_out</span><span class="p">]):</span>
-<span class="g g-Whitespace">    </span><span class="mi">136</span>     <span class="n">arys_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">ary</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="k">if</span> <span class="n">ravel</span> <span class="k">else</span> <span class="n">ary</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">ary</span> <span class="ow">in</span> <span class="n">arys</span><span class="p">]</span>
-<span class="ne">--&gt; </span><span class="mi">137</span>     <span class="n">out</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">arys_idx</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="n">n_input</span><span class="p">:],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))[</span><span class="n">index</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">138</span> <span class="k">return</span> <span class="n">out</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/arviz/stats/diagnostics.py:606,</span> in <span class="ni">_rhat_rank</span><span class="nt">(ary)</span>
-<span class="g g-Whitespace">    </span><span class="mi">604</span>     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="g g-Whitespace">    </span><span class="mi">605</span> <span class="n">split_ary</span> <span class="o">=</span> <span class="n">_split_chains</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">606</span> <span class="n">rhat_bulk</span> <span class="o">=</span> <span class="n">_rhat</span><span class="p">(</span><span class="n">_z_scale</span><span class="p">(</span><span class="n">split_ary</span><span class="p">))</span>
-<span class="g g-Whitespace">    </span><span class="mi">608</span> <span class="n">split_ary_folded</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">split_ary</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">split_ary</span><span class="p">))</span>
-<span class="g g-Whitespace">    </span><span class="mi">609</span> <span class="n">rhat_tail</span> <span class="o">=</span> <span class="n">_rhat</span><span class="p">(</span><span class="n">_z_scale</span><span class="p">(</span><span class="n">split_ary_folded</span><span class="p">))</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/arviz/stats/diagnostics.py:547,</span> in <span class="ni">_z_scale</span><span class="nt">(ary)</span>
-<span class="g g-Whitespace">    </span><span class="mi">544</span>     <span class="n">rank</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">rankdata</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">545</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">546</span>     <span class="c1"># the .ravel part is only needed to overcom a bug in scipy 1.10.0.rc1</span>
-<span class="ne">--&gt; </span><span class="mi">547</span>     <span class="n">rank</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">rankdata</span><span class="p">(</span>  <span class="c1"># pylint: disable=unexpected-keyword-arg</span>
-<span class="g g-Whitespace">    </span><span class="mi">548</span>         <span class="n">ary</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;omit&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">549</span>     <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">550</span> <span class="n">rank</span> <span class="o">=</span> <span class="n">_backtransform_ranks</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">551</span> <span class="n">z</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/scipy/stats/_stats_py.py:10236,</span> in <span class="ni">rankdata</span><span class="nt">(a, method, axis, nan_policy)</span>
-<span class="g g-Whitespace">  </span><span class="mi">10233</span>         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-<span class="g g-Whitespace">  </span><span class="mi">10235</span> <span class="n">algo</span> <span class="o">=</span> <span class="s1">&#39;mergesort&#39;</span> <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;ordinal&#39;</span> <span class="k">else</span> <span class="s1">&#39;quicksort&#39;</span>
-<span class="ne">&gt; </span><span class="mi">10236</span> <span class="n">sorter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">algo</span><span class="p">)</span>
-<span class="g g-Whitespace">  </span><span class="mi">10238</span> <span class="n">inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">sorter</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
-<span class="g g-Whitespace">  </span><span class="mi">10239</span> <span class="n">inv</span><span class="p">[</span><span class="n">sorter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">sorter</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
-
-<span class="nn">File &lt;__array_function__ internals&gt;:180,</span> in <span class="ni">argsort</span><span class="nt">(*args, **kwargs)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/numpy/core/fromnumeric.py:1120,</span> in <span class="ni">argsort</span><span class="nt">(a, axis, kind, order)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1012</span> <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_argsort_dispatcher</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1013</span> <span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="g g-Whitespace">   </span><span class="mi">1014</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">   </span><span class="mi">1015</span><span class="sd">     Returns the indices that would sort an array.</span>
-<span class="g g-Whitespace">   </span><span class="mi">1016</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1118</span><span class="sd"> </span>
-<span class="g g-Whitespace">   </span><span class="mi">1119</span><span class="sd">     &quot;&quot;&quot;</span>
-<span class="ne">-&gt; </span><span class="mi">1120</span>     <span class="k">return</span> <span class="n">_wrapfunc</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s1">&#39;argsort&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/numpy/core/fromnumeric.py:57,</span> in <span class="ni">_wrapfunc</span><span class="nt">(obj, method, *args, **kwds)</span>
-<span class="g g-Whitespace">     </span><span class="mi">54</span>     <span class="k">return</span> <span class="n">_wrapit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">56</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">---&gt; </span><span class="mi">57</span>     <span class="k">return</span> <span class="n">bound</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">58</span> <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">59</span>     <span class="c1"># A TypeError occurs if the object does have such a method in its</span>
-<span class="g g-Whitespace">     </span><span class="mi">60</span>     <span class="c1"># class, but its signature is not identical to that of NumPy&#39;s. This</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">64</span>     <span class="c1"># Call _wrapit from within the except clause to ensure a potential</span>
-<span class="g g-Whitespace">     </span><span class="mi">65</span>     <span class="c1"># exception has a traceback chain.</span>
-<span class="g g-Whitespace">     </span><span class="mi">66</span>     <span class="k">return</span> <span class="n">_wrapit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
+    </div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 187 seconds.
 </pre></div>
 </div>
 </div>
@@ -1083,7 +913,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4cfc09dfb59124bd771ba0bb95998b1a16da427ef6b22155c25ba4a031a26298.png" src="../../_images/4cfc09dfb59124bd771ba0bb95998b1a16da427ef6b22155c25ba4a031a26298.png" />
+<img alt="../../_images/1bafebccb2d792c7e3c43676a415c8f4eef8bbceb6e85a6e21c967069f764c3d.png" src="../../_images/1bafebccb2d792c7e3c43676a415c8f4eef8bbceb6e85a6e21c967069f764c3d.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1126,26 +956,26 @@ document.write(`
   <tbody>
     <tr>
       <th>mu_alpha</th>
-      <td>0.218</td>
-      <td>0.241</td>
-      <td>-0.224</td>
-      <td>0.691</td>
+      <td>0.216</td>
+      <td>0.235</td>
+      <td>-0.248</td>
+      <td>0.641</td>
       <td>0.004</td>
       <td>0.003</td>
-      <td>4670.0</td>
-      <td>3227.0</td>
+      <td>4254.0</td>
+      <td>3189.0</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>mu_beta</th>
-      <td>7.926</td>
-      <td>0.233</td>
-      <td>7.516</td>
-      <td>8.370</td>
+      <td>7.922</td>
+      <td>0.232</td>
+      <td>7.479</td>
+      <td>8.342</td>
       <td>0.004</td>
       <td>0.003</td>
-      <td>2931.0</td>
-      <td>2961.0</td>
+      <td>2755.0</td>
+      <td>2885.0</td>
       <td>1.0</td>
     </tr>
   </tbody>
@@ -1165,7 +995,7 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={&#39;center&#39;: &#39;mu_alpha&#39;}&gt;
 </pre></div>
 </div>
-<img alt="../../_images/7b8273e43598398afc64c4b23808a6edb018b1ebbac85f105c81c28a8a05c971.png" src="../../_images/7b8273e43598398afc64c4b23808a6edb018b1ebbac85f105c81c28a8a05c971.png" />
+<img alt="../../_images/4e6579ce798f4787f35d076609231d586882700855e0fffcd18f4663aad4d2bc.png" src="../../_images/4e6579ce798f4787f35d076609231d586882700855e0fffcd18f4663aad4d2bc.png" />
 </div>
 </div>
 </section>
@@ -1212,7 +1042,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/798eec0008a4151447dfd323f84fd9a99677a19d880c12c00e01ad0af02460c6.png" src="../../_images/798eec0008a4151447dfd323f84fd9a99677a19d880c12c00e01ad0af02460c6.png" />
+<img alt="../../_images/70591fd4398c14197fea5ea6a60b547b4c50542123b0c491a93ccc30d770312a.png" src="../../_images/70591fd4398c14197fea5ea6a60b547b4c50542123b0c491a93ccc30d770312a.png" />
 </div>
 </div>
 <section id="system-configuration">
@@ -1225,25 +1055,25 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Last updated: Wed Jun 28 2023
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Last updated: Wed Nov 08 2023
 
 Python implementation: CPython
-Python version       : 3.11.4
-IPython version      : 8.14.0
+Python version       : 3.9.18
+IPython version      : 8.17.2
 
-pymc    : 5.5.0
-arviz   : 0.15.1
-pytensor: 2.12.3
+pymc    : 5.9.1
+arviz   : 0.16.1
+pytensor: 2.17.3
 
-numpy     : 1.24.4
-matplotlib: 3.7.1
-arviz     : 0.15.1
-seaborn   : 0.12.2
-pymc      : 5.5.0
-pandas    : 2.0.2
-pytensor  : 2.12.3
+pymc      : 5.9.1
+seaborn   : 0.13.0
+matplotlib: 3.8.1
+pytensor  : 2.17.3
+numpy     : 1.22.0
+arviz     : 0.16.1
+pandas    : 2.0.3
 
-Watermark: 2.4.2
+Watermark: 2.4.3
 </pre></div>
 </div>
 </div>
