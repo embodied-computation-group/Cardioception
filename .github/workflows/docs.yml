@@ -24,6 +24,7 @@ jobs:
 
       - name: Build
         run: |
+          pip install --upgrade pip
           pip install psychopy==2020.1.2
           pip install -r requirements-docs.txt
           sudo apt-get install graphviz
