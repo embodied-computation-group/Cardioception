@@ -4,7 +4,7 @@
 
 ### Using the Python Package Index
 
-* The most recent version can be installed uing:
+* The most recent version can be installed using:
 
   `pip install cardioception`
 
@@ -22,12 +22,12 @@ This will create a new `cardioception` environment that you can later activate u
 
   `conda activate cardioception`
 
-```{note} If you are using the shortcut method described bellow, you will have to activate the *cardioception* environment instead of the *base* one.
+```{note} If you are using the shortcut method described below, you will have to activate the *cardioception* environment instead of the *base* one.
 ```
 
 ## Dependencies
 
-Cardioception has been tested with Python 3.7. We recommend to use the last install of Anaconda for Python 3.7 or latest (see [this link](https://www.anaconda.com/products/individual#download-section)).
+Cardioception has been tested with Python 3.7. We recommend using the last install of Anaconda for Python 3.7 or latest (see [this link](https://www.anaconda.com/products/individual#download-section)).
 
 Make sure that you have the following packages installed and up to date before running cardioception:
 
@@ -41,7 +41,7 @@ The other main dependencies are:
 * [pandas](https://pandas.pydata.org/) (>=1.0.3)
 * [pyserial](https://pypi.org/project/pyserial/) (>=3.4)
 
-In addition, some function for HTML reports will require:
+In addition, some functions for HTML reports will require:
 
 * [papermill](https://papermill.readthedocs.io/en/latest/) (>=2.3.1)
 * [matplotlib](https://matplotlib.org/) (>=3.3.3)
@@ -51,23 +51,23 @@ In addition, some function for HTML reports will require:
 * [pymc](https://www.pymc.io/welcome.html) (>=5.0)
 
 ```{note}
-The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles. 
+The versions provided here are the ones used when testing and running cardioception locally and are often the last ones. For several packages, however, older versions might also be compatible. 
 ```
 
 Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 160 Mo). These files will be removed if you uninstall the package using `pip uninstall cardioception`.
 
 ## Physiological recording
 
-Both the Heartbeat counting task (HBC) and the heart rate discrimination task (HRD) require access to physiological recording device during the task to estimate the heart rate or count the number of heartbeats in a given time window. Cardioception natively supports:
+Both the Heartbeat counting task (HBC) and the heart rate discrimination task (HRD) require access to a physiological recording device during the task to estimate the heart rate or count the number of heartbeats in a given time window. Cardioception natively supports:
 
 * The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/) 
 * Remote Data Access (RDA) via BrainVision Recorder together with [Brain product ExG amplifier](https://www.brainproducts.com/>).
 
-The package can easily be extended and integrate other recording devices by providing another recording class that will interface with your own devices (ECG, pulse oximeters, or any king of recording that will offer precise estimation of the cardiac frequency).
+The package can easily be extended and integrate other recording devices by providing another recording class that will interface with your own devices (ECG, pulse oximeters, or any kind of recording that will offer precise estimation of the cardiac frequency).
 
 ## Running the tasks
 
-Each task contains a `parameters` and a `task` submodule describing the experimental parameters and the Psychopy script respectively. Several changes and adaptation can be parametrized just by passing arguments to the parameters functions. Please refer to the API documentation for details.
+Each task contains a `parameters` and a `task` submodule describing the experimental parameters and the Psychopy script respectively. Several changes and adaptations can be parametrized just by passing arguments to the `getParameters` function. Please refer to the API documentation for details.
 
 ### Using a script
 
@@ -90,11 +90,11 @@ parameters['win'].close()
 
 This minimal example will run the Heart Rate Discrimination task with a total of 10 trials using a Psi staircase.
 
-We provide standard scripts in the [wrappers](https://github.com/LegrandNico/Cardioception/tree/master/wrappers) folder that can be adapted to your needs. We recommend copying this script in your local task folder if you want to parametrize it to fit your needs. The tasks can then easily be executed by running the corresponding wrapper file (e.g in a terminal).
+We provide standard scripts in the [wrappers](https://github.com/LegrandNico/Cardioception/tree/master/wrappers) folder that can be adapted to your needs. We recommend copying this script in your local task folder if you want to parametrize it to fit your needs. The tasks can then easily be executed by running the corresponding wrapper file (e.g. in a terminal).
 
 ### Creating a shortcut (Windows)
 
-Once you have adapted the scripts, you can create a shortcut (e.g in the Desktop) so the task can be executed just by clicking on it without any coding or command lines interactions.
+Once you have adapted the scripts, you can create a shortcut (e.g. in the Desktop) so the task can be executed just by clicking on it without any coding or command line interactions.
 
 If you are using Windows, you can simply create a `.bat` file containing the following:
 

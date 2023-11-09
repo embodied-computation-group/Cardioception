@@ -16,7 +16,7 @@ This script exemplifies how this function can be used to extract summary statist
 
 ```python
 from pathlib import Path
-from cardioception.reports import report
+from cardioception.reports import preprocessing
 
 data_folder = Path(Path().cwd(), "data")  # path to the data folder
 
@@ -25,7 +25,7 @@ for f in data_folder.iterdir():
 
     # all the preprocessing happens here
     # the input is a file name at it returns a summary dataframe
-    results_df = report(result_path=f, report_path=Path(data_folder, "reports"))
+    results_df = preprocessing(results=f)
 ```
 
 ### HTML reports using the report function
@@ -42,7 +42,7 @@ data_folder = Path(Path().cwd(), "data")  # path to the data folder
 for f in data_folder.iterdir():
 
     # this command runs the notebook and converts it into HTML
-    results_df = report(result_path=f, report_path=Path(data_folder, "reports"))
+    report(result_path=f, report_path=Path(data_folder, "reports"))
 ```
 
 ## Report templates
