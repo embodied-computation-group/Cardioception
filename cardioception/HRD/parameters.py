@@ -289,7 +289,6 @@ def getParameters(
     parameters["stairCase"] = {}
 
     if stairType == "updown":
-
         conditions = [
             {
                 "label": "low",
@@ -317,7 +316,6 @@ def getParameters(
         )
 
     elif stairType == "psi":
-
         parameters["stairCase"]["Intero"] = data.PsiHandler(
             nTrials=nTrials,
             intensRange=[-50.5, 50.5],
@@ -333,7 +331,6 @@ def getParameters(
 
     if exteroception is True:
         if stairType == "updown":
-
             conditions = [
                 {
                     "label": "low",
@@ -361,7 +358,6 @@ def getParameters(
             )
 
         elif stairType == "psi":
-
             parameters["stairCase"]["Extero"] = data.PsiHandler(
                 nTrials=nTrials,
                 intensRange=[-50.5, 50.5],

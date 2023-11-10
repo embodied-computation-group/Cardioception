@@ -93,3 +93,16 @@ Reports
 
     report
     preprocessing
+
+
+Stats
+-----
+
+.. currentmodule:: cardioception.stats
+
+.. _reports:
+
+.. autosummary::
+   :toctree: generated/stats
+
+    psychophysics

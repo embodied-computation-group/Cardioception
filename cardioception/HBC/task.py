@@ -37,7 +37,6 @@ def run(
         parameters["times"],
         range(0, len(parameters["conditions"])),
     ):
-
         parameters["triggers"]["trialStart"]  # Send trigger or None
 
         nCount, confidence, confidenceRT = trial(
@@ -223,7 +222,6 @@ def trial(
 
         nCounts = ""
         while True:
-
             # Record new key
             key = event.waitKeys(
                 keyList=[
@@ -386,7 +384,6 @@ def tutorial(parameters: dict):
 
     # Tutorial 3
     if parameters["taskVersion"] == "Shandry":
-
         messageStart = visual.TextStim(
             parameters["win"],
             height=parameters["textSize"],

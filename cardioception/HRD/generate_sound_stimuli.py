@@ -96,7 +96,6 @@ def save_wav(audio: list, file_name: str):
 
 # Generate wav files for frequencies between 15 and 200 beats per minutes
 for bpm in np.arange(15, 200, 0.5):
-
     rr = (60000 / bpm) - 200
     audio: list = []
     sample_rate = 44100.0
@@ -104,7 +103,6 @@ for bpm in np.arange(15, 200, 0.5):
     # Create
     beats = 5
     while beats > 0:
-
         # Sound
         audio = append_sinewave(audio, volume=0.5)
         audio = append_silence(audio, duration_milliseconds=rr)

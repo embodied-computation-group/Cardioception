@@ -41,13 +41,11 @@ def run(
         parameters["Modality"],
         parameters["staircaseType"],
     ):
-
         # Initialize variable
         estimatedThreshold, estimatedSlope = None, None
 
         # Wait for key press if this is the first trial
         if nTrial == 0:
-
             # Ask the participant to press default button to start
             messageStart = visual.TextStim(
                 parameters["win"],
@@ -407,7 +405,6 @@ def trial(
         core.quit()
 
     if modality == "Intero":
-
         ###########
         # Recording
         ###########
@@ -430,7 +427,6 @@ def trial(
 
         # Recording
         while True:
-
             # Read the raw PPG signal from the pulse oximeter
             # You can adapt these line to work with a different setup provided that
             # it can measure and create the new variable `bpm` (the average beats per
@@ -480,7 +476,6 @@ def trial(
                     core.wait(2)
 
     elif modality == "Extero":
-
         ###########
         # Recording
         ###########
@@ -603,7 +598,6 @@ def trial(
 
     # Record participant confidence
     if (confidenceRating is True) & (respProvided is True):
-
         # Confidence rating start trigger
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 4  # Trigger
@@ -847,7 +841,6 @@ def tutorial(parameters: dict):
     # Run training trials with feedback
     parameters["oxiTask"].setup().read(duration=2)
     for i in range(parameters["nFeedback"]):
-
         # Ramdom selection of condition
         condition = np.random.choice(["More", "Less"])
         alpha = -20.0 if condition == "Less" else 20.0
@@ -892,7 +885,6 @@ def tutorial(parameters: dict):
         # Run 10 training trials with feedback
         parameters["oxiTask"].setup().read(duration=2)
         for i in range(parameters["nFeedback"]):
-
             # Ramdom selection of condition
             condition = np.random.choice(["More", "Less"])
             alpha = -20.0 if condition == "Less" else 20.0
@@ -1075,7 +1067,6 @@ def responseDecision(
                     core.wait(2)
 
     if parameters["device"] == "mouse":
-
         # Initialise response feedback
         slower = visual.TextStim(
             parameters["win"],
@@ -1203,7 +1194,6 @@ def confidenceRatingTask(
     confidence, confidenceRT = None, None
 
     if parameters["device"] == "keyboard":
-
         markerStart = np.random.choice(
             np.arange(parameters["confScale"][0], parameters["confScale"][1])
         )
@@ -1240,7 +1230,6 @@ def confidenceRatingTask(
         confidenceRT = ratingScale.getRT()
 
     elif parameters["device"] == "mouse":
-
         # Use the mouse position to update the slider position
         # The mouse movement is limited to a rectangle above the Slider
         # To avoid being dragged out of the screen (in case of multi screens)
