@@ -15,7 +15,7 @@ reaction_time_plot <- function(df, spacing_cond, spacing_corr, n_mod) {
   sc <- spacing_corr
   # colors
   col <- c("#5f9e6e", "#b55d60")
-
+  
   # first part is modifying the data frame: Removing Nan trials, making the data frame longer and then renaming variables.
   df1 <- df %>%
     pivot_longer(cols = c(DecisionRT, ConfidenceRT)) %>%
@@ -27,7 +27,7 @@ reaction_time_plot <- function(df, spacing_cond, spacing_corr, n_mod) {
       name = relevel(name, ref = "Decision"),
       Modalityx = as.numeric(as.factor(Modality))
     )
-
+  
   if (n_mod == 2) {
     plot <- df1 %>%
       # The plotting
@@ -110,13 +110,13 @@ reaction_time_plot <- function(df, spacing_cond, spacing_corr, n_mod) {
         axis.line.y = element_line(colour = "black", size = 0.5, linetype = "solid")
       )
   }
-
+  
   results <- df %>%
     group_by(Modality) %>%
     summarize(median_decisionRT = median(DecisionRT, na.rm = T), median_confidenceRT = median(ConfidenceRT, na.rm = T)) %>%
     rename(condition = Modality)
-
-
+  
+  
   return(list(plot, results))
 }
 
@@ -131,32 +131,32 @@ sum_stat <- function(df) {
     this_df <- df %>%
       filter(Modality == i) %>%
       mutate(stimuli = as.factor(responseBPM > listenBPM), Responses = as.factor(Decision == "More"))
-
+    
     # making a Confusion Matrix to get hits (hit),correct rejections (cr), misses (miss), false accepted (fa)
     con <- confusionMatrix(this_df$stimuli, this_df$Responses)
     cr <- con$table[1, 1]
     hit <- con$table[2, 2]
     fa <- con$table[1, 2]
     miss <- con$table[2, 1]
-
+    
     # getting d' and citerion from dprime function
     result <- dprime(hit, fa, miss, cr)
-
+    
     # printing result
     print(paste("In the", i, "condition d-primne is", round(result$dprime, 2)))
     print(paste("In the", i, "condition criterion is", round(result$c, 2)))
-
+    
     result$beta <- NULL
     result$aprime <- NULL
     result$bppd <- NULL
-
+    
     df_stat <- rbind(df_stat, result)
   }
   # renameing and making it to a format that makes sense in gttable
   df_stat <- df_stat %>% rename(Criterion = c)
   rownames(df_stat) <- c(unique(df$Modality))
   df_stat$condition <- c(unique(df$Modality))
-
+  
   # retun the table and the critical data (d' and citerion)
   gttable <- df_stat %>%
     gt(rowname_col = "condition") %>%
@@ -165,7 +165,7 @@ sum_stat <- function(df) {
     ) %>%
     tab_stubhead(label = md("**Condition**"))
   returns <- list(gttable, df_stat)
-
+  
   return(returns)
 }
 
@@ -174,13 +174,13 @@ sum_stat <- function(df) {
 discretebins <- function(df, nbins) {
   temp <- list()
   out <- list()
-
+  
   quan <- quantile(df$Confidence, probs = seq(0, 1, length.out = nbins + 1))
   if ((quan[1] == quan[2]) & (quan[nbins - 1] == quan[nbins])) {
     stop("The resulting rating scale contains a lot of identical values and cannot be further analyzed")
   }
-
-
+  
+  
   if (quan[nbins - 1] == quan[nbins]) {
     print("Correcting for bias in high confidence ratings")
     hiConf <- tail(quan, n = 1)
@@ -193,8 +193,8 @@ discretebins <- function(df, nbins) {
     out[["hiconf"]] <- hiConf
     out[["rebin"]] <- 1
   }
-
-
+  
+  
   if (quan[1] == quan[2]) {
     print("Correction for bias in low confidence ratings")
     lowConf <- tail(quan, n = 1)
@@ -217,8 +217,8 @@ discretebins <- function(df, nbins) {
   for (b in 1:nbins) {
     ratings[temp[[b]]] <- b
   }
-
-
+  
+  
   return(list(ratings, out))
 }
 
@@ -227,7 +227,7 @@ discretebins <- function(df, nbins) {
 trials2counts <- function(stimID, response, rating, nRatings, padAmount = 0, padCells = 0) {
   nR_S1 <- list()
   nR_S2 <- list()
-
+  
   if (padAmount == 0) {
     padAmount <- 1 / (2 * nRatings)
   }
@@ -239,7 +239,7 @@ trials2counts <- function(stimID, response, rating, nRatings, padAmount = 0, pad
       s <- stimID[i]
       x <- response[i]
       y <- rating[i]
-
+      
       if ((s == 0) & (x == 0) & (y == r)) {
         (cs1 <- cs1 + 1)
       }
@@ -250,7 +250,7 @@ trials2counts <- function(stimID, response, rating, nRatings, padAmount = 0, pad
     nR_S1 <- append(nR_S1, cs1)
     nR_S2 <- append(nR_S2, cs2)
   }
-
+  
   # S2 responses
   for (r in 1:nRatings) {
     cs1 <- 0
@@ -259,7 +259,7 @@ trials2counts <- function(stimID, response, rating, nRatings, padAmount = 0, pad
       s <- stimID[i]
       x <- response[i]
       y <- rating[i]
-
+      
       if ((s == 0) & (x == 1) & (y == r)) {
         (cs1 <- cs1 + 1)
       }
@@ -270,8 +270,8 @@ trials2counts <- function(stimID, response, rating, nRatings, padAmount = 0, pad
     nR_S1 <- append(nR_S1, cs1)
     nR_S2 <- append(nR_S2, cs2)
   }
-
-
+  
+  
   # pad response counts to avoid zeros
   nR_S1 <- as.numeric(nR_S1)
   nR_S2 <- as.numeric(nR_S2)
@@ -279,7 +279,7 @@ trials2counts <- function(stimID, response, rating, nRatings, padAmount = 0, pad
     nR_S1 <- lapply(nR_S1, FUN = function(x) x + padAmount)
     nR_S2 <- lapply(nR_S2, FUN = function(x) x + padAmount)
   }
-
+  
   # Combine into lists
   newlist <- list(nR_S1, nR_S2)
   return(newlist)
@@ -290,12 +290,12 @@ plot_conf <- function(srs) {
   if (length(srs[[1]]) != length(srs[[2]])) {
     stop("nR_S1 and nR_S2 should have same length")
   }
-
+  
   nRratings <- length(srs[[1]]) / 2
   obsCount <- srs[[1]] + rev(srs[[2]])
   C_prop_data <- rev(obsCount[1:nRratings]) / sum(obsCount[1:nRratings])
   I_prop_data <- obsCount[(nRratings + 1):length(obsCount)] / sum(obsCount[(nRratings + 1):length(obsCount)])
-
+  
   return(list(C_prop_data, I_prop_data))
 }
 
@@ -309,18 +309,18 @@ get_df <- function(df, modality) {
            Modality = as.factor(Modality),
            reponse = as.factor(as.numeric((Decision == "More")))) %>%
     ungroup()
-
+  
   df$Confidence_bin <- discretebins(df %>% filter(Modality == modality), 4)[[1]]
-
+  
   srs <- trials2counts(stimID = df$stimuli, response = df$reponse,rating = df$Confidence_bin,nRatings = 4)
-
+  
   conf <- plot_conf(srs)
-
+  
   f <- data.frame(Confidence_bin = 1:4, correct = conf[[1]], incorrect = conf[[2]]) %>% 
     pivot_longer(cols = c("correct", "incorrect"), names_to = "ResponseCorrect", values_to = "procent")
-
+  
   f$Modality <- modality
-
+  
   return(f)
 }
 
@@ -333,9 +333,9 @@ plot_confidence <- function(df, n_mod) {
     modality <- as.character(unique(df$Modality))
     f <- get_df(df, modality)
   }
-
+  
   f$Modality <- as.factor(f$Modality)
-
+  
   plot <- f %>%
     mutate() %>%
     ggplot(aes(fill = ResponseCorrect)) +
@@ -347,7 +347,7 @@ plot_confidence <- function(df, n_mod) {
     facet_wrap(~Modality, scales = "free_y") +
     ylab("P(Confidence = y|Outcome)") +
     xlab(" ")
-
+  
   return(plot)
 }
 
@@ -359,7 +359,7 @@ plot_confidence <- function(df, n_mod) {
 # histogram plot of the intensities in the modalities.
 intensity_plot <- function(df) {
   # plotting Intensity as a fucntion of Modality
-
+  
   intensityplot <- df %>%
     ggplot(aes(x = Alpha)) +
     geom_histogram(aes(y = ..density.., col = "black", fill = Modality), position = "identity", alpha = 0.6, binwidth = 6.65) +
@@ -402,20 +402,20 @@ get_line_intervals <- function(data, Modality) {
   if (Modality == "Intero") {
     color <- "red"
   }
-
-
+  
+  
   upper <- array(NA, np$size(data[, 1, 1]))
   lower <- array(NA, np$size(data[, 1, 1]))
-
+  
   for (i in 1:np$size(data[, 1, 1])) {
     confidence <- ci(rowMeans(data, dims = 2)[i, ])
     rg <- seq(-50.5, 50.5, by = 1)
     upper[i] <- rg[confidence[[1]]]
     lower[i] <- rg[confidence[[2]]]
   }
-
+  
   data <- data.frame(upper = upper, lower = lower, col = color, Modality = Modality, x = seq(0, nrow(upper), length.out = nrow(upper)))
-
+  
   return(data)
 }
 
@@ -424,7 +424,7 @@ get_line_intervals <- function(data, Modality) {
 plot_interval <- function(df, exteroPost = NA, interoPost = NA) {
   d <- data.frame()
   dd <- data.frame()
-
+  
   # the confidence intervals for the plot extracted here
   if (!is.na(exteroPost)[1] == TRUE) {
     d <- get_line_intervals(exteroPost, "Extero")
@@ -433,10 +433,10 @@ plot_interval <- function(df, exteroPost = NA, interoPost = NA) {
     dd <- get_line_intervals(interoPost, "Intero")
   }
   d <- rbind(d, dd)
-
+  
   # The different colours for the points and lines:
   df$col <- ifelse(df$Modality == "Extero" & df$TrialType == "psi", df$col <- "blue", ifelse(df$Modality == "Intero" & df$TrialType == "psi", df$col <- "red", df$col <- "grey"))
-
+  
   # the Line in the plot:
   dataline1 <- df %>%
     filter(TrialType == "psi") %>%
@@ -447,14 +447,14 @@ plot_interval <- function(df, exteroPost = NA, interoPost = NA) {
     filter(Modality == "Intero") %>%
     mutate(x = seq(0, nrow(.), length.out = (nrow(.))))
   dataline <- rbind(dataline1, dataline2)
-
+  
   # making trials go from 0-60 in each Modality
   df <- df %>%
     group_by(Modality) %>%
     mutate(trials = 1:n()) %>%
     ungroup()
   # plot
-
+  
   if (length(unique(df$Modality)) == 2) {
     intervalplot <- df %>% ggplot(aes()) +
       geom_point(aes(x = trials, y = Alpha, color = col, shape = Decision), size = 2.5) +
@@ -475,7 +475,7 @@ plot_interval <- function(df, exteroPost = NA, interoPost = NA) {
       scale_y_continuous(name = expression(paste("Intensity  (", Delta, "BPM)"))) +
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))
   }
-
+  
   if (length(unique(df$Modality)) == 1) {
     if (unique(as.character(df$Modality == "Intero"))) {
       intervalplot <- df %>% ggplot(aes()) +
@@ -515,7 +515,7 @@ plot_interval <- function(df, exteroPost = NA, interoPost = NA) {
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))
     }
   }
-
+  
   return(intervalplot)
 }
 
@@ -529,7 +529,7 @@ analysis_plot <- function(df) {
     summarize(means = last(na.omit(EstimatedThreshold)), sds = last(na.omit(EstimatedSlope))) %>%
     inner_join(df, by = "Modality") %>%
     ungroup()
-
+  
   # making the curves for each modality based on the cumulative normal distribution
   dfq <- df %>%
     filter(Modality == "Extero") %>%
@@ -540,8 +540,8 @@ analysis_plot <- function(df) {
     mutate(x = seq(-40, 40, length.out = nrow(.)), y = pnorm(x, means, sds)) %>%
     ungroup()
   df <- rbind(dfq, dfqq)
-
-
+  
+  
   # making two data frames one that counts the number of responses in each intensity and morality and one that gives all possible combination of these
   d1 <- df %>%
     filter(Decision != "NA", Decision == "More") %>%
@@ -567,17 +567,17 @@ analysis_plot <- function(df) {
   f <- full_join(f1, f2) %>%
     replace_na(list(resp = 0)) %>%
     mutate(procent = resp / total, Decision = "More")
-
-
+  
+  
   # going from sd of normal distribution to slop on cumulative normal in the mean is just differentiating the cumulative normal:
   # that is the normal distribution and you then want to slope at where the mean is which reduces to slope = 1/(sigma*2*pi)
-
-
-
+  
+  
+  
   data1 <- df %>% filter(Modality == "Extero")
   data2 <- df %>% filter(Modality == "Intero")
-
-
+  
+  
   # plot
   analysisplot <- df %>%
     ggplot(aes()) +
@@ -610,13 +610,13 @@ analysis_plot <- function(df) {
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
       panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.position = c(0.1, 0.90), legend.key.size = unit(1.5, "cm"), legend.key = element_rect(fill = "white")
     )
-
+  
   df <- data.frame(
     condition = c(unique(data1$Modality), unique(data2$Modality)),
     threshold = c(unique(data1$means), unique(data2$means)),
     slopes = c((unique(data1$sds)), (unique(data2$sds)))
   )
-
+  
   return(list(analysisplot, df))
 }
 
@@ -632,27 +632,27 @@ getdata <- function(df) {
   d2 <- df %>%
     filter(Decision == "More") %>%
     tidyr::expand(Alpha)
-
+  
   f1 <- full_join(d1, d2) %>%
     replace_na(list(resp = 0))
-
+  
   # responses in total:
-
+  
   d3 <- df %>%
     group_by(Alpha) %>%
     summarize(total = n())
   d4 <- df %>% tidyr::expand(Alpha)
-
+  
   f2 <- full_join(d3, d4) %>%
     replace_na(list(total = 0))
-
+  
   # merging the two
   f <- full_join(f1, f2) %>%
     replace_na(list(resp = 0))
-
+  
   f$procent <- f$resp / f$total
-
-
+  
+  
   return(f)
 }
 
@@ -662,19 +662,19 @@ getdata <- function(df) {
 
 bayseanalysis <- function(df, model) {
   data <- list(N = nrow(df), n = df$total, y = df$resp, x = df$Alpha)
-
-
+  
+  
   # complieing stan model:
   mod <- model
-
+  
   # running the model:
   fit <- mod$sample(
     data = data,
     chains = 4,
     parallel_chains = 4, refresh = 0, iter_warmup = 2000, iter_sampling = 2000
   )
-
-
+  
+  
   return(fit)
 }
 
@@ -687,11 +687,11 @@ diagnostics <- function(fit, Modal) {
   } else {
     color_scheme_set("red")
   }
-
+  
   # diagnostics
   chainplot <- bayesplot::mcmc_dens_chains(fit$draws(c("alpha", "beta")))+theme_classic()
   traceplot <- bayesplot::mcmc_trace(fit$draws(c("alpha", "beta")))+theme_classic()
-
+  
   return(list(chainplot, traceplot))
 }
 
@@ -706,27 +706,27 @@ plotdraws <- function(data, fit, Modal) {
   } else {
     col <- "#c44e52"
   }
-
+  
   datap <- posterior::as_draws_df(fit)
   datamean1 <- datap %>% summarize(alpha = mean(alpha), beta = mean(beta))
-
+  
   datamean <- data.frame(x = seq(-40, 40, by = 1), y = pnorm(seq(-40, 40, by = 1), datamean1$alpha, datamean1$beta))
-
+  
   x <- seq(-40, 40, by = 0.1)
   y1 <- as.data.frame(1:801)
   x1 <- as.data.frame(1:801)
   i1 <- as.data.frame(1:801)
-
+  
   for (i in 1:100) {
     y1[, i] <- pnorm(x, mean = datap$alpha[i], sd = datap$beta[i])
     x1[, i] <- x
     i1[, i] <- rep(i, 801)
   }
   qp <- data.frame(c(ys = pivot_longer(y1, cols = everything()), xs = pivot_longer(x1, cols = everything()), is = pivot_longer(i1, cols = everything())))
-
-
-
-
+  
+  
+  
+  
   bayseplot <- qp %>% ggplot() +
     geom_line(data = qp, aes(x = xs.value, y = ys.value, group = as.factor(is.value)), alpha = 1 / 20, color = "black") +
     geom_line(data = datamean, aes(x = x, y = y), color = col, size = 1.2) +
@@ -744,7 +744,7 @@ plotdraws <- function(data, fit, Modal) {
       panel.background = element_blank(), axis.line = element_line(colour = "black")
     ) +
     scale_x_continuous(breaks = seq(-30, 30, by = 10))
-
+  
   return(bayseplot)
 }
 
@@ -754,18 +754,18 @@ baysiananalysis <- function(df, Modal, model) {
   this_df <- df %>%
     filter(Modality == Modal) %>%
     dplyr::select(Alpha, Decision)
-
+  
   f <- getdata(this_df)
   fit <- bayseanalysis(f, model)
-
+  
   diagnosticplot <- diagnostics(fit, Modal) # 1 is chain #2 is trace
   draws <- plotdraws(f, fit, Modal)
-
+  
   stats <- data.frame(bayesian_alpha = fit$summary("alpha")$mean, bayesian_beta = fit$summary("beta")$mean, condition = Modal)
-
+  
   baysplot <- list(diagnosticplot[[1]], diagnosticplot[[2]], draws, stats)
-
-
+  
+  
   return(baysplot)
 }
 
@@ -788,12 +788,12 @@ get_mean_acc <- function(df) {
     summarize(n = n())
   correct[1, 3] <- correct[1, 3] / total[1, 2]
   correct[2, 3] <- correct[2, 3] / total[2, 2]
-
+  
   correct$Accuracy <- correct$n
   correct$n <- NULL
   correct$ResponseCorrect <- NULL
   df1 <- inner_join(correct, results)
-
+  
   return(df1)
 }
 
@@ -816,32 +816,32 @@ get_AUC = function(df,bins, flem){
   }
   get_AUROC = function(df, modality,bins){
     
-      df <- df %>%
-        filter(Modality == modality) %>% 
-        mutate(stimuli = as.numeric(Alpha > 0), Modality = as.factor(Modality), reponse = as.factor(as.numeric((Decision == "More")))) %>%
-        ungroup()
-      
-      df$Confidence_bin <- discretebins(df, 4)[[1]]
+    df <- df %>%
+      filter(Modality == modality) %>% 
+      mutate(stimuli = as.numeric(Alpha > 0), Modality = as.factor(Modality), reponse = as.factor(as.numeric((Decision == "More")))) %>%
+      ungroup()
     
-      
-      model = get_data(df,modality, bins)
-
-      return(list(model = model,data = df))
-    }
+    df$Confidence_bin <- discretebins(df, 4)[[1]]
     
+    
+    model = get_data(df,modality, bins)
+    
+    return(list(model = model,data = df))
+  }
+  
   n_mod = length(unique(df$Modality))
   
   if(n_mod == 2){
-  int = get_AUROC(df, "Intero",bins)
-  ext = get_AUROC(df, "Extero",bins)
-  model = rbind(int$model,ext$model)
-  
-  flem_AUC_I = flemmings(df, "Intero")
-  flem_AUC_E = flemmings(df, "Extero")
-  
-  data = rbind(int$data,ext$data)
-
-  names = model %>% group_by(Modality)  %>% slice(1) %>% mutate(AUC = round(AUC,3))
+    int = get_AUROC(df, "Intero",bins)
+    ext = get_AUROC(df, "Extero",bins)
+    model = rbind(int$model,ext$model)
+    
+    flem_AUC_I = flemmings(df, "Intero")
+    flem_AUC_E = flemmings(df, "Extero")
+    
+    data = rbind(int$data,ext$data)
+    
+    names = model %>% group_by(Modality)  %>% slice(1) %>% mutate(AUC = round(AUC,3))
   }else{
     int = get_AUROC(df, unique(df$Modality))
     
@@ -853,11 +853,11 @@ get_AUC = function(df,bins, flem){
       mutate(AUC = round(AUC,3))
     
   }
-
-    AUCplot = model %>% 
-      ggplot(aes(col = Modality, group = Modality))+
-      geom_line(aes(x=1-specificity, y = sensitivity))+
-      theme_classic()+
+  
+  AUCplot = model %>% 
+    ggplot(aes(col = Modality, group = Modality))+
+    geom_line(aes(x=1-specificity, y = sensitivity))+
+    theme_classic()+
     geom_text(data = names, aes(x = 0.5,y = 0.2, label = paste0("AUC = ",AUC)),check_overlap = TRUE,position = position_dodge(width = 1))+
     {if(length(unique(df$Modality)) == 1 & unique(df$Modality)[1] == "Intero")scale_color_manual(values = "#c44e52")}+
     {if(length(unique(df$Modality)) == 1 & unique(df$Modality)[1] == "Extero")scale_color_manual(values = "#4c72b0")}+
@@ -879,8 +879,8 @@ get_AUC = function(df,bins, flem){
   
   if(flem == FALSE){
     data = names %>% 
-    dplyr::select(Modality, AUC) %>% 
-    rename(condition = Modality)
+      dplyr::select(Modality, AUC) %>% 
+      rename(condition = Modality)
   }
   if(flem == TRUE){
     data = names %>% 
@@ -890,8 +890,8 @@ get_AUC = function(df,bins, flem){
   
   
   
-return(list(plot = AUCplot,data = data))
-
+  return(list(plot = AUCplot,data = data))
+  
 }
 
 
@@ -901,7 +901,7 @@ flemmings = function(df, modality){
   correct = df$ResponseCorrect
   df$Confidence_bin <- discretebins(df, 4)[[1]]
   conf = df$Confidence_bin
-
+  
   Nratings = 4
   
   i <- Nratings + 1

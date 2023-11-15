@@ -38,7 +38,7 @@ model = cmdstan_model(here("docs","source","examples","R","src","first_model.sta
 results = single_sub_analysis(df, 
                               interoPost = NA, 
                               exteroPost = NA, 
-                              bayesian = F, 
+                              bayesian = T, 
                               model = model, 
                               out = here::here("docs","source","examples","R"))
 ```

@@ -303,7 +303,7 @@ study_analysis <- function(path, bayesian, model, folder = T, out) {
       
       
       data$id = gsub("^\\D*(\\d+).*", "\\1", sub_files[i])
-
+      
       
       file <- basename(sub_files[i])
       data$file = file
