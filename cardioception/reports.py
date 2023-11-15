@@ -4,11 +4,13 @@ import os
 import subprocess
 from os import PathLike
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
 import pkg_resources  # type: ignore
+
+from cardioception.stats import behaviours, psychophysics
 
 
 def cumulative_normal(x, alpha, beta):
@@ -16,6 +18,79 @@ def cumulative_normal(x, alpha, beta):
 
     # Cumulative distribution function for the standard normal distribution
     return 0.5 + 0.5 * pt.erf((x - alpha) / (beta * pt.sqrt(2)))
+
+
+def group_level_preprocessing(
+    results: Union[PathLike, pd.DataFrame],
+    variables: List[str] = ["participant_id", "Modality"],
+    additional_variables=[],
+    behavioural_indices: bool = True,
+    psychophysical_indices: bool = True,
+    metacognitive_indices: bool = True,
+) -> pd.DataFrame:
+    """Extrat all relevant indices from large result data frames.
+
+    .. note::
+        This function concatenate the results from
+        {ref}`cardioception.stats.psychophysics`, {ref}`cardioception.stats.behaviours`
+        and {ref}`cardioception.stats.metacognition`, see the documentation of thoses
+        functions for more details on the indices.
+
+    Parameters
+    ----------
+    results :
+        The data frame merging the individual result data frames. Multiple variables /
+        condition can be specifyed using separate columns with the `variables` argument.
+    variables :
+        The variables coding for group / repeated measures. The default is
+        `participant_id` and `Modality`.
+    additional_variables :
+        Additional variables for group / repeated measures.
+    behavioural_indices :
+        Whether to extract the behavioural indices. Defaults to `True`.
+    psychophysical_indices :
+        Whether to extract the psychophysical indices. Defaults to `True`.
+    metacognitive_indices
+        Whether to extract the metacognitive indices. Defaults to `True`.
+
+    Return
+    ------
+
+    See Also
+    --------
+    cardioception.stats.psychophysics, cardioception.stats.behaviours,
+    cardioception.stats.metacognition
+
+    """
+    # read the input file if only the path was provided
+    if not isinstance(results, pd.DataFrame):
+        results_df = pd.read_csv(results)
+
+    # create a list of variables to use to group the dataframe
+    variables.extend(additional_variables)
+
+    summary_df = pd.DataFrame([])
+
+    if behavioural_indices:
+        behaviours_df = behaviours(
+            summary_df=results_df,
+            variables=variables,
+            additional_variables=additional_variables,
+        )
+        summary_df = pd.merge(left=summary_df, right=behaviours_df, on=variables)
+
+    if psychophysical_indices:
+        psychophysics_df = psychophysics(
+            summary_df=results_df,
+            variables=variables,
+            additional_variables=additional_variables,
+        )
+        summary_df = pd.merge(left=summary_df, right=psychophysics_df, on=variables)
+
+    if metacognitive_indices:
+        pass
+
+    return summary_df
 
 
 def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:

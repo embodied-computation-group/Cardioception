@@ -93,10 +93,12 @@ Reports
 
     report
     preprocessing
+    group_level_preprocessing
 
 
 Stats
 -----
+Extracting the relevant parameters from long result data frame across group / repeated measures. 
 
 .. currentmodule:: cardioception.stats
 
@@ -106,3 +108,4 @@ Stats
    :toctree: generated/stats
 
     psychophysics
+    behaviours

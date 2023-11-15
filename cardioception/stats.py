@@ -23,9 +23,11 @@ def psychophysics(
     This function will use a Bayesian model to estimate psychophysics parameters and
     perform inference using MCMC sampling. The following parameters are returned:
 
-    1. Interoceptive bias
-    - `bayesian_threshold` (the mean of the interoceptive bias)
-    - `bayesian_slope` (the slope of the interoceptive bias)
+    * Interoceptive bias
+
+        * `bayesian_threshold` (the mean of the interoceptive bias)
+
+        * `bayesian_slope` (the slope of the interoceptive bias)
 
     The interoceptive bias :math:`\alpha` represents the difference between the real
     heart rate and the cardiac belief. The interoceptive slope :math:`\beta` represents
@@ -46,12 +48,14 @@ def psychophysics(
     means that the tone needs to be slower than the heart rate for the participant to
     find it the same.
 
-    2. Cardiac beliefs
-    - `belief_mean`
-    - `belief_std`
+    * Cardiac beliefs
+
+        * `belief_mean`
+
+        * `belief_std`
 
     The mean of the cardiac belief :math:`\psi_{alpha}` represents the cardiac frequency
-    that was infered on average through the task. The precision of the cardiac belief
+    that was inferred on average through the task. The precision of the cardiac belief
     :math:`\psi_{beta}` is the standard deviation around this belief. Under the
     hypothesis that the participant is not using any interoceptive information to
     perform the task, this value is the belief used to inform the decision by comparing
@@ -68,16 +72,18 @@ def psychophysics(
     Here :math:`x_i` is the proportion of positive response at the intensity :math:`i`.
     To compute the interoceptive bias, we use the frequency of the tone presented
     during the decision phase only (assuming therefore that this is the only source of
-    information used by the participant). The unit are beat per minutes (bpm).
+    information used by the participant). The units are beat per minute (bpm).
 
     .. note::
         In the two equations above, $erf$ denotes the
-    `error functions<https://en.wikipedia.org/wiki/Error_function>`_ and :math:`\phi`
-    is the cumulative normal function.
+        `error functions <https://en.wikipedia.org/wiki/Error_function>`_ and :math:`\phi`
+        is the cumulative normal function.
 
-    3. Heart rate
-    - `hr_mean` the mean of the averaged heart rates
-    - `hr_std` the standard deviation of the averaged heart rates
+    * Heart rate
+
+        * `hr_mean` the mean of the averaged heart rates
+
+        * `hr_std` the standard deviation of the averaged heart rates
 
     The mean of the averaged heart rates :math:`\omega_{alpha}` and the standard
     deviation of the averaged heart rates :math:`\omega_{beta}` are computed using the
@@ -89,28 +95,31 @@ def psychophysics(
         \omega_{alpha} & \sim \mathcal{Uniform}(15.0, 200.0) \\
         \omega_{beta} & \sim  \mathcal{Uniform}(.1, 50.0) \\
 
-    Here :math:`x_i` is the averaged heart rate at each trial.
+    Here :math:`x_i` is the average heart rate at each trial.
 
     .. note::
-        The heart rate that was recorded on every trials is the average of what was
+        The heart rate that was recorded on every trial is the average of what was
         recorded over the 5 seconds of interoception during the listening phase. Here
         we are returning the mean and standard deviation of these values.
+
+    .. warning::
+        This function requires `PyMC <https://github.com/pymc-devs/pymc>`_.
 
     Parameters
     ----------
     summary_df :
-        The data frame merging the individual result data frames. Multiple variables /
-        condition can be specifyed using separate columns with the `variables` argument.
+        The data frame merges the individual result data frames. Multiple variables/
+        condition can be specified using separate columns with the `variables` argument.
     variables :
-        The variables coding for group / repeated measures. The default is
+        The variables coding for group/repeated measures. The default is
         `participant_id` and `Modality`.
     additional_variables :
-        Additional variables for group / repeated measures.
+        Additional variables for group/repeated measures.
 
     Returns
     -------
     results_df :
-        The data frame containing, for each participant / condition / group, the
+        The data frame containing, for each participant/condition/group, the
         psychometric variables.
     """
     import pymc as pm
@@ -121,6 +130,10 @@ def psychophysics(
     # the final data fram where results are saved
     results_df = pd.DataFrame()
 
+    print("Extracting psychometric parameters from a large data frame.")
+    print(f"... Independent variables provided: {variables}.")
+    print(f"... {len(list(summary_df.groupby(variables)))} conditions in total.")
+
     # extract psychophysics parameters from trials for each sub data frame
     bias_x_total, bias_n_total, bias_r_total, bias_sub_total = [], [], [], []  # bias
     beliefs_x_total, beliefs_n_total, beliefs_r_total, beliefs_sub_total = (
@@ -130,6 +143,7 @@ def psychophysics(
         [],
     )  # beliefs
     hr_total, hr_sub_total = [], []  # heart rate
+    print("... Extract trial-level psychophysics variables.")
     for i, grouped in enumerate(list(summary_df.groupby(variables))):
         cols, sub_df = grouped
 
@@ -139,7 +153,7 @@ def psychophysics(
             ignore_index=True,
         )
 
-        # extract trial level psychometric parameters for bias
+        # extract trial-level psychometric parameters for bias
         # ------------------------------------------------------------------------------
 
         # intensity level, number of trials, number of positive responses
@@ -159,7 +173,7 @@ def psychophysics(
         bias_r_total.extend(rij)
         bias_sub_total.extend(sub_vec)
 
-        # extract trial level psychometric parameters for beliefs
+        # extract trial-level psychometric parameters for beliefs
         # ------------------------------------------------------------------------------
 
         # intensity level, number of trials, number of positive responses
@@ -179,7 +193,7 @@ def psychophysics(
         beliefs_r_total.extend(rij)
         beliefs_sub_total.extend(sub_vec)
 
-        # extract trial level heart rate
+        # extract trial-level heart rate
         # ------------------------------------------------------------------------------
 
         # intensity level, number of trials, number of positive responses
@@ -189,10 +203,11 @@ def psychophysics(
         hr_total.extend(hr)
         hr_sub_total.extend(sub_vec)
 
-    # get the number of model to fit
+    # get the number of models to fit
     n = len(list(summary_df.groupby(variables)))
 
     # fit the model (thresholds and slopes)
+    print("... Create the model and sample")
     with pm.Model():
         # Heart Rate -------------------------------------------------------------------
         hr_mean = pm.Uniform("hr_mean", lower=15.0, upper=200.0, shape=n)
@@ -244,3 +259,165 @@ def psychophysics(
     results_df["hr_std"] = idata.posterior.hr_std.mean(axis=(0, 1)).to_numpy()
 
     return results_df
+
+
+def behaviours(
+    summary_df: pd.DataFrame,
+    variables: List[str] = ["participant_id", "Modality"],
+    additional_variables=[],
+) -> pd.DataFrame:
+    r"""Extract behavioural parameters from a set of result files from the HRD task.
+
+    For each participant/repeated measure/group, the following parameters are
+    returned:
+
+    * threshold
+        The threshold of the psychometric curve as estimated during the task by the Psi
+        staircase.
+    * slope
+        The slope of the psychometric curve as estimated during the task by the Psi
+        staircase.
+    * decision_mean_rt
+        The average response time to decide whether the tone is faster or slower than
+        the heart rate.
+    * decision_median_rt
+        The median response time to decide whether the tone is faster or slower than
+        the heart rate.
+    * confidence_mean_rt
+        The average response time to provide the confidence ratings.
+    * confidence_median_rt
+        The median response time to provide the confidence ratings.
+    * confidence_mean
+        The average confidence level (using the same scale as what was used during
+        the task).
+    * dprime
+        The sensitivity (SDT indices) in discriminating whether the tone is faster than
+        the heart rate or not.
+    * criterion
+        The bias (SDT indices) in discriminating whether the tone is faster than the
+        heart rate or not.
+
+    .. warning::
+        This function requires `metadpy <https://github.com/LegrandNico/metadpy>`_.
+
+    Parameters
+    ----------
+    summary_df :
+        The data frame merges the individual result data frames. Multiple variables /
+        condition can be specified using separate columns with the `variables` argument.
+    variables :
+        The variables coding for group / repeated measures. The default is
+        `participant_id` and `Modality`.
+    additional_variables :
+        Additional variables for group / repeated measures.
+
+    Returns
+    -------
+    results_df :
+        The data frame containing, for each participant/condition/group, the
+        psychometric variables.
+    """
+    from metadpy import sdt
+
+    # create a list of variables to use to group the dataframe
+    variables.extend(additional_variables)
+
+    # the final data fram where results are saved
+    results_df = pd.DataFrame()
+
+    print("Extracting behavioural indices from a large data frame.")
+    print(f"... Independent variables provided: {variables}.")
+    print(f"... {len(list(summary_df.groupby(variables)))} conditions in total.")
+
+    for grouped in list(summary_df.groupby(variables)):
+        cols, sub_df = grouped
+
+        # psychophysics (Psi estimates)
+        threshold = sub_df.EstimatedThreshold.dropna().iloc[-1]
+        slope = sub_df.EstimatedSlope.dropna().iloc[-1]
+
+        # response time
+        # -------------
+        decision_mean_rt = sub_df.DecisionRT.mean()
+        decision_median_rt = sub_df.DecisionRT.median()
+
+        confidence_mean_rt = sub_df.ConfidenceRT.mean()
+        confidence_median_rt = sub_df.ConfidenceRT.median()
+
+        # confidence
+        # ----------
+        confidence_mean = sub_df.Confidence.mean()
+
+        # signal detection theory metrics
+        # -------------------------------
+        sub_df["Stimuli"] = sub_df.responseBPM > sub_df.listenBPM
+        sub_df["Responses"] = sub_df.Decision == "More"
+
+        # check that both signals have at least 5 valid trials each
+        if (sub_df["Stimuli"].sum() > 5) & ((~sub_df["Stimuli"]).sum() > 5):
+            hit, miss, fa, cr = sub_df.scores()
+            hr, far = sdt.rates(hits=hit, misses=miss, fas=fa, crs=cr)
+            dprime, criterion = sdt.dprime(hit_rate=hr, fa_rate=far), sdt.criterion(
+                hit_rate=hr, fa_rate=far
+            )
+        else:
+            (
+                dprime,
+                criterion,
+            ) = (
+                None,
+                None,
+            )
+
+        # update the independent variables
+        new_row = pd.Series(cols, index=variables).to_frame().T
+        new_row["threshold"] = threshold
+        new_row["slope"] = slope
+        new_row["decision_mean_rt"] = decision_mean_rt
+        new_row["decision_median_rt"] = decision_median_rt
+        new_row["confidence_mean_rt"] = confidence_mean_rt
+        new_row["confidence_median_rt"] = confidence_median_rt
+        new_row["confidence_mean"] = confidence_mean
+        new_row["dprime"] = dprime
+        new_row["criterion"] = criterion
+
+        results_df = pd.concat(
+            [results_df, new_row],
+            ignore_index=True,
+        )
+
+    return results_df
+
+
+def metacognition(
+    summary_df: pd.DataFrame,
+    variables: List[str] = ["participant_id", "Modality"],
+    additional_variables=[],
+    bayesian: bool = True,
+) -> pd.DataFrame:
+    r"""Extract metacognitive parameters from a set of result files from the HRD task.
+
+    For each participant/repeated measure/group, the following parameters are
+    returned:
+
+
+    .. warning::
+        This function requires `metadpy <https://github.com/LegrandNico/metadpy>`_.
+
+    Parameters
+    ----------
+    summary_df :
+        The data frame merges the individual result data frames. Multiple variables/
+        condition can be specified using separate columns with the `variables` argument.
+    variables :
+        The variables coding for group/repeated measures. The default is
+        `participant_id` and `Modality`.
+    additional_variables :
+        Additional variables for group/repeated measures.
+
+    Returns
+    -------
+    results_df :
+        The data frame containing, for each participant/condition/group, the
+        psychometric variables.
+    """
