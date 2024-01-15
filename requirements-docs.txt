@@ -7,7 +7,7 @@ myst-nb>=0.16.0
 sphinx==5.3.0
 numpydoc>=1.4.0
 myst-parser
-bokeh==2.4.3
+bokeh==3.0.0
 graphviz
 metadpy>=0.0.1
 watermark

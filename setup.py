@@ -20,7 +20,7 @@ LONG_DESCRIPTION = """Measuring interoceptive performance with Psychopy.
 DISTNAME = "cardioception"
 MAINTAINER = "Nicolas Legrand"
 MAINTAINER_EMAIL = "nicolas.legrand@cas.au.dk"
-VERSION = "0.4.4"
+VERSION = "0.5.0"
 
 if __name__ == "__main__":
 
@@ -34,6 +34,7 @@ if __name__ == "__main__":
         long_description=LONG_DESCRIPTION,
         license=read("LICENSE"),
         version=VERSION,
+        url="https://github.com/LegrandNico/Cardioception",
         install_requires=get_requirements(),
         include_package_data=True,
         packages=find_packages(),
