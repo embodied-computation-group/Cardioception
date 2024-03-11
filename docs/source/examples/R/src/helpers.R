@@ -843,11 +843,13 @@ get_AUC = function(df,bins, flem){
     
     names = model %>% group_by(Modality)  %>% slice(1) %>% mutate(AUC = round(AUC,3))
   }else{
-    int = get_AUROC(df, unique(df$Modality))
+    int = get_AUROC(df, unique(df$Modality), bins)
     
     model = rbind(int$model)
     
     data = rbind(int$data)
+
+    flem_AUC_I = flemmings(df, unique(df$Modality))
     
     names = model  %>% slice(1) %>% 
       mutate(AUC = round(AUC,3))
@@ -883,9 +885,15 @@ get_AUC = function(df,bins, flem){
       rename(condition = Modality)
   }
   if(flem == TRUE){
+     if (n_mod == 2) {
     data = names %>% 
       dplyr::select(Modality) %>% 
       rename(condition = Modality) %>% cbind(flem_AUC = c(flem_AUC_I,flem_AUC_E))
+    } else {
+      data = names %>% 
+        dplyr::select(Modality) %>% 
+        rename(condition = Modality) %>% cbind(flem_AUC = flem_AUC_I)
+    }
   }
   
   
