@@ -153,67 +153,74 @@ single_sub_analysis <- function(df, interoPost = NA, exteroPost = NA, bayesian =
   # if the bayesian analysis is selected:
   if (bayesian == TRUE) {
     if (n_mod == 2) {
-      # run bayesian analysis on Extero and Intero and append the statistics to the dataframe (resultsdata)
-      baysextero <- baysiananalysis(df, "Extero", model)
-      stats <- baysextero[[4]]
       
-      baysintero <- baysiananalysis(df, "Intero", model)
-      stats <- rbind(stats, baysintero[[4]])
-      
-      resultsdata <- cbind(resultsdata, stats)
-      
-      baysplot_ex <- baysextero[[1]] + baysextero[[2]] + baysextero[[3]] + plot_layout(design = c(
-        patchwork::area(1, 1, 1, 1),
-        patchwork::area(1, 2, 1, 2),
-        patchwork::area(2, 1, 3, 2)
-      ))
-      
-      baysplot_in <- baysintero[[1]] + baysintero[[2]] + baysintero[[3]] + plot_layout(design = c(
-        patchwork::area(1, 1, 1, 1),
-        patchwork::area(1, 2, 1, 2),
-        patchwork::area(2, 1, 3, 2)
-      ))
-      
-      baysplot <- baysextero[[1]] + baysextero[[2]] + baysextero[[3]] + baysintero[[1]] + baysintero[[2]] + baysintero[[3]] + plot_layout(design = c(
-        patchwork::area(1, 1, 1, 1),
-        patchwork::area(1, 2, 1, 2),
-        patchwork::area(2, 1, 3, 2),
-        patchwork::area(1, 3, 1, 3),
-        patchwork::area(1, 4, 1, 4),
-        patchwork::area(2, 3, 3, 4)
-      ))
-      
-      # save the figures
-      ggsave(paste0(output_dir,"/resultplot_bayse_intero",idx,".png"), baysplot_in, width = 4000, height = 2200, units = "px")
-      ggsave(paste0(output_dir,"/resultplot_bayse_extero",idx,".png"), baysplot_ex, width = 4000, height = 2200, units = "px")
-      ggsave(paste0(output_dir,"/resultplot_bayse",idx,".png"), baysplot, width = 4000, height = 2200, units = "px")
-      
-      baysplot <- list(baysplot_ex, baysplot_in, baysplot)
+        # run bayesian analysis on Extero and Intero and append the statistics to the dataframe (resultsdata)
+        results = run_bayes_analysis(df1, model)
+        
+        # Combine stuff for stats and plots
+        stats <- rbind(results[["Intero"]][["stats"]],results[["Extero"]][["stats"]])
+        
+        resultsdata <- cbind(resultsdata, stats)
+        
+        baysplot_ex <- results[["Extero"]][["chainplot"]] + results[["Extero"]][["traceplot"]] + results[["Extero"]][["bayseplot"]] +
+          plot_layout(design = c(
+          patchwork::area(1, 1, 1, 1),
+          patchwork::area(1, 2, 1, 2),
+          patchwork::area(2, 1, 3, 2)
+        ))
+        
+        baysplot_in <- results[["Intero"]][["chainplot"]] + results[["Intero"]][["traceplot"]] + results[["Intero"]][["bayseplot"]] +
+          plot_layout(design = c(
+          patchwork::area(1, 1, 1, 1),
+          patchwork::area(1, 2, 1, 2),
+          patchwork::area(2, 1, 3, 2)
+        ))
+        
+        # save the figures
+        ggsave(paste0(output_dir,"/resultplot_bayse_intero",idx,".png"), baysplot_in, width = 4000, height = 2200, units = "px")
+        ggsave(paste0(output_dir,"/resultplot_bayse_extero",idx,".png"), baysplot_ex, width = 4000, height = 2200, units = "px")
+        
+        bayesplot <- list(baysplot_ex, baysplot_in)
     }
+    
     
     if (n_mod == 1) {
-      bayse <- baysiananalysis(df, as.character(unique(df$Modality)), model)
-      stats <- bayse[[4]]
+      
+      modality = unique(df$Modality)
+      # run bayesian analysis on Extero and Intero and append the statistics to the dataframe (resultsdata)
+      results = run_bayes_analysis(df1, model)
+      
+      stats <- rbind(results[[modality]][["stats"]])
+      
       resultsdata <- cbind(resultsdata, stats)
       
-      baysplot <- bayse[[1]] + bayse[[2]] + bayse[[3]] + plot_layout(design = c(
-        patchwork::area(1, 1, 1, 1),
-        patchwork::area(1, 2, 1, 2),
-        patchwork::area(2, 1, 3, 2)
-      ))
-      ggsave(paste0(output_dir,"/resultplot_bayse",idx,".png"), baysplot, width = 4000, height = 2200, units = "px")
+      bayesplot <- results[[modality]][["chainplot"]] + results[[modality]][["traceplot"]] + results[[modality]][["bayseplot"]] +
+        plot_layout(design = c(
+          patchwork::area(1, 1, 1, 1),
+          patchwork::area(1, 2, 1, 2),
+          patchwork::area(2, 1, 3, 2)
+        ))
+      
+      # save the figures
+      ggsave(paste0(output_dir,paste0("/resultplot_bayse_",modality),idx,".png"), bayesplot, width = 4000, height = 2200, units = "px")
+      
+      bayesplot <- list(bayesplot)
     }
     
-    # delete all duplicate columns in the resulting dataframe
+
+      # delete all duplicate columns in the resulting dataframe
+      
+      resultsdata <- resultsdata[, !duplicated(colnames(resultsdata))]
+      # give it sensisble rownames:
+      rownames(resultsdata) <- 1:nrow(resultsdata)
+      # save it
+      write.csv(resultsdata, paste0(output_dir,"/data",idx,".csv"))
+      
+      return(list(rt_plot = reactiontimeplot, summary_stat = stat, conf_plot = confidenceplot,AUC_plot = AUC_plot, staircase_plot = intervalplot, histogram_plot = intensityplot, analysis_plot = analysisplot, concatenated_plot = plot, stats = resultsdata, bayesian_plot = bayesplot))
+      
     
-    resultsdata <- resultsdata[, !duplicated(colnames(resultsdata))]
-    # give it sensisble rownames:
-    rownames(resultsdata) <- 1:nrow(resultsdata)
-    # save it
-    write.csv(resultsdata, paste0(output_dir,"/data",idx,".csv"))
-    
-    return(list(rt_plot = reactiontimeplot, summary_stat = stat, conf_plot = confidenceplot,AUC_plot = AUC_plot, staircase_plot = intervalplot, histogram_plot = intensityplot, analysis_plot = analysisplot, concatenated_plot = plot, stats = resultsdata, bayesian_plot = baysplot))
   }
+  
   # delete all duplicate columns in the resulting dataframe
   resultsdata <- resultsdata[, !duplicated(colnames(resultsdata))]
   # give it sensisble rownames:

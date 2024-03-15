@@ -59,12 +59,12 @@ out is the output directory for the results of the analysis
 
 
 ```{r message=FALSE, results='hide',warning=FALSE}
-results = single_sub_analysis(df,                                                                  #The raw dataframe
-                              interoPost = interoPost,                                             #numpy array for the intero (NA if not avaliable)
-                              exteroPost = exteroPost,                                             #numpy array for the extero (NA if not avaliable)
-                              bayesian = F,                                                        #Bayesian Analysis (TRUE/FALSE)
-                              model = NA,                                                          #Bayesian model here a stan script (NA if Bayesian is FALSE)
-                              out = here::here("docs","source","examples","R"))                    #Output directory for results      
+results = single_sub_analysis(df,                                                         #The raw dataframe
+                              interoPost = interoPost,                                    #numpy array for the intero (NA if not avaliable)
+                              exteroPost = exteroPost,                                    #numpy array for the extero (NA if not avaliable)
+                              bayesian = F,                                               #Bayesian Analysis (TRUE/FALSE)
+                              model = NA,                                                 #Bayesian model here a stan script (NA if Bayesian is FALSE)
+                              out = here::here("docs","source","examples","R"))           #Output directory for results      
 ```
 
 **Note that these analyses can also be run with only one "Modality", important is that either the interopost or exteropost then gets set to NA i.e. the modality you do not have access to!**

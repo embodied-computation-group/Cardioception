@@ -621,157 +621,6 @@ analysis_plot <- function(df) {
 }
 
 
-
-
-# helper function for the bayesian analysis.
-getdata <- function(df) {
-  d1 <- df %>%
-    filter(Decision == "More") %>%
-    group_by(Alpha, .drop = FALSE) %>%
-    summarize(resp = n())
-  d2 <- df %>%
-    filter(Decision == "More") %>%
-    tidyr::expand(Alpha)
-  
-  f1 <- full_join(d1, d2) %>%
-    replace_na(list(resp = 0))
-  
-  # responses in total:
-  
-  d3 <- df %>%
-    group_by(Alpha) %>%
-    summarize(total = n())
-  d4 <- df %>% tidyr::expand(Alpha)
-  
-  f2 <- full_join(d3, d4) %>%
-    replace_na(list(total = 0))
-  
-  # merging the two
-  f <- full_join(f1, f2) %>%
-    replace_na(list(resp = 0))
-  
-  f$procent <- f$resp / f$total
-  
-  
-  return(f)
-}
-
-
-
-# baysian analysis of the dataframe df with a given model
-
-bayseanalysis <- function(df, model) {
-  data <- list(N = nrow(df), n = df$total, y = df$resp, x = df$Alpha)
-  
-  
-  # complieing stan model:
-  mod <- model
-  
-  # running the model:
-  fit <- mod$sample(
-    data = data,
-    chains = 4,
-    parallel_chains = 4, refresh = 0, iter_warmup = 2000, iter_sampling = 2000
-  )
-  
-  
-  return(fit)
-}
-
-
-# diagnostic function for the baysian model fit.
-
-diagnostics <- function(fit, Modal) {
-  if (Modal == "Extero") {
-    color_scheme_set("blue")
-  } else {
-    color_scheme_set("red")
-  }
-  
-  # diagnostics
-  chainplot <- bayesplot::mcmc_dens_chains(fit$draws(c("alpha", "beta")))+theme_classic()
-  traceplot <- bayesplot::mcmc_trace(fit$draws(c("alpha", "beta")))+theme_classic()
-  
-  return(list(chainplot, traceplot))
-}
-
-
-
-
-# function to get plot draws of the joint posterior distribution of the fit (baysian model fit)
-plotdraws <- function(data, fit, Modal) {
-  # make plot as with brms:
-  if (Modal == "Extero") {
-    col <- "#4c72b0"
-  } else {
-    col <- "#c44e52"
-  }
-  
-  datap <- posterior::as_draws_df(fit)
-  datamean1 <- datap %>% summarize(alpha = mean(alpha), beta = mean(beta))
-  
-  datamean <- data.frame(x = seq(-40, 40, by = 1), y = pnorm(seq(-40, 40, by = 1), datamean1$alpha, datamean1$beta))
-  
-  x <- seq(-40, 40, by = 0.1)
-  y1 <- as.data.frame(1:801)
-  x1 <- as.data.frame(1:801)
-  i1 <- as.data.frame(1:801)
-  
-  for (i in 1:100) {
-    y1[, i] <- pnorm(x, mean = datap$alpha[i], sd = datap$beta[i])
-    x1[, i] <- x
-    i1[, i] <- rep(i, 801)
-  }
-  qp <- data.frame(c(ys = pivot_longer(y1, cols = everything()), xs = pivot_longer(x1, cols = everything()), is = pivot_longer(i1, cols = everything())))
-  
-  
-  
-  
-  bayseplot <- qp %>% ggplot() +
-    geom_line(data = qp, aes(x = xs.value, y = ys.value, group = as.factor(is.value)), alpha = 1 / 20, color = "black") +
-    geom_line(data = datamean, aes(x = x, y = y), color = col, size = 1.2) +
-    geom_point(data = data, aes(x = Alpha, y = procent, size = total * 5, alpha = 0.5, color = col), show.legend = FALSE) +
-    coord_cartesian(xlim = c(-35, 35)) +
-    scale_size(range = c(0, 15)) +
-    geom_text(data = datamean1, aes(x = -25, y = 0.80, label = paste("Threshold for ", Modal, "is", round(fit$summary("alpha")$mean, 2), "\u00B1", round(fit$summary("alpha")$sd, 2)), col = col), size = 3, show.legend = F) +
-    geom_text(data = datamean1, aes(x = -25, y = 0.70, label = paste("Slope for ", Modal, "is", round(fit$summary("beta")$mean, 2), "\u00B1", round(fit$summary("beta")$sd, 2)), col = col), size = 3, show.legend = F) +
-    scale_color_manual(values = col) +
-    theme(legend.title = element_blank()) +
-    ylab(label = "P(Response = More | Intensity)") +
-    xlab(expression(paste("Intensity  (", Delta, "BPM)"))) +
-    theme(
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      panel.background = element_blank(), axis.line = element_line(colour = "black")
-    ) +
-    scale_x_continuous(breaks = seq(-30, 30, by = 10))
-  
-  return(bayseplot)
-}
-
-
-# combining the bayesian analysis scripts to run a bayesian analysis with diagnostic checks and joint posterior draws.
-baysiananalysis <- function(df, Modal, model) {
-  this_df <- df %>%
-    filter(Modality == Modal) %>%
-    dplyr::select(Alpha, Decision)
-  
-  f <- getdata(this_df)
-  fit <- bayseanalysis(f, model)
-  
-  diagnosticplot <- diagnostics(fit, Modal) # 1 is chain #2 is trace
-  draws <- plotdraws(f, fit, Modal)
-  
-  stats <- data.frame(bayesian_alpha = fit$summary("alpha")$mean, bayesian_beta = fit$summary("beta")$mean, condition = Modal)
-  
-  baysplot <- list(diagnosticplot[[1]], diagnosticplot[[2]], draws, stats)
-  
-  
-  return(baysplot)
-}
-
-
-
-
 # function to get mean accuracy
 get_mean_acc <- function(df) {
   results <- df %>%
@@ -798,6 +647,11 @@ get_mean_acc <- function(df) {
 }
 
 
+
+
+
+
+
 get_AUC = function(df,bins, flem){
   
   get_data = function(df, modality,bins){
@@ -814,6 +668,7 @@ get_AUC = function(df,bins, flem){
     
     return(pROC::ggroc(roc_con)$data %>% mutate(Modality = modality, AUC = auc[[1]]))
   }
+  
   get_AUROC = function(df, modality,bins){
     
     df <- df %>%
@@ -843,7 +698,7 @@ get_AUC = function(df,bins, flem){
     
     names = model %>% group_by(Modality)  %>% slice(1) %>% mutate(AUC = round(AUC,3))
   }else{
-    int = get_AUROC(df, unique(df$Modality))
+    int = get_AUROC(df, unique(df$Modality),bins)
     
     model = rbind(int$model)
     
@@ -882,10 +737,14 @@ get_AUC = function(df,bins, flem){
       dplyr::select(Modality, AUC) %>% 
       rename(condition = Modality)
   }
-  if(flem == TRUE){
+  if(flem == TRUE & n_mod == 2){
     data = names %>% 
       dplyr::select(Modality) %>% 
       rename(condition = Modality) %>% cbind(flem_AUC = c(flem_AUC_I,flem_AUC_E))
+  }else if(flem == TRUE & n_mod == 1){
+    data = names %>% 
+      dplyr::select(Modality, AUC) %>% 
+      rename(condition = Modality)
   }
   
   
@@ -932,4 +791,239 @@ flemmings = function(df, modality){
   # AUROC is stored in 'auroc2'
   return(auroc2)
   
+}
+
+
+
+
+
+#bayesian stuff:
+
+
+run_bayes_analysis = function(df, model){
+  
+  # compiling the Stan model:
+  mod <- model
+  
+  results = list()
+  i = 0
+  for(modality in unique(df$Modality)){
+    i = i+1
+    
+    df_1 <- df %>% 
+      filter(Modality == modality) %>% 
+      group_by(Alpha) %>%
+      summarize(x=mean(Alpha),
+                resp = sum(Decision=="More"),
+                n = n())
+    
+    
+    standata <- list(N = nrow(df_1), n = df_1$n, y = df_1$resp, x = df_1$Alpha)
+    
+    if(grepl("Lapse",mod$stan_file())){
+      
+       fitted = run_lapse(standata,modality,mod)
+       
+    }else{
+      
+      fitted = run_normal(standata,modality,mod)
+      
+    }
+    
+    results[[modality]] = fitted
+  }
+  
+  
+  
+  return(results)
+  
+  
+}
+
+
+run_normal = function(standata,modality,mod){
+  
+
+  # running the model:
+  fit <- mod$sample(
+    data = standata,
+    chains = 4,
+    parallel_chains = 4,
+    refresh = 0,
+    iter_warmup = 2000,
+    iter_sampling = 2000
+  )
+  
+  if (modality == "Extero") {
+    color_scheme_set("blue")
+    col <- "#4c72b0"
+  } else if(modality == "Intero"){
+    color_scheme_set("red")
+    col <- "#c44e52"
+    
+  }else{
+    color_scheme_set("grey")
+  }
+  
+  # diagnostics
+  chainplot <- bayesplot::mcmc_dens_chains(fit$draws(c("alpha", "beta_unconstrained")))+theme_classic()
+  traceplot <- bayesplot::mcmc_trace(fit$draws(c("alpha", "beta_unconstrained")))+theme_classic()
+  
+  
+  data = data.frame(standata) %>% mutate(procent = y/n)
+  
+
+  
+  datap <- posterior::as_draws_df(fit)
+  datamean1 <- datap %>% summarize(alpha = mean(alpha), beta = mean(beta))
+  
+  datamean <- data.frame(x = seq(-40, 40, by = 1), y = pnorm(seq(-40, 40, by = 1), datamean1$alpha, datamean1$beta))
+  
+  x <- seq(-40, 40, by = 0.1)
+  y1 <- as.data.frame(1:801)
+  x1 <- as.data.frame(1:801)
+  i1 <- as.data.frame(1:801)
+  
+  for (i in 1:100) {
+    y1[, i] <- pnorm(x, mean = datap$alpha[i], sd = datap$beta[i])
+    x1[, i] <- x
+    i1[, i] <- rep(i, 801)
+  }
+  qp <- data.frame(c(ys = pivot_longer(y1, cols = everything()),
+                     xs = pivot_longer(x1, cols = everything()),
+                     is = pivot_longer(i1, cols = everything())))
+  
+  
+  
+  
+  bayseplot <- qp %>% ggplot() +
+    geom_line(data = qp, aes(x = xs.value, y = ys.value, group = as.factor(is.value)), alpha = 1 / 20, color = "black") +
+    geom_line(data = datamean, aes(x = x, y = y), color = col, size = 1.2) +
+    geom_point(data = data, aes(x = x, y = procent, size = n * 5, alpha = 0.5, color = col), show.legend = FALSE) +
+    coord_cartesian(xlim = c(-35, 35)) +
+    scale_size(range = c(0, 15)) +
+    geom_text(data = datamean1, aes(x = -25, y = 0.80, label = paste("Threshold for ", modality, "is", round(fit$summary("alpha")$mean, 2), "\u00B1", round(fit$summary("alpha")$sd, 2)), col = col), size = 3, show.legend = F) +
+    geom_text(data = datamean1, aes(x = -25, y = 0.70, label = paste("Slope for ", modality, "is", round(fit$summary("beta")$mean, 2), "\u00B1", round(fit$summary("beta")$sd, 2)), col = col), size = 3, show.legend = F) +
+    scale_color_manual(values = col) +
+    theme(legend.title = element_blank()) +
+    ylab(label = "P(Response = More | Intensity)") +
+    xlab(expression(paste("Intensity  (", Delta, "BPM)"))) +
+    theme(
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      panel.background = element_blank(), axis.line = element_line(colour = "black")
+    ) +
+    scale_x_continuous(breaks = seq(-30, 30, by = 10))
+  
+  stats <- data.frame(bayesian_alpha_mean = fit$summary("alpha")$mean,
+                      bayesian_beta_mean = fit$summary("beta")$mean,
+                      bayesian_lambda_mean = NA,
+                      bayesian_alpha_sd = fit$summary("alpha")$sd,
+                      bayesian_beta_sd = fit$summary("beta")$sd,
+                      bayesian_lambda_sd = NA,
+                      divergences = mean(fit$diagnostic_summary()$num_divergent),
+                      rhat = mean(fit$summary() %>% .$rhat),
+                      condition = modality)
+  
+  
+  
+  return(list(chainplot = chainplot,traceplot = traceplot,bayseplot = bayseplot, stats = stats))
+  
+}
+
+
+run_lapse = function(standata,modality,mod){
+  # running the model:
+  fit <- mod$sample(
+    data = standata,
+    chains = 4,
+    parallel_chains = 4,
+    refresh = 0,
+    iter_warmup = 2000,
+    iter_sampling = 2000
+  )
+  
+  if (modality == "Extero") {
+    color_scheme_set("blue")
+    col <- "#4c72b0"
+  } else if(modality == "Intero"){
+    color_scheme_set("red")
+    col <- "#c44e52"
+    
+  }else{
+    color_scheme_set("grey")
+  }
+  
+  # diagnostics
+  chainplot <- bayesplot::mcmc_dens_chains(fit$draws(c("alpha", "beta_unconstrained","lambda_unconstrained")))+theme_classic()
+  traceplot <- bayesplot::mcmc_trace(fit$draws(c("alpha", "beta_unconstrained","lambda_unconstrained")))+theme_classic()
+  
+  
+  data = data.frame(standata) %>% mutate(procent = y/n)
+  
+  
+  datap <- posterior::as_draws_df(fit)
+  datamean1 <- datap %>% summarize(alpha = mean(alpha), beta = mean(beta), lambda = mean(lambda))
+  
+  datamean <- data.frame(x = seq(-40, 40, by = 1), y = psychometric(seq(-40,40, by = 1), datamean1$alpha,datamean1$beta,datamean1$lambda))
+  
+  x <- seq(-40, 40, by = 0.1)
+  y1 <- as.data.frame(1:801)
+  x1 <- as.data.frame(1:801)
+  i1 <- as.data.frame(1:801)
+  
+  for (i in 1:100) {
+    y1[, i] <- psychometric(x, datap$alpha[i], datap$beta[i], datap$lambda[i])
+    x1[, i] <- x
+    i1[, i] <- rep(i, 801)
+  }
+  qp <- data.frame(c(ys = pivot_longer(y1, cols = everything()),
+                     xs = pivot_longer(x1, cols = everything()),
+                     is = pivot_longer(i1, cols = everything())))
+  
+  
+  
+  
+  bayseplot <- qp %>% ggplot() +
+    geom_line(data = qp, aes(x = xs.value, y = ys.value, group = as.factor(is.value)), alpha = 1 / 20, color = "black") +
+    geom_line(data = datamean, aes(x = x, y = y), color = col, size = 1.2) +
+    geom_point(data = data, aes(x = x, y = procent, size = n * 5, alpha = 0.5, color = col), show.legend = FALSE) +
+    coord_cartesian(xlim = c(-35, 35)) +
+    scale_size(range = c(0, 15)) +
+    geom_text(data = datamean1, aes(x = -25, y = 0.80, label = paste("Threshold for ", modality, "is", round(fit$summary("alpha")$mean, 2), "\u00B1", round(fit$summary("alpha")$sd, 2)), col = col), size = 3, show.legend = F) +
+    geom_text(data = datamean1, aes(x = -25, y = 0.70, label = paste("Slope for ", modality, "is", round(fit$summary("beta")$mean, 2), "\u00B1", round(fit$summary("beta")$sd, 2)), col = col), size = 3, show.legend = F) +
+    scale_color_manual(values = col) +
+    theme(legend.title = element_blank()) +
+    ylab(label = "P(Response = More | Intensity)") +
+    xlab(expression(paste("Intensity  (", Delta, "BPM)"))) +
+    theme(
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      panel.background = element_blank(), axis.line = element_line(colour = "black")
+    ) +
+    scale_x_continuous(breaks = seq(-30, 30, by = 10))
+  
+  
+  
+  stats <- data.frame(bayesian_alpha_mean = fit$summary("alpha")$mean,
+                      bayesian_beta_mean = fit$summary("beta")$mean,
+                      bayesian_lambda_mean = fit$summary("lambda")$mean,
+                      bayesian_alpha_sd = fit$summary("alpha")$sd,
+                      bayesian_beta_sd = fit$summary("beta")$sd,
+                      bayesian_lambda_sd = fit$summary("lambda")$sd,
+                      divergences = mean(fit$diagnostic_summary()$num_divergent),
+                      rhat = mean(fit$summary() %>% .$rhat),
+                      condition = modality)
+  
+  
+  
+  return(list(chainplot = chainplot,traceplot = traceplot,bayseplot = bayseplot, stats = stats))
+  
+}
+
+psychometric = function(x,alpha,beta,lambda){
+  return(lambda + (1 - 2 * lambda) * (0.5+0.5*erf((x-alpha)/(beta*sqrt(2)))))
+}
+
+
+psychometric_nolapse = function(x,alpha,beta){
+  return((0.5+0.5*erf((x-alpha)/(beta*sqrt(2)))))
 }

@@ -9,8 +9,12 @@ output: html_document
 # **Here we show how to perform a bayesian analysis on the data after it has been collected which is very similar to the "simple" analysis. Please see the "simple analysis before this!**
 
 ```{r message=FALSE}
-pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot, grid,reticulate,cmdstanr,posterior,rstan,bayesplot,here,rmarkdown)
+pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot,
+               grid,reticulate,cmdstanr,posterior,rstan,bayesplot,here,rmarkdown,pracma,
+               brms)
 np <- import("numpy")
+
+set.seed(111)
 ```
 
 
@@ -28,12 +32,67 @@ df = psychophysics_df %>% filter(Subject == "sub_0042")
 source(here("docs","source","examples","R","src","firstlevelanalysis.R"))
 ```
 
-The only difference here is that we set bayesian equal to T (TRUE) and specify the model. Here the model is a predefined Stan model that is inside the src folder called first_model.stan
+The only difference here is that we set bayesian equal to T (TRUE) and specify the model. The models can be found in the src folder inside the .stan files. These are probabilitic models written in stan that are compiled and does the sampling. There are two options at the moment for re-fitting there is the standard cummulative normal aswell as a cummulative normal that incorporates a lapse rate, that sepcifies the minimum and maximum of the tails of the psychometric. This means that a lapse rate of 5% (0.05) means that the psychometric on the lower end is 5% and on the upper end is 95%. The reason to include a lapse rate is that if responses are made that are attentional slips or misclicks in the far end of the stimulus spectrum (high or low) then this is greatly influence the slope of the psychometric if modelled without the lapse rate. 
 
-**Doing the same as for the simple analysis with bayesian = T**
+The priors of the bayesian model is as follows in the unconstrained space (beta is constained to be positive so is exponentially transformed, and the lapse is constrained between 0 and 0.5 meaning its inv_logit transformed and then devided by 2:
+
+alpha ~ normal(0,20);
+beta ~ normal(0,3);
+lambda ~ normal(-4,2);
+
+This means that the parameters in the constrained space look like this:
+```{r}
+data.frame(alpha = rnorm(1000,0,20), beta = exp(rnorm(10000,0,3)), lambda = brms::inv_logit_scaled(rnorm(1000,-4,2)) / 2) %>% 
+  pivot_longer(everything(), values_to = "value",names_to = "parameter") %>% 
+  ggplot(aes(x = value, fill = parameter))+geom_histogram(col = "black")+facet_wrap(~parameter, scales = "free")+theme_classic()
+```
+
+Below there is a visualization of what this extra lapse rate does as well as what the priors of the model means when looking at the psychometric function itself:
+
+```{r}
+n_sim = 25
+
+alpha = rnorm(n_sim,0,20)
+beta = rnorm(n_sim,0,3)
+lambda = rnorm(n_sim,-4,2)
+
+data.frame(alpha = alpha, beta = exp(beta), lambda = brms::inv_logit_scaled(lambda) / 2) %>% 
+  rowwise() %>% 
+  mutate(x = list(seq(-80,80,0.1)),
+         y = list(psychometric(seq(-80,80,0.1), alpha, beta, lambda))
+         ) %>% 
+  ungroup %>% 
+  mutate(id = 1:n()) %>% 
+  unnest(cols = c(x, y)) %>% mutate(lapse = T) %>% 
+  ggplot(aes(x = x, y = y, group = id))+
+  geom_line(alpha = 0.5)+theme_classic()+ggtitle("With Lapse rate")
+
+
+
+data.frame(alpha = alpha, beta = exp(beta), lambda = NA) %>% 
+  rowwise() %>% 
+  mutate(x = list(seq(-80,80,0.1)),
+         y = list(psychometric_nolapse(seq(-80,80,0.1), alpha, beta))
+         ) %>% 
+  ungroup %>% 
+  mutate(id = 1:n()) %>% 
+  unnest(cols = c(x, y)) %>% mutate(lapse = F) %>% 
+  ggplot(aes(x = x, y = y, group = id))+
+  geom_line(alpha = 0.5)+theme_classic()+ggtitle("Without Lapse rate")
+
+
+```
+
+If you want to change the priors of the Bayesian model, this has to be done inside the Stan scripts. By opening the .stan File and then changing the last couple of lines of code where the syntax is the same as above, it is therefore possible to visualize what the prior distributions for the parameters and also see what they entail (prior predictive checks) for the shape of the psychometric here in the markdown script and then changing them inside the Stan scripts themselves. 
+
+
+**Running the analysis using this bayesian fit invovles the same as for the simple analysis with two addition arguments firstly the flage bayesian needs to be set to T (TRUE), and a model has to be specified. There are at the moment two different models to choose from, one with the lapse rate and one without**
 
 ```{r message=FALSE, results='hide',warning=FALSE}
-model = cmdstan_model(here("docs","source","examples","R","src","first_model.stan"))
+# No lapse rate model:
+model = cmdstan_model(here("docs","source","examples","R","src","Standard Cummulative normal.stan"))
+# Lapse rate model:
+model = cmdstan_model(here("docs","source","examples","R","src","Lapse Cummulative normal.stan"))
 
 results = single_sub_analysis(df, 
                               interoPost = NA, 
@@ -43,7 +102,7 @@ results = single_sub_analysis(df,
                               out = here::here("docs","source","examples","R"))
 ```
 
-**The results list now also contains a new index called bayesian_plot. This is a list of either 1 or 3 plots. There'll be 1 if you only have one Morality and 3 if you have two (Extero and Intero). Here there is 3 plots**
+**The results list now also contains a new index called bayesian_plot. This is a list of either 1 or 3 plots. There will be 1 if you only have one Morality and 2 if you have two (Extero and Intero). Here there is 3 plots**
 
 Lets look at them individually:
 
@@ -51,17 +110,16 @@ Lets look at them individually:
 results$bayesian_plot[[1]]
 ```
 
-**NOTE: The Import thing to look at for good model convergence is the upper plots: Here we see that all the 4 chains (to the left) seem to capture the same posterior distribution. It is also clear from the trace-plots to the upper right that the chains mix well (hairy catterpillars), meaning good convergence**
+**NOTE: The Import thing to look at for good model convergence is the upper plots: Here we see that all the 4 chains (to the left) seem to capture the same posterior distribution. It is also clear from the trace-plots to the upper right that the chains mix well (hairy catterpillars), meaning good convergence. Lastly looking into whether there are divergences in the sampling process is pivotal, these are stored in the stats file under divergences, if this column is not 0, then trusting the estimates even with good looking chains is not advised. Dealing with divergences for single subjects fits like here involves changing priors and or the model itself (i.e. leaving out or including the lapse rate)**
 
 ```{r}
 results$bayesian_plot[[2]]
 ```
-
-
-And the combined plot can be found in the last index
-```{r, fig.height=8,fig.width=14}
-results$bayesian_plot[[3]]
+##**Here is the number of mean in both conditions divergences:**
+```{r}
+results$stats$divergences
 ```
+Indicating that there are divergences here so perhaps runnning without the Lapse rate would be preferable, or changing the priors.
 
 
 **Of cause this can be run through several subjects like the "simple" analysis**
