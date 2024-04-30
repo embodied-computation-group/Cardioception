@@ -383,6 +383,10 @@ def getParameters(
             serial=port, sfreq=75, add_channels=1, **systole_kw
         )
         parameters["oxiTask"].setup().read(duration=1)
+        
+        # # for Nonin 3231 USB
+        # parameters['oxiTask'] = Nonin3231USB(serial=port, add_channels=1).setup().read(1)
+
     elif setup == "test":
         # Use pre-recorded pulse time series for testing
         port = serialSim()

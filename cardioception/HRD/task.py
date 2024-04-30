@@ -444,6 +444,14 @@ def trial(
             # Only use the last 5 seconds of the recording
             bpm = 60000 / np.diff(np.where(peaks[-5000:])[0])
 
+            
+            # # for Nonin3231USB
+            # # Only use the last 5 seconds of the recording
+            # bpm =  pd.Series(parameters["oxiTask"].read(duration=5.0).bpm)[-5:]
+            # # use bpm as signal, Nonin3231USB gives no raw signal
+            # signal = bpm
+
+
             print(f"... bpm: {[round(i) for i in bpm]}")
 
             # Prevent crash if NaN value
