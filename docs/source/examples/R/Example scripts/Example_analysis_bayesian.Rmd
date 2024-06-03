@@ -6,7 +6,7 @@ output: html_document
 ---
 
 
-# **Here we show how to perform a bayesian analysis on the data after it has been collected which is very similar to the "simple" analysis. Please see the "simple analysis before this!**
+# **Here we show how to perform a Bayesian post-hoc analysis on the data, which is very similar to the "simple" analysis. Please see the "simple analysis before this!**
 
 ```{r message=FALSE}
 pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot,
@@ -19,6 +19,7 @@ set.seed(111)
 
 
 # **Reading in the data**
+
 ```{r message=FALSE}
 #Here we read the same file as in the python notebook:
 psychophysics_df = read_csv('https://github.com/embodied-computation-group/CardioceptionPaper/raw/main/data/Del2_merged.txt')
@@ -32,22 +33,40 @@ df = psychophysics_df %>% filter(Subject == "sub_0042")
 source(here("docs","source","examples","R","src","firstlevelanalysis.R"))
 ```
 
-The only difference here is that we set bayesian equal to T (TRUE) and specify the model. The models can be found in the src folder inside the .stan files. These are probabilitic models written in stan that are compiled and does the sampling. There are two options at the moment for re-fitting there is the standard cummulative normal aswell as a cummulative normal that incorporates a lapse rate, that sepcifies the minimum and maximum of the tails of the psychometric. This means that a lapse rate of 5% (0.05) means that the psychometric on the lower end is 5% and on the upper end is 95%. The reason to include a lapse rate is that if responses are made that are attentional slips or misclicks in the far end of the stimulus spectrum (high or low) then this is greatly influence the slope of the psychometric if modelled without the lapse rate. 
 
-The priors of the bayesian model is as follows in the unconstrained space (beta is constained to be positive so is exponentially transformed, and the lapse is constrained between 0 and 0.5 meaning its inv_logit transformed and then devided by 2:
+The difference between this example and the simple analysis is that here we set Bayesian equal to T (TRUE) and specify a model.
+
+The models can be found in the src directory inside the .stan files. These are probabilistic models written in stan.
+
+
+There are two options at the moment for re-fitting the data using this Bayesian model, there is the standard cumulative normal as well as a cumulative normal that incorporates a lapse rate, that specifies the minimum and maximum of the tails of the psychometric.
+
+
+A lapse rate of 5% (0.05) means that the psychometric function (the cumulative normal) on the lower end is 5% and on the upper end is 95%.
+
+The reason to include a lapse rate is that if responses are made that are attentional slips or miss-clicks, then this is greatly influence the slope of the function if not accounted for.
+
+In order to run a Bayesian probabilistic model, one needs to specify priors on the free parameters. Here there are 2 or 3 depending on the model. 
+
+The priors of the Bayesian model is as follows:
 
 alpha ~ normal(0,20);
 beta ~ normal(0,3);
 lambda ~ normal(-4,2);
 
-This means that the parameters in the constrained space look like this:
+Note that all the parameters are specified in the unconstrained space, this means that the slope of the psychometric i.e. beta is going to be constrained to be strictly positive and is therefore exponentially transformed. 
+The lapse is constrained between 0 and 0.5 meaning its inverse logit transformed and then divided by 2:
+
+
+We now visualize these priors
+
 ```{r}
 data.frame(alpha = rnorm(1000,0,20), beta = exp(rnorm(10000,0,3)), lambda = brms::inv_logit_scaled(rnorm(1000,-4,2)) / 2) %>% 
   pivot_longer(everything(), values_to = "value",names_to = "parameter") %>% 
   ggplot(aes(x = value, fill = parameter))+geom_histogram(col = "black")+facet_wrap(~parameter, scales = "free")+theme_classic()
 ```
 
-Below there is a visualization of what this extra lapse rate does as well as what the priors of the model means when looking at the psychometric function itself:
+Below there is a visualization of what this extra lapse rate does, as well as what the priors of the model means when looking at the psychometric function itself.
 
 ```{r}
 n_sim = 25
@@ -83,10 +102,34 @@ data.frame(alpha = alpha, beta = exp(beta), lambda = NA) %>%
 
 ```
 
-If you want to change the priors of the Bayesian model, this has to be done inside the Stan scripts. By opening the .stan File and then changing the last couple of lines of code where the syntax is the same as above, it is therefore possible to visualize what the prior distributions for the parameters and also see what they entail (prior predictive checks) for the shape of the psychometric here in the markdown script and then changing them inside the Stan scripts themselves. 
+The addition of the lapse rate is visually obvious when looking at the very steep psychometric functions, which do not asymtote at 0 and 1, but at the lambda value and 1-lambda. This is what is called prior predictive checks.
+
+### **Changing the priors**
+
+If you want to change the priors of the Bayesian model, this has to be done inside the Stan scripts. 
+
+Open the .stan file and then navigate to the last couple of lines of code where the syntax is the same as above i.e.
+
+alpha ~ normal(0,20);
+beta ~ normal(0,3);
+lambda ~ normal(-4,2);
+
+These lines of code are the priors of the model and it is therefore possible to first visualize what the prior distributions for the parameters entail (prior predictive checks) for the shape of the psychometric and then changing them inside the Stan scripts themselves. 
 
 
-**Running the analysis using this bayesian fit invovles the same as for the simple analysis with two addition arguments firstly the flage bayesian needs to be set to T (TRUE), and a model has to be specified. There are at the moment two different models to choose from, one with the lapse rate and one without**
+**Running the analysis**
+
+
+Using this bayesian fit invovles the same as for the simple analysis with two addition arguments.
+
+Firstly, the flag Bayesian needs to be set to T (TRUE), and a model has to be specified.
+
+There are at the moment two different models to choose from, one with the lapse rate and one without. These are called 
+
+"Standard Cummulative normal.stan"
+"Lapse Cummulative normal.stan"
+
+Respectively
 
 ```{r message=FALSE, results='hide',warning=FALSE}
 # No lapse rate model:
@@ -102,7 +145,9 @@ results = single_sub_analysis(df,
                               out = here::here("docs","source","examples","R"))
 ```
 
-**The results list now also contains a new index called bayesian_plot. This is a list of either 1 or 3 plots. There will be 1 if you only have one Morality and 2 if you have two (Extero and Intero). Here there is 3 plots**
+The results list now also contains a new index called bayesian_plot.
+
+This is a list of either 1 or 3 plots. There will be 1 if you only have one Modality and 2 if you have two i.e. both Extero and Intero.
 
 Lets look at them individually:
 
@@ -110,16 +155,37 @@ Lets look at them individually:
 results$bayesian_plot[[1]]
 ```
 
-**NOTE: The Import thing to look at for good model convergence is the upper plots: Here we see that all the 4 chains (to the left) seem to capture the same posterior distribution. It is also clear from the trace-plots to the upper right that the chains mix well (hairy catterpillars), meaning good convergence. Lastly looking into whether there are divergences in the sampling process is pivotal, these are stored in the stats file under divergences, if this column is not 0, then trusting the estimates even with good looking chains is not advised. Dealing with divergences for single subjects fits like here involves changing priors and or the model itself (i.e. leaving out or including the lapse rate)**
 
 ```{r}
 results$bayesian_plot[[2]]
 ```
-##**Here is the number of mean in both conditions divergences:**
+# **Convergence and trust in the model**
+
+NOTE: 
+
+When running a Bayesian model like this convergence is not a given. It is therefore important to check good model covergence!
+
+In-order to check for good model convergence watch the upper plots in the above two plots:
+
+Here we see that all the 4 chains (to the left) seem to capture the same posterior distribution . It is also clear from the trace-plots to the upper right that the chains mix well (hairy catterpillars), indicating good convergence.
+
+Lastly, one needs to investigate whether there are divergences in the sampling process. 
+
+This information is stored in the stats file under divergences, if this column is not 0, then trusting the estimates even with good looking chains is not advised.
+
+Dealing with divergences for single subjects fits, involves changing priors and or the model itself (i.e. leaving out or including the lapse rate).
+
+Other approaches for dealing with these divergences exist, but is out of the scope of this tutorial [see](https://discourse.mc-stan.org/t/divergent-transitions-a-primer/17099) 
+
+
+
+## **Here is the number of mean in both conditions divergences:**
 ```{r}
 results$stats$divergences
 ```
-Indicating that there are divergences here so perhaps runnning without the Lapse rate would be preferable, or changing the priors.
+Indicating that there are divergences here so perhaps running without the Lapse rate would be preferable, or changing the priors.
+
+
 
 
 **Of cause this can be run through several subjects like the "simple" analysis**
@@ -127,7 +193,7 @@ Indicating that there are divergences here so perhaps runnning without the Lapse
 ```{r message=FALSE, fig.show='hide', results='hide', warning=FALSE}
 path_to_data = here("docs","source","examples","R","data")
 
-out = here::here("..")
+out =  here::here("docs","source","examples","R")
 
 data = study_analysis(path = path_to_data,
                       bayesian = T,
@@ -139,7 +205,7 @@ data = study_analysis(path = path_to_data,
 
 
 ```{r}
-read.csv(here("..","resulting_dataframe.csv")) %>% select(-X)%>% head(4)
+read.csv(here("docs","source","examples","R","resulting_dataframe.csv")) %>% select(-X)%>% head(4)
 ```
 
 ### Here the Bayesian alpha is the threshold and the beta is the slope

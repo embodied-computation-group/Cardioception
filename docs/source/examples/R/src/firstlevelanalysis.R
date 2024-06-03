@@ -158,7 +158,7 @@ single_sub_analysis <- function(df, interoPost = NA, exteroPost = NA, bayesian =
         results = run_bayes_analysis(df1, model)
         
         # Combine stuff for stats and plots
-        stats <- rbind(results[["Intero"]][["stats"]],results[["Extero"]][["stats"]])
+        stats <- rbind(results[["Extero"]][["stats"]],results[["Intero"]][["stats"]])
         
         resultsdata <- cbind(resultsdata, stats)
         

@@ -1027,3 +1027,17 @@ psychometric = function(x,alpha,beta,lambda){
 psychometric_nolapse = function(x,alpha,beta){
   return((0.5+0.5*erf((x-alpha)/(beta*sqrt(2)))))
 }
+
+
+
+transform_data_to_stan = function(data){
+  
+  data = data %>% group_by(Alpha,participant_id, sessions)%>%
+    summarise(Alpha=mean(Alpha),
+              npx=n(),
+              resp=sum(resp))%>%
+    ungroup()
+  
+  return(data)
+}
+
