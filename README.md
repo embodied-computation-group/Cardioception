@@ -31,8 +31,6 @@ If you have questions regarding the tasks, please contact Micah Allen directly. 
 
 # Installation
 
-## Using the Python Package Index
-
 The package can be installed by downloading the repository and following the instructions therein. **Note: do not use "pip install cardioception" as this is an unverified fork created by a third party**. We are looking into the matter but cannot verify the security or integrity of that installation. For the latest version of cardioception, please install directly from this repository. 
 
 * The current development branch can be installed using
