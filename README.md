@@ -27,13 +27,13 @@ If you are using [systole](https://github.com/embodied-computation-group/systole
 
 ## Looking for help?
 
-If you have questions regarding the tasks, want to report a bug or discuss data analysis, please ask on our public [![Gitter](https://badges.gitter.im/Cardioception/community.svg)](https://gitter.im/Cardioception/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge).
+If you have questions regarding the tasks, please contact Micah Allen directly. The gitter chat is no longer supported. 
 
 # Installation
 
 ## Using the Python Package Index
 
-The package can be installed by downloading the repository and following the instructions therein. Note: do not use "pip install cardioception" as this has been hijacked and is an unverified package create by a third party. We are looking into the matter but cannot verify the security or integrity of that installation. For the latest version of cardioception, please install directly from this repository. 
+The package can be installed by downloading the repository and following the instructions therein. **Note: do not use "pip install cardioception" as this is an unverified fork created by a third party**. We are looking into the matter but cannot verify the security or integrity of that installation. For the latest version of cardioception, please install directly from this repository. 
 
 * The current development branch can be installed using
   `pip install git+https://github.com/embodied-computation-group/Cardioception.git`
@@ -56,7 +56,7 @@ Cardioception has been tested with Python 3.7. We recommend to use the last inst
 
 Make sure that you have the following packages installed and up to date before running cardioception:
 
-The package can be installed by downloading the repository and following the instructions therein. Note: do not use "pip install cardioception" as this is an unverified package create by a third party. We are looking into the matter but cannot verify the security or integrity of that installation. For the latest version of cardioception, please install directly from this repository. 
+The package can be installed by downloading the repository and following the instructions therein.  **Note: do not use "pip install cardioception" as this is an unverified fork created by a third party**. We are looking into the matter but cannot verify the security or integrity of that installation. For the latest version of cardioception, please install directly from this repository. 
 
 * [systole](https://systole-docs.github.io/) can be installed with `pip install systole`.
 
