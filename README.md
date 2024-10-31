@@ -56,7 +56,8 @@ Cardioception has been tested with Python 3.7. We recommend to use the last inst
 
 Make sure that you have the following packages installed and up to date before running cardioception:
 
-* [psychopy](https://www.psychopy.org/) can be installed with `pip install psychopy`.
+The package can be installed by downloading the repository. Note: do not use "pip install cardioception" as this is an unverified package create by a third party. We are looking into the matter but cannot verify the security or integrity of that installation. For the latest version of cardioception, please install directly from this repository. 
+
 * [systole](https://systole-docs.github.io/) can be installed with `pip install systole`.
 
 The other main dependencies are:
