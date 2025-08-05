@@ -2,15 +2,13 @@
 
 ## Installation
 
-### Using the Python Package Index
+### Using GitHub
 
-* The most recent version can be installed uing:
-
-  `pip install cardioception`
-
-* The current development branch can be installed using:
+The current development branch can be installed using:
 
   `pip install git+https://github.com/embodied-computation-group/Cardioception.git`
+
+This will install the official version maintained by the Embodied Computation Group.
 
 ### Set up a conda environment
 
@@ -54,7 +52,7 @@ In addition, some function for HTML reports will require:
 The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles. 
 ```
 
-Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 160 Mo). These files will be removed if you uninstall the package using `pip uninstall cardioception`.
+Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 160 Mo). These files will be removed if you uninstall the package.
 
 ## Physiological recording
 
