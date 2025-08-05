@@ -471,6 +471,38 @@ document.write(`
 <li><p>The <strong>Heart Rate Discrimination task</strong> <span id="id2">[<a class="reference internal" href="references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see <em>Analyses</em> below), together with metacognitive efficiency.</p></li>
 </ol>
 <p>These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task uses the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>. This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI…).</p>
+<section id="data-analysis">
+<h2>📊 Data Analysis<a class="headerlink" href="#data-analysis" title="Permalink to this heading">#</a></h2>
+<section id="recommended-r-analysis">
+<h3>🎯 Recommended: R Analysis<a class="headerlink" href="#recommended-r-analysis" title="Permalink to this heading">#</a></h3>
+<p><strong>For comprehensive data analysis, we recommend using our R analysis scripts located in the <code class="docutils literal notranslate"><span class="pre">R_analysis/</span></code> directory.</strong></p>
+<p>The R analysis provides:</p>
+<ul class="simple">
+<li><p><strong>Individual subject analysis</strong> with reaction time plots and signal detection theory metrics</p></li>
+<li><p><strong>Group-level hierarchical analysis</strong></p></li>
+<li><p><strong>Bayesian analysis</strong> using Stan models</p></li>
+<li><p><strong>Comprehensive visualization</strong> of results</p></li>
+</ul>
+<p><strong>🚀 Quick Start:</strong></p>
+<ul class="simple">
+<li><p><strong>Individual subject analysis</strong>: See <code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_simple.Rmd</span></code></p></li>
+<li><p><strong>Group-level analysis</strong>: See <code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_Hierarchical.Rmd</span></code></p></li>
+<li><p><strong>Bayesian analysis</strong>: See <code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_bayesian.Rmd</span></code></p></li>
+</ul>
+<p>For complete documentation and examples, see the <a class="reference internal" href="#../R_analysis/README.md"><span class="xref myst">R Analysis README</span></a>.</p>
+</section>
+<section id="python-analysis-outdated">
+<h3>📈 Python Analysis (Outdated)<a class="headerlink" href="#python-analysis-outdated" title="Permalink to this heading">#</a></h3>
+<p><em>Python analysis examples are available but are outdated and may not be maintained. For hierarchical Bayesian modeling, we strongly recommend using the R analysis approach above.</em></p>
+<p>Python users can find examples in the documentation, but these are primarily for reference. The Python analysis includes:</p>
+<ul class="simple">
+<li><p>Basic preprocessing and reporting functions</p></li>
+<li><p>Template notebooks for data visualization</p></li>
+<li><p>Outdated Bayesian modeling examples</p></li>
+</ul>
+<p><strong>⚠️ Important</strong>: Users interested in hierarchical Bayesian modeling should refer to the R analysis code, which provides more comprehensive and up-to-date implementations.</p>
+</section>
+</section>
 <section id="looking-for-help">
 <h2>Looking for help?<a class="headerlink" href="#looking-for-help" title="Permalink to this heading">#</a></h2>
 <p>If you have questions regarding the tasks or want discuss data analysis, please contact Micah Allen directly.</p>
@@ -525,6 +557,11 @@ Maintained by the Embodied Computation Group, Aarhus University.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Cardioception</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#official-repository-notice">🧠 Official Repository Notice</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-analysis">📊 Data Analysis</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#recommended-r-analysis">🎯 Recommended: R Analysis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-analysis-outdated">📈 Python Analysis (Outdated)</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#looking-for-help">Looking for help?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development">Development</a></li>
 </ul>
