@@ -23,6 +23,36 @@ The Cardioception Python Package - Measuring Interoception with Psychopy - imple
 
 These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task uses the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...).
 
+## 📊 Data Analysis
+
+### 🎯 Recommended: R Analysis
+
+**For comprehensive data analysis, we recommend using our R analysis scripts located in the `R_analysis/` directory.**
+
+The R analysis provides:
+- **Individual subject analysis** with reaction time plots and signal detection theory metrics
+- **Group-level hierarchical analysis** 
+- **Bayesian analysis** using Stan models
+- **Comprehensive visualization** of results
+
+**🚀 Quick Start:**
+- **Individual subject analysis**: See `R_analysis/Example scripts/Example_analysis_simple.Rmd`
+- **Group-level analysis**: See `R_analysis/Example scripts/Example_analysis_Hierarchical.Rmd`
+- **Bayesian analysis**: See `R_analysis/Example scripts/Example_analysis_bayesian.Rmd`
+
+For complete documentation and examples, see the [R Analysis README](../R_analysis/README.md).
+
+### 📈 Python Analysis (Outdated)
+
+*Python analysis examples are available but are outdated and may not be maintained. For hierarchical Bayesian modeling, we strongly recommend using the R analysis approach above.*
+
+Python users can find examples in the documentation, but these are primarily for reference. The Python analysis includes:
+- Basic preprocessing and reporting functions
+- Template notebooks for data visualization
+- Outdated Bayesian modeling examples
+
+**⚠️ Important**: Users interested in hierarchical Bayesian modeling should refer to the R analysis code, which provides more comprehensive and up-to-date implementations.
+
 ## Looking for help?
 
 If you have questions regarding the tasks or want discuss data analysis, please contact Micah Allen directly.

@@ -25,6 +25,36 @@ These tasks can run using minimal experimental settings: a computer and a record
 
 The documentation can be found under the following [link](https://embodied-computation-group.github.io/Cardioception/#).
 
+## 📊 Data Analysis
+
+### 🎯 Recommended: R Analysis
+
+**For comprehensive data analysis, we recommend using our R analysis scripts located in the `R_analysis/` directory.**
+
+The R analysis provides:
+- **Individual subject analysis** with reaction time plots and signal detection theory metrics
+- **Group-level hierarchical analysis** 
+- **Bayesian analysis** using Stan models
+- **Comprehensive visualization** of results
+
+**🚀 Quick Start:**
+- **Individual subject analysis**: See `R_analysis/Example scripts/Example_analysis_simple.Rmd`
+- **Group-level analysis**: See `R_analysis/Example scripts/Example_analysis_Hierarchical.Rmd`
+- **Bayesian analysis**: See `R_analysis/Example scripts/Example_analysis_bayesian.Rmd`
+
+For complete documentation and examples, see the [R Analysis README](R_analysis/README.md).
+
+### 📈 Python Analysis (Outdated)
+
+*Python analysis examples are available but are outdated and may not be maintained. For hierarchical Bayesian modeling, we strongly recommend using the R analysis approach above.*
+
+Python users can find examples in the documentation, but these are primarily for reference. The Python analysis includes:
+- Basic preprocessing and reporting functions
+- Template notebooks for data visualization
+- Outdated Bayesian modeling examples
+
+**⚠️ Important**: Users interested in hierarchical Bayesian modeling should refer to the R analysis code, which provides more comprehensive and up-to-date implementations.
+
 ## How to cite?
 
 If you are using cardioception in a publication we ask you to cite the following paper:
@@ -155,7 +185,28 @@ This task implements an adaptive psychophysical procedure for estimating partici
 
 # Analyses
 
-## Task reports
+## 📊 Recommended: R Analysis
+
+**For comprehensive data analysis, we recommend using our R analysis scripts located in the `R_analysis/` directory.**
+
+The R analysis provides:
+- **Individual subject analysis** with reaction time plots and signal detection theory metrics
+- **Group-level hierarchical analysis** 
+- **Bayesian analysis** using Stan models
+- **Comprehensive visualization** of results
+
+**🚀 Quick Start:**
+- **Individual subject analysis**: See `R_analysis/Example scripts/Example_analysis_simple.Rmd`
+- **Group-level analysis**: See `R_analysis/Example scripts/Example_analysis_Hierarchical.Rmd`
+- **Bayesian analysis**: See `R_analysis/Example scripts/Example_analysis_bayesian.Rmd`
+
+For complete documentation and examples, see the [R Analysis README](R_analysis/README.md).
+
+## 📈 Python Analysis (Outdated)
+
+*Python analysis examples are available but are outdated and may not be maintained. For hierarchical Bayesian modeling, we strongly recommend using the R analysis approach above.*
+
+### Task reports
 
 The results are saved in the `'resultPath'` folder defined in the parameters dictionary. For each task, we provide a comprehensive notebook detailing the main results, quality checks, and basic preprocessing steps. You can automatically generate the HTML reports using the following code snippet:
 
@@ -177,9 +228,11 @@ You can also analyze the results in [Google Colab](https://colab.research.google
 | Heartbeat Counting task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb) | [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb)
 | Heart Rate Discrimination task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb) | [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb)
 
-## Bayesian modeling
+### Bayesian modeling (Deprecated)
 
 More advanced subject and group-level Bayesian modeling approaches are described in the following notebooks.
+
+**⚠️ Important**: Users interested in hierarchical Bayesian modeling should refer to the R analysis code, which provides more comprehensive and up-to-date implementations.
 
 | Notebook | Colab | nbViewer |
 | --- | ---| --- |
