@@ -3,9 +3,6 @@
 
 Here we represent the analysis of the HRD-task in R, as already implemented in Python.
 
-The organization of the project is as follows:
-
-
 ```
 ├── README.md                  <- The top-level README for this project.
 |
