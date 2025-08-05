@@ -4,7 +4,7 @@
 
 # 🧠 Official Repository Notice
 
-This is the **original and officially maintained version** of the Cardioception software package, co-created by Micah Allen and the Embodied Computation Group at Aarhus University (2019–2022), as part of grant-funded research.
+This is the **original and officially maintained version** of the Cardioception software package, co-created by Micah Allen and the Embodied Computation Group at Aarhus University (2019–2022). Development of this package was funded by a Lundbeckfonden Fellowship to Micah Allen.
 
 This repository reflects the version cited in peer-reviewed publications and is actively maintained by the Embodied Computation Group.
 
