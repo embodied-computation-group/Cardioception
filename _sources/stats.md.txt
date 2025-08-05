@@ -1,10 +1,34 @@
 # Statistical analysis
 
-## Using R
+## ⚠️ IMPORTANT: Analysis Approach Update
 
-If you want to use R to analyse your data, you can find R/Stan scripts with example notebooks in [this folder](https://github.com/embodied-computation-group/Cardioception/tree/master/docs/source/examples/R).
+**The Python analysis tutorials are deprecated. We recommend using the R analysis scripts for all Cardioception data analysis.**
 
-## Using Python
+## 📊 Recommended: R Analysis
+
+**For comprehensive data analysis, please use our R analysis scripts located in the `R_analysis/` directory.**
+
+The R analysis provides:
+- **Individual subject analysis** with reaction time plots and signal detection theory metrics
+- **Group-level hierarchical analysis** 
+- **Bayesian analysis** using Stan models
+- **Comprehensive visualization** of results
+
+### 🚀 Quick Start with R Analysis
+
+1. **Individual subject analysis**: See `R_analysis/Example scripts/Example_analysis_simple.Rmd`
+2. **Group-level analysis**: See `R_analysis/Example scripts/Example_analysis_Hierarchical.Rmd`
+3. **Bayesian analysis**: See `R_analysis/Example scripts/Example_analysis_bayesian.Rmd`
+
+For complete documentation and examples, see the [R Analysis README](../R_analysis/README.md).
+
+---
+
+## 📈 Deprecated: Python Analysis
+
+*The following Python analysis methods are deprecated and may not be maintained. We recommend using the R analysis approach above.*
+
+### Using Python (Deprecated)
 
 If you want to use Python to analyse your data, the package includes two functions ([preprocessing](cardioception.reports.preprocessing) and [report](cardioception.reports.report)) that can help automate the analysis of large datasets obtained with the Heart Rate Discrimination task. We also provide notebooks detailing specific parts of the data analysis and Bayesian modelling of psychophysics (see below).
 
@@ -45,7 +69,7 @@ for f in data_folder.iterdir():
     results_df = report(result_path=f, report_path=Path(data_folder, "reports"))
 ```
 
-## Report templates
+## Report templates (Deprecated)
 
 Here, you will find the report templates used to produce the HTML reports when calling the [report function](cardioception.reports.report) function. We provide one for the Heart Rate Discrimination task and one for the Heart Beat Counting task. You can navigate the notebooks by clicking on the links or run them interactively in [Google Colab](https://colab.research.google.com/) using the badges, and upload your data. Visualizing the data this way is recommended to assess the quality of the PPG recording or the general performance of the participant during the tasks.
 
@@ -64,7 +88,7 @@ examples/templates/*
 | {ref}`hbc_template` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/templates/HeartBeatCounting.ipynb)
 | {ref}`hrd_template` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/templates/HeartRateDiscrimination.ipynb)
 
-## Bayesian modelling of psychophysics
+## Bayesian modelling of psychophysics (Deprecated)
 
 These notebooks provide a more detailled introduction to the Bayesian modelling of the psychometric functions to estimate threshold and slope offline (as opposed to the online estimation performed by the Psi staircase). The models are implemented in PyMC, the code can easily be adapted to fit different modelling needs (e.g. group comparison, repeated measure...).
 
