@@ -1,7 +1,7 @@
 # Core package
 -e .
 
-# Documentation dependencies
+# Documentation dependencies (minimal set to avoid conflicts)
 sphinx==5.3.0
 sphinx-bootstrap-theme>=0.8.1
 sphinxcontrib-bibtex>=2.4.2
@@ -12,14 +12,10 @@ myst-nb>=0.16.0
 # Theme
 pydata-sphinx-theme>=0.12.0
 
-# Data analysis (compatible versions)
-xarray>=2022.6.0
-bokeh==2.4.3
-
-# Visualization
+# Visualization (compatible versions)
 graphviz
 
-# Optional: Commented out to avoid conflicts
-# pymc>=5.0.1
-# metadpy>=0.0.1
-# watermark
+# Note: Removed problematic packages that cause dependency conflicts
+# - xarray (conflicts with numpy version)
+# - bokeh (conflicts with systole requirements)
+# - pymc, metadpy, watermark (optional packages)
