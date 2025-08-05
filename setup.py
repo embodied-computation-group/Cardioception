@@ -20,7 +20,7 @@ LONG_DESCRIPTION = """Measuring interoceptive performance with Psychopy.
 DISTNAME = "cardioception"
 MAINTAINER = "Micah Allen"
 MAINTAINER_EMAIL = "micah.allen@clin.au.dk"
-VERSION = "0.4.4"
+VERSION = "0.4.5"
 
 if __name__ == "__main__":
 
