@@ -21,7 +21,8 @@ If you want to report a bug, you can open an issue on the [GitHub page](https://
 
 ## Development
 
-This package was created and is maintained by [Nicolas Legrand](https://legrandnico.github.io/), [Micah Allen](https://the-ecg.org/people), and the [Embodied Computation Group](https://the-ecg.org/).
+Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk
+Maintained by the Embodied Computation Group, Aarhus University.
 
 <img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/LabLogo.png" height ="100"><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/AU.png" height ="100">
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Nicolas Legrand
+# Copyright (C) 2020–2025 Micah Allen, Embodied Computation Group, Aarhus University
 import os
 import codecs
 from setuptools import find_packages, setup
@@ -18,8 +18,8 @@ LONG_DESCRIPTION = """Measuring interoceptive performance with Psychopy.
 """
 
 DISTNAME = "cardioception"
-MAINTAINER = "Nicolas Legrand"
-MAINTAINER_EMAIL = "nicolas.legrand@cas.au.dk"
+MAINTAINER = "Micah Allen"
+MAINTAINER_EMAIL = "micah.allen@clin.au.dk"
 VERSION = "0.4.4"
 
 if __name__ == "__main__":

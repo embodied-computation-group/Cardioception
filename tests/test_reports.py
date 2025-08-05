@@ -1,4 +1,5 @@
-# Author: Nicolas Legrand <nicolas.legrand@cas.au.dk>
+# Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk
+# Maintained by the Embodied Computation Group, Aarhus University
 
 import os
 import unittest

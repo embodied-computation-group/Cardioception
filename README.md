@@ -186,7 +186,8 @@ More advanced subject and group-level Bayesian modeling approaches are described
 
 # Development
 
-This package was created by [Nicolas Legrand](https://legrandnico.github.io/), [Micah Allen](https://the-ecg.org/people), and the [ECG group](https://the-ecg.org/). The package is maintained by Micah Allen and the ECG. 
+Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk
+Maintained by the Embodied Computation Group, Aarhus University. 
 
 <img src = "images/ECG_logo (1).png" height ="100">
 
