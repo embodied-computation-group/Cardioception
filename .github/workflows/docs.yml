@@ -22,12 +22,20 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Build
+      - name: Install system dependencies
         run: |
-          pip install --upgrade pip
-          pip install psychopy==2020.1.2
+          sudo apt-get update
+          sudo apt-get install -y graphviz
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade setuptools wheel
+          pip install -r requirements.txt
           pip install -r requirements-docs.txt
-          sudo apt-get install graphviz
+
+      - name: Build documentation
+        run: |
           sphinx-build -b html docs/source docs/build/html
 
       - name: Deploy 🚀

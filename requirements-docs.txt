@@ -1,15 +1,25 @@
+# Core package
 -e .
-xarray>=2022.6.0
-pymc>=5.0.1
-pydata-sphinx-theme>=0.12.0
+
+# Documentation dependencies
+sphinx==5.3.0
 sphinx-bootstrap-theme>=0.8.1
 sphinxcontrib-bibtex>=2.4.2
-myst-nb>=0.16.0
-sphinx==5.3.0
 numpydoc>=1.4.0
 myst-parser
-#pingouin
+myst-nb>=0.16.0
+
+# Theme
+pydata-sphinx-theme>=0.12.0
+
+# Data analysis (compatible versions)
+xarray>=2022.6.0
 bokeh==2.4.3
+
+# Visualization
 graphviz
-metadpy>=0.0.1
-watermark
+
+# Optional: Commented out to avoid conflicts
+# pymc>=5.0.1
+# metadpy>=0.0.1
+# watermark
