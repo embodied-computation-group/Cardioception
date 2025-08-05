@@ -1,0 +1,146 @@
+---
+title: "Example_analysis_Hierarchical"
+output: html_document
+date: "2024-06-03"
+---
+
+# *NOTE: this script and analysis is still preliminary and should only be used if one is comfortable with both hierarchical and bayesian models!*
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot,
+               grid,reticulate,cmdstanr,posterior,rstan,bayesplot,here,rmarkdown,pracma,
+               brms)
+
+set.seed(111)
+
+source(here("docs","source","examples","R","src","firstlevelanalysis.R"))
+
+```
+
+## **Here we show how to perform a Hierarchical Bayesian post-hoc analysis on the data.**
+
+This type of analysis is similar to the post-hoc single fit bayesian analysis, however here we fit all our subjects together.
+
+This is analogous to the difference between running many separate linear regression and then aggregating the results, compared to running a linear mixed effects model. (This script is what a linear mixed effects model is).
+
+
+
+## *Running this model*
+
+For the moment, running this type of hierarchical model, opens the black-box of the sampling algorithm from the single fit analysis.
+
+Firstly, we need to specify the model:
+
+```{r}
+mod = cmdstanr::cmdstan_model(here::here("docs","source","examples","R","src","Hierarchical Cummulative Normal.stan"))
+```
+
+and load the data
+
+```{r}
+data = read.csv(here::here("docs","source","examples","R","data","Hierarchical data","Hierarchical_data.csv"))
+```
+
+
+This data set is simulated and represents a within subject design with two sessions. We can visualize the aggregated (population level) effects for each session:
+
+```{r}
+data %>% ggplot(aes(x = Alpha, y = resp, col = as.factor(sessions)))+
+  geom_smooth(method = "glm", 
+    method.args = list(family = "binomial"), 
+    se = FALSE)+theme_classic()
+```
+
+To run the model one needs to run the following:
+
+This just aggregates the data for the stan model to run a bit faster. Note that you will need a participant_id column that is a unique identifier for each subjects and a sessions column that is a unique session identifier.
+
+```{r}
+data = data %>% mutate(sessions = ifelse(sessions == 1, 0 ,1))
+
+data = transform_data_to_stan(data) %>% arrange(participant_id,sessions)
+```
+
+
+Now one just needs to put it all into one big list as below and run the model!
+
+
+Note! Here 3 matrices are specified "X_lapse", "X_alpha", "X_beta". These represent parameterizations of these three parameters of the model.
+
+What this means is that you can specify you desired constast of interrest by adding a column to this matrix, the model will then give the estimate (as in a linear model), of how much this "covariate" explains. Here we are interrested in the difference in slope (beta) and threshold (alpha) between sessions.
+
+```{r}
+datastan = list(T = nrow(data),
+                 S = length(unique(data$participant_id)),
+                 S_id = as.numeric(data$participant_id),
+                 X = data %>% .$Alpha,
+                 X_lapse = as.matrix(data.frame(int = rep(1,nrow(data)))),
+                 X_alpha = as.matrix(data.frame(int = rep(1,nrow(data)),
+                                                 sessions = data %>% .$sessions)),
+                 X_beta = as.matrix(data.frame(int = rep(1,nrow(data)),
+                                                 sessions = data %>% .$sessions)),
+                 N_alpha = 2,
+                 N_beta = 2,
+                 N_lapse = 1,
+                 Y = data %>% .$resp,
+                 npx = data %>% .$npx
+                
+)
+
+```
+
+
+Running the model is the easy bit. The following makes the stan model sample from the joint posterior. See the comments for each line!
+
+```{r}
+fit <- mod$sample(
+  data = datastan,                        #The List specified above containing the data
+  iter_sampling = 1000,                   #The number of sampling draws
+  iter_warmup = 1000,                     #The number of warmup draws
+  chains = 4,                             #The number of chains
+  init = 0,                               #Initial values for the sampler
+  parallel_chains = 4,                    #the number of chains to run in parallel
+  refresh = 500,                          #when do you want a update from stan? Here 500 means that after 500 draws you get an "update"
+  adapt_delta = 0.90,                     #control parameter for the sampler (sometimes useful for getting rid of divergences)
+  max_treedepth = 10                      #control parameter for the sampler (useful if you get a warning about max_treedepth)
+)
+```
+
+
+## *Output*
+
+
+The output of this process is an object that has both summary of the marginal posteriors, but also all the draws from it.
+
+Firstly, calling the summary of the object gives a summary of the model.
+
+```{r}
+fit$summary()
+```
+
+Here is a description of what these variables mean
+
+gm[1] is the "population" mean of the slope for the reference level of sessions (i.e. session 0).
+
+gm[2] is the "population" mean difference of the slope between the session levels (this was specified in the data).
+
+gm[3] is the "population" mean of the lapse rate. This was not specified to vary between sessions.
+
+gm[4] is the "population" mean of the threshold for the reference level of sessions (i.e. session 0).
+
+gm[5] is the "population" mean difference of the threshold between the session levels (this was specified in the data).
+
+
+The same indexing is present for tau_u which displays the standard deviation of the population level distribution i.e.
+
+gm[1] is the "population" standard deviation of the slope for the reference level of sessions (i.e. session 0).
+
+gm[2] is the "population" standard deviation difference of the slope between the session levels (this was specified in the data).
+
+gm[3] is the "population" standard deviation of the lapse rate. This was not specified to vary between sessions.
+
+gm[4] is the "population" standard deviation of the threshold for the reference level of sessions (i.e. session 0).
+
+gm[5] is the "population" standard deviation difference of the threshold between the session levels (this was specified in the data).

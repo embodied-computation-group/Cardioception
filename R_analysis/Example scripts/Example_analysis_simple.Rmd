@@ -1,0 +1,136 @@
+---
+title: "Example Analysis"
+author: "Jesper Fischer Ehmsen"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+## **importing libraries**
+```{r message=FALSE}
+pacman::p_load(tidyverse,ggdist,psycho,caret,patchwork, gt, cowplot, grid,reticulate, here,rmarkdown)
+np <- import("numpy")
+```
+
+
+## **Reading the data**
+
+## **Note that this is where you will put the path to your own HRD_final.txt file for the first line**
+
+## **If you also have access to the posterior files then these can be added as below. Remember to change the directory!**
+```{r message=FALSE}
+#This line reads in a subject result file:
+df = read_csv("https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/examples/templates/data/HRD/HRD_final.txt")
+
+#These next lines read in the psi posterior distributions for each modality. 
+#These will be saved with names depending on your conditions, so modify as needed. 
+interoPost = np$load(here("docs","source","examples","templates","data","HRD","Intero_posterior.npy"))
+
+exteroPost = np$load(here("docs","source","examples","templates","data","HRD","Extero_posterior.npy"))
+```
+
+
+## **Making an analysis on one participant**
+
+## **first loading in the functions**
+
+```{r message=FALSE, results='hide',warning=FALSE}
+#loading the functions to do the analysis:
+
+source(here("docs","source","examples","R","src","firstlevelanalysis.R"))
+```
+
+## **Time to analyse! This next function takes the raw data i.e. the .txt file plus the posterior distributions for each staircase condition (e.g., extero vs intero).**
+
+## **If the numpy arrays (.npy) are not provided the function won't be able to produce the staircase plot.**
+
+## **If you don't have the .npy files, just input NA in the exteroPost and interoPost arguments**
+
+
+## **Arguments:**
+
+df is the raw data frame, 
+
+interoPost and exteroPost are the posterior distrubtions for each condition (if applicable). 
+
+bayesian is a boolean flag, if set to TRUE, it will run a post-hoc Bayesian analysis, FALSE means to skip it.
+
+Note that to run this Bayesian analysis you will need to install cmdstan and rstan. 
+
+To run the extra bayesian analysis see the example_analysis_bayesian markdown
+
+out is the output directory for the results of the analysis
+
+**Note that the function drops NAs from the critical columns by default!**
+
+
+```{r message=FALSE, results='hide',warning=FALSE}
+results = single_sub_analysis(df,                                                         #The raw dataframe
+                              interoPost = interoPost,                                    #numpy array for the intero (NA if not avaliable)
+                              exteroPost = exteroPost,                                    #numpy array for the extero (NA if not avaliable)
+                              bayesian = F,                                               #Bayesian Analysis (TRUE/FALSE)
+                              model = NA,                                                 #Bayesian model here a stan script (NA if Bayesian is FALSE)
+                              out = here::here("docs","source","examples","R"))           #Output directory for results      
+```
+
+**Note that these analyses can also be run with only one "Modality", important is that either the interopost or exteropost then gets set to NA i.e. the modality you do not have access to!**
+
+**Lastly it should be noted that when running a single subject a random ID will be given if one does not have an id column in the dataframe!**
+
+
+## **Results**
+
+The returned list contains all individual subplots from the subject level analysis, and one (two) composite plots. Which are saved in the /results_sub directory. You can use these to generate individual plots, e.g. For example, the staircase plots:
+
+```{r}
+results$staircase_plot
+```
+
+Composite results plots are stored here
+
+```{r,warning=FALSE, fig.height=10,fig.width=16}
+results$concatenated_plot
+```
+
+All the individual plots seen, can be accessed in the results list by either calling the different indices (e.g. results[[1]]), or just using the dollar-sign notation "results$rt_plot"
+
+
+**Group level analysis**
+Making an analysis on each subject in a nested directory with a folder for each subject is easy, you just give this function the path to where the subject folders are!
+
+## **Arguments:**
+
+path is the path to the txt.files which are either in a nested directory or all in one folder
+
+bayesian is a boolean flag, same as for the single subject analysis.
+
+To run the extra bayesian analysis see the example_analysis_bayesian markdown
+
+folder is a flag for indicating whether the path points to a nested directory (folder = T) or just a single folder with all the .txt files (folder = F)
+
+out is the output directory for the results of the analysis
+
+**Note that the function drops NAs from the critical columns by default!**
+
+```{r message=FALSE, fig.show='hide', results='hide', warning=FALSE}
+path_to_data = here("docs","source","examples","R","data")
+
+out = here::here("docs","source","examples","R")
+
+data = study_analysis(path = path_to_data,
+                      bayesian = FALSE,
+                      model = NA,
+                      folder = T,
+                      out = out)
+```
+
+These lines of code will then produce a results folder in each subject folder with the composite plot for the simple and if specified the bayesian analysis. Crucially individial's data is also stored, but also a combined file dataframe in csv format will appear in the out directory (specified in the function) called "resulting_dataframe.csv". here the combined data is stored.
+
+```{r}
+read.csv(here("docs","source","examples","R","resulting_dataframe.csv")) %>% select(-X)%>% head(4)
+```
+
+
+
