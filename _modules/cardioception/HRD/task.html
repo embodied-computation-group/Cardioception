@@ -1524,7 +1524,7 @@ document.write(`
             <span class="n">decision</span><span class="p">,</span> <span class="n">decisionRT</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
             <span class="c1"># Record participant response (+/-)</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Too late&quot;</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span> <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;tooLate&quot;</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="n">message</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
             <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
@@ -1811,7 +1811,7 @@ document.write(`
                 <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
                     <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
                     <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-                    <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Too late&quot;</span><span class="p">,</span>
+                    <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;tooLate&quot;</span><span class="p">],</span>
                     <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
                     <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">),</span>
                 <span class="p">)</span>
