@@ -12,6 +12,10 @@ This repository reflects the version cited in peer-reviewed publications and is 
 
 ***
 
+# 📢 2025 Update – Hierarchical Modelling Toolkit
+
+> 📢 **New in 2025:** We released the [Hierarchical Interoception modelling toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception) alongside the preprint [*Hierarchical Bayesian Modelling of Interoceptive Psychophysics*](https://www.biorxiv.org/content/10.1101/2025.08.27.672360v1). This toolkit delivers turnkey hierarchical Bayesian analyses, normative priors, and power-analysis resources for Heart Rate Discrimination and related tasks. We strongly recommend using it to model data collected with Cardioception.
+
 # Cardioception
 
 <img src="/images/logo.png" align="left" alt="cardioception" height="230" HSPACE=30>
@@ -19,41 +23,11 @@ This repository reflects the version cited in peer-reviewed publications and is 
 The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):
 
 1. The **Heartbeat counting task** developed by Rainer Schandry<sup>1,2</sup>. This task cardiac measures interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.
-2. The **Heart Rate Discrimination Task** <sup>3</sup> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see *Analyses* below), together with metacognitive efficiency.
+2. The **Heart Rate Discrimination Task** <sup>3</sup> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see *Legacy analysis resources* below), together with metacognitive efficiency.
 
 These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task use the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...).
 
 The documentation can be found under the following [link](https://embodied-computation-group.github.io/Cardioception/#).
-
-## 📊 Data Analysis
-
-### 🎯 Recommended: R Analysis
-
-**For comprehensive data analysis, we recommend using our R analysis scripts located in the `R_analysis/` directory.**
-
-The R analysis provides:
-- **Individual subject analysis** with reaction time plots and signal detection theory metrics
-- **Group-level hierarchical analysis** 
-- **Bayesian analysis** using Stan models
-- **Comprehensive visualization** of results
-
-**🚀 Quick Start:**
-- **Individual subject analysis**: See `R_analysis/Example scripts/Example_analysis_simple.Rmd`
-- **Group-level analysis**: See `R_analysis/Example scripts/Example_analysis_Hierarchical.Rmd`
-- **Bayesian analysis**: See `R_analysis/Example scripts/Example_analysis_bayesian.Rmd`
-
-For complete documentation and examples, see the [R Analysis README](R_analysis/README.md).
-
-### 📈 Python Analysis (Outdated)
-
-*Python analysis examples are available but are outdated and may not be maintained. For hierarchical Bayesian modeling, we strongly recommend using the R analysis approach above.*
-
-Python users can find examples in the documentation, but these are primarily for reference. The Python analysis includes:
-- Basic preprocessing and reporting functions
-- Template notebooks for data visualization
-- Outdated Bayesian modeling examples
-
-**⚠️ Important**: Users interested in hierarchical Bayesian modeling should refer to the R analysis code, which provides more comprehensive and up-to-date implementations.
 
 ## How to cite?
 
@@ -167,6 +141,22 @@ call [path to your environment */conda.bat] activate
 pause
 ```
 
+# Hierarchical Interoception Modelling Toolbox
+
+To analyze Heart Rate Discrimination (HRD) and related interoceptive datasets collected with Cardioception, we now recommend the dedicated [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception). The companion preprint [*Hierarchical Bayesian Modelling of Interoceptive Psychophysics*](https://www.biorxiv.org/content/10.1101/2025.08.27.672360v1) details the models, validation, and normative priors included in the release.
+
+Key resources provided by the toolbox:
+- Hierarchical psychometric models for HRD and RRST data implemented in Stan/BRMS, with extensive recovery and validation tests.
+- Normative priors and summaries derived from large reference datasets to plug directly into your own analyses.
+- A power-analysis suite (R Markdown + Shiny app) for exploring sample-size/trial requirements under different effect sizes.
+
+**Quick start:**
+1. Clone the repository and run `setup.R` to install dependencies.
+2. Open `app & demo/BRMS demo.Rmd` for a full HRD workflow that can be adapted to Cardioception exports.
+3. Launch the Shiny power-analysis app (`app & demo/shiny app.R`) to plan upcoming HRD studies.
+
+Please cite the preprint above when reporting results derived from the toolbox, and reference Cardioception for data acquisition.
+
 # Tasks
 
 ## The Heartbeat Counting task
@@ -183,11 +173,13 @@ By default, this task implements the version used in recent publications <sup>3<
 
 This task implements an adaptive psychophysical procedure for estimating participants' ability to discriminate their heart rate. On each trial, participants attend to their heartbeat sensations for five seconds and estimate their average heart rate. Immediately following this period, a cardiac feedback stimulus of 5 tones is played at a particular BPM frequency. The frequency is determined as their estimated average BPM plus or minus an intensity value that is updated by an adaptive staircase procedure (up/down or psi).
 
-# Analyses
+# Legacy analysis resources
 
-## 📊 Recommended: R Analysis
+The resources below remain available for teams who depend on the historical Cardioception workflows. For new projects, we recommend transitioning to the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception).
 
-**For comprehensive data analysis, we recommend using our R analysis scripts located in the `R_analysis/` directory.**
+## 📊 R analysis scripts (maintained legacy)
+
+**R-based analyses live in the `R_analysis/` directory and continue to receive maintenance for backwards compatibility.**
 
 The R analysis provides:
 - **Individual subject analysis** with reaction time plots and signal detection theory metrics
@@ -202,9 +194,9 @@ The R analysis provides:
 
 For complete documentation and examples, see the [R Analysis README](R_analysis/README.md).
 
-## 📈 Python Analysis (Outdated)
+## 📈 Python notebooks (archived)
 
-*Python analysis examples are available but are outdated and may not be maintained. For hierarchical Bayesian modeling, we strongly recommend using the R analysis approach above.*
+*Python notebooks are provided for reference only and are no longer actively maintained. For hierarchical Bayesian modeling, use the Hierarchical Interoception toolbox or the R analysis scripts above.*
 
 ### Task reports
 
