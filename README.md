@@ -14,7 +14,7 @@ This repository reflects the version cited in peer-reviewed publications and is 
 
 # 📢 2025 Update – Hierarchical Modelling Toolkit
 
-> 📢 **New in 2025:** We released the [Hierarchical Interoception modelling toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception) alongside the preprint [*Hierarchical Bayesian Modelling of Interoceptive Psychophysics*](https://www.biorxiv.org/content/10.1101/2025.08.27.672360v1.full). This toolkit delivers turnkey hierarchical Bayesian analyses, normative priors, and power-analysis resources for Heart Rate Discrimination and related tasks. We strongly recommend using it to model data collected with Cardioception.
+> 📢 **New in 2025:** We released the [Hierarchical Interoception modelling toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception) alongside the preprint [*Hierarchical Bayesian Modelling of Interoceptive Psychophysics*](https://www.biorxiv.org/content/10.1101/2025.08.27.672360v1). This toolkit delivers turnkey hierarchical Bayesian analyses, normative priors, and power-analysis resources for Heart Rate Discrimination and related tasks. We strongly recommend using it to model data collected with Cardioception.
 
 # Cardioception
 
