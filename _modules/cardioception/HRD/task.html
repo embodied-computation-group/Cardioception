@@ -1534,13 +1534,21 @@ document.write(`
             <span class="n">decision</span> <span class="o">=</span> <span class="n">responseKey</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">decisionRT</span> <span class="o">=</span> <span class="n">responseKey</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
 
+            <span class="c1"># Translate keyboard response to decision labels if mapping provided</span>
+            <span class="n">response_keys</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;response_keys&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">response_keys</span><span class="p">:</span>
+                <span class="n">key_to_condition</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">cond</span> <span class="k">for</span> <span class="n">cond</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">response_keys</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                <span class="n">decision_label</span> <span class="o">=</span> <span class="n">key_to_condition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">decision</span><span class="p">,</span> <span class="n">decision</span><span class="p">)</span>
+                <span class="n">isCorrect</span> <span class="o">=</span> <span class="n">decision_label</span> <span class="o">==</span> <span class="n">condition</span>
+                <span class="n">decision</span> <span class="o">=</span> <span class="n">decision_label</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">isCorrect</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="p">(</span><span class="n">decision</span> <span class="o">==</span> <span class="n">condition</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
+
             <span class="c1"># Read oximeter</span>
             <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">readInWaiting</span><span class="p">()</span>
 
             <span class="c1"># Feedback</span>
             <span class="k">if</span> <span class="n">feedback</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="c1"># Is the answer Correct?</span>
-                <span class="n">isCorrect</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="p">(</span><span class="n">decision</span> <span class="o">==</span> <span class="n">condition</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
                 <span class="k">if</span> <span class="n">isCorrect</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
                     <span class="n">acc</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
                         <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>

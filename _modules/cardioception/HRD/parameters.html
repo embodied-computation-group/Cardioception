@@ -640,6 +640,8 @@ document.write(`
 <span class="sd">        Vector indexing stairce type (`&#39;UpDown&#39;`, `&#39;psi&#39;`, `&#39;psiCatchTrial&#39;`).</span>
 <span class="sd">    startKey : str</span>
 <span class="sd">        The key to press to start the task and go to next steps.</span>
+<span class="sd">    response_keys : dict</span>
+<span class="sd">        Mapping from trial conditions to keyboard response keys.</span>
 <span class="sd">    respMax : float</span>
 <span class="sd">        The maximum time for decision (in seconds).</span>
 <span class="sd">    results : str</span>
@@ -697,7 +699,8 @@ document.write(`
     <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;maxRatingTime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;isi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;space&quot;</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;allowedKeys&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="s2">&quot;down&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;response_keys&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;More&quot;</span><span class="p">:</span> <span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="s2">&quot;Less&quot;</span><span class="p">:</span> <span class="s2">&quot;down&quot;</span><span class="p">}</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;allowedKeys&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;response_keys&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nTrials&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nTrials</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nBreaking&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nBreaking</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;lambdaIntero&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Save the history of lambda values</span>
