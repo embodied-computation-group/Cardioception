@@ -143,7 +143,7 @@ pause
 
 # Hierarchical Interoception Modelling Toolbox
 
-To analyze Heart Rate Discrimination (HRD) and related interoceptive datasets collected with Cardioception, we now recommend the dedicated [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception). The companion preprint [*Hierarchical Bayesian Modelling of Interoceptive Psychophysics*](https://www.biorxiv.org/content/10.1101/2025.08.27.672360v1.full) details the models, validation, and normative priors included in the release.
+To analyze Heart Rate Discrimination (HRD) and related interoceptive datasets collected with Cardioception, we now recommend the dedicated [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception). The companion preprint [*Hierarchical Bayesian Modelling of Interoceptive Psychophysics*](https://www.biorxiv.org/content/10.1101/2025.08.27.672360v1) details the models, validation, and normative priors included in the release.
 
 Key resources provided by the toolbox:
 - Hierarchical psychometric models for HRD and RRST data implemented in Stan/BRMS, with extensive recovery and validation tests.
