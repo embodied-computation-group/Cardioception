@@ -161,6 +161,8 @@ def getParameters(
         Vector indexing stairce type (`'UpDown'`, `'psi'`, `'psiCatchTrial'`).
     startKey : str
         The key to press to start the task and go to next steps.
+    response_keys : dict
+        Mapping from trial conditions to keyboard response keys.
     respMax : float
         The maximum time for decision (in seconds).
     results : str
@@ -218,7 +220,8 @@ def getParameters(
     parameters["maxRatingTime"] = 5
     parameters["isi"] = (0.25, 0.25)
     parameters["startKey"] = "space"
-    parameters["allowedKeys"] = ["up", "down"]
+    parameters["response_keys"] = {"More": "up", "Less": "down"}
+    parameters["allowedKeys"] = list(parameters["response_keys"].values())
     parameters["nTrials"] = nTrials
     parameters["nBreaking"] = nBreaking
     parameters["lambdaIntero"] = []  # Save the history of lambda values

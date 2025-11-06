@@ -1055,13 +1055,21 @@ def responseDecision(
             decision = responseKey[0][0]
             decisionRT = responseKey[0][1]
 
+            # Translate keyboard response to decision labels if mapping provided
+            response_keys = parameters.get("response_keys")
+            if response_keys:
+                key_to_condition = {key: cond for cond, key in response_keys.items()}
+                decision_label = key_to_condition.get(decision, decision)
+                isCorrect = decision_label == condition
+                decision = decision_label
+            else:
+                isCorrect = True if (decision == condition) else False
+
             # Read oximeter
             parameters["oxiTask"].readInWaiting()
 
             # Feedback
             if feedback is True:
-                # Is the answer Correct?
-                isCorrect = True if (decision == condition) else False
                 if isCorrect is False:
                     acc = visual.TextStim(
                         parameters["win"],
