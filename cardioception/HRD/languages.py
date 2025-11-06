@@ -145,7 +145,7 @@ def danish(device: str, setup: str, exteroception: bool) -> Dict[str, Collection
 
     btnext = "tryk på mellemrumstasten" if device == "keyboard" else "klik på musen"
     texts = {
-        "done": "Du har genemført opgaven. Tak for din deltagalse.",
+        "done": "Du har gennemført opgaven. Tak for din deltagelse.",
         "slower": "Langsommere",
         "faster": "Hurtigere",
         "checkOximeter": "Sørg venligst for at pulsoximeteret sidder rigtigt på din finger.",
@@ -246,7 +246,7 @@ Da opgavens sværhedsgrad ændrer sig over tid, er det sjældent at du vil være
 
     texts[
         "Tutorial6"
-    ] = """Dette er slutningen på vejledningen. Hvis du har noget spørgsmål, så spørg endelig en forsker nu.
+    ] = """Dette er slutningen på vejledningen. Hvis du har nogen spørgsmål, så spørg endelig en forsker nu.
 Ellers kan du fortsætte til hovedopgaven."""
 
     return texts
@@ -275,7 +275,7 @@ def danish_children(
 
     btnext = "tryk på mellemrumstasten" if device == "keyboard" else "klik på musen"
     texts = {
-        "done": "Du har genemført opgaven. Tak for din deltagalse.",
+        "done": "Du har gennemført opgaven. Tak for din deltagelse.",
         "slower": "Langsommere",
         "faster": "Hurtigere",
         "checkOximeter": "Spørg forskningsassistensen om, hvordan du skal placere fingerklemmen.",
@@ -350,7 +350,7 @@ Det andet sæt af bib-lyde vil ALTID være langsommere eller hurtigere end det f
 
     texts[
         "Tutorial6"
-    ] = """Dette er slutningen på vejledningen. Hvis du har noget spørgsmål, så spørg endelig en forsker nu.
+    ] = """Dette er slutningen på øve-runden. Hvis du har nogen spørgsmål, så spørg en forsker nu.
 Ellers kan du fortsætte til opgaven."""
 
     return texts

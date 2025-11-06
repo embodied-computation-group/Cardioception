@@ -1045,7 +1045,7 @@ def responseDecision(
             decision, decisionRT = None, None
             # Record participant response (+/-)
             message = visual.TextStim(
-                parameters["win"], height=parameters["textSize"], text="Too late"
+                parameters["win"], height=parameters["textSize"], text=parameters["texts"]["tooLate"]
             )
             message.draw()
             parameters["win"].flip()
@@ -1332,7 +1332,7 @@ def confidenceRatingTask(
                 message = visual.TextStim(
                     parameters["win"],
                     height=parameters["textSize"],
-                    text="Too late",
+                    text=parameters["texts"]["tooLate"],
                     color="red",
                     pos=(0.0, -0.2),
                 )
