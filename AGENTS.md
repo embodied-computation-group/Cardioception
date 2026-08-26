@@ -50,10 +50,14 @@ tests/
   `-our` and `modelling`/`behavioural`. This matches the existing code and notebooks.
   `setup='behavioral'` is a code literal, not prose. Do not change it.
 - Python is formatted with black, imports sorted with isort, and checked with flake8
-  and mypy. Linting runs on **Python 3.8**, so do not use 3.9+ only APIs in the
-  package. `importlib.resources.files` in particular is 3.9+; use
-  `cardioception._resources.resource_filename` instead.
-- Docs build on Python 3.9 with Sphinx 5.3 and furo. `conf.py` must not import the
+  and mypy, on **Python 3.11**. The package supports **3.10 and 3.11**: the upper
+  bound is `pywinhook`, which ships wheels only to cp311, not PsychoPy, which
+  allows 3.12. Note that CI runs `black` and `isort` *before* `flake8`, so
+  formatting findings are reformatted away rather than reported.
+- Use `cardioception._resources.resource_filename` rather than
+  `importlib.resources.files` for shipped data files. Not for version reasons any
+  more, just so there is one way of doing it.
+- Docs build on Python 3.10 with Sphinx 5.3 and furo. `conf.py` must not import the
   package: it reads `__version__` from `__init__.py` with a regex, because importing
   would drag PsychoPy and its GUI stack onto the docs runner, where wxPython cannot
   build.
