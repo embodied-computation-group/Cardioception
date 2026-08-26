@@ -54,6 +54,10 @@ A growing number of studies have used the Heart Rate Discrimination task. If you
 - Jeganathan, J., Campbell, M. E. J., Legrand, N., Allen, M., & Breakspear, M. (2025). Aberrant cardiac interoception in psychosis. *Schizophrenia Bulletin*, 51(1), 208–216. <https://doi.org/10.1093/schbul/sbae078>
 - Tyrer, A., Ehmsen, J. F., Hoogervorst, K., Nikolova, N., Pando-Naude, V., Steenkjær, C. H., Courtin, A. S., Fardo, F., Hauser, T., Bavato, F., & Allen, M. (2025). Peripheral beta-blockade differentially enhances cardiac and respiratory interoception (p. 2025.02.28.640776). *bioRxiv*. <https://doi.org/10.1101/2025.02.28.640776>
 
+**2024**
+
+- Leganes-Fonteneau, M. (2024). Alcohol effects on interoception shape expectancies and subjective effects: A registered report using the heart rate discrimination task. *Alcohol and Alcoholism*, 59(4), agae025. <https://doi.org/10.1093/alcalc/agae025>
+
 ## Looking for help?
 
 If you have questions regarding the tasks, please contact Micah Allen directly. 
