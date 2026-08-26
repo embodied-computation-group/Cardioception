@@ -1,0 +1,92 @@
+/* Cardioception documentation styling.
+   Palette taken from the package logo: navy line art on an off-white field. */
+
+:root {
+  --cardio-navy: #1f3352;
+  --cardio-navy-light: #2f4b73;
+  --cardio-paper: #f7f6f2;
+  --cardio-rule: #dcd8cf;
+}
+
+/* Light theme */
+body {
+  --color-brand-primary: var(--cardio-navy);
+  --color-brand-content: var(--cardio-navy-light);
+  --color-background-primary: var(--cardio-paper);
+  --color-background-secondary: #efece5;
+  --color-api-background: #efece5;
+  --color-highlight-on-target: #f3e7c8;
+}
+
+/* Dark theme keeps the same hues, lifted for contrast */
+body[data-theme="dark"] {
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  --color-background-primary: #131a24;
+  --color-background-secondary: #1b2531;
+  --color-api-background: #1b2531;
+}
+
+@media (prefers-color-scheme: dark) {
+  body:not([data-theme="light"]) {
+    --color-brand-primary: #9fc0e8;
+    --color-brand-content: #9fc0e8;
+    --color-background-primary: #131a24;
+    --color-background-secondary: #1b2531;
+    --color-api-background: #1b2531;
+  }
+}
+
+/* The logo carries the wordmark, so give it room and drop the border */
+.sidebar-logo {
+  max-width: 82%;
+  margin: 0.6rem auto 0.2rem auto;
+}
+
+/* Headings: a little more weight and a rule under the page title */
+h1 {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  border-bottom: 2px solid var(--color-brand-primary);
+  padding-bottom: 0.3rem;
+}
+
+h2 {
+  font-weight: 600;
+  margin-top: 2rem;
+}
+
+/* Tables: the notebook link tables on the analysis pages read better boxed */
+table.docutils {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table.docutils th,
+table.docutils td {
+  border: 1px solid var(--cardio-rule);
+  padding: 0.4rem 0.6rem;
+}
+
+table.docutils th {
+  background: var(--color-background-secondary);
+}
+
+/* Task screenshots and figures sit on the page rather than floating */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Inline literals: the package name shows up constantly, keep it legible */
+code.literal {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--cardio-rule);
+  border-radius: 3px;
+  padding: 0 0.25em;
+  font-size: 0.88em;
+}
+
+body[data-theme="dark"] code.literal {
+  border-color: #2b3949;
+}
