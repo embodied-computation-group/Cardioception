@@ -58,6 +58,7 @@ def getParameters(
         interoceptive).
     nTrials : int
         The number of trials to run (UpDown and psi staircase).
+
         .. note::
            This number indicates the total number of trials that will be presented
            during the experiment. If `nTrials=50` and `exteroception=False`, the task
@@ -136,6 +137,7 @@ def getParameters(
         decided to place the pulse oximeter (if relevant).
     nTrials : int
         The number of trials to run (UpDown and psi staircase).
+
         .. note::
            This number indicates the total number of trials that will be presented
            during the experiment. If `nTrials=50` and `exteroception=False`, the task
@@ -194,6 +196,7 @@ def getParameters(
     -----
     When using the `behavioral` setup, triggers will be sent to the PPG  recording. The
     trigger channel is coding for different events during the task as follows:
+
     - Trial start: 1
     - recording trigger: 2
     - sound trigger : 3
