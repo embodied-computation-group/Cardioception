@@ -189,8 +189,36 @@ https://github.com/LegrandNico/systole/raw/master/systole/datasets//ppg.npy
 
 `environment.yml` pins `systole==0.2.4`, but `requirements.txt` asks only for
 `systole>=0.2.3`, so a pip install takes 0.3.0 and gets the broken path. The two files
-disagree, and the looser one wins. Note also that this makes the test mode require an
-internet connection, which is worth stating in the docs.
+disagree, and the looser one wins.
+
+The data files are not gone, they moved with the repository. Checked directly:
+
+| URL | Status |
+|---|---|
+| `LegrandNico/systole` repository page | 200 |
+| `LegrandNico/systole/raw/master/systole/datasets/ppg.npy` | 404 |
+| `embodied-computation-group/systole/raw/master/systole/datasets/ppg.npy` | 200 |
+
+systole 0.3.0 hardcodes the old path at `systole/datasets/__init__.py`, lines 65, 83 and
+122. The fix belongs upstream in `embodied-computation-group/systole`, which is a one line
+change, rather than in a version pin here. Pinning back to `systole<0.3` does work, and
+`serialSim()` then returns 24847 samples because 0.2.x bundles the data locally instead of
+fetching it, but it also forces `bokeh<3`, because `systole/__init__.py` eagerly imports
+its plotting module and bokeh 3 removed `bokeh.plotting.figure`. That is a heavy cost for
+a path the behavioral setup never touches.
+
+Two related points on provenance. The systole distribution on PyPI is published from
+`LegrandNico/systole`, not from the Embodied Computation Group repository, so
+`pip install systole` does not install the group's own version. All systole links and
+install instructions in this repository have been repointed at
+`https://github.com/embodied-computation-group/systole` accordingly.
+
+One place could not be changed: `requirements.txt` line 10 still reads `systole>=0.2.3`,
+because `setup.py` feeds that file straight into `install_requires`, and PyPI rejects any
+distribution whose `Requires-Dist` contains a direct URL reference. Putting
+`systole @ git+https://...` there would make the project unpublishable. Resolving that
+needs a decision: either drop systole from `install_requires` and have users install it
+separately, or keep depending on the PyPI build. Flagged, not decided.
 
 ## Finding the serial port
 
