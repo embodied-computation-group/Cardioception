@@ -2,7 +2,7 @@
 
 # Cardioception
 
-<img src="/images/logo.png" align="left" alt="cardioception" height="230" HSPACE=30>
+<img src="images/cardioception_icon.png" align="left" alt="cardioception" height="230" HSPACE=30>
 
 Cardioception measures cardiac interoception in [PsychoPy](https://www.psychopy.org/). The package is built around the Heart Rate Discrimination task (HRD), a psychophysical method that estimates how accurately and how precisely people judge their own heart rate. It also includes the older Heartbeat Counting task, described [further down](#the-heartbeat-counting-task).
 

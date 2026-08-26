@@ -14,7 +14,7 @@ This repository reflects the version cited in peer-reviewed publications and is 
 
 ---
 
-<img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/logo.png" align="left" alt="cardioception" height="230" HSPACE=30>
+<img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/images/cardioception_icon.png" align="left" alt="cardioception" height="230" HSPACE=30>
 
 The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):
 
