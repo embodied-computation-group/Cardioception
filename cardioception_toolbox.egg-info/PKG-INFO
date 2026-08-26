@@ -1,3 +1,51 @@
+Metadata-Version: 2.4
+Name: cardioception-toolbox
+Version: 0.6.1
+Summary: Measuring interoceptive performance with Psychopy - the official Cardioception toolbox from the Embodied Computation Group.
+Home-page: https://github.com/embodied-computation-group/Cardioception
+Author: Micah Allen
+Author-email: micah.allen@clin.au.dk
+Maintainer: Micah Allen
+Maintainer-email: micah.allen@clin.au.dk
+License: MIT
+Project-URL: Homepage, https://github.com/embodied-computation-group/Cardioception
+Project-URL: Documentation, https://embodied-computation-group.github.io/Cardioception/
+Project-URL: Source, https://github.com/embodied-computation-group/Cardioception
+Project-URL: Bug Tracker, https://github.com/embodied-computation-group/Cardioception/issues
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering
+Requires-Python: >=3.9,<3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy<=1.23,>=1.18
+Requires-Dist: scipy>=1.3.0
+Requires-Dist: pandas>=1.0.3
+Requires-Dist: psychopy==2022.2.5
+Requires-Dist: pyserial>=3.4
+Requires-Dist: matplotlib>=3.3.3
+Requires-Dist: seaborn>=0.11.1
+Requires-Dist: pingouin>=0.3.10
+Requires-Dist: papermill>=2.3.1
+Requires-Dist: systole-core>=0.3.0
+Requires-Dist: setuptools<81,>=38.4
+Requires-Dist: packaging
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: license-file
+Dynamic: maintainer
+Dynamic: maintainer-email
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
 [![GitHub license](https://img.shields.io/github/license/embodied-computation-group/Cardioception)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE) [![GitHub release](https://img.shields.io/github/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/) [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit) [![pip](https://badge.fury.io/py/cardioception-toolbox.svg)](https://pypi.org/project/cardioception-toolbox/) [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/) [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 # Cardioception Toolbox
@@ -56,48 +104,24 @@ To install the development branch instead:
 pip install git+https://github.com/embodied-computation-group/Cardioception.git
 ```
 
-### Step by step, from a fresh machine
+### Setting up a conda environment
 
-If you are installing for the first time, or helping someone who is, follow the
-**[installation guide](https://www.the-ecg.org/Cardioception/installation.html)**.
-It walks through the five steps from installing Python to confirming the pulse
-oximeter is producing a real signal, shows the expected output at each step, and
-ends with a troubleshooting table covering the errors that actually come up.
-
-The short version, on a machine that already has Python 3.9:
-
-```
-python -m venv cardioception-env
-cardioception-env\Scripts\activate       # Windows
-source cardioception-env/bin/activate    # macOS and Linux
-pip install cardioception-toolbox
-python -c "from cardioception.HRD import task; print('ok')"
-```
-
-### The conda environment file
-
-`environment.yml` is an **alternative** to the three commands above, not an extra step. It is worth using if you already have Anaconda or Miniconda, because it pins the interpreter to 3.9 for you and installs `pywinhook` from conda-forge, which on Windows saves building it from source:
+The `environment.yml` file at the root of the repository builds an environment with everything the tasks need. From the Anaconda prompt:
 
 ```
 conda env create -f environment.yml
 conda activate cardioception
 ```
 
-`environment_linux.yml` is the same with the Linux-specific packages. If you do not already use conda, the `venv` route above works and involves one fewer tool.
-
-If you use the desktop shortcut described below, point it at whichever environment you created rather than at `base`.
+If you use the desktop shortcut described below, point it at the `cardioception` environment rather than `base`.
 
 ### Dependencies
 
-**Python 3.9 is required, and only 3.9.** `systole-core` needs 3.9 or later, and the pinned PsychoPy cannot be imported on 3.10 or later, so the two constraints meet at a single version and `pip` refuses anything else. Widening that is [issue #92](https://github.com/embodied-computation-group/Cardioception/issues/92).
+**Python 3.9 is required, and only 3.9**: `systole-core` needs 3.9 or later and the pinned PsychoPy cannot be imported on 3.10 or later, so `pip` will refuse anything else. Pip installs the runtime dependencies for you, and [`requirements.txt`](requirements.txt) records the versions we test with. The ones that matter most are [PsychoPy](https://www.psychopy.org/) for stimulus delivery and [systole](https://github.com/embodied-computation-group/systole) for talking to the recording device, alongside numpy, scipy, pandas and pyserial. The `setuptools<81` bound is a hard requirement, not a preference: PsychoPy 2022.2.5 imports `pkg_resources`, which setuptools removed in 82. The remaining pins reflect what we run locally.
 
-Pip installs everything you need. The two that matter are [PsychoPy](https://www.psychopy.org/) for stimulus delivery and [systole](https://github.com/embodied-computation-group/systole) for reading the pulse oximeter, alongside numpy, scipy, pandas and pyserial. [`requirements.txt`](requirements.txt) records the versions we test against.
+The HTML reports need a few extras that are not installed by default: [papermill](https://papermill.readthedocs.io/en/latest/), [matplotlib](https://matplotlib.org/), [seaborn](https://seaborn.pydata.org/), [pingouin](https://pingouin-stats.org/), [metadpy](https://github.com/Embodi3dComputationGroup/metadpy) and [pymc](https://www.pymc.io/welcome.html).
 
-One pin is a hard requirement rather than a preference: `setuptools<81`, because PsychoPy 2022.2.5 imports `pkg_resources` and setuptools removed it in version 82.
-
-Analysing the data needs a few extras that are not installed by default: [papermill](https://papermill.readthedocs.io/en/latest/), [matplotlib](https://matplotlib.org/), [seaborn](https://seaborn.pydata.org/), [pingouin](https://pingouin-stats.org/), [metadpy](https://github.com/Embodi3dComputationGroup/metadpy) and [pymc](https://www.pymc.io/welcome.html).
-
-Installing the package also copies about 140 MB of images and sounds that the tasks play, most of it the 370 pre-generated tone files used by the Heart Rate Discrimination task. `pip uninstall cardioception-toolbox` removes them again.
+Installing the package also copies about 160 Mo of images and sounds that the tasks play. Running `pip uninstall cardioception-toolbox` removes them again.
 
 ## Recording devices
 
