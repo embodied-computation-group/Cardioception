@@ -68,6 +68,7 @@ Written and maintained by Micah Allen and the Embodied Computation Group, Aarhus
 ---
 hidden:
 ---
+Installation <installation.md>
 Guide <user_guide.md>
 Theory <measuring.md>
 Tutorials <tutorials/index.md>

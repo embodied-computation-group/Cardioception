@@ -68,6 +68,9 @@ bibtex_reference_style = "author_year"
 bibtex_default_style = "unsrt"
 
 myst_enable_extensions = ["dollarmath"]
+# Give headings real anchors, so a link like (page.md#some-heading) resolves.
+# Several pages cross-reference each other by heading slug.
+myst_heading_anchors = 3
 
 panels_add_bootstrap_css = False
 

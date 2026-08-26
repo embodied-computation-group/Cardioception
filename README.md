@@ -56,24 +56,48 @@ To install the development branch instead:
 pip install git+https://github.com/embodied-computation-group/Cardioception.git
 ```
 
-### Setting up a conda environment
+### Step by step, from a fresh machine
 
-The `environment.yml` file at the root of the repository builds an environment with everything the tasks need. From the Anaconda prompt:
+If you are installing for the first time, or helping someone who is, follow the
+**[installation guide](https://www.the-ecg.org/Cardioception/installation.html)**.
+It walks through the five steps from installing Python to confirming the pulse
+oximeter is producing a real signal, shows the expected output at each step, and
+ends with a troubleshooting table covering the errors that actually come up.
+
+The short version, on a machine that already has Python 3.9:
+
+```
+python -m venv cardioception-env
+cardioception-env\Scripts\activate       # Windows
+source cardioception-env/bin/activate    # macOS and Linux
+pip install cardioception-toolbox
+python -c "from cardioception.HRD import task; print('ok')"
+```
+
+### The conda environment file
+
+`environment.yml` is an **alternative** to the three commands above, not an extra step. It is worth using if you already have Anaconda or Miniconda, because it pins the interpreter to 3.9 for you and installs `pywinhook` from conda-forge, which on Windows saves building it from source:
 
 ```
 conda env create -f environment.yml
 conda activate cardioception
 ```
 
-If you use the desktop shortcut described below, point it at the `cardioception` environment rather than `base`.
+`environment_linux.yml` is the same with the Linux-specific packages. If you do not already use conda, the `venv` route above works and involves one fewer tool.
+
+If you use the desktop shortcut described below, point it at whichever environment you created rather than at `base`.
 
 ### Dependencies
 
-**Python 3.9 is required, and only 3.9**: `systole-core` needs 3.9 or later and the pinned PsychoPy cannot be imported on 3.10 or later, so `pip` will refuse anything else. Pip installs the runtime dependencies for you, and [`requirements.txt`](requirements.txt) records the versions we test with. The ones that matter most are [PsychoPy](https://www.psychopy.org/) for stimulus delivery and [systole](https://github.com/embodied-computation-group/systole) for talking to the recording device, alongside numpy, scipy, pandas and pyserial. The `setuptools<81` bound is a hard requirement, not a preference: PsychoPy 2022.2.5 imports `pkg_resources`, which setuptools removed in 82. The remaining pins reflect what we run locally.
+**Python 3.9 is required, and only 3.9.** `systole-core` needs 3.9 or later, and the pinned PsychoPy cannot be imported on 3.10 or later, so the two constraints meet at a single version and `pip` refuses anything else. Widening that is [issue #92](https://github.com/embodied-computation-group/Cardioception/issues/92).
 
-The HTML reports need a few extras that are not installed by default: [papermill](https://papermill.readthedocs.io/en/latest/), [matplotlib](https://matplotlib.org/), [seaborn](https://seaborn.pydata.org/), [pingouin](https://pingouin-stats.org/), [metadpy](https://github.com/Embodi3dComputationGroup/metadpy) and [pymc](https://www.pymc.io/welcome.html).
+Pip installs everything you need. The two that matter are [PsychoPy](https://www.psychopy.org/) for stimulus delivery and [systole](https://github.com/embodied-computation-group/systole) for reading the pulse oximeter, alongside numpy, scipy, pandas and pyserial. [`requirements.txt`](requirements.txt) records the versions we test against.
 
-Installing the package also copies about 160 Mo of images and sounds that the tasks play. Running `pip uninstall cardioception-toolbox` removes them again.
+One pin is a hard requirement rather than a preference: `setuptools<81`, because PsychoPy 2022.2.5 imports `pkg_resources` and setuptools removed it in version 82.
+
+Analysing the data needs a few extras that are not installed by default: [papermill](https://papermill.readthedocs.io/en/latest/), [matplotlib](https://matplotlib.org/), [seaborn](https://seaborn.pydata.org/), [pingouin](https://pingouin-stats.org/), [metadpy](https://github.com/Embodi3dComputationGroup/metadpy) and [pymc](https://www.pymc.io/welcome.html).
+
+Installing the package also copies about 140 MB of images and sounds that the tasks play, most of it the 370 pre-generated tone files used by the Heart Rate Discrimination task. `pip uninstall cardioception-toolbox` removes them again.
 
 ## Recording devices
 
