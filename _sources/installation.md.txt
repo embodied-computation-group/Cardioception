@@ -68,11 +68,14 @@ confusing failure part-way through installation.
 pip install cardioception-toolbox
 ```
 
-Expect this to take a few minutes and to download roughly 140 MB, most of it the
-370 pre-generated tone files the Heart Rate Discrimination task plays.
+Expect this to take a few minutes. Cardioception itself is a small download,
+about 8 MB, but it pulls in PsychoPy and its Qt stack, so several hundred MB
+will cross the network in total. On disk the package expands to roughly 140 MB,
+almost all of it the 370 pre-generated tone files the Heart Rate Discrimination
+task plays: they compress well in the wheel and do not on disk.
 
 ```text
-Successfully installed cardioception-toolbox-0.6.1 psychopy-2026.2.2 systole-core-0.3.1 ...
+Successfully installed cardioception-toolbox-0.7.0 psychopy-2026.2.2 systole-core-0.3.1 ...
 ```
 
 ```{note}
