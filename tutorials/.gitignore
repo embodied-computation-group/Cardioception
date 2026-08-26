@@ -1,0 +1,5 @@
+# Fitted model objects are large and are not committed. Regenerate with 01_fit.R.
+results/*.rds
+results/*.csv.gz
+# Participant-level data is added deliberately, not by accident.
+data/*.csv
