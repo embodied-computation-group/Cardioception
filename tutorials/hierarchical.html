@@ -166,6 +166,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide.html">Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../measuring.html">Theory</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -526,7 +527,7 @@ report that as a clean null.</p>
 precise than women in the auditory condition and less precise in the cardiac one,
 and a model with one gender term per parameter has nowhere to put that except in
 the average, where it cancels. Age does the same thing on the slope.</p>
-<p>This is why the table in <a class="reference internal" href="#adding-your-design"><span class="xref myst">Adding your design</span></a> suggests
+<p>This is why the table in <a class="reference internal" href="#adding-your-design">Adding your design</a> suggests
 interacting your grouping variable with <code class="docutils literal notranslate"><span class="pre">Modality</span></code> whenever you have both
 conditions. The auditory condition is not a formality: an effect that appears in
 both is telling you something about the task rather than about interoception.</p>
@@ -577,7 +578,7 @@ curve yourself and wonder why the data will not sit on it.</p>
 <code class="docutils literal notranslate"><span class="pre">beta</span></code> and <code class="docutils literal notranslate"><span class="pre">lambda</span></code> and push them through the likelihood. In brms,
 <code class="docutils literal notranslate"><span class="pre">re_formula</span> <span class="pre">=</span> <span class="pre">NA</span></code>. This is what the group-level coefficients describe, so it
 is the curve to put beside a table of effects, and it is what
-<a class="reference internal" href="#what-the-worked-model-found"><span class="xref myst">the figure above</span></a> shows.</p></li>
+<a class="reference internal" href="#what-the-worked-model-found">the figure above</a> shows.</p></li>
 <li><p><strong>The average of the participants’ curves.</strong> Predict each participant’s own
 curve, then average those. This is what pooled observed data estimate, because
 every trial in the pool belongs to a real participant.</p></li>
@@ -612,7 +613,7 @@ this bites in the cardiac condition and barely shows in the auditory one:</p>
 <p>The practical consequence is short: <strong>do not judge fit by laying pooled data over
 a population curve.</strong> Compare each participant to their own curve, or compare
 pooled bins to a prediction made over the participants and trials that produced
-them. Both are in <a class="reference internal" href="#checking-in-this-order"><span class="xref myst">Checking</span></a>.</p>
+them. Both are in <a class="reference internal" href="#checking-in-this-order">Checking</a>.</p>
 <p>One more thing works this way in the HRD specifically. The staircase concentrates
 trials near each participant’s own threshold, so a bin at an extreme ΔBPM is made
 up of whoever happened to have a threshold out there rather than a fair sample of
