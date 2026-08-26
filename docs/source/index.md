@@ -12,8 +12,6 @@ This is the version cited in peer-reviewed publications, and the Embodied Comput
 
 ---
 
-<img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/images/cardioception_icon.png" align="left" alt="cardioception" height="230" HSPACE=30>
-
 Cardioception is a Python package for measuring interoception with Psychopy. It implements two measures of cardiac interoception:
 
 1. The Heartbeat Counting task (HBC), also known as the Heartbeat tracking task, developed by Rainer Schandry {cite:p}`1978:dale,1981:schandry`. Participants count their heartbeats for a given period of time, and an accuracy score comes from comparing the reported number of heartbeats with the true number.
