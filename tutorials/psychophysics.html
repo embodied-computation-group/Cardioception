@@ -242,8 +242,14 @@ already: this page assumes the aggregated data frame prepared there.</p>
 <h2>What the task produces<a class="headerlink" href="#what-the-task-produces" title="Permalink to this heading">#</a></h2>
 <p>On each trial the participant hears tones played at their own heart rate plus or
 minus some offset, and judges whether the tones were faster or slower than their
-heart. The offset is the stimulus intensity, in ΔBPM, and the staircase moves it
-around from trial to trial.</p>
+heart. The offset is the stimulus intensity, in ΔBPM, and an adaptive Bayesian
+procedure (Psi) chooses it from trial to trial.</p>
+<p>Psi is converging on the participant’s <strong>point of subjective equality</strong>: the offset
+at which they are equally likely to answer “faster” or “slower”. That point is the
+threshold, and it is the quantity the task exists to measure. Note what this means:
+the staircase tracks the participant’s belief about their heart rate, not a target
+level of accuracy. For a biased participant it settles well away from their true
+heart rate, and it is supposed to.</p>
 <p>Plotting the proportion of “faster” responses against that intensity gives the
 shape the model has to describe:</p>
 <p><img alt="Responses against stimulus intensity for one participant" src="../_images/psychometric_example.png" /></p>
@@ -287,8 +293,15 @@ different question, and the reason the HRD exists is that it separates them.</p>
 be badly wrong about their heart rate while discriminating changes in it very
 precisely, and someone else can be unbiased but unable to tell 60 from 75 BPM.
 Heartbeat counting scores confound the two; this separates them.</p>
-<p>Watch the sign on <code class="docutils literal notranslate"><span class="pre">beta</span></code>. It is a log <em>slope</em>, so bigger is better, and it is easy
-to describe an improvement backwards.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">beta</span></code> means the opposite thing in the model and in the original paper. In the brms
+model above, <code class="docutils literal notranslate"><span class="pre">exp(beta)</span></code> is 1/σ, so <strong>larger <code class="docutils literal notranslate"><span class="pre">beta</span></code> is steeper, meaning better
+precision</strong>. In <a class="reference external" href="https://doi.org/10.1016/j.biopsycho.2021.108239">Legrand et al. (2022)</a>
+the slope parameter is σ itself, where “a larger slope value reflects a less steep
+psychometric function”, so <strong>larger is worse</strong>. Same Greek letter, inverted meaning.
+Check which convention a number is on before comparing it to anything.</p>
+</div>
 </section>
 <section id="the-data-the-model-wants">
 <h2>The data the model wants<a class="headerlink" href="#the-data-the-model-wants" title="Permalink to this heading">#</a></h2>

@@ -10,8 +10,15 @@ already: this page assumes the aggregated data frame prepared there.
 
 On each trial the participant hears tones played at their own heart rate plus or
 minus some offset, and judges whether the tones were faster or slower than their
-heart. The offset is the stimulus intensity, in ΔBPM, and the staircase moves it
-around from trial to trial.
+heart. The offset is the stimulus intensity, in ΔBPM, and an adaptive Bayesian
+procedure (Psi) chooses it from trial to trial.
+
+Psi is converging on the participant's **point of subjective equality**: the offset
+at which they are equally likely to answer "faster" or "slower". That point is the
+threshold, and it is the quantity the task exists to measure. Note what this means:
+the staircase tracks the participant's belief about their heart rate, not a target
+level of accuracy. For a biased participant it settles well away from their true
+heart rate, and it is supposed to.
 
 Plotting the proportion of "faster" responses against that intensity gives the
 shape the model has to describe:
@@ -40,8 +47,14 @@ be badly wrong about their heart rate while discriminating changes in it very
 precisely, and someone else can be unbiased but unable to tell 60 from 75 BPM.
 Heartbeat counting scores confound the two; this separates them.
 
-Watch the sign on `beta`. It is a log *slope*, so bigger is better, and it is easy
-to describe an improvement backwards.
+```{warning}
+`beta` means the opposite thing in the model and in the original paper. In the brms
+model above, `exp(beta)` is 1/σ, so **larger `beta` is steeper, meaning better
+precision**. In [Legrand et al. (2022)](https://doi.org/10.1016/j.biopsycho.2021.108239)
+the slope parameter is σ itself, where "a larger slope value reflects a less steep
+psychometric function", so **larger is worse**. Same Greek letter, inverted meaning.
+Check which convention a number is on before comparing it to anything.
+```
 
 ## The data the model wants
 
