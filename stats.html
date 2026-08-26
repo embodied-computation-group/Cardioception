@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Heartbeat Counting task - Summary results" href="examples/templates/HeartBeatCounting.html" /><link rel="prev" title="Inspecting your results" href="inspecting_data.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API" href="api.html" /><link rel="prev" title="Inspecting your results" href="inspecting_data.html" />
 
     <link rel="shortcut icon" href="_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>Statistical analysis - Cardioception Toolbox</title>
@@ -169,19 +169,8 @@
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="measuring.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inspecting_data.html">Inspecting results</a></li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Statistical analysis</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html">Heartbeat Counting task - Summary results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html#heartbeats-and-artefacts-detection">Heartbeats and artefacts detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html">Heart Rate Discrimination task - Summary results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#response-time">Response time</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#metacognition">Metacognition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#psychophysics">Psychophysics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#psychometric-function">Psychometric function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#pulse-oximeter">Pulse oximeter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#save-dataframe">Save dataframe</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Statistical analysis</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html">cardioception.HBC.parameters.getParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/HBC.task/cardioception.HBC.task.run.html">cardioception.HBC.task.run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
@@ -383,22 +372,22 @@ quality rather than as the basis of an analysis pipeline.</p>
 </div>
 <section id="report-templates">
 <h3>Report templates<a class="headerlink" href="#report-templates" title="Permalink to this heading">#</a></h3>
-<p>These are the notebooks the report function runs, one per task. You can open them here, or run them in <a class="reference external" href="https://colab.research.google.com/">Google Colab</a> and upload your own data.</p>
-<div class="toctree-wrapper compound">
-</div>
+<p>The report function runs one notebook per task. They live in the package at
+<code class="docutils literal notranslate"><span class="pre">cardioception/notebooks/</span></code> and are kept for data quality checks rather than as tutorials.
+You can open them in <a class="reference external" href="https://colab.research.google.com/">Google Colab</a> and upload your own data:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Notebook</p></th>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
 <th class="head"><p>Colab</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="examples/templates/HeartBeatCounting.html#hbc-template"><span class="std std-ref">Heartbeat Counting task - Summary results</span></a></p></td>
-<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/templates/HeartBeatCounting.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
+<tr class="row-even"><td><p>Heartbeat Counting</p></td>
+<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#hrd-template"><span class="std std-ref">Heart Rate Discrimination task - Summary results</span></a></p></td>
-<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/templates/HeartRateDiscrimination.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
+<tr class="row-odd"><td><p>Heart Rate Discrimination</p></td>
+<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -421,12 +410,12 @@ quality rather than as the basis of an analysis pipeline.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="examples/templates/HeartBeatCounting.html">
+          <a class="next-page" href="api.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Heartbeat Counting task - Summary results</div>
+                <div class="title">API</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
