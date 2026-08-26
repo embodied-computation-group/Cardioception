@@ -8,7 +8,5 @@ seaborn>=0.11.1
 pingouin>=0.3.10
 papermill>=2.3.1
 systole-core>=0.3.0
-# No setuptools ceiling: psychopy 2026.2.2 does not import pkg_resources.
-# Verified by checking sys.modules after importing visual, data, gui and sound.
 setuptools>=38.4
 packaging
