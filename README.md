@@ -210,3 +210,5 @@ The studies below have used the Heart Rate Discrimination task. If your work is 
 Written by Nicolas Legrand and Micah Allen, 2019 to 2022. Contact: micah@cfin.au.dk. Maintained by the Embodied Computation Group, Aarhus University.
 
 Some of the icons in the figures and in the tasks themselves come from **Flaticon** [www.flaticon.com](www.flaticon.com).
+
+<img src = "images/LabLogo.png" height ="100">
