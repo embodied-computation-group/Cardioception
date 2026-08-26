@@ -46,6 +46,7 @@ For HRD data we recommend the [Hierarchical Interoception toolbox](https://githu
 
 - [User guide](user_guide.md) for installation, dependencies and running a task
 - [Theory](measuring.md) for what the two tasks measure and why
+- [Inspecting results](inspecting_data.md) for looking at your data before modelling, in Python or R
 - [Statistical analysis](stats.md) for modelling your data
 - [API](api.rst) for the parameters and task functions
 - [Cite](cite.md) for the references to use in a publication
@@ -70,6 +71,7 @@ hidden:
 ---
 Guide <user_guide.md>
 Theory <measuring.md>
+Inspecting results <inspecting_data.md>
 Statistical analysis <stats.md>
 API <api.rst>
 Cite <cite.md>

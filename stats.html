@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Heartbeat Counting task - Summary results" href="examples/templates/HeartBeatCounting.html" /><link rel="prev" title="Measuring cardiac interoception" href="measuring.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Heartbeat Counting task - Summary results" href="examples/templates/HeartBeatCounting.html" /><link rel="prev" title="Inspecting your results" href="inspecting_data.html" />
 
     <link rel="shortcut icon" href="_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>Statistical analysis - Cardioception Toolbox</title>
@@ -168,6 +168,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="measuring.html">Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspecting_data.html">Inspecting results</a></li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Statistical analysis</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html">Heartbeat Counting task - Summary results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html#heartbeats-and-artefacts-detection">Heartbeats and artefacts detection</a></li>
@@ -178,12 +179,6 @@
 <li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#psychometric-function">Psychometric function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#pulse-oximeter">Pulse oximeter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#save-dataframe">Save dataframe</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html">Fitting a psychometric function at the subject level</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#model">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#plotting">Plotting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html">Fitting a psychometric function at the group level</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#model">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#plotting">Plotting</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -365,6 +360,12 @@
 </section>
 <section id="quality-checks-in-python">
 <h2>Quality checks in Python<a class="headerlink" href="#quality-checks-in-python" title="Permalink to this heading">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">preprocessing</span></code> and <code class="docutils literal notranslate"><span class="pre">report</span></code> functions are the original Python helpers. They still
+work, but they are due to be rebuilt, so treat them as a convenience for checking data
+quality rather than as the basis of an analysis pipeline.</p>
+</div>
 <p>The package includes two functions that summarise a result folder and build an HTML report per participant. The reports are worth generating for every session, mainly to check the quality of the PPG recording.</p>
 <p>The <a class="reference internal" href="generated/reports/cardioception.reports.preprocessing.html#cardioception.reports.preprocessing" title="cardioception.reports.preprocessing"><span class="xref myst py py-func">preprocessing function</span></a> takes the <code class="docutils literal notranslate"><span class="pre">final.txt</span></code> data frame, or a path to it, and returns a summary data frame with response times, the psychometric parameters estimated online by the Psi algorithm, and signal detection measures.</p>
 <p>The <a class="reference internal" href="generated/reports/cardioception.reports.report.html#cardioception.reports.report" title="cardioception.reports.report"><span class="xref myst py py-func">report function</span></a> runs the notebook templates below and writes HTML. It needs more than <code class="docutils literal notranslate"><span class="pre">final.txt</span></code>, because it analyses the PPG signal as well. The script assumes a <code class="docutils literal notranslate"><span class="pre">data</span></code> folder containing one sub-folder per participant:</p>
@@ -411,26 +412,7 @@
 <p>The material below is kept for reference and is no longer maintained. Use the hierarchical toolbox for modelling, and the R scripts for the older workflow.</p>
 </div>
 <p>The R scripts in <code class="docutils literal notranslate"><span class="pre">R_analysis/</span></code> are still maintained for existing pipelines and cover single-subject analysis, group-level models and Bayesian fits in Stan. See the <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/tree/master/R_analysis">R analysis directory</a>.</p>
-<p>These PyMC notebooks fit the psychometric function offline at the subject and group level. They predate the toolbox and are superseded by it.</p>
-<div class="toctree-wrapper compound">
-</div>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="colwidths-auto docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Notebook</p></th>
-<th class="head"><p>Colab</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#psychophysics-subject-level"><span class="std std-ref">Fitting a psychometric function at the subject level</span></a></p></td>
-<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#psychophysics-group-level"><span class="std std-ref">Fitting a psychometric function at the group level</span></a></p></td>
-<td><p><a class="reference external" href="https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
+<p>The PyMC notebooks that used to fit the psychometric function offline have been removed. Model fitting is done in R with the toolbox, and the <a class="reference internal" href="inspecting_data.html"><span class="std std-doc">data inspection page</span></a> covers what Python is still used for.</p>
 </section>
 </section>
 
@@ -448,14 +430,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="measuring.html">
+          <a class="prev-page" href="inspecting_data.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Measuring cardiac interoception</div>
+                <div class="title">Inspecting your results</div>
                 
               </div>
             </a>
