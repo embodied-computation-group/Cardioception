@@ -284,33 +284,34 @@ if (have("psy_full_curve_gender.csv.gz")) {
   save_fig("fig_modality_gender", fig, 180, 76)
 
   if (!is.null(ppc)) {
-    # The solid line has to be here. Pooled observed data estimate the average of
-    # the participants' curves, not the curve of the average participant, and
-    # with a threshold SD near 11 dBPM those are visibly different. Showing the
-    # points against the dashed line alone makes a model that fits 98% of bins
-    # look like it is failing.
+    # Predictions against data, and nothing else. The curve of the average
+    # participant is a different quantity, and it belongs beside the effects
+    # table it describes rather than on a check of fit: pooled data do not
+    # estimate it, so drawing it here only invites the reader to measure the
+    # points against the wrong line. Both lines together live on fig_population,
+    # where the distinction between them is the actual subject.
+    #
+    # What is left is all model prediction of the pooled quantity: the bars
+    # discretely, per bin, and the line continuously.
     marg <- if (have("psy_full_curve_marginal.csv.gz"))
       rd("psy_full_curve_marginal.csv.gz") else NULL
 
-    chk <- ggplot(cur, aes(x)) +
+    chk <- ggplot(ppc, aes(x)) +
       geom_hline(yintercept = 0.5, linetype = "dotted", colour = GREY, linewidth = 0.3) +
-      geom_linerange(data = ppc, aes(x = x, ymin = pp_lo, ymax = pp_hi, colour = gender),
-                     alpha = 0.35, linewidth = 1.1, inherit.aes = FALSE) +
-      geom_line(aes(y = m, colour = gender, group = interaction(gender, ci)),
-                linewidth = 0.4, linetype = "dashed", alpha = 0.5) +
+      geom_linerange(aes(ymin = pp_lo, ymax = pp_hi, colour = gender),
+                     alpha = 0.35, linewidth = 1.1) +
       { if (!is.null(marg))
           geom_line(data = marg, aes(x, m, colour = gender, group = gender),
-                    linewidth = 0.9, inherit.aes = FALSE) } +
-      geom_point(data = ppc, aes(x, p, colour = gender, size = n), alpha = 0.75,
-                 stroke = 0, inherit.aes = FALSE) +
+                    linewidth = 0.8, alpha = 0.9, inherit.aes = FALSE) } +
+      geom_point(aes(y = p, colour = gender, size = n), alpha = 0.8, stroke = 0) +
       scale_colour_manual(values = PAL) + scale_size_area(max_size = 2.2) +
       scale_y_continuous(breaks = c(0, 0.5, 1)) +
       coord_cartesian(ylim = c(0, 1)) +
       facet_wrap(~Modality) +
       labs(x = expression(Delta*"BPM"), y = "P(respond \"faster\")",
            title = "Posterior predictive check",
-           subtitle = paste("bars: 95% predicted per bin.  solid: average of",
-                            "participants.  dashed: average participant")) + th
+           subtitle = paste("points are observed, sized by trials.",
+                            "Line and bars are what the model predicts for them.")) + th
     save_fig("fig_ppc_modality_gender", chk / word_legend(PAL) +
                plot_layout(heights = c(1, 0.08)), 180, 76)
   }
