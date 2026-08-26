@@ -1,25 +1,10 @@
-# Cardioception
+# Cardioception Toolbox
 
-[![GitHub license](https://img.shields.io/github/license/embodied-computation-group/Cardioception)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE) [![GitHub release](https://img.shields.io/github/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/) [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit) [![pip](https://badge.fury.io/py/cardioception-toolbox.svg)](https://pypi.org/project/cardioception-toolbox/) [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/) [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![GitHub release](https://img.shields.io/github/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/) [![pip](https://badge.fury.io/py/cardioception-toolbox.svg)](https://pypi.org/project/cardioception-toolbox/) [![GitHub license](https://img.shields.io/github/license/embodied-computation-group/Cardioception)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE)
 
----
+Cardioception measures cardiac interoception in [Psychopy](https://www.psychopy.org/). The package is built around the Heart Rate Discrimination task (HRD), a psychophysical method that estimates how accurately and how precisely people judge their own heart rate. It also ships the classic Heartbeat Counting task.
 
-# Official repository notice
-
-This is the original, officially maintained version of the Cardioception software package, co-created by Micah Allen and the Embodied Computation Group at Aarhus University (2019-2022). Development of this package was funded by a Lundbeckfonden Fellowship to Micah Allen.
-
-This is the version cited in peer-reviewed publications, and the Embodied Computation Group maintains it. We cannot guarantee the accuracy, validity, or scientific reproducibility of unofficial forks or versions of this software, so please use this repository for scientific work, installation, and citation.
-
----
-
-Cardioception is a Python package for measuring interoception with Psychopy. It implements two measures of cardiac interoception:
-
-1. The Heartbeat Counting task (HBC), also known as the Heartbeat tracking task, developed by Rainer Schandry {cite:p}`1978:dale,1981:schandry`. Participants count their heartbeats for a given period of time, and an accuracy score comes from comparing the reported number of heartbeats with the true number.
-2. The Heart Rate Discrimination task {cite:p}`2022:legrand`, an adaptive psychophysical measure in which participants estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. Staircase procedures manipulate the difference between the true heart rate and the presented tone, which gives the bias (threshold) and precision (slope) of the psychometric function, along with metacognitive efficiency. These can be estimated online or offline (see the data analysis section below).
-
-The tasks run with minimal equipment: a computer and a recording device to monitor the participant's heart rate. The default version uses the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). This sensor plugs directly into the stim PC over USB and works with Cardioception without any additional code. The tasks can also be used with other recording devices and experimental settings (ECG, M/EEG, fMRI...).
-
-## Installation
+The tasks run with minimal equipment: a computer and a device that reads the participant's pulse. They also work with richer setups (ECG, M/EEG, fMRI) when you have them.
 
 ```{important}
 Install the package as **`cardioception-toolbox`**:
@@ -37,29 +22,41 @@ from cardioception.HRD import task
 
 See the [user guide](user_guide.md) for conda environments, dependencies and the development version.
 
-## Data analysis
+## The tasks
 
-### R analysis
+### Heart Rate Discrimination task
 
-We recommend the R scripts in the `R_analysis/` directory. They cover single-subject analysis with reaction time plots and signal detection theory metrics, group-level hierarchical analysis, Bayesian analysis with Stan models, and plotting of the results.
+The HRD {cite:p}`2022:legrand` is an adaptive psychophysical measure. Participants attend to their heartbeat sensations, then hear tones played faster or slower than their true heart rate and judge which. Staircase procedures adjust that difference from trial to trial, which gives the bias (threshold) and the precision (slope) of the psychometric function. Both can be estimated online during the task or offline afterwards.
 
-Example scripts:
+### Heartbeat Counting task
 
-- `R_analysis/Example scripts/Example_analysis_simple.Rmd` for a single subject
-- `R_analysis/Example scripts/Example_analysis_Hierarchical.Rmd` for group-level analysis
-- `R_analysis/Example scripts/Example_analysis_bayesian.Rmd` for Bayesian analysis
+The HBC {cite:p}`1978:dale,1981:schandry`, also known as the heartbeat tracking task, asks participants to count their heartbeats over a fixed period. An accuracy score compares the reported count against the true number of beats.
 
-The [R analysis README](../R_analysis/README.md) has the full documentation and further examples.
+The package keeps this task because much of the literature rests on it. For new studies we would point you to the HRD, which separates interoceptive bias from precision and is less confounded by beliefs about heart rate. The [theory page](measuring.md) sets out that argument in full.
 
-### Python analysis (outdated)
+## Recording devices
 
-The Python analysis examples are outdated and may not be maintained. They are kept mainly for reference and include basic preprocessing and reporting functions, template notebooks for data visualization, and older Bayesian modelling examples. If you want to fit hierarchical Bayesian models, use the R code above instead.
+The default setup uses the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/), which plugs into the stimulus PC over USB and needs no extra code. Remote Data Access through BrainVision Recorder is also supported, and you can add other devices by writing a recording class. The [user guide](user_guide.md) has the details.
 
-## Looking for help?
+## Analysing your data
 
-If you have questions regarding the tasks or want to discuss data analysis, please contact Micah Allen directly.
+For HRD data we recommend the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), described in [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3). The [statistical analysis page](stats.md) walks through the workflow, including how to model confidence ratings.
 
-If you want to report a bug, you can open an issue on the [GitHub page](https://github.com/embodied-computation-group/Cardioception).
+## Where to go next
+
+- [User guide](user_guide.md) for installation, dependencies and running a task
+- [Theory](measuring.md) for what the two tasks measure and why
+- [Statistical analysis](stats.md) for modelling your data
+- [API](api.rst) for the parameters and task functions
+- [Cite](cite.md) for the references to use in a publication
+
+## Getting help
+
+For questions about the tasks or about data analysis, contact Micah Allen directly. To report a bug, open an issue on the [GitHub page](https://github.com/embodied-computation-group/Cardioception/issues).
+
+```{note}
+This is the original Cardioception, created by Micah Allen and the Embodied Computation Group at Aarhus University between 2019 and 2022, funded by a Lundbeckfonden Fellowship to Micah Allen. It is the version cited in the peer-reviewed publications listed on the [cite page](cite.md). We cannot vouch for unofficial forks, so we recommend working from this repository for research, installation and citation.
+```
 
 ## Development
 
@@ -71,10 +68,10 @@ Written and maintained by Micah Allen and the Embodied Computation Group, Aarhus
 ---
 hidden:
 ---
-Theory <measuring.md>
 Guide <user_guide.md>
-API <api.rst>
+Theory <measuring.md>
 Statistical analysis <stats.md>
+API <api.rst>
 Cite <cite.md>
 References <references.md>
 ```

@@ -99,6 +99,9 @@ source_suffix = [".rst", ".md"]
 # The master toctree document.
 master_doc = "index"
 
+# The example notebooks are archived and are not re-run at build time; their
+# stored outputs are rendered as they are.
+nb_execution_mode = "off"
 nb_execution_timeout = 300
 
 # Add any paths that contain templates here, relative to this directory.
