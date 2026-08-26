@@ -125,41 +125,18 @@ spent there. Notice how few trials sit far from each participant's own threshold
 that is the staircase doing its job, and it is also why individual slope estimates
 are shaky.
 
-(two-averages)=
-## Two averages that are not the same
+## And everyone else
 
-Put all 512 participants together and one thing becomes obvious and one thing
-becomes confusing.
+The same three parameters, fitted to all 512 participants, with the group curve
+drawn over them.
 
-![All participants, and the two group averages](../images/tutorials/fig_population.png)
+![All participants, and the group curve](../images/tutorials/fig_all_participants.png)
 
-The obvious part is on the left: people differ enormously. The confusing part is on
-the right, and it catches nearly everyone the first time.
-
-There are two different "group curves", and they are not interchangeable:
-
-- **The curve of the average participant.** Take the population-level `alpha`,
-  `beta` and `lambda` and push them through the likelihood. In brms this is
-  `re_formula = NA`. This is what the group-level coefficients describe, so it is
-  the curve to show next to a table of effects.
-- **The average of the participants' curves.** Predict each participant's own
-  curve, then average those. This is what pooled observed data estimate.
-
-With a threshold SD of about 11 ΔBPM these come apart visibly. Averaging many
-sigmoids that sit at very different thresholds gives something much shallower than
-one sigmoid at their mean threshold. That is Jensen's inequality, the same reason
-the mean of $e^x$ is not $e^{\text{mean}(x)}$, and it is a property of the curve
-rather than a sign of a bad fit.
-
-So when observed points miss the fitted curve, the first question is which curve
-they were compared against. The check that means something is the model's
-predictive interval for each bin, which the
-[hierarchical tutorial](hierarchical.md#checking-in-this-order) shows.
-
-There is a second reason those points are awkward here, specific to this task: the
-staircase concentrates trials near each participant's own threshold, so a bin at an
-extreme ΔBPM is not a fair sample of people. It is made up of whoever happened to
-have a threshold out there.
+People differ enormously. Thresholds run from tens of BPM below the true heart
+rate to somewhat above it, and slopes vary alongside them. That spread is the
+thing most worth taking away from this page: it is far larger than any group
+difference you are likely to be testing for, which is exactly why the next
+tutorial fits everyone in a single model instead of one at a time.
 
 ## Why you should not stop here
 
