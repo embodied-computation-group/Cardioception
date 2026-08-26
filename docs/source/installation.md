@@ -7,18 +7,18 @@ rather than assuming it worked, because most of the ways this goes wrong are
 quiet ones.
 
 ```{note}
-Cardioception currently requires **Python 3.9, and only 3.9**. `systole-core`
-needs 3.9 or later, and the pinned PsychoPy cannot be imported on 3.10 or later,
-so the two constraints meet at a single version. `pip` will refuse to install on
-anything else, which is deliberate: the alternative is an install that appears to
-work and fails later. Widening this is
-[issue #92](https://github.com/embodied-computation-group/Cardioception/issues/92).
+Cardioception needs **Python 3.10 or 3.11**. The upper bound is not PsychoPy,
+which allows 3.12, but `pywinhook`: it publishes wheels only up to 3.11, and
+without one it has to be compiled from source on Windows, which needs a C
+toolchain most people do not have. `pip` refuses anything outside that range
+rather than failing halfway through an install.
 ```
 
-## 1. Install Python 3.9
+## 1. Install Python 3.10 or 3.11
 
 Download it from [python.org/downloads](https://www.python.org/downloads/) and
-pick a 3.9 release. On Windows, tick **Add Python to PATH** in the installer.
+pick a 3.10 or 3.11 release. On Windows, tick **Add Python to PATH** in the
+installer.
 
 If you already use Anaconda, skip to [the conda route](#the-conda-route) instead.
 
@@ -29,11 +29,11 @@ python --version
 ```
 
 ```text
-Python 3.9.13
+Python 3.10.11
 ```
 
-Anything that does not start with `3.9` means you are running a different
-interpreter. On Windows, `py -3.9 --version` selects one explicitly.
+Anything outside 3.10 and 3.11 means you are running a different interpreter.
+On Windows, `py -3.10 --version` selects one explicitly.
 
 ## 2. Make a virtual environment
 
@@ -72,7 +72,7 @@ Expect this to take a few minutes and to download roughly 140 MB, most of it the
 370 pre-generated tone files the Heart Rate Discrimination task plays.
 
 ```text
-Successfully installed cardioception-toolbox-0.6.1 psychopy-2022.2.5 systole-core-0.3.1 ...
+Successfully installed cardioception-toolbox-0.6.1 psychopy-2026.2.2 systole-core-0.3.1 ...
 ```
 
 ```{note}
@@ -165,7 +165,7 @@ oximeter and opens a windowed rather than fullscreen display.
 
 `environment.yml` at the root of the repository is an alternative to steps 1 to
 3, not an addition to them. Use it if you already have Anaconda or Miniconda
-installed, in which case it is the shorter path: it pins the interpreter to 3.9
+installed, in which case it is the shorter path: it pins the interpreter to 3.10
 for you and installs `pywinhook` from conda-forge, which on Windows saves
 building it from source.
 
@@ -176,8 +176,8 @@ conda env create -f environment.yml
 conda activate cardioception
 ```
 
-Then carry on from step 4. `environment_linux.yml` is the same thing with the
-Linux-specific packages, including wxPython and PyMC.
+Then carry on from step 4. `environment_linux.yml` is the same thing with PyMC added for the analysis
+notebooks.
 
 If you do not already use conda, do not install it just for this. The venv route
 above works and involves one fewer tool.
@@ -189,13 +189,12 @@ These are the errors that actually come up, with what causes them.
 
 | Error | Cause and fix |
 |---|---|
-| `ERROR: Package requires a different Python: 3.x not in '>=3.9,<3.10'` | Working as intended. Only 3.9 can satisfy every dependency. Install 3.9 and make the environment from it. |
-| `ModuleNotFoundError: No module named 'pkg_resources'` | setuptools 82 or later removed it, and PsychoPy 2022.2.5 imports it. Fix with `pip install "setuptools<81"`. A fresh install of the current release pins this for you. |
-| `OverflowError: line number table is too long` | Python 3.10 or later. PsychoPy 2022.2.5 cannot be imported there. Use 3.9. |
-| `AttributeError: module 'pkgutil' has no attribute 'ImpImporter'` | Python 3.12 or later, where the pinned numpy has no wheel and tries to build. Use 3.9. |
+| `ERROR: Package requires a different Python: 3.x not in '>=3.10,<3.12'` | Working as intended. Install 3.10 or 3.11 and build the environment from it. |
+| `error: command 'swig.exe' failed` | Python 3.12 or later on Windows, where `pywinhook` has no wheel and tries to build from source. Use 3.10 or 3.11, or take the conda route, which supplies it prebuilt. |
+| `ModuleNotFoundError: No module named 'pkg_resources'` | An older Cardioception with PsychoPy 2022.2.5, which imported it. Upgrade, or pin `setuptools<81`. |
+| `OverflowError: line number table is too long` | An older PsychoPy on Python 3.10 or later. Upgrade Cardioception. |
 | `Could not install packages due to an OSError: [Errno 2] No such file or directory: '...'` with a very long path | The Windows 260-character path limit. Move the environment somewhere shallower, or enable long path support. |
 | `Can't connect to HTTPS URL because the SSL module is not available` | The virtual environment was built from an Anaconda interpreter. Build it from a python.org install, or use the conda route instead of `venv`. |
-| `error: command 'swig.exe' failed` | `pywinhook` has no wheel for your Python and is trying to build. Use 3.9, which has one, or install it from conda-forge. |
 | `SerialException: could not open port` | Wrong port name, or another program is holding the device. Close anything else reading it and re-run the port listing above. |
 | Task runs but the recording is flat | Almost always the sensor rather than the software. Re-run step 5 and read the amplitude. |
 

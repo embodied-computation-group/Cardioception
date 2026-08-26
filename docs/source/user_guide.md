@@ -42,7 +42,7 @@ If you are using the shortcut method described below, activate the *cardioceptio
 
 ## Dependencies
 
-Cardioception requires **Python 3.9**, and only 3.9. `systole-core` needs 3.9 or later, while the pinned PsychoPy cannot be imported on 3.10 or later, so the two constraints meet at a single version. `pip` will refuse to install on anything else. See [issue #92](https://github.com/embodied-computation-group/Cardioception/issues/92) for the plan to widen this.
+Cardioception requires **Python 3.10 or 3.11**. The upper bound is `pywinhook`, which publishes wheels only up to 3.11; PsychoPy itself allows 3.12. See the [installation guide](installation.md) for step-by-step instructions.
 
 Make sure that you have the following packages installed and up to date before running cardioception:
 

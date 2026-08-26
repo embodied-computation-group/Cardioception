@@ -3,7 +3,6 @@
 
 from typing import Optional, Tuple
 
-import numpy as np
 import pandas as pd
 
 
@@ -129,6 +128,8 @@ def trial(
     """
 
     from psychopy import core, event, visual
+
+    from .._rating import keyboard_rating
 
     # Initialize default values
     confidence, confidenceRT = None, None
@@ -305,30 +306,27 @@ def trial(
         # Rating scale
         ##############
         if parameters["rating"] is True:
-            markerStart = np.random.choice(
-                np.arange(parameters["confScale"][0], parameters["confScale"][1])
-            )
-            ratingScale = visual.RatingScale(
-                parameters["win"],
-                low=parameters["confScale"][0],
-                high=parameters["confScale"][1],
-                noMouse=True,
-                labels=parameters["labelsRating"],
-                acceptKeys="down",
-                markerStart=markerStart,
-            )
             message = visual.TextStim(
                 parameters["win"],
                 text=parameters["texts"]["confidence"],
                 height=parameters["textSize"],
+                pos=(0, 0.2),
             )
             parameters["triggers"]["confidenceStart"]
-            while ratingScale.noResponse:
-                message.draw()
-                ratingScale.draw()
-                parameters["win"].flip()
-            confidence = ratingScale.getRating()
-            confidenceRT = ratingScale.getRT()
+
+            # Arrow keys move the marker, the down key confirms. This was a
+            # visual.RatingScale until PsychoPy 2026 moved that class into the
+            # psychopy-legacy plugin, where constructing one raises
+            # PluginRequiredError. No max_time, because this scale waits for the
+            # participant rather than timing out, which is what it did before.
+            confidence, confidenceRT, _ = keyboard_rating(
+                win=parameters["win"],
+                message=message,
+                low=parameters["confScale"][0],
+                high=parameters["confScale"][1],
+                labels=parameters["labelsRating"],
+                label_height=parameters["textSize"] * 0.6,
+            )
             parameters["triggers"]["confidenceStop"]
 
     finalCount = int(nCounts) if nCounts else None

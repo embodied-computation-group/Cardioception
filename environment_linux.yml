@@ -1,11 +1,10 @@
 name: cardioception
 dependencies:
-  - python=3.9
+  - python=3.10
   - pip
   - conda-forge::pymc=5.6.0
-  - conda-forge::wxpython=4.2.0
   - pip:
     - systole-core>=0.3.0
-    - psychopy==2022.2.5
+    - psychopy==2026.2.2
     - cardioception-toolbox
     - metadpy

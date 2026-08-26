@@ -9,6 +9,7 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
+
 from ._resources import resource_filename
 
 
@@ -115,7 +116,10 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
                     hit_rate=hr, fa_rate=far
                 )
             else:
-                d, c, = (
+                (
+                    d,
+                    c,
+                ) = (
                     None,
                     None,
                 )

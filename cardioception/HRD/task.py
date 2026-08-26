@@ -7,8 +7,9 @@ from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from .._resources import resource_filename
 from systole.detection import ppg_peaks
+
+from .._resources import resource_filename
 
 
 def run(
@@ -445,13 +446,11 @@ def trial(
             # Only use the last 5 seconds of the recording
             bpm = 60000 / np.diff(np.where(peaks[-5000:])[0])
 
-            
             # # for Nonin3231USB
             # # Only use the last 5 seconds of the recording
             # bpm =  pd.Series(parameters["oxiTask"].read(duration=5.0).bpm)[-5:]
             # # use bpm as signal, Nonin3231USB gives no raw signal
             # signal = bpm
-
 
             print(f"... bpm: {[round(i) for i in bpm]}")
 
@@ -1041,7 +1040,9 @@ def responseDecision(
             decision, decisionRT = None, None
             # Record participant response (+/-)
             message = visual.TextStim(
-                parameters["win"], height=parameters["textSize"], text=parameters["texts"]["tooLate"]
+                parameters["win"],
+                height=parameters["textSize"],
+                text=parameters["texts"]["tooLate"],
             )
             message.draw()
             parameters["win"].flip()
@@ -1210,6 +1211,8 @@ def confidenceRatingTask(
 
     from psychopy import core, visual
 
+    from .._rating import keyboard_rating
+
     print("...starting confidence rating.")
 
     # Initialise default values
@@ -1217,40 +1220,34 @@ def confidenceRatingTask(
 
     if parameters["device"] == "keyboard":
 
-        markerStart = np.random.choice(
-            np.arange(parameters["confScale"][0], parameters["confScale"][1])
-        )
-        ratingScale = visual.RatingScale(
-            parameters["win"],
-            low=parameters["confScale"][0],
-            high=parameters["confScale"][1],
-            noMouse=True,
-            labels=parameters["labelsRating"],
-            acceptKeys="down",
-            markerStart=markerStart,
-        )
-
         message = visual.TextStim(
             parameters["win"],
             height=parameters["textSize"],
+            pos=(0, 0.2),
             text=parameters["texts"]["Confidence"],
         )
 
-        # Wait for response
-        ratingProvided = False
-        clock = core.Clock()
-        while clock.getTime() < parameters["maxRatingTime"]:
-            if not ratingScale.noResponse:
-                ratingScale.markerColor = (0, 0, 1)
-                if clock.getTime() > parameters["minRatingTime"]:
-                    ratingProvided = True
-                    break
-            ratingScale.draw()
-            message.draw()
-            parameters["win"].flip()
-
-        confidence = ratingScale.getRating()
-        confidenceRT = ratingScale.getRT()
+        # Arrow keys move the marker, the down key confirms. This was a
+        # visual.RatingScale until PsychoPy 2026 moved that class into the
+        # psychopy-legacy plugin, where constructing one raises
+        # PluginRequiredError. Slider is the supported replacement and is what
+        # the mouse branch below already used, so both devices now show the
+        # same widget.
+        confidence, confidenceRT, ratingProvided = keyboard_rating(
+            win=parameters["win"],
+            message=message,
+            low=parameters["confScale"][0],
+            high=parameters["confScale"][1],
+            labels=parameters["labelsRating"],
+            min_time=parameters["minRatingTime"],
+            max_time=parameters["maxRatingTime"],
+            label_height=parameters["textSize"] * 0.6,
+        )
+        if ratingProvided and confidenceRT is not None:
+            print(
+                f"... Confidence level: {confidence}"
+                + f" with response time {round(confidenceRT, 2)} seconds"
+            )
 
     elif parameters["device"] == "mouse":
 

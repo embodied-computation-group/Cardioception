@@ -55,31 +55,31 @@ def english(device: str, setup: str, exteroception: bool) -> Dict[str, Collectio
 
 You will only be allowed to focus on the internal sensations of your heartbeats, but not to measure your heart rate by any other means (e.g. checking pulse at your wrist or your neck).
         """
-    texts[
-        "pulseTutorial1"
-    ] = "Please place the pulse oximeter on your forefinger. Use your non-dominant hand as depicted in this schema."
+    texts["pulseTutorial1"] = (
+        "Please place the pulse oximeter on your forefinger. Use your non-dominant hand as depicted in this schema."
+    )
 
-    texts[
-        "pulseTutorial2"
-    ] = "If you can feel your heartbeats when you have the pulse oximeter on your forefinger, try to place it on another finger."
+    texts["pulseTutorial2"] = (
+        "If you can feel your heartbeats when you have the pulse oximeter on your forefinger, try to place it on another finger."
+    )
 
-    texts[
-        "pulseTutorial3"
-    ] = "You can test different configurations until you find the finger which provides you with the least sensory input about your heart rate."
+    texts["pulseTutorial3"] = (
+        "You can test different configurations until you find the finger which provides you with the least sensory input about your heart rate."
+    )
 
-    texts[
-        "pulseTutorial4"
-    ] = "Please enter the number of the finger corresponding to the finger where you decided to place the pulse oximeter."
+    texts["pulseTutorial4"] = (
+        "Please enter the number of the finger corresponding to the finger where you decided to place the pulse oximeter."
+    )
 
-    texts[
-        "Tutorial2"
-    ] = "When you see this icon, try to focus on your heartbeat for 5 seconds. Try not to move, as we are recording your pulse in this period"
+    texts["Tutorial2"] = (
+        "When you see this icon, try to focus on your heartbeat for 5 seconds. Try not to move, as we are recording your pulse in this period"
+    )
 
     moreResp = "UP key" if device == "keyboard" else "RIGHT mouse button"
     lessResp = "DOWN key" if device == "keyboard" else "LEFT mouse button"
-    texts[
-        "Tutorial3_icon"
-    ] = """After this 'heart listening' period, you will see the same icon and hear a series of beeps."""
+    texts["Tutorial3_icon"] = (
+        """After this 'heart listening' period, you will see the same icon and hear a series of beeps."""
+    )
     texts[
         "Tutorial3_responses"
     ] = f"""As quickly and accurately as possible, you will listen to these beeps and decide if they are faster ({moreResp}) or slower ({lessResp}) than your own heart rate.
@@ -87,9 +87,9 @@ You will only be allowed to focus on the internal sensations of your heartbeats,
 The beeps will ALWAYS be slower or faster than your heart. Please guess, even if you are unsure."""
 
     if exteroception is True:
-        texts[
-            "Tutorial3bis"
-        ] = """For some trials, instead of seeing the heart icon, you will see a listening icon. You will then have to listen to a first set of beeps, instead of your heart."""
+        texts["Tutorial3bis"] = (
+            """For some trials, instead of seeing the heart icon, you will see a listening icon. You will then have to listen to a first set of beeps, instead of your heart."""
+        )
 
         texts[
             "Tutorial3ter"
@@ -168,13 +168,13 @@ def danish(device: str, setup: str, exteroception: bool) -> Dict[str, Collection
     }
 
     if device == "keyboard":
-        texts[
-            "responseText"
-        ] = "Brug NED tasten for langsommere - OP tasten for hurtigere."
+        texts["responseText"] = (
+            "Brug NED tasten for langsommere - OP tasten for hurtigere."
+        )
     elif device == "mouse":
-        texts[
-            "responseText"
-        ] = "Brug VENSTRE museknap for langsommere - HØJRE museknap for hurtigere."
+        texts["responseText"] = (
+            "Brug VENSTRE museknap for langsommere - HØJRE museknap for hurtigere."
+        )
 
     texts[
         "Tutorial1"
@@ -182,31 +182,31 @@ def danish(device: str, setup: str, exteroception: bool) -> Dict[str, Collection
 
 Du må kun fokusere på din indre følelse af din hjerterytme. Du må altså ikke måle din hjerterytme på andre måder (fx ved at tjekke din puls på dit håndled eller din hals).
         """
-    texts[
-        "pulseTutorial1"
-    ] = "Placer venligst puls oximeteret på din pegefinger. Brug din ikke-dominante hånd som beskrevet i dette skema."
+    texts["pulseTutorial1"] = (
+        "Placer venligst puls oximeteret på din pegefinger. Brug din ikke-dominante hånd som beskrevet i dette skema."
+    )
 
-    texts[
-        "pulseTutorial2"
-    ] = "Hvis du kan mærke din hjerterytme, når du har puls oximeteret på din pegefinger, så prøv at placere det på en anden finger."
+    texts["pulseTutorial2"] = (
+        "Hvis du kan mærke din hjerterytme, når du har puls oximeteret på din pegefinger, så prøv at placere det på en anden finger."
+    )
 
-    texts[
-        "pulseTutorial3"
-    ] = "Du kan teste forskellige fingre indtil du finder den finger, der giver dig mindst sensorisk indput omkring din hjerterytme."
+    texts["pulseTutorial3"] = (
+        "Du kan teste forskellige fingre indtil du finder den finger, der giver dig mindst sensorisk indput omkring din hjerterytme."
+    )
 
-    texts[
-        "pulseTutorial4"
-    ] = "Indtast venligt nummeret på den finger som du besluttede at placere puls oximeteret på."
+    texts["pulseTutorial4"] = (
+        "Indtast venligt nummeret på den finger som du besluttede at placere puls oximeteret på."
+    )
 
-    texts[
-        "Tutorial2"
-    ] = "Når du ser dette ikon, forsøg da at fokusere på din hjerterytme i 5 sekunder. Prøv ikke at bevæge dig, da vi registrere din puls i dette tidsrum"
+    texts["Tutorial2"] = (
+        "Når du ser dette ikon, forsøg da at fokusere på din hjerterytme i 5 sekunder. Prøv ikke at bevæge dig, da vi registrere din puls i dette tidsrum"
+    )
 
     moreResp = "OP tasten" if device == "keyboard" else "HØJRE mussetast"
     lessResp = "NED tasten" if device == "keyboard" else "VENSTRE mussetast"
-    texts[
-        "Tutorial3_icon"
-    ] = """Efter tidsrummet hvor du har forsøgt at mærke dit hjerte, vil du se det samme ikon og høre en række bib-lyde."""
+    texts["Tutorial3_icon"] = (
+        """Efter tidsrummet hvor du har forsøgt at mærke dit hjerte, vil du se det samme ikon og høre en række bib-lyde."""
+    )
     texts[
         "Tutorial3_responses"
     ] = f"""Det følgende skal du gøre så hurtigt og præcist som muligt: Du vil lytte til disse bib-lyde og beslutte om de er hurtigere ({moreResp}) eller langsommere ({lessResp}) end din egen hjerterytme.
@@ -214,9 +214,9 @@ Du må kun fokusere på din indre følelse af din hjerterytme. Du må altså ikk
 Bib-lydene vil ALTID være langsommere eller hurtigere end dit hjerte. Gæt venligst selvom du er usikker."""
 
     if exteroception is True:
-        texts[
-            "Tutorial3bis"
-        ] = """I nogle runder vil du se et lytteikon i stedet for et hjerteikon. Her vil du skulle lytte til et sæt af bib-lyde i stedet for dit hjerte."""
+        texts["Tutorial3bis"] = (
+            """I nogle runder vil du se et lytteikon i stedet for et hjerteikon. Her vil du skulle lytte til et sæt af bib-lyde i stedet for dit hjerte."""
+        )
 
         texts[
             "Tutorial3ter"
@@ -298,17 +298,15 @@ def danish_children(
     }
 
     if device == "keyboard":
-        texts[
-            "responseText"
-        ] = "Brug NED tasten for langsommere - OP tasten for hurtigere."
+        texts["responseText"] = (
+            "Brug NED tasten for langsommere - OP tasten for hurtigere."
+        )
     elif device == "mouse":
-        texts[
-            "responseText"
-        ] = "Brug VENSTRE museknap for langsommere - HØJRE museknap for hurtigere."
+        texts["responseText"] = (
+            "Brug VENSTRE museknap for langsommere - HØJRE museknap for hurtigere."
+        )
 
-    texts[
-        "Tutorial1"
-    ] = """Instruktion 1
+    texts["Tutorial1"] = """Instruktion 1
         """
     texts["pulseTutorial1"] = "Udstyr."
 
@@ -316,25 +314,25 @@ def danish_children(
 
     texts["pulseTutorial3"] = ""
 
-    texts[
-        "pulseTutorial4"
-    ] = "Indtast venligt nummeret på den finger som du besluttede at placere fingerklemmen på."
+    texts["pulseTutorial4"] = (
+        "Indtast venligt nummeret på den finger som du besluttede at placere fingerklemmen på."
+    )
 
-    texts[
-        "Tutorial2"
-    ] = "Når du ser dette ikon, forsøg da at fokusere på din indre puls i 5 sekunder. Prøv ikke at bevæge dig, da vi måler din puls i dette tidsrum"
+    texts["Tutorial2"] = (
+        "Når du ser dette ikon, forsøg da at fokusere på din indre puls i 5 sekunder. Prøv ikke at bevæge dig, da vi måler din puls i dette tidsrum"
+    )
 
     moreResp = "OP tasten" if device == "keyboard" else "HØJRE mussetast"
     lessResp = "NED tasten" if device == "keyboard" else "VENSTRE mussetast"
-    texts[
-        "Tutorial3_icon"
-    ] = """Efter du har forsøgt at mærke din indre puls, vil du se det samme ikon og høre en række bib-lyde."""
+    texts["Tutorial3_icon"] = (
+        """Efter du har forsøgt at mærke din indre puls, vil du se det samme ikon og høre en række bib-lyde."""
+    )
     texts["Tutorial3_responses"] = """Instruktion 2"""
 
     if exteroception is True:
-        texts[
-            "Tutorial3bis"
-        ] = """I nogle runder vil du se et lytteikon i stedet for et hjerteikon. Her vil du skulle lytte til et sæt af bib-lyde i stedet for dit hjerte."""
+        texts["Tutorial3bis"] = (
+            """I nogle runder vil du se et lytteikon i stedet for et hjerteikon. Her vil du skulle lytte til et sæt af bib-lyde i stedet for dit hjerte."""
+        )
 
         texts[
             "Tutorial3ter"
@@ -402,13 +400,13 @@ def french(device: str, setup: str, exteroception: bool) -> Dict[str, Collection
     }
 
     if device == "keyboard":
-        texts[
-            "responseText"
-        ] = "Appuyez sur la flèche vers le BAS pour plus lent - vers le HAUT pour plus rapide."
+        texts["responseText"] = (
+            "Appuyez sur la flèche vers le BAS pour plus lent - vers le HAUT pour plus rapide."
+        )
     elif device == "mouse":
-        texts[
-            "responseText"
-        ] = "Appuyez sur le clic GAUCHE pour plus lent - clic DROIT pour plus rapide."
+        texts["responseText"] = (
+            "Appuyez sur le clic GAUCHE pour plus lent - clic DROIT pour plus rapide."
+        )
 
     texts[
         "Tutorial1"
@@ -416,31 +414,31 @@ def french(device: str, setup: str, exteroception: bool) -> Dict[str, Collection
 
 Vous serez uniquement autorisés à vous concentrer sur vos sensations internes de vos battements cardiaques, mais ne mesurez pas votre rythme cardiaque par d'autres moyens (ex. vérification du pouls au poignet ou au cou).
         """
-    texts[
-        "pulseTutorial1"
-    ] = "Veuillez placer l'oxymètre de pouls sur votre index. Utilisez votre main non-dominante comme illustré sur ce schéma."
+    texts["pulseTutorial1"] = (
+        "Veuillez placer l'oxymètre de pouls sur votre index. Utilisez votre main non-dominante comme illustré sur ce schéma."
+    )
 
-    texts[
-        "pulseTutorial2"
-    ] = "Si vous pouvez sentir vos battements de coeur quand vous portez l'oxymètre de pouls sur votre index, essayez de le placer sur un autre doigt."
+    texts["pulseTutorial2"] = (
+        "Si vous pouvez sentir vos battements de coeur quand vous portez l'oxymètre de pouls sur votre index, essayez de le placer sur un autre doigt."
+    )
 
-    texts[
-        "pulseTutorial3"
-    ] = "Vous pouvez essayer différentes configurations jusqu'à ce que vous trouviez le doigt qui provoque le moins de sensations de battements cardiaques."
+    texts["pulseTutorial3"] = (
+        "Vous pouvez essayer différentes configurations jusqu'à ce que vous trouviez le doigt qui provoque le moins de sensations de battements cardiaques."
+    )
 
-    texts[
-        "pulseTutorial4"
-    ] = "Veuillez entrer le numéro du doigt correspondant au doigt sur lequel vous avez décidé de placer l'oxymètre de pouls."
+    texts["pulseTutorial4"] = (
+        "Veuillez entrer le numéro du doigt correspondant au doigt sur lequel vous avez décidé de placer l'oxymètre de pouls."
+    )
 
-    texts[
-        "Tutorial2"
-    ] = "Quand vous voyez cette icône, essayez de vous concentrer sur vos battements cardiaques durant 5 secondes. Essayez de ne pas bouger, car nous enregistrons votre pouls durant cette période."
+    texts["Tutorial2"] = (
+        "Quand vous voyez cette icône, essayez de vous concentrer sur vos battements cardiaques durant 5 secondes. Essayez de ne pas bouger, car nous enregistrons votre pouls durant cette période."
+    )
 
     moreResp = "flèche vers le HAUT" if device == "keyboard" else "clic DROIT"
     lessResp = "flèche vers le BAS" if device == "keyboard" else "clic GAUCHE"
-    texts[
-        "Tutorial3_icon"
-    ] = """Après cette période d'écoute du coeur, vous verrez la même icône and entendrez une série de bips."""
+    texts["Tutorial3_icon"] = (
+        """Après cette période d'écoute du coeur, vous verrez la même icône and entendrez une série de bips."""
+    )
     texts[
         "Tutorial3_responses"
     ] = f"""Aussi rapidement et précisément possible, vous écouterez ces bips et déciderez s'ils sont plus rapides ({moreResp}) ou plus lents ({lessResp}) que votre propre rythme cardiaque.
@@ -448,9 +446,9 @@ Vous serez uniquement autorisés à vous concentrer sur vos sensations internes 
 Les bips seront TOUJOURS plus lents ou plus rapides que votre coeur. Veuillez faire une estimation, même si vous n'est pas sûr."""
 
     if exteroception is True:
-        texts[
-            "Tutorial3bis"
-        ] = """Pour certains essais, au lieu de voir une icône de coeur, vous verrez une icône d'écoute. Vous devrez alors écouter une première série de bips, au lieu de votre coeur."""
+        texts["Tutorial3bis"] = (
+            """Pour certains essais, au lieu de voir une icône de coeur, vous verrez une icône d'écoute. Vous devrez alors écouter une première série de bips, au lieu de votre coeur."""
+        )
 
         texts[
             "Tutorial3ter"

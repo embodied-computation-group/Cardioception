@@ -6,12 +6,13 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
-from .._resources import resource_filename
 import serial
 from systole import serialSim
 from systole.recording import Oximeter
 
 from cardioception.HRD.languages import danish, danish_children, english, french
+
+from .._resources import resource_filename
 
 
 def getParameters(
@@ -390,7 +391,7 @@ def getParameters(
             serial=port, sfreq=75, add_channels=1, **systole_kw
         )
         parameters["oxiTask"].setup().read(duration=1)
-        
+
         # # for Nonin 3231 USB
         # parameters['oxiTask'] = Nonin3231USB(serial=port, add_channels=1).setup().read(1)
 

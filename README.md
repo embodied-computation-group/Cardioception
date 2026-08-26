@@ -64,7 +64,7 @@ It walks through the five steps from installing Python to confirming the pulse
 oximeter is producing a real signal, shows the expected output at each step, and
 ends with a troubleshooting table covering the errors that actually come up.
 
-The short version, on a machine that already has Python 3.9:
+The short version, on a machine that already has Python 3.10 or 3.11:
 
 ```
 python -m venv cardioception-env
@@ -76,7 +76,7 @@ python -c "from cardioception.HRD import task; print('ok')"
 
 ### The conda environment file
 
-`environment.yml` is an **alternative** to the three commands above, not an extra step. It is worth using if you already have Anaconda or Miniconda, because it pins the interpreter to 3.9 for you and installs `pywinhook` from conda-forge, which on Windows saves building it from source:
+`environment.yml` is an **alternative** to the three commands above, not an extra step. It is worth using if you already have Anaconda or Miniconda, because it pins the interpreter to 3.10 for you and installs `pywinhook` from conda-forge, which on Windows saves building it from source:
 
 ```
 conda env create -f environment.yml
@@ -89,11 +89,9 @@ If you use the desktop shortcut described below, point it at whichever environme
 
 ### Dependencies
 
-**Python 3.9 is required, and only 3.9.** `systole-core` needs 3.9 or later, and the pinned PsychoPy cannot be imported on 3.10 or later, so the two constraints meet at a single version and `pip` refuses anything else. Widening that is [issue #92](https://github.com/embodied-computation-group/Cardioception/issues/92).
+**Python 3.10 or 3.11 is required.** The upper bound comes from `pywinhook`, which publishes wheels only up to 3.11 and otherwise has to be compiled from source on Windows. PsychoPy itself allows 3.12.
 
 Pip installs everything you need. The two that matter are [PsychoPy](https://www.psychopy.org/) for stimulus delivery and [systole](https://github.com/embodied-computation-group/systole) for reading the pulse oximeter, alongside numpy, scipy, pandas and pyserial. [`requirements.txt`](requirements.txt) records the versions we test against.
-
-One pin is a hard requirement rather than a preference: `setuptools<81`, because PsychoPy 2022.2.5 imports `pkg_resources` and setuptools removed it in version 82.
 
 Analysing the data needs a few extras that are not installed by default: [papermill](https://papermill.readthedocs.io/en/latest/), [matplotlib](https://matplotlib.org/), [seaborn](https://seaborn.pydata.org/), [pingouin](https://pingouin-stats.org/), [metadpy](https://github.com/Embodi3dComputationGroup/metadpy) and [pymc](https://www.pymc.io/welcome.html).
 
