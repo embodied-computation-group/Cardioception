@@ -97,6 +97,12 @@ Add a subject identifier when you concatenate folders. Trials where the particip
 
 ## Quality checks in Python
 
+```{note}
+The `preprocessing` and `report` functions are the original Python helpers. They still
+work, but they are due to be rebuilt, so treat them as a convenience for checking data
+quality rather than as the basis of an analysis pipeline.
+```
+
 The package includes two functions that summarise a result folder and build an HTML report per participant. The reports are worth generating for every session, mainly to check the quality of the PPG recording.
 
 The [preprocessing function](cardioception.reports.preprocessing) takes the `final.txt` data frame, or a path to it, and returns a summary data frame with response times, the psychometric parameters estimated online by the Psi algorithm, and signal detection measures.
@@ -143,19 +149,4 @@ The material below is kept for reference and is no longer maintained. Use the hi
 
 The R scripts in `R_analysis/` are still maintained for existing pipelines and cover single-subject analysis, group-level models and Bayesian fits in Stan. See the [R analysis directory](https://github.com/embodied-computation-group/Cardioception/tree/master/R_analysis).
 
-These PyMC notebooks fit the psychometric function offline at the subject and group level. They predate the toolbox and are superseded by it.
-
-```{toctree}
----
-hidden:
-glob:
----
-
-examples/psychophysics/*
-
-```
-
-| Notebook | Colab |
-| --- | ---|
-| {ref}`psychophysics_subject_level` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb)
-| {ref}`psychophysics_group_level` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb)
+The PyMC notebooks that used to fit the psychometric function offline have been removed. Model fitting is done in R with the toolbox, and the [data inspection page](inspecting_data.md) covers what Python is still used for.
