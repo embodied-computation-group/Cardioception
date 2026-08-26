@@ -15,3 +15,6 @@ docs/auto_examples
 
 # Local reference material, not redistributable
 .context/
+
+# Build output from pip install -e
+*.egg-info/
