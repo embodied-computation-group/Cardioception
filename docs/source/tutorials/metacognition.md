@@ -24,21 +24,39 @@ throws away information and makes the answer depend on where you cut.
 ## Why not the m-ratio
 
 The m-ratio, meta-d′ divided by d′, is the usual summary of metacognitive
-efficiency. We no longer recommend it for the HRD, for reasons that compound.
+efficiency, and the original HRD paper reported it. We no longer recommend it for
+this task, and the reason is specific to how the staircase works.
 
-The staircase holds performance near a target accuracy **by construction**. That
-means type-1 sensitivity is set largely by the procedure rather than by the
-participant, and between-subject variance in d′ is compressed. Dividing by a
-quantity the design has pinned down is hard to interpret, and the ratio becomes
-unstable for anyone performing near chance.
+**The HRD does not hold accuracy constant.** The Psi procedure converges on the
+participant's point of subjective equality: the Δ-BPM at which they are equally
+likely to answer "faster" or "slower". That is a *subjective* staircase, tracking
+the very bias the task exists to measure, not a performance-tracking one aiming at
+some fixed percentage correct.
 
-Meta-d′ also assumes a stationary type-1 process, whereas an adaptive staircase
-changes the stimulus from trial to trial deliberately. And the estimator wants
-confidence in a handful of discrete bins, while the HRD records a continuous
-rating.
+**Accuracy, though, is scored against the true heart rate.** A "faster" response
+counts as correct only when Δ-BPM is above zero, and "slower" only when it is
+below.
 
-None of this makes meta-d′ a bad measure in general. It makes it a poor fit for
-this task.
+Those two facts come apart for exactly the participants who are most interesting.
+Someone whose threshold sits at −15 Δ-BPM spends the session being played tones
+around 15 BPM below their true rate, because that is where the staircase has
+decided to put them. Almost every trial then has "slower" as the objectively
+correct answer. One stimulus class barely occurs, and the type-1 hit and
+false-alarm rates that d′ and meta-d′ are built from rest on a handful of trials,
+or none. **The more biased the participant, the worse this gets**, so the measure
+degrades precisely where the task has found something worth reporting.
+
+There is a further problem underneath. Under this design d′ is not a clean index
+of perceptual sensitivity anyway: it mixes bias with precision, which is the
+confound the psychometric function was introduced to resolve. Dividing by it
+reintroduces what the HRD was built to separate.
+
+Finally, meta-d′ expects confidence in a few discrete bins, so a continuous slider
+has to be cut into categories. The original analysis used four. That discards
+information and makes the result depend on where the cut points fall.
+
+None of this makes meta-d′ a poor measure in general. It makes it a poor fit for a
+subjective staircase scored against an objective truth.
 
 ## Ordered beta regression
 

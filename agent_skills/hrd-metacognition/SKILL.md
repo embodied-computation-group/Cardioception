@@ -30,23 +30,32 @@ That shape rules out the obvious options:
 
 ## Why not the m-ratio
 
-The m-ratio, meta-d′ divided by d′, is the usual summary of metacognitive efficiency,
-and it fits the HRD badly for several reasons at once:
+The m-ratio, meta-d′ divided by d′, is the usual summary of metacognitive
+efficiency. It fits the HRD badly, for a reason specific to the staircase.
 
-- The staircase holds performance near a target accuracy **by construction**, so type-1
-  sensitivity is set largely by the procedure rather than by the participant. Dividing
-  by a quantity the design has pinned down is hard to interpret, and between-subject
-  variance in d′ is compressed.
-- The ratio is unstable as d′ approaches zero, so participants near chance produce
-  extreme or undefined values.
-- Meta-d′ assumes a stationary type-1 process. An adaptive staircase changes the
-  stimulus from trial to trial by design.
-- The estimator expects confidence in a few discrete bins, and HRD confidence is
-  continuous.
+**The HRD does not hold accuracy constant.** Psi converges on the participant's
+point of subjective equality, the Δ-BPM where they are equally likely to answer
+"faster" or "slower". It tracks their bias, which is the quantity of interest, not
+a target percentage correct.
+
+**Accuracy is scored against the true heart rate**: "faster" is correct only when
+Δ-BPM > 0, "slower" only when Δ-BPM < 0.
+
+So for a biased participant the two come apart. A threshold of −15 Δ-BPM means the
+staircase presents tones around 15 BPM below the true rate all session, and
+"slower" is objectively correct on nearly every trial. One stimulus class is
+nearly absent, and the hit and false-alarm rates behind d′ and meta-d′ rest on very
+few trials. The more biased the participant, the more degenerate the type-1 table,
+so the measure fails hardest on the participants the task has most to say about.
+
+Two further problems: d′ under this design mixes bias with precision, which is the
+confound the psychometric function exists to separate; and meta-d′ needs discrete
+confidence bins, so a continuous slider must be cut, which discards information and
+makes the answer depend on the cut points.
 
 If a meta-d′ analysis is specifically required, for instance to match a published
-protocol, it is a separate job with its own machinery and its own failure modes. Do not
-improvise it inside this skill.
+protocol, it is a separate job with its own machinery and its own failure modes.
+Do not improvise it inside this skill.
 
 ## The model
 
