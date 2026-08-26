@@ -12,7 +12,7 @@ API
 Tasks
 -----
 
-Heart Beat Counting task
+Heartbeat Counting task
 ========================
 
 Parameters

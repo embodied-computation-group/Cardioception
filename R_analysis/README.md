@@ -1,20 +1,12 @@
+# R analysis for the Cardioception HRD task
 
-# R Analysis for Cardioception HRD Task
+Important: this is the recommended analysis approach for Cardioception data. The Python analysis tutorials are deprecated, so use the R scripts here instead.
 
-**⚠️ IMPORTANT: This is the RECOMMENDED analysis approach for Cardioception data.**
+## Analysis overview
 
-The Python analysis tutorials are deprecated. Please use these R analysis scripts for all Cardioception data analysis.
+This directory holds the R implementation for analyzing Heart Rate Discrimination (HRD) task data from Cardioception. It covers single-subject analysis, with reaction time plots and signal detection theory metrics, group-level hierarchical analysis, and Bayesian analysis using Stan models. The scripts also produce plots of the results.
 
-## 📊 Analysis Overview
-
-This directory contains the complete R implementation for analyzing Heart Rate Discrimination (HRD) task data from Cardioception. The analysis includes:
-
-- **Individual subject analysis** with reaction time plots and signal detection theory metrics
-- **Group-level hierarchical analysis** 
-- **Bayesian analysis** using Stan models
-- **Comprehensive visualization** of results
-
-## 📁 Directory Structure
+## Directory structure
 
 ```
 ├── README.md                  <- This file
@@ -30,28 +22,26 @@ This directory contains the complete R implementation for analyzing Heart Rate D
     └── Example_analysis_bayesian.Rmd    <- Bayesian analysis
 ```
 
-## 🚀 Quick Start
+## Quick start
 
-1. **For individual subject analysis**: See `Example scripts/Example_analysis_simple.Rmd`
-2. **For group-level analysis**: See `Example scripts/Example_analysis_Hierarchical.Rmd`
-3. **For Bayesian analysis**: See `Example scripts/Example_analysis_bayesian.Rmd`
+Single-subject analysis is covered in `Example scripts/Example_analysis_simple.Rmd`, group-level analysis in `Example scripts/Example_analysis_Hierarchical.Rmd`, and the Bayesian version in `Example scripts/Example_analysis_bayesian.Rmd`.
 
-## 📈 Example Output
+## Example output
 
-### Standard Analysis Results
+### Standard analysis results
 ![Standard Analysis](readme_figures/Concatenated.png)
 
-### Bayesian Analysis Results
+### Bayesian analysis results
 ![Bayesian Analysis](readme_figures/Bayseiananalysis.png)
 
-*Note: The Bayesian analysis example uses different participant data, hence the different threshold and slope values.*
+The Bayesian example uses data from a different participant, which is why the threshold and slope values differ.
 
-## 🔧 Requirements
+## Requirements
 
 - R with tidyverse, ggdist, psycho, caret, patchwork, gt, cowplot, grid, reticulate, here, rmarkdown
 - For Bayesian analysis: cmdstan and rstan
 - Python numpy (for loading .npy files)
 
-## 📖 Documentation
+## Documentation
 
-See the individual R Markdown files in `Example scripts/` for detailed tutorials and workflow examples.
+The R Markdown files in `Example scripts/` walk through each analysis step by step.

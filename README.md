@@ -81,7 +81,7 @@ from cardioception.HRD.parameters import getParameters
 from cardioception.HRD import task
 
 # Set global task parameters
-parameters = parameters.getParameters(
+parameters = getParameters(
     participant='Subject_01', session='Test', serialPort=None,
     setup='behavioral', nTrials=10, screenNb=0)
 

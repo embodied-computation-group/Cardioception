@@ -4,24 +4,22 @@
 
 ---
 
-# 🧠 Official Repository Notice
+# Official repository notice
 
-This is the **original and officially maintained version** of the Cardioception software package, co-created by Micah Allen and the Embodied Computation Group at Aarhus University (2019–2022). Development of this package was funded by a Lundbeckfonden Fellowship to Micah Allen.
+This is the original, officially maintained version of the Cardioception software package, co-created by Micah Allen and the Embodied Computation Group at Aarhus University (2019-2022). Development of this package was funded by a Lundbeckfonden Fellowship to Micah Allen.
 
-This repository reflects the version cited in peer-reviewed publications and is actively maintained by the Embodied Computation Group.
-
-⚠️ We cannot guarantee the accuracy, validity, or scientific reproducibility of any unofficial forks or versions of this software. Please use this repository for all scientific work, installations, and citation.
+This is the version cited in peer-reviewed publications, and the Embodied Computation Group maintains it. We cannot guarantee the accuracy, validity, or scientific reproducibility of unofficial forks or versions of this software, so please use this repository for scientific work, installation, and citation.
 
 ---
 
 <img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/images/cardioception_icon.png" align="left" alt="cardioception" height="230" HSPACE=30>
 
-The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):
+Cardioception is a Python package for measuring interoception with Psychopy. It implements two measures of cardiac interoception:
 
-1. The **Heartbeat counting task (HBC)**, also known as the **Heartbeat tracking task**, developed by Rainer Schandry {cite:p}`1978:dale,1981:schandry`. This task measures cardiac interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.
-2. The **Heart Rate Discrimination task** {cite:p}`2022:legrand` implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see *Analyses* below), together with metacognitive efficiency.
+1. The Heartbeat Counting task (HBC), also known as the Heartbeat tracking task, developed by Rainer Schandry {cite:p}`1978:dale,1981:schandry`. Participants count their heartbeats for a given period of time, and an accuracy score comes from comparing the reported number of heartbeats with the true number.
+2. The Heart Rate Discrimination task {cite:p}`2022:legrand`, an adaptive psychophysical measure in which participants estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. Staircase procedures manipulate the difference between the true heart rate and the presented tone, which gives the bias (threshold) and precision (slope) of the psychometric function, along with metacognitive efficiency. These can be estimated online or offline (see the data analysis section below).
 
-These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task uses the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI...).
+The tasks run with minimal equipment: a computer and a recording device to monitor the participant's heart rate. The default version uses the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/). This sensor plugs directly into the stim PC over USB and works with Cardioception without any additional code. The tasks can also be used with other recording devices and experimental settings (ECG, M/EEG, fMRI...).
 
 ## Installation
 
@@ -33,7 +31,7 @@ Install the package as **`cardioception-toolbox`**:
 This is the official package, maintained by the Embodied Computation Group at Aarhus University. It is the version described in this documentation and used in our publications. Make sure the package name you install is exactly `cardioception-toolbox`.
 ```
 
-The *import* name is unchanged, so no existing script needs to be edited:
+The import name is still `cardioception`, so existing scripts do not need to be edited:
 
 ```python
 from cardioception.HRD import task
@@ -41,39 +39,27 @@ from cardioception.HRD import task
 
 See the [user guide](user_guide.md) for conda environments, dependencies and the development version.
 
-## 📊 Data Analysis
+## Data analysis
 
-### 🎯 Recommended: R Analysis
+### R analysis
 
-**For comprehensive data analysis, we recommend using our R analysis scripts located in the `R_analysis/` directory.**
+We recommend the R scripts in the `R_analysis/` directory. They cover single-subject analysis with reaction time plots and signal detection theory metrics, group-level hierarchical analysis, Bayesian analysis with Stan models, and plotting of the results.
 
-The R analysis provides:
-- **Individual subject analysis** with reaction time plots and signal detection theory metrics
-- **Group-level hierarchical analysis** 
-- **Bayesian analysis** using Stan models
-- **Comprehensive visualization** of results
+Example scripts:
 
-**🚀 Quick Start:**
-- **Individual subject analysis**: See `R_analysis/Example scripts/Example_analysis_simple.Rmd`
-- **Group-level analysis**: See `R_analysis/Example scripts/Example_analysis_Hierarchical.Rmd`
-- **Bayesian analysis**: See `R_analysis/Example scripts/Example_analysis_bayesian.Rmd`
+- `R_analysis/Example scripts/Example_analysis_simple.Rmd` for a single subject
+- `R_analysis/Example scripts/Example_analysis_Hierarchical.Rmd` for group-level analysis
+- `R_analysis/Example scripts/Example_analysis_bayesian.Rmd` for Bayesian analysis
 
-For complete documentation and examples, see the [R Analysis README](../R_analysis/README.md).
+The [R analysis README](../R_analysis/README.md) has the full documentation and further examples.
 
-### 📈 Python Analysis (Outdated)
+### Python analysis (outdated)
 
-*Python analysis examples are available but are outdated and may not be maintained. For hierarchical Bayesian modeling, we strongly recommend using the R analysis approach above.*
-
-Python users can find examples in the documentation, but these are primarily for reference. The Python analysis includes:
-- Basic preprocessing and reporting functions
-- Template notebooks for data visualization
-- Outdated Bayesian modeling examples
-
-**⚠️ Important**: Users interested in hierarchical Bayesian modeling should refer to the R analysis code, which provides more comprehensive and up-to-date implementations.
+The Python analysis examples are outdated and may not be maintained. They are kept mainly for reference and include basic preprocessing and reporting functions, template notebooks for data visualization, and older Bayesian modelling examples. If you want to fit hierarchical Bayesian models, use the R code above instead.
 
 ## Looking for help?
 
-If you have questions regarding the tasks or want discuss data analysis, please contact Micah Allen directly.
+If you have questions regarding the tasks or want to discuss data analysis, please contact Micah Allen directly.
 
 If you want to report a bug, you can open an issue on the [GitHub page](https://github.com/embodied-computation-group/Cardioception).
 
