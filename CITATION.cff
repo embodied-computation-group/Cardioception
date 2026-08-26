@@ -1,0 +1,96 @@
+cff-version: 1.2.0
+title: Cardioception
+message: >-
+  If you use Cardioception in a publication, please cite the article under
+  preferred-citation. Use the software metadata below when you need to point at
+  a specific released version.
+type: software
+authors:
+  - given-names: Micah
+    family-names: Allen
+    email: micah@cfin.au.dk
+    orcid: 'https://orcid.org/0000-0001-9399-4179'
+    affiliation: >-
+      Center of Functionally Integrative Neuroscience, Aarhus University,
+      Denmark
+  - given-names: Nicolas
+    family-names: Legrand
+    orcid: 'https://orcid.org/0000-0002-2651-4929'
+    affiliation: >-
+      Center of Functionally Integrative Neuroscience, Aarhus University,
+      Denmark
+  - name: Embodied Computation Group, Aarhus University
+identifiers:
+  - type: url
+    value: 'https://pypi.org/project/cardioception-toolbox/'
+    description: The package on PyPI
+repository-code: 'https://github.com/embodied-computation-group/Cardioception'
+url: 'https://www.the-ecg.org/Cardioception/'
+abstract: >-
+  Cardioception measures cardiac interoception in PsychoPy. It implements the
+  Heart Rate Discrimination task, a psychophysical method that separates the
+  bias in what people believe their heart rate to be from the precision with
+  which they can discriminate it, together with the older Heartbeat Counting
+  task.
+keywords:
+  - interoception
+  - heart rate discrimination
+  - heartbeat counting
+  - psychophysics
+  - metacognition
+  - cardiac
+  - psychopy
+license: MIT
+version: 0.7.0
+date-released: '2026-08-26'
+preferred-citation:
+  type: article
+  title: >-
+    The heart rate discrimination task: A psychophysical method to estimate the
+    accuracy and precision of interoceptive beliefs
+  authors:
+    - given-names: Nicolas
+      family-names: Legrand
+      orcid: 'https://orcid.org/0000-0002-2651-4929'
+    - given-names: Niia
+      family-names: Nikolova
+    - given-names: Camile
+      family-names: Correa
+    - given-names: Malthe
+      family-names: Brændholt
+    - given-names: Anna
+      family-names: Stuckert
+    - given-names: Nanna
+      family-names: Kildahl
+    - given-names: Melina
+      family-names: Vejlø
+    - given-names: Francesca
+      family-names: Fardo
+    - given-names: Micah
+      family-names: Allen
+      orcid: 'https://orcid.org/0000-0001-9399-4179'
+  journal: Biological Psychology
+  volume: 168
+  start: 108239
+  year: 2022
+  doi: 10.1016/j.biopsycho.2021.108239
+references:
+  - type: article
+    title: >-
+      Systole: A python package for cardiac signal synchrony and analysis
+    authors:
+      - given-names: Nicolas
+        family-names: Legrand
+        orcid: 'https://orcid.org/0000-0002-2651-4929'
+      - given-names: Micah
+        family-names: Allen
+        orcid: 'https://orcid.org/0000-0001-9399-4179'
+    journal: Journal of Open Source Software
+    volume: 7
+    issue: 69
+    start: 3832
+    year: 2022
+    doi: 10.21105/joss.03832
+    notes: >-
+      Cardioception talks to the recording device through Systole by default, so
+      cite this as well if you use that path.
