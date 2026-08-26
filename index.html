@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Measuring cardiac interoception" href="measuring.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="User guide" href="user_guide.html" />
 
     <link rel="shortcut icon" href="_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>Cardioception Toolbox</title>
@@ -143,7 +143,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -166,9 +166,27 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1"><a class="reference internal" href="measuring.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">Guide</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1"><a class="reference internal" href="measuring.html">Theory</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="stats.html">Statistical analysis</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html">Heartbeat Counting task - Summary results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html#heartbeats-and-artefacts-detection">Heartbeats and artefacts detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html">Heart Rate Discrimination task - Summary results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#response-time">Response time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#metacognition">Metacognition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#psychophysics">Psychophysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#psychometric-function">Psychometric function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#pulse-oximeter">Pulse oximeter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#save-dataframe">Save dataframe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html">Fitting a psychometric function at the subject level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#plotting">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html">Fitting a psychometric function at the group level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#plotting">Plotting</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html">cardioception.HBC.parameters.getParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/HBC.task/cardioception.HBC.task.run.html">cardioception.HBC.task.run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
@@ -187,24 +205,6 @@
 <li class="toctree-l2"><a class="reference internal" href="generated/HRD.languages/cardioception.HRD.languages.french.html">cardioception.HRD.languages.french</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="stats.html">Statistical analysis</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html">Heartbeat Counting task - Summary results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html#heartbeats-and-artefacts-detection">Heartbeats and artefacts detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html">Heart Rate Discrimination task - Summary results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#response-time">Response time</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#metacognition">Metacognition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#psychophysics">Psychophysics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#psychometric-function">Psychometric function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#pulse-oximeter">Pulse oximeter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#save-dataframe">Save dataframe</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html">Fitting a psychometric function at the subject level</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#model">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#plotting">Plotting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html">Fitting a psychometric function at the group level</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#model">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#plotting">Plotting</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">Cite</a></li>
@@ -237,30 +237,17 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="cardioception">
-<h1>Cardioception<a class="headerlink" href="#cardioception" title="Permalink to this heading">#</a></h1>
-<p><a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/embodied-computation-group/Cardioception" /></a> <a class="reference external" href="https://GitHub.com/embodied-computation-group/Cardioception/releases/"><img alt="GitHub release" src="https://img.shields.io/github/release/embodied-computation-group/Cardioception" /></a> <a class="reference external" href="https://github.com/pre-commit/pre-commit"><img alt="pre-commit" src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&amp;logoColor=white" /></a> <a class="reference external" href="https://pypi.org/project/cardioception-toolbox/"><img alt="pip" src="https://badge.fury.io/py/cardioception-toolbox.svg" /></a> <a class="reference external" href="https://github.com/psf/black"><img alt="black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a> <a class="reference external" href="http://mypy-lang.org/"><img alt="mypy" src="http://www.mypy-lang.org/static/mypy_badge.svg" /></a> <a class="reference external" href="https://pycqa.github.io/isort/"><img alt="Imports: isort" src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&amp;labelColor=ef8336" /></a></p>
-</section>
-<hr class="docutils" />
-<section class="tex2jax_ignore mathjax_ignore" id="official-repository-notice">
-<h1>Official repository notice<a class="headerlink" href="#official-repository-notice" title="Permalink to this heading">#</a></h1>
-<p>This is the original, officially maintained version of the Cardioception software package, co-created by Micah Allen and the Embodied Computation Group at Aarhus University (2019-2022). Development of this package was funded by a Lundbeckfonden Fellowship to Micah Allen.</p>
-<p>This is the version cited in peer-reviewed publications, and the Embodied Computation Group maintains it. We cannot guarantee the accuracy, validity, or scientific reproducibility of unofficial forks or versions of this software, so please use this repository for scientific work, installation, and citation.</p>
-<hr class="docutils" />
-<p>Cardioception is a Python package for measuring interoception with Psychopy. It implements two measures of cardiac interoception:</p>
-<ol class="arabic simple">
-<li><p>The Heartbeat Counting task (HBC), also known as the Heartbeat tracking task, developed by Rainer Schandry <span id="id1">[<a class="reference internal" href="references.html#id2" title="Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. Perceptual and Motor Skills, 47(1):79-85, 1978. PMID: 704264. URL: https://doi.org/10.2466/pms.1978.47.1.79, arXiv:https://doi.org/10.2466/pms.1978.47.1.79, doi:10.2466/pms.1978.47.1.79.">Dale and Anderson, 1978</a>, <a class="reference internal" href="references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x, doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>]</span>. Participants count their heartbeats for a given period of time, and an accuracy score comes from comparing the reported number of heartbeats with the true number.</p></li>
-<li><p>The Heart Rate Discrimination task <span id="id2">[<a class="reference internal" href="references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span>, an adaptive psychophysical measure in which participants estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. Staircase procedures manipulate the difference between the true heart rate and the presented tone, which gives the bias (threshold) and precision (slope) of the psychometric function, along with metacognitive efficiency. These can be estimated online or offline (see the data analysis section below).</p></li>
-</ol>
-<p>The tasks run with minimal equipment: a computer and a recording device to monitor the participant’s heart rate. The default version uses the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>. This sensor plugs directly into the stim PC over USB and works with Cardioception without any additional code. The tasks can also be used with other recording devices and experimental settings (ECG, M/EEG, fMRI…).</p>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
+          <section class="tex2jax_ignore mathjax_ignore" id="cardioception-toolbox">
+<h1>Cardioception Toolbox<a class="headerlink" href="#cardioception-toolbox" title="Permalink to this heading">#</a></h1>
+<p><a class="reference external" href="https://GitHub.com/embodied-computation-group/Cardioception/releases/"><img alt="GitHub release" src="https://img.shields.io/github/release/embodied-computation-group/Cardioception" /></a> <a class="reference external" href="https://pypi.org/project/cardioception-toolbox/"><img alt="pip" src="https://badge.fury.io/py/cardioception-toolbox.svg" /></a> <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/embodied-computation-group/Cardioception" /></a></p>
+<p>Cardioception measures cardiac interoception in <a class="reference external" href="https://www.psychopy.org/">Psychopy</a>. The package is built around the Heart Rate Discrimination task (HRD), a psychophysical method that estimates how accurately and how precisely people judge their own heart rate. It also ships the classic Heartbeat Counting task.</p>
+<p>The tasks run with minimal equipment: a computer and a device that reads the participant’s pulse. They also work with richer setups (ECG, M/EEG, fMRI) when you have them.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>Install the package as <strong><code class="docutils literal notranslate"><span class="pre">cardioception-toolbox</span></code></strong>:</p>
@@ -274,29 +261,43 @@
 </pre></div>
 </div>
 <p>See the <a class="reference internal" href="user_guide.html"><span class="std std-doc">user guide</span></a> for conda environments, dependencies and the development version.</p>
+<section id="the-tasks">
+<h2>The tasks<a class="headerlink" href="#the-tasks" title="Permalink to this heading">#</a></h2>
+<section id="heart-rate-discrimination-task">
+<h3>Heart Rate Discrimination task<a class="headerlink" href="#heart-rate-discrimination-task" title="Permalink to this heading">#</a></h3>
+<p>The HRD <span id="id1">[<a class="reference internal" href="references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span> is an adaptive psychophysical measure. Participants attend to their heartbeat sensations, then hear tones played faster or slower than their true heart rate and judge which. Staircase procedures adjust that difference from trial to trial, which gives the bias (threshold) and the precision (slope) of the psychometric function. Both can be estimated online during the task or offline afterwards.</p>
 </section>
-<section id="data-analysis">
-<h2>Data analysis<a class="headerlink" href="#data-analysis" title="Permalink to this heading">#</a></h2>
-<section id="r-analysis">
-<h3>R analysis<a class="headerlink" href="#r-analysis" title="Permalink to this heading">#</a></h3>
-<p>We recommend the R scripts in the <code class="docutils literal notranslate"><span class="pre">R_analysis/</span></code> directory. They cover single-subject analysis with reaction time plots and signal detection theory metrics, group-level hierarchical analysis, Bayesian analysis with Stan models, and plotting of the results.</p>
-<p>Example scripts:</p>
+<section id="heartbeat-counting-task">
+<h3>Heartbeat Counting task<a class="headerlink" href="#heartbeat-counting-task" title="Permalink to this heading">#</a></h3>
+<p>The HBC <span id="id2">[<a class="reference internal" href="references.html#id2" title="Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. Perceptual and Motor Skills, 47(1):79-85, 1978. PMID: 704264. URL: https://doi.org/10.2466/pms.1978.47.1.79, arXiv:https://doi.org/10.2466/pms.1978.47.1.79, doi:10.2466/pms.1978.47.1.79.">Dale and Anderson, 1978</a>, <a class="reference internal" href="references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x, doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>]</span>, also known as the heartbeat tracking task, asks participants to count their heartbeats over a fixed period. An accuracy score compares the reported count against the true number of beats.</p>
+<p>The package keeps this task because much of the literature rests on it. For new studies we would point you to the HRD, which separates interoceptive bias from precision and is less confounded by beliefs about heart rate. The <a class="reference internal" href="measuring.html"><span class="std std-doc">theory page</span></a> sets out that argument in full.</p>
+</section>
+</section>
+<section id="recording-devices">
+<h2>Recording devices<a class="headerlink" href="#recording-devices" title="Permalink to this heading">#</a></h2>
+<p>The default setup uses the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>, which plugs into the stimulus PC over USB and needs no extra code. Remote Data Access through BrainVision Recorder is also supported, and you can add other devices by writing a recording class. The <a class="reference internal" href="user_guide.html"><span class="std std-doc">user guide</span></a> has the details.</p>
+</section>
+<section id="analysing-your-data">
+<h2>Analysing your data<a class="headerlink" href="#analysing-your-data" title="Permalink to this heading">#</a></h2>
+<p>For HRD data we recommend the <a class="reference external" href="https://github.com/embodied-computation-group/Hierarchical-Interoception">Hierarchical Interoception toolbox</a>, described in <a class="reference external" href="https://doi.org/10.3758/s13428-026-03137-3">Courtin et al. (2026)</a>. The <a class="reference internal" href="stats.html"><span class="std std-doc">statistical analysis page</span></a> walks through the workflow, including how to model confidence ratings.</p>
+</section>
+<section id="where-to-go-next">
+<h2>Where to go next<a class="headerlink" href="#where-to-go-next" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_simple.Rmd</span></code> for a single subject</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_Hierarchical.Rmd</span></code> for group-level analysis</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_bayesian.Rmd</span></code> for Bayesian analysis</p></li>
+<li><p><a class="reference internal" href="user_guide.html"><span class="std std-doc">User guide</span></a> for installation, dependencies and running a task</p></li>
+<li><p><a class="reference internal" href="measuring.html"><span class="std std-doc">Theory</span></a> for what the two tasks measure and why</p></li>
+<li><p><a class="reference internal" href="stats.html"><span class="std std-doc">Statistical analysis</span></a> for modelling your data</p></li>
+<li><p><a class="reference internal" href="api.html"><span class="std std-doc">API</span></a> for the parameters and task functions</p></li>
+<li><p><a class="reference internal" href="cite.html"><span class="std std-doc">Cite</span></a> for the references to use in a publication</p></li>
 </ul>
-<p>The <a class="reference internal" href="#../R_analysis/README.md"><span class="xref myst">R analysis README</span></a> has the full documentation and further examples.</p>
 </section>
-<section id="python-analysis-outdated">
-<h3>Python analysis (outdated)<a class="headerlink" href="#python-analysis-outdated" title="Permalink to this heading">#</a></h3>
-<p>The Python analysis examples are outdated and may not be maintained. They are kept mainly for reference and include basic preprocessing and reporting functions, template notebooks for data visualization, and older Bayesian modelling examples. If you want to fit hierarchical Bayesian models, use the R code above instead.</p>
-</section>
-</section>
-<section id="looking-for-help">
-<h2>Looking for help?<a class="headerlink" href="#looking-for-help" title="Permalink to this heading">#</a></h2>
-<p>If you have questions regarding the tasks or want to discuss data analysis, please contact Micah Allen directly.</p>
-<p>If you want to report a bug, you can open an issue on the <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception">GitHub page</a>.</p>
+<section id="getting-help">
+<h2>Getting help<a class="headerlink" href="#getting-help" title="Permalink to this heading">#</a></h2>
+<p>For questions about the tasks or about data analysis, contact Micah Allen directly. To report a bug, open an issue on the <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/issues">GitHub page</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is the original Cardioception, created by Micah Allen and the Embodied Computation Group at Aarhus University between 2019 and 2022, funded by a Lundbeckfonden Fellowship to Micah Allen. It is the version cited in the peer-reviewed publications listed on the <a class="reference internal" href="cite.html"><span class="std std-doc">cite page</span></a>. We cannot vouch for unofficial forks, so we recommend working from this repository for research, installation and citation.</p>
+</div>
 </section>
 <section id="development">
 <h2>Development<a class="headerlink" href="#development" title="Permalink to this heading">#</a></h2>
@@ -312,12 +313,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="measuring.html">
+          <a class="next-page" href="user_guide.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Measuring cardiac interoception</div>
+                <div class="title">User guide</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -344,8 +345,36 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Cardioception Toolbox</a><ul>
+<li><a class="reference internal" href="#the-tasks">The tasks</a><ul>
+<li><a class="reference internal" href="#heart-rate-discrimination-task">Heart Rate Discrimination task</a></li>
+<li><a class="reference internal" href="#heartbeat-counting-task">Heartbeat Counting task</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#recording-devices">Recording devices</a></li>
+<li><a class="reference internal" href="#analysing-your-data">Analysing your data</a></li>
+<li><a class="reference internal" href="#where-to-go-next">Where to go next</a></li>
+<li><a class="reference internal" href="#getting-help">Getting help</a></li>
+<li><a class="reference internal" href="#development">Development</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

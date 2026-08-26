@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="How to cite?" href="../../cite.html" /><link rel="prev" title="Fitting a psychometric function at the subject level" href="1-psychophysics_subject_level.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="API" href="../../api.html" /><link rel="prev" title="Fitting a psychometric function at the subject level" href="1-psychophysics_subject_level.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>Fitting a psychometric function at the group level - Cardioception Toolbox</title>
@@ -166,9 +166,27 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../measuring.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">Guide</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../measuring.html">Theory</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../stats.html">Statistical analysis</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../templates/HeartBeatCounting.html">Heartbeat Counting task - Summary results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templates/HeartBeatCounting.html#heartbeats-and-artefacts-detection">Heartbeats and artefacts detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html">Heart Rate Discrimination task - Summary results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#response-time">Response time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#metacognition">Metacognition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#psychophysics">Psychophysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#psychometric-function">Psychometric function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#pulse-oximeter">Pulse oximeter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#save-dataframe">Save dataframe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-psychophysics_subject_level.html">Fitting a psychometric function at the subject level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-psychophysics_subject_level.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-psychophysics_subject_level.html#plotting">Plotting</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Fitting a psychometric function at the group level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plotting">Plotting</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html">cardioception.HBC.parameters.getParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/HBC.task/cardioception.HBC.task.run.html">cardioception.HBC.task.run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
@@ -187,24 +205,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../generated/HRD.languages/cardioception.HRD.languages.french.html">cardioception.HRD.languages.french</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../stats.html">Statistical analysis</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../templates/HeartBeatCounting.html">Heartbeat Counting task - Summary results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../templates/HeartBeatCounting.html#heartbeats-and-artefacts-detection">Heartbeats and artefacts detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html">Heart Rate Discrimination task - Summary results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#response-time">Response time</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#metacognition">Metacognition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#psychophysics">Psychophysics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#psychometric-function">Psychometric function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#pulse-oximeter">Pulse oximeter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../templates/HeartRateDiscrimination.html#save-dataframe">Save dataframe</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-psychophysics_subject_level.html">Fitting a psychometric function at the subject level</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-psychophysics_subject_level.html#model">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-psychophysics_subject_level.html#plotting">Plotting</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Fitting a psychometric function at the group level</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#model">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#plotting">Plotting</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../cite.html">Cite</a></li>
@@ -258,18 +258,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">pymc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pm</span>
 
 <span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s1">'talk'</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">pytensor.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pt</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named 'pytensor'
 </pre></div>
 </div>
 </div>
@@ -863,12 +851,12 @@ Watermark: 2.4.2
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../../cite.html">
+          <a class="next-page" href="../../api.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">How to cite?</div>
+                <div class="title">API</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

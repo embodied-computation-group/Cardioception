@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Heartbeat Counting task - Summary results" href="examples/templates/HeartBeatCounting.html" /><link rel="prev" title="cardioception.reports.preprocessing" href="generated/reports/cardioception.reports.preprocessing.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Heartbeat Counting task - Summary results" href="examples/templates/HeartBeatCounting.html" /><link rel="prev" title="Measuring cardiac interoception" href="measuring.html" />
 
     <link rel="shortcut icon" href="_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>Statistical analysis - Cardioception Toolbox</title>
@@ -166,9 +166,27 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="measuring.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">Guide</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1"><a class="reference internal" href="measuring.html">Theory</a></li>
+<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Statistical analysis</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html">Heartbeat Counting task - Summary results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html#heartbeats-and-artefacts-detection">Heartbeats and artefacts detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html">Heart Rate Discrimination task - Summary results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#response-time">Response time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#metacognition">Metacognition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#psychophysics">Psychophysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#psychometric-function">Psychometric function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#pulse-oximeter">Pulse oximeter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#save-dataframe">Save dataframe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html">Fitting a psychometric function at the subject level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#plotting">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html">Fitting a psychometric function at the group level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#plotting">Plotting</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html">cardioception.HBC.parameters.getParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/HBC.task/cardioception.HBC.task.run.html">cardioception.HBC.task.run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
@@ -187,24 +205,6 @@
 <li class="toctree-l2"><a class="reference internal" href="generated/HRD.languages/cardioception.HRD.languages.french.html">cardioception.HRD.languages.french</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Statistical analysis</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html">Heartbeat Counting task - Summary results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartBeatCounting.html#heartbeats-and-artefacts-detection">Heartbeats and artefacts detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html">Heart Rate Discrimination task - Summary results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#response-time">Response time</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#metacognition">Metacognition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#psychophysics">Psychophysics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#psychometric-function">Psychometric function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#pulse-oximeter">Pulse oximeter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/templates/HeartRateDiscrimination.html#save-dataframe">Save dataframe</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html">Fitting a psychometric function at the subject level</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#model">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/1-psychophysics_subject_level.html#plotting">Plotting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html">Fitting a psychometric function at the group level</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#model">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/psychophysics/2-psychophysics_group_level.html#plotting">Plotting</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">Cite</a></li>
@@ -258,7 +258,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_Hierarchical.Rmd</span></code> for group-level analysis</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_bayesian.Rmd</span></code> for the Bayesian models</p></li>
 </ul>
-<p>The <a class="reference internal" href="#../R_analysis/README.md"><span class="xref myst">R analysis README</span></a> has the full documentation and further examples.</p>
+<p>The <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/tree/master/R_analysis">R analysis README</a> has the full documentation and further examples.</p>
 </section>
 <section id="python-analysis-deprecated">
 <h2>Python analysis (deprecated)<a class="headerlink" href="#python-analysis-deprecated" title="Permalink to this heading">#</a></h2>
@@ -361,14 +361,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="generated/reports/cardioception.reports.preprocessing.html">
+          <a class="prev-page" href="measuring.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">cardioception.reports.preprocessing</div>
+                <div class="title">Measuring cardiac interoception</div>
                 
               </div>
             </a>

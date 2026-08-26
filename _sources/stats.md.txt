@@ -14,7 +14,7 @@ The example scripts are a good place to start:
 - `R_analysis/Example scripts/Example_analysis_Hierarchical.Rmd` for group-level analysis
 - `R_analysis/Example scripts/Example_analysis_bayesian.Rmd` for the Bayesian models
 
-The [R analysis README](../R_analysis/README.md) has the full documentation and further examples.
+The [R analysis README](https://github.com/embodied-computation-group/Cardioception/tree/master/R_analysis) has the full documentation and further examples.
 
 ## Python analysis (deprecated)
 
