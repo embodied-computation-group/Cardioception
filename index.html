@@ -459,18 +459,17 @@ document.write(`
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="official-repository-notice">
-<h1>🧠 Official Repository Notice<a class="headerlink" href="#official-repository-notice" title="Permalink to this heading">#</a></h1>
-<p>This is the <strong>original and officially maintained version</strong> of the Cardioception software package, co-created by Micah Allen and the Embodied Computation Group at Aarhus University (2019–2022). Development of this package was funded by a Lundbeckfonden Fellowship to Micah Allen.</p>
-<p>This repository reflects the version cited in peer-reviewed publications and is actively maintained by the Embodied Computation Group.</p>
-<p>⚠️ We cannot guarantee the accuracy, validity, or scientific reproducibility of any unofficial forks or versions of this software. Please use this repository for all scientific work, installations, and citation.</p>
+<h1>Official repository notice<a class="headerlink" href="#official-repository-notice" title="Permalink to this heading">#</a></h1>
+<p>This is the original, officially maintained version of the Cardioception software package, co-created by Micah Allen and the Embodied Computation Group at Aarhus University (2019-2022). Development of this package was funded by a Lundbeckfonden Fellowship to Micah Allen.</p>
+<p>This is the version cited in peer-reviewed publications, and the Embodied Computation Group maintains it. We cannot guarantee the accuracy, validity, or scientific reproducibility of unofficial forks or versions of this software, so please use this repository for scientific work, installation, and citation.</p>
 <hr class="docutils" />
 <img src="https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/images/cardioception_icon.png" align="left" alt="cardioception" height="230" HSPACE=30>
-<p>The Cardioception Python Package - Measuring Interoception with Psychopy - implements two measures of cardiac interoception (cardioception):</p>
+<p>Cardioception is a Python package for measuring interoception with Psychopy. It implements two measures of cardiac interoception:</p>
 <ol class="arabic simple">
-<li><p>The <strong>Heartbeat counting task (HBC)</strong>, also known as the <strong>Heartbeat tracking task</strong>, developed by Rainer Schandry <span id="id1">[<a class="reference internal" href="references.html#id2" title="Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. Perceptual and Motor Skills, 47(1):79-85, 1978. PMID: 704264. URL: https://doi.org/10.2466/pms.1978.47.1.79, arXiv:https://doi.org/10.2466/pms.1978.47.1.79, doi:10.2466/pms.1978.47.1.79.">Dale and Anderson, 1978</a>, <a class="reference internal" href="references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x, doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>]</span>. This task measures cardiac interoception by asking participants to count their heartbeats for a given period of time. An accuracy score is then derived by comparing the reported number of heartbeats and the true number of heartbeats.</p></li>
-<li><p>The <strong>Heart Rate Discrimination task</strong> <span id="id2">[<a class="reference internal" href="references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see <em>Analyses</em> below), together with metacognitive efficiency.</p></li>
+<li><p>The Heartbeat Counting task (HBC), also known as the Heartbeat tracking task, developed by Rainer Schandry <span id="id1">[<a class="reference internal" href="references.html#id2" title="Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. Perceptual and Motor Skills, 47(1):79-85, 1978. PMID: 704264. URL: https://doi.org/10.2466/pms.1978.47.1.79, arXiv:https://doi.org/10.2466/pms.1978.47.1.79, doi:10.2466/pms.1978.47.1.79.">Dale and Anderson, 1978</a>, <a class="reference internal" href="references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x, doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>]</span>. Participants count their heartbeats for a given period of time, and an accuracy score comes from comparing the reported number of heartbeats with the true number.</p></li>
+<li><p>The Heart Rate Discrimination task <span id="id2">[<a class="reference internal" href="references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span>, an adaptive psychophysical measure in which participants estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. Staircase procedures manipulate the difference between the true heart rate and the presented tone, which gives the bias (threshold) and precision (slope) of the psychometric function, along with metacognitive efficiency. These can be estimated online or offline (see the data analysis section below).</p></li>
 </ol>
-<p>These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task uses the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>. This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI…).</p>
+<p>The tasks run with minimal equipment: a computer and a recording device to monitor the participant’s heart rate. The default version uses the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>. This sensor plugs directly into the stim PC over USB and works with Cardioception without any additional code. The tasks can also be used with other recording devices and experimental settings (ECG, M/EEG, fMRI…).</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
 <div class="admonition important">
@@ -481,47 +480,33 @@ document.write(`
 </div>
 <p>This is the official package, maintained by the Embodied Computation Group at Aarhus University. It is the version described in this documentation and used in our publications. Make sure the package name you install is exactly <code class="docutils literal notranslate"><span class="pre">cardioception-toolbox</span></code>.</p>
 </div>
-<p>The <em>import</em> name is unchanged, so no existing script needs to be edited:</p>
+<p>The import name is still <code class="docutils literal notranslate"><span class="pre">cardioception</span></code>, so existing scripts do not need to be edited:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD</span><span class="w"> </span><span class="kn">import</span> <span class="n">task</span>
 </pre></div>
 </div>
 <p>See the <a class="reference internal" href="user_guide.html"><span class="std std-doc">user guide</span></a> for conda environments, dependencies and the development version.</p>
 </section>
 <section id="data-analysis">
-<h2>📊 Data Analysis<a class="headerlink" href="#data-analysis" title="Permalink to this heading">#</a></h2>
-<section id="recommended-r-analysis">
-<h3>🎯 Recommended: R Analysis<a class="headerlink" href="#recommended-r-analysis" title="Permalink to this heading">#</a></h3>
-<p><strong>For comprehensive data analysis, we recommend using our R analysis scripts located in the <code class="docutils literal notranslate"><span class="pre">R_analysis/</span></code> directory.</strong></p>
-<p>The R analysis provides:</p>
+<h2>Data analysis<a class="headerlink" href="#data-analysis" title="Permalink to this heading">#</a></h2>
+<section id="r-analysis">
+<h3>R analysis<a class="headerlink" href="#r-analysis" title="Permalink to this heading">#</a></h3>
+<p>We recommend the R scripts in the <code class="docutils literal notranslate"><span class="pre">R_analysis/</span></code> directory. They cover single-subject analysis with reaction time plots and signal detection theory metrics, group-level hierarchical analysis, Bayesian analysis with Stan models, and plotting of the results.</p>
+<p>Example scripts:</p>
 <ul class="simple">
-<li><p><strong>Individual subject analysis</strong> with reaction time plots and signal detection theory metrics</p></li>
-<li><p><strong>Group-level hierarchical analysis</strong></p></li>
-<li><p><strong>Bayesian analysis</strong> using Stan models</p></li>
-<li><p><strong>Comprehensive visualization</strong> of results</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_simple.Rmd</span></code> for a single subject</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_Hierarchical.Rmd</span></code> for group-level analysis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_bayesian.Rmd</span></code> for Bayesian analysis</p></li>
 </ul>
-<p><strong>🚀 Quick Start:</strong></p>
-<ul class="simple">
-<li><p><strong>Individual subject analysis</strong>: See <code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_simple.Rmd</span></code></p></li>
-<li><p><strong>Group-level analysis</strong>: See <code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_Hierarchical.Rmd</span></code></p></li>
-<li><p><strong>Bayesian analysis</strong>: See <code class="docutils literal notranslate"><span class="pre">R_analysis/Example</span> <span class="pre">scripts/Example_analysis_bayesian.Rmd</span></code></p></li>
-</ul>
-<p>For complete documentation and examples, see the <a class="reference internal" href="#../R_analysis/README.md"><span class="xref myst">R Analysis README</span></a>.</p>
+<p>The <a class="reference internal" href="#../R_analysis/README.md"><span class="xref myst">R analysis README</span></a> has the full documentation and further examples.</p>
 </section>
 <section id="python-analysis-outdated">
-<h3>📈 Python Analysis (Outdated)<a class="headerlink" href="#python-analysis-outdated" title="Permalink to this heading">#</a></h3>
-<p><em>Python analysis examples are available but are outdated and may not be maintained. For hierarchical Bayesian modeling, we strongly recommend using the R analysis approach above.</em></p>
-<p>Python users can find examples in the documentation, but these are primarily for reference. The Python analysis includes:</p>
-<ul class="simple">
-<li><p>Basic preprocessing and reporting functions</p></li>
-<li><p>Template notebooks for data visualization</p></li>
-<li><p>Outdated Bayesian modeling examples</p></li>
-</ul>
-<p><strong>⚠️ Important</strong>: Users interested in hierarchical Bayesian modeling should refer to the R analysis code, which provides more comprehensive and up-to-date implementations.</p>
+<h3>Python analysis (outdated)<a class="headerlink" href="#python-analysis-outdated" title="Permalink to this heading">#</a></h3>
+<p>The Python analysis examples are outdated and may not be maintained. They are kept mainly for reference and include basic preprocessing and reporting functions, template notebooks for data visualization, and older Bayesian modelling examples. If you want to fit hierarchical Bayesian models, use the R code above instead.</p>
 </section>
 </section>
 <section id="looking-for-help">
 <h2>Looking for help?<a class="headerlink" href="#looking-for-help" title="Permalink to this heading">#</a></h2>
-<p>If you have questions regarding the tasks or want discuss data analysis, please contact Micah Allen directly.</p>
+<p>If you have questions regarding the tasks or want to discuss data analysis, please contact Micah Allen directly.</p>
 <p>If you want to report a bug, you can open an issue on the <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception">GitHub page</a>.</p>
 </section>
 <section id="development">
@@ -572,11 +557,11 @@ Maintained by the Embodied Computation Group, Aarhus University.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Cardioception</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#official-repository-notice">🧠 Official Repository Notice</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#official-repository-notice">Official repository notice</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-analysis">📊 Data Analysis</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#recommended-r-analysis">🎯 Recommended: R Analysis</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-analysis-outdated">📈 Python Analysis (Outdated)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-analysis">Data analysis</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#r-analysis">R analysis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-analysis-outdated">Python analysis (outdated)</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#looking-for-help">Looking for help?</a></li>

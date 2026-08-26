@@ -492,7 +492,7 @@ document.write(`
 </div>
 <p>This is the official package, maintained by the Embodied Computation Group at Aarhus University. It is the version described in this documentation and used in our publications. Make sure the package name you install is exactly <code class="docutils literal notranslate"><span class="pre">cardioception-toolbox</span></code>.</p>
 </div>
-<p>The <em>import</em> name is unchanged, so no existing script needs to be edited:</p>
+<p>The import name is still <code class="docutils literal notranslate"><span class="pre">cardioception</span></code>, so existing scripts do not need to be edited:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD</span><span class="w"> </span><span class="kn">import</span> <span class="n">task</span>
 </pre></div>
 </div>
@@ -505,19 +505,19 @@ document.write(`
 </section>
 <section id="set-up-a-conda-environment">
 <h3>Set up a conda environment<a class="headerlink" href="#set-up-a-conda-environment" title="Permalink to this heading">#</a></h3>
-<p>The task can be installed in a new environment using the <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> file that you can find at the root of the directory. Using the Anaconda prompt, you can create a new environment with:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> file at the root of the directory describes a complete environment for the task. From the Anaconda prompt, create it with:</p>
 <p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span> <span class="pre">-f</span> <span class="pre">environment.yml</span></code></p>
-<p>This will create a new <code class="docutils literal notranslate"><span class="pre">cardioception</span></code> environment that you can later activate using:</p>
+<p>This creates a <code class="docutils literal notranslate"><span class="pre">cardioception</span></code> environment, which you can then activate with:</p>
 <p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">cardioception</span></code></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you are using the shortcut method described bellow, you will have to activate the <em>cardioception</em> environment instead of the <em>base</em> one.</p>
+<p>If you are using the shortcut method described below, activate the <em>cardioception</em> environment rather than the <em>base</em> one.</p>
 </div>
 </section>
 </section>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading">#</a></h2>
-<p>Cardioception has been tested with Python 3.7. We recommend to use the last install of Anaconda for Python 3.7 or latest (see <a class="reference external" href="https://www.anaconda.com/products/individual#download-section">this link</a>).</p>
+<p>Cardioception has been tested with Python 3.7. We recommend the latest Anaconda install for Python 3.7 or newer (see <a class="reference external" href="https://www.anaconda.com/products/individual#download-section">this link</a>).</p>
 <p>Make sure that you have the following packages installed and up to date before running cardioception:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.psychopy.org/">psychopy</a> can be installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">psychopy</span></code>.</p></li>
@@ -530,7 +530,7 @@ document.write(`
 <li><p><a class="reference external" href="https://pandas.pydata.org/">pandas</a> (&gt;=1.0.3)</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/pyserial/">pyserial</a> (&gt;=3.4)</p></li>
 </ul>
-<p>In addition, some function for HTML reports will require:</p>
+<p>The functions that build the HTML reports also require:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://papermill.readthedocs.io/en/latest/">papermill</a> (&gt;=2.3.1)</p></li>
 <li><p><a class="reference external" href="https://matplotlib.org/">matplotlib</a> (&gt;=3.3.3)</p></li>
@@ -541,30 +541,30 @@ document.write(`
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The version provided here are the ones used when testing and runing cardioception locally, and are often the last ones. For several packages however, older version might also be compatibles.</p>
+<p>The versions listed here are the ones we use when testing and running cardioception locally, and are usually the most recent. For several packages, older versions work as well.</p>
 </div>
-<p>Cardioception will automatically copy the images and sound files necessary to run the task correctly (~ 160 Mo). These files will be removed if you uninstall the package.</p>
+<p>Cardioception copies the images and sound files the tasks need (~ 160 Mo). Uninstalling the package removes them.</p>
 </section>
 <section id="physiological-recording">
 <h2>Physiological recording<a class="headerlink" href="#physiological-recording" title="Permalink to this heading">#</a></h2>
-<p>Both the Heartbeat counting task (HBC) and the heart rate discrimination task (HRD) require access to physiological recording device during the task to estimate the heart rate or count the number of heartbeats in a given time window. Cardioception natively supports:</p>
+<p>Both the Heartbeat Counting task (HBC) and the Heart Rate Discrimination task (HRD) need a physiological recording device during the task, either to estimate the heart rate or to count the number of heartbeats in a given time window. Cardioception natively supports:</p>
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a></p></li>
-<li><p>Remote Data Access (RDA) via BrainVision Recorder together with <a class="reference external" href="https://www.brainproducts.com/%3E">Brain product ExG amplifier</a>.</p></li>
+<li><p>Remote Data Access (RDA) via BrainVision Recorder together with <a class="reference external" href="https://www.brainproducts.com/">Brain product ExG amplifier</a>.</p></li>
 </ul>
-<p>The package can easily be extended and integrate other recording devices by providing another recording class that will interface with your own devices (ECG, pulse oximeters, or any king of recording that will offer precise estimation of the cardiac frequency).</p>
+<p>You can add other devices by writing a recording class that interfaces with your own hardware (ECG, pulse oximeters, or any kind of recording that gives a precise estimate of the cardiac frequency).</p>
 </section>
 <section id="running-the-tasks">
 <h2>Running the tasks<a class="headerlink" href="#running-the-tasks" title="Permalink to this heading">#</a></h2>
-<p>Each task contains a <code class="docutils literal notranslate"><span class="pre">parameters</span></code> and a <code class="docutils literal notranslate"><span class="pre">task</span></code> submodule describing the experimental parameters and the Psychopy script respectively. Several changes and adaptation can be parametrized just by passing arguments to the parameters functions. Please refer to the API documentation for details.</p>
+<p>Each task has a <code class="docutils literal notranslate"><span class="pre">parameters</span></code> submodule holding the experimental parameters and a <code class="docutils literal notranslate"><span class="pre">task</span></code> submodule holding the Psychopy script. Most adaptations can be made by passing arguments to the parameters function. See the API documentation for details.</p>
 <section id="using-a-script">
 <h3>Using a script<a class="headerlink" href="#using-a-script" title="Permalink to this heading">#</a></h3>
-<p>Once the package has been installed, you can run the task (e.g. here the Heart rate Discrimination task) using the following code snippet:</p>
+<p>Once the package is installed, you can run a task (here the Heart Rate Discrimination task) with the following code snippet:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD.parameters</span><span class="w"> </span><span class="kn">import</span> <span class="n">getParameters</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD</span><span class="w"> </span><span class="kn">import</span> <span class="n">task</span>
 
 <span class="c1"># Set global task parameters</span>
-<span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">getParameters</span><span class="p">(</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">getParameters</span><span class="p">(</span>
     <span class="n">participant</span><span class="o">=</span><span class="s1">'Subject_01'</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">'Test'</span><span class="p">,</span> <span class="n">serialPort</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">setup</span><span class="o">=</span><span class="s1">'behavioral'</span><span class="p">,</span> <span class="n">nTrials</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">screenNb</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
@@ -574,13 +574,13 @@ document.write(`
 <span class="n">parameters</span><span class="p">[</span><span class="s1">'win'</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>This minimal example will run the Heart Rate Discrimination task with a total of 10 trials using a Psi staircase.</p>
-<p>We provide standard scripts in the <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers">wrappers</a> folder that can be adapted to your needs. We recommend copying this script in your local task folder if you want to parametrize it to fit your needs. The tasks can then easily be executed by running the corresponding wrapper file (e.g in a terminal).</p>
+<p>This minimal example runs the Heart Rate Discrimination task with 10 trials and a Psi staircase.</p>
+<p>Standard scripts are available in the <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers">wrappers</a> folder. Copy the one you need into your local task folder and edit it there. A task can then be run by executing its wrapper file, for example from a terminal.</p>
 </section>
 <section id="creating-a-shortcut-windows">
 <h3>Creating a shortcut (Windows)<a class="headerlink" href="#creating-a-shortcut-windows" title="Permalink to this heading">#</a></h3>
-<p>Once you have adapted the scripts, you can create a shortcut (e.g in the Desktop) so the task can be executed just by clicking on it without any coding or command lines interactions.</p>
-<p>If you are using Windows, you can simply create a <code class="docutils literal notranslate"><span class="pre">.bat</span></code> file containing the following:</p>
+<p>Once you have adapted the scripts, you can create a shortcut (on the Desktop, say) so the task starts with a click, without any coding or command line interaction.</p>
+<p>On Windows, create a <code class="docutils literal notranslate"><span class="pre">.bat</span></code> file containing the following:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>call<span class="w"> </span><span class="o">[</span>path<span class="w"> </span>to<span class="w"> </span>your<span class="w"> </span>environment<span class="w"> </span>*/conda.bat<span class="o">]</span><span class="w"> </span>activate
 <span class="o">[</span>path<span class="w"> </span>to<span class="w"> </span>your<span class="w"> </span><span class="nb">local</span><span class="w"> </span>*/python.exe<span class="o">]</span><span class="w"> </span><span class="o">[</span>path<span class="w"> </span>to<span class="w"> </span>your<span class="w"> </span>wrapper<span class="w"> </span>*/hrd.py<span class="o">]</span>
 pause
@@ -590,7 +590,7 @@ pause
 </section>
 <section id="creating-html-reports">
 <h2>Creating HTML reports<a class="headerlink" href="#creating-html-reports" title="Permalink to this heading">#</a></h2>
-<p>The results are saved in the <code class="docutils literal notranslate"><span class="pre">'resultPath'</span></code> folder defined in the parameters dictionary. For each task, we provide a comprehensive notebook detailing the main results, quality checks, and basic preprocessing steps. You can automatically generate the HTML reports using the following code snippet:</p>
+<p>Results are saved in the <code class="docutils literal notranslate"><span class="pre">'resultPath'</span></code> folder defined in the parameters dictionary. Each task comes with a notebook covering the main results, quality checks, and basic preprocessing steps. To generate the HTML report:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.reports</span><span class="w"> </span><span class="kn">import</span> <span class="n">report</span>
 
 <span class="n">resultPath</span> <span class="o">=</span> <span class="s2">"./"</span>  <span class="c1"># the folder containing the result files</span>
@@ -599,7 +599,7 @@ pause
 <span class="n">report</span><span class="p">(</span><span class="n">resultPath</span><span class="p">,</span> <span class="n">reportPath</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">'HRD'</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This code will generate the HTML reports for the Heart Rate Discrimination task in the <code class="docutils literal notranslate"><span class="pre">reportPath</span></code> folder using the results files located in <code class="docutils literal notranslate"><span class="pre">resultPath</span></code>. This will require <a class="reference external" href="https://papermill.readthedocs.io/en/latest/">papermill</a>.</p>
+<p>This writes the HTML report for the Heart Rate Discrimination task into <code class="docutils literal notranslate"><span class="pre">reportPath</span></code>, using the result files found in <code class="docutils literal notranslate"><span class="pre">resultPath</span></code>. It requires <a class="reference external" href="https://papermill.readthedocs.io/en/latest/">papermill</a>.</p>
 </section>
 </section>
 
