@@ -403,17 +403,37 @@ term.</p></li>
 proportions for a few individual participants.</p></li>
 <li><p>Only then read the coefficients.</p></li>
 </ol>
-<p>On the third of those, compare like with like. The obvious check plots the pooled
-observed proportions against the fitted curve, and the points always miss. They
-are supposed to: see <a class="reference internal" href="psychophysics.html#two-averages"><span class="std std-ref">the psychophysical model</span></a>
-for why the average participant’s curve is not the average of the participants’
-curves. The comparison that means something is against the model’s predictive
-interval for each bin.</p>
+<p>The third deserves care, because the obvious version of it is misleading.</p>
+<p><strong>Check participants one at a time first.</strong> Plot each participant’s fitted curve
+against that participant’s own trials. Nothing is pooled, so a departure is
+misfit and not an artefact of mixing people together. This is the check the
+<a class="reference external" href="https://github.com/embodied-computation-group/Hierarchical-Interoception">Hierarchical Interoception toolbox</a>
+recommends, and it should be your primary one.</p>
+<p><img alt="Sixteen participants, each against their own data" src="../_images/fig_subject_fits.png" /></p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># each participant's own parameters, from coef()</span>
+<span class="n">cf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">coef</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span><span class="o">$</span><span class="n">subj</span><span class="p">[,</span><span class="w"> </span><span class="s">"Estimate"</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Then the pooled check, with its caveat.</strong> Pooling observed proportions across
+participants and drawing them against the fitted curve is tempting, and the points
+will miss. Usually that is not misfit. Pooled data estimate the <em>average of the
+participants’ curves</em>, while the population curve is the curve <em>of the average
+participant</em>, and with a threshold SD near 11 ΔBPM those are visibly different
+lines. See <a class="reference internal" href="psychophysics.html#two-averages"><span class="std std-ref">two averages that are not the same</span></a>.</p>
 <p><img alt="Posterior predictive check by modality and gender" src="../_images/fig_ppc_modality_gender.png" /></p>
-<p>Use <code class="docutils literal notranslate"><span class="pre">posterior_predict()</span></code> for this, not <code class="docutils literal notranslate"><span class="pre">posterior_epred()</span></code>. The expectation
+<p>The points track the solid line, not the dashed one. What actually decides the
+question is the bars: the model’s predictive interval for each bin, computed over
+the real trials. On the worked model 60 of 61 bins fall inside their 95% interval,
+and the one that does not misses by 0.003. The model fits.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">posterior_predict()</span></code> for those bars, not <code class="docutils literal notranslate"><span class="pre">posterior_epred()</span></code>. The expectation
 carries uncertainty in the mean but no binomial sampling noise, so as a predictive
 interval it is far too narrow in thinly sampled bins and will report misfit that is
 nothing but noise.</p>
+<p>A third effect shows up at the extremes of this task specifically. The staircase
+concentrates trials near each participant’s own threshold, so a bin at −40 ΔBPM
+is made up of whoever happened to have a threshold out there rather than a fair
+sample of the group. The bars respect that, because they are computed over the
+trials each participant actually received. A smooth curve cannot.</p>
 </section>
 <section id="what-the-worked-model-found">
 <h2>What the worked model found<a class="headerlink" href="#what-the-worked-model-found" title="Permalink to this heading">#</a></h2>
