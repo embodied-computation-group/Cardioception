@@ -10,16 +10,34 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import os
+import re
 import time
 
-import cardioception
 import sphinx_bootstrap_theme
+
+
+def get_version():
+    """Read __version__ from the package without importing it.
+
+    Importing cardioception here would pull in PsychoPy and its GUI stack,
+    which the documentation build does not need and cannot install on the
+    Linux runner.
+    """
+    init = os.path.join(
+        os.path.dirname(__file__), "..", "..", "cardioception", "__init__.py"
+    )
+    with open(init, encoding="utf-8") as buff:
+        match = re.search(r"""^__version__ = ["'](.+)["']""", buff.read(), re.M)
+    if match is None:
+        raise RuntimeError("Could not find __version__ in cardioception/__init__.py")
+    return match.group(1)
 
 # -- Project information -----------------------------------------------------
 project = "cardioception"
 copyright = "2020–2025, Micah Allen, Embodied Computation Group, Aarhus University"
 author = "Micah Allen"
-release = cardioception.__version__
+release = get_version()
 
 
 image_scrapers = ("matplotlib",)
@@ -58,6 +76,19 @@ panels_add_bootstrap_css = False
 
 # Generate the API documentation when building
 autosummary_generate = True
+
+# The API pages only need the docstrings, so the packages that talk to the
+# screen and the recording device are mocked rather than installed.
+autodoc_mock_imports = [
+    "psychopy",
+    "serial",
+    "systole",
+    "pymc",
+    "pytensor",
+    "metadpy",
+    "papermill",
+    "pingouin",
+]
 numpydoc_show_class_members = False
 
 # Include the example source for plots in API docs

@@ -1,5 +1,10 @@
-# Core package
--e .
+# The package itself is installed separately with --no-deps: the API pages only
+# need the docstrings, and PsychoPy's GUI stack does not build on the runner.
+# cardioception.reports and the parameters modules still import these at module
+# level, so autodoc needs them present (the rest are mocked in conf.py).
+numpy
+pandas
+matplotlib
 
 # Documentation dependencies (minimal set to avoid conflicts)
 sphinx==5.3.0
