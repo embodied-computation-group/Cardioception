@@ -124,22 +124,14 @@ for f in data_folder.iterdir():
 
 ### Report templates
 
-These are the notebooks the report function runs, one per task. You can open them here, or run them in [Google Colab](https://colab.research.google.com/) and upload your own data.
+The report function runs one notebook per task. They live in the package at
+`cardioception/notebooks/` and are kept for data quality checks rather than as tutorials.
+You can open them in [Google Colab](https://colab.research.google.com/) and upload your own data:
 
-```{toctree}
----
-hidden:
-glob:
----
-
-examples/templates/*
-
-```
-
-| Notebook | Colab |
-| --- | ---|
-| {ref}`hbc_template` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/templates/HeartBeatCounting.ipynb)
-| {ref}`hrd_template` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/templates/HeartRateDiscrimination.ipynb)
+| Task | Colab |
+| --- | --- |
+| Heartbeat Counting | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb) |
+| Heart Rate Discrimination | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb) |
 
 ## Archived material
 
