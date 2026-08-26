@@ -260,6 +260,28 @@ if (!is.null(fit) && !is.null(dat)) {
   write_gz(d0[d0$subj %in% pick, c("subj", "x", "y", "n")],
            file.path(small_dir, "psy_intero_examples_data.csv.gz"),
            "observed trials for those 3 subjects")
+
+  # A grid of participants, each curve against that participant's own data.
+  # This is the fit check the Hierarchical Interoception toolbox recommends, and
+  # it is the one that answers the question cleanly: a pooled plot mixes people
+  # together, so a departure there can come from the pooling rather than from the
+  # fit. Nothing is pooled here, so nothing is confounded.
+  #
+  # Curves come from coef() point estimates, as the toolbox does, rather than
+  # from posterior_epred over a 16-subject grid: same line, far less to store.
+  gpick <- dimnames(cf)[[1]][order(a)[round(seq(0.03, 0.97, length.out = 16) * length(a))]]
+  xs_g <- seq(-40, 40, by = 1)
+  write_gz(do.call(rbind, lapply(gpick, function(s) data.frame(
+             subj = s, x = xs_g,
+             p = psy_curve(xs_g, cf[s, "Estimate", "alpha_Intercept"],
+                           cf[s, "Estimate", "beta_Intercept"],
+                           cf[s, "Estimate", "lambda_Intercept"]),
+             alpha = cf[s, "Estimate", "alpha_Intercept"]))),
+           file.path(small_dir, "psy_intero_grid_curve.csv.gz"),
+           "16 participants spanning the threshold range, fitted curves")
+  write_gz(d0[d0$subj %in% gpick, c("subj", "x", "y", "n")],
+           file.path(small_dir, "psy_intero_grid_data.csv.gz"),
+           "observed trials for those 16 participants")
   rm(fit); gc(verbose = FALSE)
 }
 

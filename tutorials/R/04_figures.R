@@ -218,6 +218,45 @@ if (have("psy_intero_curve_subjects.csv.gz")) {
 }
 
 # ===========================================================================
+# 3b. The fit check that is not confounded by pooling.
+#
+# Sixteen participants spanning the threshold range, each fitted curve against
+# that participant's own trials. This is what the Hierarchical Interoception
+# toolbox does, and it is the right primary check: nothing is pooled, so a
+# departure here is misfit rather than an artefact of mixing people together.
+# ===========================================================================
+if (have("psy_intero_grid_curve.csv.gz") && have("psy_intero_grid_data.csv.gz")) {
+  gc_ <- rd("psy_intero_grid_curve.csv.gz")
+  gd  <- rd("psy_intero_grid_data.csv.gz")
+
+  gd <- gd %>% group_by(subj, x) %>%
+    summarise(p = sum(y) / sum(n), n = sum(n), .groups = "drop")
+
+  ord <- gc_ %>% distinct(subj, alpha) %>% arrange(alpha)
+  lab <- setNames(sprintf("%+.0f", ord$alpha), ord$subj)
+  gc_$subj <- factor(gc_$subj, ord$subj, lab[ord$subj])
+  gd$subj  <- factor(gd$subj,  ord$subj, lab[ord$subj])
+
+  fig <- ggplot(gc_, aes(x, p)) +
+    geom_hline(yintercept = 0.5, linetype = "dotted", colour = GREY, linewidth = 0.25) +
+    geom_vline(xintercept = 0, linetype = "dotted", colour = GREY, linewidth = 0.25) +
+    geom_line(colour = MODPAL[["Intero"]], linewidth = 0.6) +
+    geom_point(data = gd, aes(x, p, size = n), colour = NAVY, alpha = 0.5, stroke = 0) +
+    scale_size_area(max_size = 1.6) +
+    scale_y_continuous(breaks = c(0, 0.5, 1)) +
+    # Match the curve's own range, or the line stops dead at 40 while a handful
+    # of trials carry on to 50 and it reads as the model giving up.
+    coord_cartesian(ylim = c(0, 1), xlim = c(-40, 40)) +
+    facet_wrap(~subj, ncol = 4) +
+    labs(x = expression(Delta*"BPM"), y = "P(respond \"faster\")",
+         title = "Sixteen participants, each against their own data",
+         subtitle = "panel labels are that participant's threshold in dBPM") +
+    th + theme(strip.text = element_text(size = 7, colour = "grey35"),
+               axis.text = element_text(size = 6))
+  save_fig("fig_subject_fits", fig, 180, 150)
+}
+
+# ===========================================================================
 # 4. Modality and gender.
 # Modality in panels, gender in colour. The interoceptive shift is large enough
 # that it has to be seen next to the auditory control to be read properly.
@@ -245,22 +284,33 @@ if (have("psy_full_curve_gender.csv.gz")) {
   save_fig("fig_modality_gender", fig, 180, 76)
 
   if (!is.null(ppc)) {
+    # The solid line has to be here. Pooled observed data estimate the average of
+    # the participants' curves, not the curve of the average participant, and
+    # with a threshold SD near 11 dBPM those are visibly different. Showing the
+    # points against the dashed line alone makes a model that fits 98% of bins
+    # look like it is failing.
+    marg <- if (have("psy_full_curve_marginal.csv.gz"))
+      rd("psy_full_curve_marginal.csv.gz") else NULL
+
     chk <- ggplot(cur, aes(x)) +
       geom_hline(yintercept = 0.5, linetype = "dotted", colour = GREY, linewidth = 0.3) +
       geom_linerange(data = ppc, aes(x = x, ymin = pp_lo, ymax = pp_hi, colour = gender),
-                     alpha = 0.35, linewidth = 0.9, inherit.aes = FALSE) +
-      geom_point(data = ppc, aes(x, p, colour = gender, size = n), alpha = 0.7,
-                 stroke = 0, inherit.aes = FALSE) +
+                     alpha = 0.35, linewidth = 1.1, inherit.aes = FALSE) +
       geom_line(aes(y = m, colour = gender, group = interaction(gender, ci)),
-                linewidth = 0.4, linetype = "dashed", alpha = 0.6) +
+                linewidth = 0.4, linetype = "dashed", alpha = 0.5) +
+      { if (!is.null(marg))
+          geom_line(data = marg, aes(x, m, colour = gender, group = gender),
+                    linewidth = 0.9, inherit.aes = FALSE) } +
+      geom_point(data = ppc, aes(x, p, colour = gender, size = n), alpha = 0.75,
+                 stroke = 0, inherit.aes = FALSE) +
       scale_colour_manual(values = PAL) + scale_size_area(max_size = 2.2) +
       scale_y_continuous(breaks = c(0, 0.5, 1)) +
       coord_cartesian(ylim = c(0, 1)) +
       facet_wrap(~Modality) +
       labs(x = expression(Delta*"BPM"), y = "P(respond \"faster\")",
            title = "Posterior predictive check",
-           subtitle = paste("bars are the model's 95% interval for each pooled bin;",
-                            "dashed is the average-participant curve")) + th
+           subtitle = paste("bars: 95% predicted per bin.  solid: average of",
+                            "participants.  dashed: average participant")) + th
     save_fig("fig_ppc_modality_gender", chk / word_legend(PAL) +
                plot_layout(heights = c(1, 0.08)), 180, 76)
   }

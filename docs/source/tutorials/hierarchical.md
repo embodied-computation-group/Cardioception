@@ -175,19 +175,45 @@ oversubscribes and runs slower than leaving it alone.
    proportions for a few individual participants.
 4. Only then read the coefficients.
 
-On the third of those, compare like with like. The obvious check plots the pooled
-observed proportions against the fitted curve, and the points always miss. They
-are supposed to: see [the psychophysical model](psychophysics.md#two-averages)
-for why the average participant's curve is not the average of the participants'
-curves. The comparison that means something is against the model's predictive
-interval for each bin.
+The third deserves care, because the obvious version of it is misleading.
+
+**Check participants one at a time first.** Plot each participant's fitted curve
+against that participant's own trials. Nothing is pooled, so a departure is
+misfit and not an artefact of mixing people together. This is the check the
+[Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception)
+recommends, and it should be your primary one.
+
+![Sixteen participants, each against their own data](../images/tutorials/fig_subject_fits.png)
+
+```r
+# each participant's own parameters, from coef()
+cf <- coef(fit)$subj[, "Estimate", ]
+```
+
+**Then the pooled check, with its caveat.** Pooling observed proportions across
+participants and drawing them against the fitted curve is tempting, and the points
+will miss. Usually that is not misfit. Pooled data estimate the *average of the
+participants' curves*, while the population curve is the curve *of the average
+participant*, and with a threshold SD near 11 ΔBPM those are visibly different
+lines. See [two averages that are not the same](psychophysics.md#two-averages).
 
 ![Posterior predictive check by modality and gender](../images/tutorials/fig_ppc_modality_gender.png)
 
-Use `posterior_predict()` for this, not `posterior_epred()`. The expectation
+The points track the solid line, not the dashed one. What actually decides the
+question is the bars: the model's predictive interval for each bin, computed over
+the real trials. On the worked model 60 of 61 bins fall inside their 95% interval,
+and the one that does not misses by 0.003. The model fits.
+
+Use `posterior_predict()` for those bars, not `posterior_epred()`. The expectation
 carries uncertainty in the mean but no binomial sampling noise, so as a predictive
 interval it is far too narrow in thinly sampled bins and will report misfit that is
 nothing but noise.
+
+A third effect shows up at the extremes of this task specifically. The staircase
+concentrates trials near each participant's own threshold, so a bin at −40 ΔBPM
+is made up of whoever happened to have a threshold out there rather than a fair
+sample of the group. The bars respect that, because they are computed over the
+trials each participant actually received. A smooth curve cannot.
 
 ## What the worked model found
 
