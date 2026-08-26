@@ -2,19 +2,19 @@
 
 ***
 
-# 🧠 Official Repository Notice
+# Official Repository Notice
 
 This is the **original and officially maintained version** of the Cardioception software package, co-created by Micah Allen and the Embodied Computation Group at Aarhus University (2019–2022). Development of this package was funded by a Lundbeckfonden Fellowship to Micah Allen.
 
 This repository reflects the version cited in peer-reviewed publications and is actively maintained by the Embodied Computation Group.
 
-⚠️ We cannot guarantee the accuracy, validity, or scientific reproducibility of any unofficial forks or versions of this software. Please use this repository for all scientific work, installations, and citation.
+We cannot guarantee the accuracy, validity, or scientific reproducibility of any unofficial forks or versions of this software. Please use this repository for all scientific work, installations, and citation.
 
 ***
 
-# 📢 2025 Update – Hierarchical Modelling Toolkit
+# 2025 Update – Hierarchical Modelling Toolkit
 
-> 📢 **New in 2025:** We released the [Hierarchical Interoception modelling toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception) alongside the preprint [*Hierarchical Bayesian Modelling of Interoceptive Psychophysics*](https://www.biorxiv.org/content/10.1101/2025.08.27.672360v1). This toolkit delivers turnkey hierarchical Bayesian analyses, normative priors, and power-analysis resources for Heart Rate Discrimination and related tasks. We strongly recommend using it to model data collected with Cardioception.
+> **New in 2025:** We released the [Hierarchical Interoception modelling toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception) alongside the preprint [*Hierarchical Bayesian Modelling of Interoceptive Psychophysics*](https://www.biorxiv.org/content/10.1101/2025.08.27.672360v1). This toolkit delivers turnkey hierarchical Bayesian analyses, normative priors, and power-analysis resources for Heart Rate Discrimination and related tasks. We strongly recommend using it to model data collected with Cardioception.
 
 # Cardioception
 
@@ -64,7 +64,7 @@ If you have questions regarding the tasks, please contact Micah Allen directly.
 
 # Installation
 
-> ### ✅ Install `cardioception-toolbox`
+> ### Install `cardioception-toolbox`
 >
 > ```
 > pip install cardioception-toolbox
@@ -208,7 +208,7 @@ This task implements an adaptive psychophysical procedure for estimating partici
 
 The resources below remain available for teams who depend on the historical Cardioception workflows. For new projects, we recommend transitioning to the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception).
 
-## 📊 R analysis scripts (maintained legacy)
+## R analysis scripts (maintained legacy)
 
 **R-based analyses live in the `R_analysis/` directory and continue to receive maintenance for backwards compatibility.**
 
@@ -218,14 +218,14 @@ The R analysis provides:
 - **Bayesian analysis** using Stan models
 - **Comprehensive visualization** of results
 
-**🚀 Quick Start:**
+**Quick start:**
 - **Individual subject analysis**: See `R_analysis/Example scripts/Example_analysis_simple.Rmd`
 - **Group-level analysis**: See `R_analysis/Example scripts/Example_analysis_Hierarchical.Rmd`
 - **Bayesian analysis**: See `R_analysis/Example scripts/Example_analysis_bayesian.Rmd`
 
 For complete documentation and examples, see the [R Analysis README](R_analysis/README.md).
 
-## 📈 Python notebooks (archived)
+## Python notebooks (archived)
 
 *Python notebooks are provided for reference only and are no longer actively maintained. For hierarchical Bayesian modeling, use the Hierarchical Interoception toolbox or the R analysis scripts above.*
 
@@ -255,7 +255,7 @@ You can also analyze the results in [Google Colab](https://colab.research.google
 
 More advanced subject and group-level Bayesian modeling approaches are described in the following notebooks.
 
-**⚠️ Important**: Users interested in hierarchical Bayesian modeling should refer to the R analysis code, which provides more comprehensive and up-to-date implementations.
+**Important:** Users interested in hierarchical Bayesian modeling should refer to the R analysis code, which provides more comprehensive and up-to-date implementations.
 
 | Notebook | Colab | nbViewer |
 | --- | ---| --- |
