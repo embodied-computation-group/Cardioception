@@ -1314,10 +1314,11 @@ def confidenceRatingTask(
                     clock.getTime(),
                     True,
                 )
-                print(
-                    f"... Confidence level: {confidence}"
-                    + f" with response time {round(confidenceRT, 2)} seconds"
-                )
+                if confidenceRT is not None:
+                    print(
+                        f"... Confidence level: {confidence}"
+                        + f" with response time {round(confidenceRT, 2)} seconds"
+                    )
                 # Change marker color after response provided
                 slider.marker.color = "green"
                 slider.draw()
