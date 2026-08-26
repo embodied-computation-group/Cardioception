@@ -8,5 +8,10 @@ seaborn>=0.11.1
 pingouin>=0.3.10
 papermill>=2.3.1
 systole-core>=0.3.0
+# The setuptools ceiling is on PsychoPy's behalf, not ours: 2022.2.5 imports
+# pkg_resources, which setuptools removed in 82. 81 is used rather than 82
+# because 81 also dropped --dry-run for setup.py, which this project builds with.
+# Cardioception itself does not import pkg_resources (see cardioception/_resources.py).
+# Remove this bound when PsychoPy is upgraded. See issue #92.
 setuptools>=38.4,<81
 packaging

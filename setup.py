@@ -13,8 +13,15 @@ def read(fname):
         return buff.read()
 
 def get_requirements():
-    with codecs.open(REQUIREMENTS_FILE) as buff:
-        return buff.read().splitlines()
+    """Requirement specifiers from requirements.txt, ignoring comments.
+
+    Comments and blank lines are stripped rather than passed through: setuptools
+    treats every line as a specifier, so a `#` line here becomes an unparseable
+    requirement and the build fails on a file that looks fine.
+    """
+    with codecs.open(REQUIREMENTS_FILE, encoding="utf-8") as buff:
+        lines = (line.strip() for line in buff.read().splitlines())
+        return [line for line in lines if line and not line.startswith("#")]
 
 DESCRIPTION = (
     "Measuring interoceptive performance with Psychopy - the official "

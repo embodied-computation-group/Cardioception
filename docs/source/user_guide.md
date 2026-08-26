@@ -42,7 +42,7 @@ If you are using the shortcut method described below, activate the *cardioceptio
 
 ## Dependencies
 
-Cardioception has been tested with Python 3.7. We recommend the latest Anaconda install for Python 3.7 or newer (see [this link](https://www.anaconda.com/products/individual#download-section)).
+Cardioception requires **Python 3.9**, and only 3.9. `systole-core` needs 3.9 or later, while the pinned PsychoPy cannot be imported on 3.10 or later, so the two constraints meet at a single version. `pip` will refuse to install on anything else. See [issue #92](https://github.com/embodied-computation-group/Cardioception/issues/92) for the plan to widen this.
 
 Make sure that you have the following packages installed and up to date before running cardioception:
 
