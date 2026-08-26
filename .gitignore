@@ -12,3 +12,6 @@ docs/source/api
 docs/build
 docs/auto_examples
 .Rproj.user
+
+# Local reference material, not redistributable
+.context/

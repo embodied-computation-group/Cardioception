@@ -15,8 +15,9 @@ the user's decisions.
 
 Cardioception records confidence on a continuous slider, 0 to 100. Participants use both
 ends heavily: "completely unsure" and "completely certain" are real answers, not
-rounding. In a reference sample of 191 participants, around a quarter of trials sit
-exactly on a bound.
+rounding. In a reference sample of 512 participants and 68,932 trials, 15.0% sit
+exactly on a bound: 3.9% at zero and 11.1% at one. Measure this in your own data
+before fitting, because it is what justifies the model.
 
 That shape rules out the obvious options:
 

@@ -9,34 +9,19 @@
 #   <model>_fixef.csv          fixed effects with credible intervals
 #   <model>_diagnostics.txt    written by 01_fit.R, copied through unchanged
 #   contrasts.csv              the effects the tutorial actually discusses
-#   fig_*.png                  figures for the documentation
+#
+# Figures are not written here. See R/04_figures.R.
 
 suppressPackageStartupMessages({
   library(brms)
   library(dplyr)
-  library(ggplot2)
   library(posterior)
 })
 
 source(Sys.getenv("HRD_MODELS", "R/models.R"))
 
 out_dir <- Sys.getenv("HRD_OUT", "results")
-fig_dir <- Sys.getenv("HRD_FIGS", file.path(out_dir, "figures"))
-dir.create(fig_dir, showWarnings = FALSE, recursive = TRUE)
 
-NAVY <- "#1f3352"; MID <- "#2f4b73"; GREY <- "#8a94a3"
-PAPER <- "#f7f6f2"; ROSE <- "#a8586b"
-
-theme_hrd <- function() {
-  theme_classic(base_size = 11) +
-    theme(
-      plot.background = element_rect(fill = PAPER, colour = NA),
-      panel.background = element_rect(fill = PAPER, colour = NA),
-      legend.background = element_rect(fill = PAPER, colour = NA),
-      plot.title = element_text(colour = NAVY, size = 11),
-      axis.text = element_text(colour = NAVY, size = 9)
-    )
-}
 
 load_fit <- function(name) {
   p <- file.path(out_dir, paste0(name, ".rds"))
@@ -107,84 +92,9 @@ if (length(contrasts)) {
   message("wrote contrasts.csv")
 }
 
-# --- figure: psychometric curves by gender ---------------------------------
-# Posterior mean curves for the two genders in each modality, at the sample mean
-# of age and BMI, which is what centring the covariates makes the intercept mean.
-if (!is.null(fit_full)) {
-  d <- readRDS(Sys.getenv("HRD_DATA", "data/model_data.rds"))$both
-  grid <- expand.grid(
-    x = seq(-40, 40, length.out = 120),
-    Modality = factor(c("Extero", "Intero"), levels = levels(d$Modality)),
-    gender = factor(c("Female", "Male"), levels = levels(d$gender)),
-    age_z = 0, bmi_z = 0, n = 1
-  )
-  ep <- posterior_epred(fit_full, newdata = grid, re_formula = NA)
-  grid$p <- colMeans(ep)
-  grid$lo <- apply(ep, 2, quantile, 0.025)
-  grid$hi <- apply(ep, 2, quantile, 0.975)
-
-  p <- ggplot(grid, aes(x, p, colour = gender, fill = gender)) +
-    geom_ribbon(aes(ymin = lo, ymax = hi), alpha = 0.18, colour = NA) +
-    geom_line(linewidth = 1) +
-    geom_hline(yintercept = 0.5, linetype = "dotted", colour = GREY) +
-    geom_vline(xintercept = 0, linetype = "dotted", colour = GREY) +
-    facet_wrap(~Modality) +
-    scale_colour_manual(values = c(Female = ROSE, Male = MID)) +
-    scale_fill_manual(values = c(Female = ROSE, Male = MID)) +
-    labs(x = "Intensity (dBPM)", y = "P(\"faster\")",
-         title = "Posterior psychometric functions at mean age and BMI") +
-    theme_hrd()
-  ggsave(file.path(fig_dir, "fig_psychometric_gender.png"), p,
-         width = 7.5, height = 3.4, dpi = 200)
-  message("wrote fig_psychometric_gender.png")
-
-  # --- figure: where the effects are ---------------------------------------
-  fx <- all_fixef[["psy_full"]]
-  eff <- fx %>%
-    filter(grepl("^(alpha|beta)_", term), !grepl("Intercept", term)) %>%
-    mutate(
-      parameter = ifelse(grepl("^alpha", term), "alpha (threshold)", "beta (log slope)"),
-      label = sub("^(alpha|beta)_", "", term)
-    )
-  p2 <- ggplot(eff, aes(Estimate, label)) +
-    geom_vline(xintercept = 0, linetype = "dotted", colour = GREY) +
-    geom_errorbarh(aes(xmin = Q2.5, xmax = Q97.5), height = 0.18, colour = MID) +
-    geom_point(colour = NAVY, size = 2) +
-    facet_wrap(~parameter, scales = "free_x") +
-    labs(x = "Posterior estimate", y = NULL,
-         title = "Effects on threshold and slope, with 95% credible intervals") +
-    theme_hrd()
-  ggsave(file.path(fig_dir, "fig_effects.png"), p2,
-         width = 8, height = 3.2, dpi = 200)
-  message("wrote fig_effects.png")
-}
-
-# --- figure: confidence by accuracy ----------------------------------------
-if (!is.null(fit_meta)) {
-  grid <- expand.grid(
-    Accuracy = factor(c("incorrect", "correct"), levels = c("incorrect", "correct")),
-    Modality = factor(c("Extero", "Intero")),
-    gender = factor(c("Female", "Male")),
-    age_z = 0, bmi_z = 0
-  )
-  ep <- posterior_epred(fit_meta, newdata = grid, re_formula = NA)
-  grid$p <- colMeans(ep)
-  grid$lo <- apply(ep, 2, quantile, 0.025)
-  grid$hi <- apply(ep, 2, quantile, 0.975)
-
-  p3 <- ggplot(grid, aes(Accuracy, p, colour = gender, group = gender)) +
-    geom_errorbar(aes(ymin = lo, ymax = hi), width = 0.08,
-                  position = position_dodge(0.2)) +
-    geom_line(position = position_dodge(0.2)) +
-    geom_point(size = 2, position = position_dodge(0.2)) +
-    facet_wrap(~Modality) +
-    scale_colour_manual(values = c(Female = ROSE, Male = MID)) +
-    labs(x = NULL, y = "Predicted confidence",
-         title = "Confidence by accuracy, on the response scale") +
-    theme_hrd()
-  ggsave(file.path(fig_dir, "fig_confidence.png"), p3,
-         width = 7.5, height = 3.4, dpi = 200)
-  message("wrote fig_confidence.png")
-}
+# Figures live in R/04_figures.R, which draws them from results/small/ rather
+# than from a fitted model. Nothing here should call ggsave: this script and that
+# one once both wrote fig_effects.png into the same directory, and whichever ran
+# last silently won.
 
 message("summaries complete")
