@@ -1,0 +1,95 @@
+name: Publish
+
+# Build and upload to PyPI when a GitHub release is published.
+#
+# Until now every upload was a manual `twine upload`, which is how the published
+# 0.6.1 came to differ from the repository: the wheel shipped an older
+# `_resources.py` and carried no `requires_python` metadata at all, so
+# `pip install cardioception-toolbox` succeeded on Python 3.13 and failed later.
+# Building from the tag removes the opportunity for that to happen again.
+#
+# Authentication is PyPI Trusted Publishing (OIDC), so there is no API token in
+# repository secrets to leak or rotate. It has to be configured once on PyPI:
+# see the note at the bottom of this file.
+
+on:
+  release:
+    types: [published]
+  # Allows a dry run: builds and checks the artefacts without uploading.
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build sdist and wheel
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+
+      # The version lives in two files, cardioception/__init__.py and setup.py,
+      # and a release is tagged separately again. Three places is two too many,
+      # and a mismatch is silent: pip would happily publish a wheel whose version
+      # disagrees with the tag people were told to expect.
+      - name: Check the version agrees with the tag
+        if: github.event_name == 'release'
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(python -c "import re;print(re.search(r'__version__ = \"(.+)\"', open('cardioception/__init__.py').read()).group(1))")
+          SETUP=$(python -c "import re;print(re.search(r'VERSION = \"(.+)\"', open('setup.py').read()).group(1))")
+          echo "tag=$TAG  __init__=$PKG  setup.py=$SETUP"
+          test "$TAG" = "$PKG" || { echo "::error::tag $TAG does not match __init__.py $PKG"; exit 1; }
+          test "$TAG" = "$SETUP" || { echo "::error::tag $TAG does not match setup.py $SETUP"; exit 1; }
+
+      # Catches a malformed long_description before PyPI rejects the upload,
+      # which it does after the version number is already burned.
+      - name: Check the metadata renders
+        run: twine check dist/*
+
+      - name: What was built
+        run: ls -l dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    name: Upload to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    # Only on a real release. workflow_dispatch stops after build, so the
+    # artefacts can be inspected without publishing anything.
+    if: github.event_name == 'release'
+    environment:
+      name: pypi
+      url: https://pypi.org/project/cardioception-toolbox/
+    permissions:
+      # Required for Trusted Publishing. No API token is stored anywhere.
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+# One-time setup on PyPI, needed before the first run:
+#
+#   https://pypi.org/manage/project/cardioception-toolbox/settings/publishing/
+#
+#   Owner:              embodied-computation-group
+#   Repository:         Cardioception
+#   Workflow filename:  publish.yml
+#   Environment:        pypi
+#
+# Then optionally add a `pypi` environment under repository Settings, Environments,
+# with required reviewers, so an upload needs an explicit approval.
