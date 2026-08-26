@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --account=ecg_general
 #SBATCH --job-name=hrd_fit
-#SBATCH --partition=normal
+#SBATCH --partition=short
 #SBATCH --cpus-per-task=128
 #SBATCH --mem=192g
-#SBATCH --time=1-12:00:00
+#SBATCH --time=11:00:00
 #SBATCH --array=0-3
 #SBATCH --output=logs/fit_%A_%a.out
 #SBATCH --error=logs/fit_%A_%a.err
@@ -21,9 +21,14 @@
 # thousands of aggregated cells; adding chains past 8 mostly buys redundant
 # samples instead of speed.
 #
-# Walltime is sized for the worst case. A job killed at the limit writes nothing,
-# and the ones it kills are the slow-to-converge models, which is precisely the
-# wrong sample to lose.
+# Walltime and partition are set from the smoke test, not from a guess: 25
+# subjects at 600 iterations sampled in about 0.02 h, which scales to a few hours
+# for 512 subjects at 4000 iterations. `short` caps at 12 h but is usually far
+# from full, so it backfills much faster than `normal` against a deep queue.
+#
+# 11 h still leaves a wide margin over the estimate, because a job killed at the
+# limit writes nothing, and the ones it kills are the slow-to-converge models,
+# which is precisely the wrong sample to lose.
 #
 # Each task exits immediately if its summary already exists, so a partially
 # completed array can be resubmitted unchanged to fill only the gaps.
