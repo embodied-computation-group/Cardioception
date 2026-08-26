@@ -53,6 +53,7 @@ if __name__ == "__main__":
             "Programming Language :: Python :: 3",
             "Topic :: Scientific/Engineering",
         ],
+        python_requires=">=3.9,<3.10",
         version=VERSION,
         install_requires=get_requirements(),
         include_package_data=True,

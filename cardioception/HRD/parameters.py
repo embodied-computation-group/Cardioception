@@ -240,7 +240,7 @@ def getParameters(
     if resultPath is None:
         parameters["resultPath"] = parameters["path"] + "/data/" + participant + session
     else:
-        parameters["resultPath"] = None
+        parameters["resultPath"] = resultPath
     # Create Results directory if not already exists
     if not os.path.exists(parameters["resultPath"]):
         os.makedirs(parameters["resultPath"])
