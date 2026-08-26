@@ -1548,10 +1548,11 @@
                     <span class="n">clock</span><span class="o">.</span><span class="n">getTime</span><span class="p">(),</span>
                     <span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"... Confidence level: </span><span class="si">{</span><span class="n">confidence</span><span class="si">}</span><span class="s2">"</span>
-                    <span class="o">+</span> <span class="sa">f</span><span class="s2">" with response time </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">confidenceRT</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> seconds"</span>
-                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">confidenceRT</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"... Confidence level: </span><span class="si">{</span><span class="n">confidence</span><span class="si">}</span><span class="s2">"</span>
+                        <span class="o">+</span> <span class="sa">f</span><span class="s2">" with response time </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">confidenceRT</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> seconds"</span>
+                    <span class="p">)</span>
                 <span class="c1"># Change marker color after response provided</span>
                 <span class="n">slider</span><span class="o">.</span><span class="n">marker</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="s2">"green"</span>
                 <span class="n">slider</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
