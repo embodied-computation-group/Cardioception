@@ -40,14 +40,13 @@ The default setup uses the [Nonin 3012LP Xpod USB pulse oximeter](https://www.no
 
 ## Analysing your data
 
-For HRD data we recommend the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), described in [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3). The [statistical analysis page](stats.md) walks through the workflow, including how to model confidence ratings.
+For HRD data we recommend the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), described in [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3). The [tutorials](tutorials/index.md) walk through the workflow, from checking your data to fitting hierarchical models with covariates.
 
 ## Where to go next
 
 - [User guide](user_guide.md) for installation, dependencies and running a task
 - [Theory](measuring.md) for what the two tasks measure and why
-- [Inspecting results](inspecting_data.md) for looking at your data before modelling, in Python or R
-- [Statistical analysis](stats.md) for modelling your data
+- [Tutorials](tutorials/index.md) for inspecting your data, then modelling it
 - [API](api.rst) for the parameters and task functions
 - [Cite](cite.md) for the references to use in a publication
 
@@ -71,8 +70,7 @@ hidden:
 ---
 Guide <user_guide.md>
 Theory <measuring.md>
-Inspecting results <inspecting_data.md>
-Statistical analysis <stats.md>
+Tutorials <tutorials/index.md>
 API <api.rst>
 Cite <cite.md>
 References <references.md>

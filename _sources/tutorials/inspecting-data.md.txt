@@ -4,7 +4,7 @@ Do this before you fit anything. Most problems with an HRD dataset are visible i
 
 This page shows the same handful of checks in Python and in R, so you can use whichever you already have open. The figures come from the dataset behind the Cardioception paper: 22,920 trials from 191 participants.
 
-Model fitting itself is done in R with the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception); see the [statistical analysis page](stats.md).
+Model fitting itself is done in R with the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception); see the [modelling tutorials](index.md).
 
 ## What the task writes
 
@@ -75,7 +75,7 @@ A handful of missed trials is normal. A participant missing a quarter of them wa
 
 This is the single most useful plot. It shows the intensity offered on each trial, and it should start wide and settle towards the participant's threshold.
 
-![Staircase trajectory for one participant](images/staircase_trajectory.png)
+![Staircase trajectory for one participant](../images/staircase_trajectory.png)
 
 ```python
 import matplotlib.pyplot as plt
@@ -110,7 +110,7 @@ Two failure modes are obvious here. A trace that wanders without settling means 
 
 This is the shape the model will fit. Bin the intensities first, because a staircase visits most values only once or twice.
 
-![Responses against stimulus intensity for one participant](images/psychometric_example.png)
+![Responses against stimulus intensity for one participant](../images/psychometric_example.png)
 
 ```python
 import numpy as np
@@ -146,7 +146,7 @@ The curve should rise from left to right and cross 0.5 somewhere near the partic
 
 The rating is a slider bounded at 0 and 100, and people genuinely use both ends.
 
-![Distribution of confidence ratings](images/confidence_distribution.png)
+![Distribution of confidence ratings](../images/confidence_distribution.png)
 
 ```python
 fig, ax = plt.subplots(figsize=(7, 3.5))
@@ -171,7 +171,7 @@ Worth checking two things: whether the ratings span the scale at all, and how mu
 
 `EstimatedThreshold` holds the task's own running estimate. It is not a replacement for fitting the model, but it is a fast sanity check across a sample.
 
-![Online threshold estimates across participants](images/threshold_distribution.png)
+![Online threshold estimates across participants](../images/threshold_distribution.png)
 
 ```python
 last = (data.dropna(subset=["EstimatedThreshold"])
@@ -210,7 +210,7 @@ clean |>
   write_csv("hrd_tidy.csv")
 ```
 
-From here, follow the [statistical analysis page](stats.md).
+From here, follow the [modelling tutorials](index.md).
 
 ## Automated quality reports
 
