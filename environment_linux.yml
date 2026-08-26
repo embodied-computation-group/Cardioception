@@ -6,7 +6,7 @@ dependencies:
   - conda-forge::wxpython=4.2.0
   - pip:
     - bokeh==2.4.3
-    - systole==0.2.4
+    - git+https://github.com/embodied-computation-group/systole.git
     - psychopy==2022.2.5
     - cardioception-toolbox
     - metadpy

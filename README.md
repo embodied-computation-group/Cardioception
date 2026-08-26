@@ -69,7 +69,7 @@ If you use the desktop shortcut described below, point it at the `cardioception`
 
 ### Dependencies
 
-We test against Python 3.9. Pip installs the runtime dependencies for you, and [`requirements.txt`](requirements.txt) records the versions we test with. The ones that matter most are [PsychoPy](https://www.psychopy.org/) for stimulus delivery and [systole](https://systole-docs.github.io/) for talking to the recording device, alongside numpy, scipy, pandas and pyserial. Older versions of several of these usually work; the pins reflect what we run locally rather than a hard requirement.
+We test against Python 3.9. Pip installs the runtime dependencies for you, and [`requirements.txt`](requirements.txt) records the versions we test with. The ones that matter most are [PsychoPy](https://www.psychopy.org/) for stimulus delivery and [systole](https://github.com/embodied-computation-group/systole) for talking to the recording device, alongside numpy, scipy, pandas and pyserial. Older versions of several of these usually work; the pins reflect what we run locally rather than a hard requirement.
 
 The HTML reports need a few extras that are not installed by default: [papermill](https://papermill.readthedocs.io/en/latest/), [matplotlib](https://matplotlib.org/), [seaborn](https://seaborn.pydata.org/), [pingouin](https://pingouin-stats.org/), [metadpy](https://github.com/Embodi3dComputationGroup/metadpy) and [pymc](https://www.pymc.io/welcome.html).
 
