@@ -175,50 +175,42 @@ oversubscribes and runs slower than leaving it alone.
    proportions for a few individual participants.
 4. Only then read the coefficients.
 
-The third deserves care, because the obvious version of it is misleading.
+On the third, do both of these.
 
-**Check participants one at a time first.** Plot each participant's fitted curve
-against that participant's own trials. Nothing is pooled, so a departure is
-misfit and not an artefact of mixing people together. This is the check the
+**Each participant against their own data.** Plot every participant's fitted
+curve over that participant's own trials. This is the check the
 [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception)
-recommends, and it should be your primary one.
+recommends, and it is the one to trust: nothing is pooled, so what you see is
+the fit and nothing else.
 
 ![Sixteen participants, each against their own data](../images/tutorials/fig_subject_fits.png)
 
 ```r
-# each participant's own parameters, from coef()
-cf <- coef(fit)$subj[, "Estimate", ]
+cf <- coef(fit)$subj[, "Estimate", ]   # each participant's own parameters
 ```
 
-**Then the pooled check.** Pool the observed proportions into bins and ask the
+Look for curves that sit away from their points, and for participants whose data
+cannot constrain a curve at all. A handful of imperfect panels in a sample this
+size is normal.
+
+**The group, against pooled data.** Bin the observed proportions and ask the
 model what it predicts for those same bins.
 
 ![Posterior predictive check by modality and gender](../images/tutorials/fig_ppc_modality_gender.png)
 
-Everything on that figure is either data or a prediction of it: the points are
-observed, and the bars and the line are what the model expects for them. On the
-worked model **60 of 61 bins fall inside their 95% interval**, and the one that
-does not misses by 0.003. The model fits.
+Points are observed; the line and bars are what the model predicts for them. On
+the worked model **60 of 61 bins fall inside their 95% interval**, and the one
+that misses does so by 0.003.
 
 Use `posterior_predict()` for those bars, not `posterior_epred()`. The expectation
 carries uncertainty in the mean but no binomial sampling noise, so as a predictive
 interval it is far too narrow in thinly sampled bins and will report misfit that is
 nothing but noise.
 
-```{warning}
-Do not check pooled data against the population curve. `re_formula = NA` gives
-the curve *of the average participant*, while pooled proportions estimate the
-*average of the participants' curves*, and with a threshold SD near 11 ΔBPM those
-are different lines. Comparing them makes a model that fits look badly wrong. The
-prediction to use here is one made over the participants and trials that actually
-produced each bin. See [two averages that are not the same](psychophysics.md#two-averages).
-```
-
-A third effect shows up at the extremes of this task specifically. The staircase
-concentrates trials near each participant's own threshold, so a bin at −40 ΔBPM
-is made up of whoever happened to have a threshold out there rather than a fair
-sample of the group. The bars respect that, because they are computed over the
-trials each participant actually received. A smooth curve cannot.
+Generate the prediction over the participants and trials that actually produced
+each bin, which is what `posterior_predict(fit)` does by default. Predicting from
+population parameters alone answers a different question, and
+[the note at the end of this page](#two-averages) explains why that matters here.
 
 ## What the worked model found
 
@@ -312,3 +304,45 @@ mean(as_draws_df(fit)$b_alpha_genderMale > 0)
 Report threshold and slope together, and say which condition an effect appeared in.
 "Gender affected interoceptive bias" means something quite different depending on
 whether the same difference showed up in the auditory control.
+
+(two-averages)=
+## A note on group curves
+
+You can skip this on a first reading. It matters when you draw a group-level
+curve yourself and wonder why the data will not sit on it.
+
+There are two different "group curves", and they answer different questions:
+
+- **The curve of the average participant.** Take the population-level `alpha`,
+  `beta` and `lambda` and push them through the likelihood. In brms,
+  `re_formula = NA`. This is what the group-level coefficients describe, so it
+  is the curve to put beside a table of effects, and it is what
+  [the figure above](#what-the-worked-model-found) shows.
+- **The average of the participants' curves.** Predict each participant's own
+  curve, then average those. This is what pooled observed data estimate, because
+  every trial in the pool belongs to a real participant.
+
+They are not the same, because the curve is not a straight line. Averaging many
+sigmoids that sit at different thresholds gives something shallower than one
+sigmoid at their mean threshold: Jensen's inequality, the same reason the mean of
+$e^x$ is not $e^{\text{mean}(x)}$.
+
+![Two group averages that are not the same](../images/tutorials/fig_two_averages.png)
+
+How far apart they fall depends on how much participants differ, which is why
+this bites in the cardiac condition and barely shows in the auditory one:
+
+| Condition | Between-participant SD of threshold | Largest gap between the curves |
+|---|---|---|
+| Auditory | 2.44 ΔBPM | 0.026 |
+| Cardiac | 10.97 ΔBPM | 0.099 |
+
+The practical consequence is short: **do not judge fit by laying pooled data over
+a population curve.** Compare each participant to their own curve, or compare
+pooled bins to a prediction made over the participants and trials that produced
+them. Both are in [Checking](#checking-in-this-order).
+
+One more thing works this way in the HRD specifically. The staircase concentrates
+trials near each participant's own threshold, so a bin at an extreme ΔBPM is made
+up of whoever happened to have a threshold out there rather than a fair sample of
+the group. A prediction over the real trials carries that; a smooth curve cannot.

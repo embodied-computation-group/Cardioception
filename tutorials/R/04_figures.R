@@ -166,55 +166,55 @@ if (have("psy_intero_examples_curve.csv.gz")) {
 }
 
 # ===========================================================================
-# 3. Everyone at once, and the two curves that are not the same curve.
-# The population curve is the function OF the average participant. The pooled
-# data estimate the average OF the participants' functions, and with a threshold
-# SD of roughly 11 dBPM those differ visibly. Showing both turns "why do the
-# points miss the curve?" into the figure's content.
+# 3. Everyone at once: every participant's curve, with the group curve over it.
+#
+# Two figures rather than one panel pair, deliberately. This one is the plain
+# picture of the sample and belongs in the main flow. The comparison between the
+# two kinds of group average is a genuine subtlety, but it derails a first
+# reading, so it gets its own figure and its own aside at the end of a page.
 # ===========================================================================
 if (have("psy_intero_curve_subjects.csv.gz")) {
   spag <- rd("psy_intero_curve_subjects.csv.gz")
   pop  <- rd("psy_intero_curve_pop.csv.gz")
+  pop1 <- pop[pop$ci == levels(pop$ci)[1], ]
 
-  left <- ggplot(spag, aes(x, p, group = subj)) +
+  fig <- ggplot(spag, aes(x, p, group = subj)) +
     geom_hline(yintercept = 0.5, linetype = "dotted", colour = GREY, linewidth = 0.3) +
     geom_vline(xintercept = 0, linetype = "dotted", colour = GREY, linewidth = 0.3) +
-    geom_line(colour = MODPAL[["Intero"]], alpha = 0.06, linewidth = 0.25) +
-    geom_line(data = pop[pop$ci == levels(pop$ci)[1], ], aes(y = m, group = 1),
-              colour = NAVY, linewidth = 0.9) +
+    geom_line(colour = MODPAL[["Intero"]], alpha = 0.07, linewidth = 0.25) +
+    geom_line(data = pop1, aes(y = m, group = 1), colour = NAVY, linewidth = 1) +
     scale_y_continuous(breaks = c(0, 0.5, 1)) +
-    labs(x = expression(Delta*"BPM"), y = "P(respond \"faster\")",
-         title = paste0(length(unique(spag$subj)), " participants"),
-         subtitle = "each at their posterior-mean parameters") + th
+    coord_cartesian(ylim = c(0, 1)) +
+    labs(x = expression(Delta*"BPM (tone - true heart rate)"),
+         y = "P(respond \"faster\")",
+         title = paste0("All ", length(unique(spag$subj)), " participants, and the group"),
+         subtitle = paste("each faint line is one participant at their",
+                          "posterior-mean parameters")) + th
+  save_fig("fig_all_participants", fig, 180, 76)
 
-  right <- NULL
+  # The aside figure. Kept out of the main flow, and referenced from one place.
   if (have("psy_intero_curve_marginal.csv.gz") && have("psy_intero_ppc_bins.csv.gz")) {
     marg <- rd("psy_intero_curve_marginal.csv.gz")
     ppc  <- rd("psy_intero_ppc_bins.csv.gz")
-    right <- ggplot(pop, aes(x)) +
+    two <- ggplot(pop, aes(x)) +
       geom_hline(yintercept = 0.5, linetype = "dotted", colour = GREY, linewidth = 0.3) +
       geom_vline(xintercept = 0, linetype = "dotted", colour = GREY, linewidth = 0.3) +
-      geom_linerange(data = ppc, aes(x = x, ymin = pp_lo, ymax = pp_hi),
-                     colour = NAVY, alpha = 0.30, linewidth = 1.1,
-                     inherit.aes = FALSE) +
-      geom_ribbon(aes(ymin = lo, ymax = hi, group = ci), fill = NAVY, alpha = 0.16) +
-      geom_line(aes(y = m, group = ci), colour = NAVY, linewidth = 0.45,
+      geom_line(aes(y = m, group = ci), colour = NAVY, linewidth = 0.7,
                 linetype = "dashed") +
-      geom_line(data = marg, aes(x, m), colour = MODPAL[["Intero"]], linewidth = 0.9,
+      geom_line(data = marg, aes(x, m), colour = MODPAL[["Intero"]], linewidth = 1,
                 inherit.aes = FALSE) +
-      geom_point(data = ppc, aes(x, p, size = n), colour = NAVY, alpha = 0.7,
+      geom_point(data = ppc, aes(x, p, size = n), colour = "grey35", alpha = 0.7,
                  stroke = 0, inherit.aes = FALSE) +
-      scale_size_area(max_size = 2.2) +
+      scale_size_area(max_size = 2.4) +
       scale_y_continuous(breaks = c(0, 0.5, 1)) +
       coord_cartesian(ylim = c(0, 1)) +
-      labs(x = expression(Delta*"BPM"), y = NULL,
-           title = "Two different averages",
-           subtitle = paste("dashed: average participant.  solid: average of",
-                            "participants.  bars: predicted range for each bin")) + th
+      labs(x = expression(Delta*"BPM"), y = "P(respond \"faster\")",
+           title = "Two group averages that are not the same",
+           subtitle = paste("dashed: the average participant's curve.",
+                            "solid: the average of the participants' curves.",
+                            "points: observed")) + th
+    save_fig("fig_two_averages", two, 180, 76)
   }
-
-  fig <- if (is.null(right)) left else (left | right)
-  save_fig("fig_population", fig, 180, 72)
 }
 
 # ===========================================================================
@@ -288,7 +288,7 @@ if (have("psy_full_curve_gender.csv.gz")) {
     # participant is a different quantity, and it belongs beside the effects
     # table it describes rather than on a check of fit: pooled data do not
     # estimate it, so drawing it here only invites the reader to measure the
-    # points against the wrong line. Both lines together live on fig_population,
+    # points against the wrong line. Both lines together live on fig_two_averages,
     # where the distinction between them is the actual subject.
     #
     # What is left is all model prediction of the pooled quantity: the bars
