@@ -63,8 +63,7 @@ If you want to report a bug, you can open an issue on the [GitHub page](https://
 
 ## Development
 
-Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk
-Maintained by the Embodied Computation Group, Aarhus University.
+Written and maintained by Micah Allen and the Embodied Computation Group, Aarhus University. Contact: micah@cfin.au.dk
 
 <img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/LabLogo.png" height ="100"><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/AU.png" height ="100">
 
