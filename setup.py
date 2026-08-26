@@ -25,7 +25,7 @@ LONG_DESCRIPTION = read("README.md")
 DISTNAME = "cardioception-toolbox"
 MAINTAINER = "Micah Allen"
 MAINTAINER_EMAIL = "micah.allen@clin.au.dk"
-VERSION = "0.6.0"
+VERSION = "0.6.1"
 URL = "https://github.com/embodied-computation-group/Cardioception"
 
 if __name__ == "__main__":

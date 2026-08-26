@@ -9,7 +9,7 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
-import pkg_resources  # type: ignore
+from ._resources import resource_filename
 
 
 def cumulative_normal(x, alpha, beta):
@@ -260,7 +260,7 @@ def report(
         template = "HeartBeatCounting.ipynb"
 
     execute_notebook(
-        pkg_resources.resource_filename("cardioception.notebooks", template),
+        resource_filename("cardioception.notebooks", template),
         temp_notebook,
         parameters=dict(resultPath=str(result_path), reportPath=str(report_path)),
     )

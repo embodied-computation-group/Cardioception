@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
-import pkg_resources  # type: ignore
+from .._resources import resource_filename
 import serial
 from systole import serialSim
 from systole.recording import Oximeter
@@ -437,14 +437,14 @@ def getParameters(
         parameters["pulseSchema"] = visual.ImageStim(
             win=parameters["win"],
             units="height",
-            image=pkg_resources.resource_filename(__name__, "Images/pulseOximeter.png"),
+            image=resource_filename("cardioception.HRD", "Images/pulseOximeter.png"),
             pos=(0.0, 0.0),
         )
         parameters["pulseSchema"].size *= 0.2
         parameters["handSchema"] = visual.ImageStim(
             win=parameters["win"],
             units="height",
-            image=pkg_resources.resource_filename(__name__, "Images/hand.png"),
+            image=resource_filename("cardioception.HRD", "Images/hand.png"),
             pos=(0.0, -0.08),
         )
         parameters["handSchema"].size *= 0.15
@@ -452,7 +452,7 @@ def getParameters(
     parameters["listenLogo"] = visual.ImageStim(
         win=parameters["win"],
         units="height",
-        image=pkg_resources.resource_filename(__name__, "Images/listen.png"),
+        image=resource_filename("cardioception.HRD", "Images/listen.png"),
         pos=(0.0, 0.0),
     )
     parameters["listenLogo"].size *= 0.08
@@ -460,7 +460,7 @@ def getParameters(
     parameters["heartLogo"] = visual.ImageStim(
         win=parameters["win"],
         units="height",
-        image=pkg_resources.resource_filename(__name__, "Images/heartbeat.png"),
+        image=resource_filename("cardioception.HRD", "Images/heartbeat.png"),
         pos=(0.0, 0.0),
     )
     parameters["heartLogo"].size *= 0.04

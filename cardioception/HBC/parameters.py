@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
-import pkg_resources  # type: ignore
+from .._resources import resource_filename
 import serial
 from systole import serialSim
 from systole.recording import Oximeter
@@ -175,11 +175,11 @@ def getParameters(
 
     # Set note played at trial start
     parameters["noteStart"] = sound.Sound(
-        pkg_resources.resource_filename("cardioception.HBC", "Sounds/start.wav")
+        resource_filename("cardioception.HBC", "Sounds/start.wav")
     )
 
     parameters["noteStop"] = sound.Sound(
-        pkg_resources.resource_filename("cardioception.HBC", "Sounds/stop.wav")
+        resource_filename("cardioception.HBC", "Sounds/stop.wav")
     )
 
     # Open window
@@ -191,14 +191,14 @@ def getParameters(
     parameters["restLogo"] = visual.ImageStim(
         win=parameters["win"],
         units="height",
-        image=pkg_resources.resource_filename(__name__, "Images/rest.png"),
+        image=resource_filename("cardioception.HBC", "Images/rest.png"),
         pos=(0.0, -0.2),
     )
     parameters["restLogo"].size *= 0.15
     parameters["heartLogo"] = visual.ImageStim(
         win=parameters["win"],
         units="height",
-        image=pkg_resources.resource_filename(__name__, "Images/heartbeat.png"),
+        image=resource_filename("cardioception.HBC", "Images/heartbeat.png"),
         pos=(0.0, -0.2),
     )
     parameters["heartLogo"].size *= 0.05

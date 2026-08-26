@@ -7,7 +7,7 @@ from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
-import pkg_resources  # type: ignore
+from .._resources import resource_filename
 from systole.detection import ppg_peaks
 
 
@@ -514,9 +514,7 @@ def trial(
         listenBPM = np.random.choice(np.arange(40, 100, 0.5))
 
         # Play the corresponding beat file
-        listenFile = pkg_resources.resource_filename(
-            "cardioception.HRD", f"Sounds/{listenBPM}.wav"
-        )
+        listenFile = resource_filename("cardioception.HRD", f"Sounds/{listenBPM}.wav")
         print(f"...loading file (Listen): {listenFile}")
 
         # Play selected BPM frequency
@@ -551,9 +549,7 @@ def trial(
         responseBPM = 199.0
     else:
         responseBPM = listenBPM + alpha
-    responseFile = pkg_resources.resource_filename(
-        "cardioception.HRD", f"Sounds/{responseBPM}.wav"
-    )
+    responseFile = resource_filename("cardioception.HRD", f"Sounds/{responseBPM}.wav")
     print(f"...loading file (Response): {responseFile}")
 
     # Play selected BPM frequency
