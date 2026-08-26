@@ -74,8 +74,6 @@ The *import* name is unchanged, so no existing script needs to be edited:
 from cardioception.HRD import task
 ```
 
-> **A note on the `cardioception` name on PyPI.** The PyPI project called `cardioception` is a separate third-party fork. It is not maintained by the Embodied Computation Group, it is not the version described in this repository, and it is not the version cited in our publications. Install `cardioception-toolbox`, or install directly from this repository, to get the official version.
-
 The current development branch can be installed using
   `pip install git+https://github.com/embodied-computation-group/Cardioception.git`
 
