@@ -7,18 +7,18 @@ rather than assuming it worked, because most of the ways this goes wrong are
 quiet ones.
 
 ```{note}
-Cardioception currently requires **Python 3.9, and only 3.9**. `systole-core`
-needs 3.9 or later, and the pinned PsychoPy cannot be imported on 3.10 or later,
-so the two constraints meet at a single version. `pip` will refuse to install on
-anything else, which is deliberate: the alternative is an install that appears to
-work and fails later. Widening this is
-[issue #92](https://github.com/embodied-computation-group/Cardioception/issues/92).
+Cardioception needs **Python 3.10 or 3.11**. The upper bound is not PsychoPy,
+which allows 3.12, but `pywinhook`: it publishes wheels only up to 3.11, and
+without one it has to be compiled from source on Windows, which needs a C
+toolchain most people do not have. `pip` refuses anything outside that range
+rather than failing halfway through an install.
 ```
 
-## 1. Install Python 3.9
+## 1. Install Python 3.10 or 3.11
 
 Download it from [python.org/downloads](https://www.python.org/downloads/) and
-pick a 3.9 release. On Windows, tick **Add Python to PATH** in the installer.
+pick a 3.10 or 3.11 release. On Windows, tick **Add Python to PATH** in the
+installer.
 
 If you already use Anaconda, skip to [the conda route](#the-conda-route) instead.
 
@@ -29,11 +29,11 @@ python --version
 ```
 
 ```text
-Python 3.9.13
+Python 3.10.11
 ```
 
-Anything that does not start with `3.9` means you are running a different
-interpreter. On Windows, `py -3.9 --version` selects one explicitly.
+Anything outside 3.10 and 3.11 means you are running a different interpreter.
+On Windows, `py -3.10 --version` selects one explicitly.
 
 ## 2. Make a virtual environment
 
@@ -72,7 +72,7 @@ Expect this to take a few minutes and to download roughly 140 MB, most of it the
 370 pre-generated tone files the Heart Rate Discrimination task plays.
 
 ```text
-Successfully installed cardioception-toolbox-0.6.1 psychopy-2022.2.5 systole-core-0.3.1 ...
+Successfully installed cardioception-toolbox-0.6.1 psychopy-2026.2.2 systole-core-0.3.1 ...
 ```
 
 ```{note}
@@ -100,57 +100,50 @@ text usually names the cause precisely.
 
 ## 5. Check the recording device
 
-Plug the pulse oximeter in and confirm the computer can see it before you try to
-collect data. A beat count on its own is not enough: with an empty sensor the
-peak detector still reports beats, so a session can look fine and contain
-nothing.
-
-Find the port first:
+Plug the pulse oximeter in and confirm the computer can see a real signal
+before you try to collect data:
 
 ```bash
-python -c "from serial.tools import list_ports; [print(p.device, p.description) for p in list_ports.comports()]"
+python -m cardioception.check_device
 ```
+
+It finds the port on its own when there is only one, records for twenty
+seconds, and tells you plainly what it saw:
 
 ```text
-COM3 USB Serial Port (COM3)
+Using the only serial port found: COM3 (USB Serial Port (COM3))
+Recording 20 s from COM3. Keep a finger in the sensor.
+
+  samples            1500 (20.0 s)
+  signal amplitude   242.7      (needs > 20)
+  beats detected     29
+  heart rate         87 BPM
+  beat intervals     0.60 to 0.80 s, sd 0.045   (needs sd < 0.15)
+
+  VERDICT: clean physiological signal
+  Ready to collect data.
 ```
 
-On macOS and Linux the name looks like `/dev/tty.usbserial-XXXX` or
-`/dev/ttyUSB0` instead.
+It exits 0 only for a clean signal, so it can be used in a startup script.
 
-Then record for a few seconds **with a finger in the sensor** and look at the
-signal rather than the beat count:
-
-```python
-import numpy as np, serial
-from systole.recording import Oximeter
-
-ser = serial.Serial("COM3", baudrate=9600, timeout=1/75, stopbits=1)
-oxi = Oximeter(serial=ser, sfreq=75, add_channels=1)
-oxi.setup()
-oxi.read(duration=20)
-ser.close()
-
-rec = np.asarray(oxi.recording, dtype=float)
-idx = np.where(np.asarray(oxi.peaks))[0]
-amplitude = np.percentile(rec, 95) - np.percentile(rec, 5)
-print(f"amplitude {amplitude:.1f}, beats {len(idx)}")
-if len(idx) > 2:
-    ibi = np.diff(idx) / 75
-    print(f"heart rate {60/ibi.mean():.0f} BPM, interval sd {ibi.std():.3f} s")
+```{important}
+**Read the amplitude, not the beat count.** With an empty sensor the peak
+detector still reports beats, and they look entirely reasonable. A real
+measurement on an empty Nonin gave 67 BPM from 16 detected beats, on a trace
+spanning a single ADC unit. Nothing about the beat count gave it away; the
+amplitude of 1.0 did.
 ```
 
-Read **amplitude first**, then the intervals:
+The three cases it distinguishes:
 
-| What you see | What it means |
+| Verdict | What it means |
 |---|---|
-| amplitude near 1, intervals scattered | No finger in the sensor. The trace is flat and the reported beats are noise. |
-| amplitude large, interval sd above about 0.15 s | Finger present but detection is unreliable. Reseat the sensor and keep the hand still. |
-| amplitude large, intervals between roughly 0.5 and 1.2 s with small spread | A clean physiological signal. You are ready. |
+| `no finger in the sensor` | Amplitude below 20. The trace is flat and any beats are noise. |
+| `signal present but detection unreliable` | Real signal, but the intervals between beats are too scattered to trust. Reseat the sensor, keep the hand still and below heart level. |
+| `clean physiological signal` | Amplitude in the hundreds, intervals between 0.4 and 1.2 s with little spread. Ready. |
 
-For reference, an empty sensor measured on our setup gave an amplitude of 1.0
-across a raw range of 99 to 100, and still reported 10 beats in 20 seconds with
-an interval spread of 2.1 seconds. Beat count alone would not have caught it.
+Useful options: `--list` prints the serial ports and exits, `--port COM3` picks
+one when several are attached, and `--duration` changes the recording length.
 
 ## You are ready
 
@@ -165,7 +158,7 @@ oximeter and opens a windowed rather than fullscreen display.
 
 `environment.yml` at the root of the repository is an alternative to steps 1 to
 3, not an addition to them. Use it if you already have Anaconda or Miniconda
-installed, in which case it is the shorter path: it pins the interpreter to 3.9
+installed, in which case it is the shorter path: it pins the interpreter to 3.10
 for you and installs `pywinhook` from conda-forge, which on Windows saves
 building it from source.
 
@@ -176,8 +169,8 @@ conda env create -f environment.yml
 conda activate cardioception
 ```
 
-Then carry on from step 4. `environment_linux.yml` is the same thing with the
-Linux-specific packages, including wxPython and PyMC.
+Then carry on from step 4. `environment_linux.yml` is the same thing with PyMC added for the analysis
+notebooks.
 
 If you do not already use conda, do not install it just for this. The venv route
 above works and involves one fewer tool.
@@ -189,13 +182,12 @@ These are the errors that actually come up, with what causes them.
 
 | Error | Cause and fix |
 |---|---|
-| `ERROR: Package requires a different Python: 3.x not in '>=3.9,<3.10'` | Working as intended. Only 3.9 can satisfy every dependency. Install 3.9 and make the environment from it. |
-| `ModuleNotFoundError: No module named 'pkg_resources'` | setuptools 82 or later removed it, and PsychoPy 2022.2.5 imports it. Fix with `pip install "setuptools<81"`. A fresh install of the current release pins this for you. |
-| `OverflowError: line number table is too long` | Python 3.10 or later. PsychoPy 2022.2.5 cannot be imported there. Use 3.9. |
-| `AttributeError: module 'pkgutil' has no attribute 'ImpImporter'` | Python 3.12 or later, where the pinned numpy has no wheel and tries to build. Use 3.9. |
+| `ERROR: Package requires a different Python: 3.x not in '>=3.10,<3.12'` | Working as intended. Install 3.10 or 3.11 and build the environment from it. |
+| `error: command 'swig.exe' failed` | Python 3.12 or later on Windows, where `pywinhook` has no wheel and tries to build from source. Use 3.10 or 3.11, or take the conda route, which supplies it prebuilt. |
+| `ModuleNotFoundError: No module named 'pkg_resources'` | An older Cardioception with PsychoPy 2022.2.5, which imported it. Upgrade, or pin `setuptools<81`. |
+| `OverflowError: line number table is too long` | An older PsychoPy on Python 3.10 or later. Upgrade Cardioception. |
 | `Could not install packages due to an OSError: [Errno 2] No such file or directory: '...'` with a very long path | The Windows 260-character path limit. Move the environment somewhere shallower, or enable long path support. |
 | `Can't connect to HTTPS URL because the SSL module is not available` | The virtual environment was built from an Anaconda interpreter. Build it from a python.org install, or use the conda route instead of `venv`. |
-| `error: command 'swig.exe' failed` | `pywinhook` has no wheel for your Python and is trying to build. Use 3.9, which has one, or install it from conda-forge. |
 | `SerialException: could not open port` | Wrong port name, or another program is holding the device. Close anything else reading it and re-run the port listing above. |
 | Task runs but the recording is flat | Almost always the sensor rather than the software. Re-run step 5 and read the amplitude. |
 

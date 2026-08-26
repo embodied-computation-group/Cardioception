@@ -6,10 +6,11 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
-from .._resources import resource_filename
 import serial
 from systole import serialSim
 from systole.recording import Oximeter
+
+from .._resources import resource_filename
 
 
 def getParameters(

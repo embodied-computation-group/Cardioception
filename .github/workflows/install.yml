@@ -1,0 +1,84 @@
+name: Install
+
+# Guard the path a new user actually walks.
+#
+# The documentation had drifted in four independent ways before anyone noticed:
+# the conda instructions no longer worked, the stated Python version was wrong,
+# the systole links pointed at a dead site, and the setuptools bound was missing.
+# None of that breaks a unit test, because none of it is code, so this installs
+# the package the way the installation guide says to and checks the claims.
+#
+# Two jobs, because they fail for different reasons and it is worth knowing
+# which. `install` needs no display and covers dependency resolution and the
+# documented Python range. `startup` adds a virtual display and builds the task's
+# parameters, which constructs a PsychoPy window and loads every stimulus.
+
+on:
+  push:
+    branches: [master, "dev/**"]
+  pull_request:
+  # Dependencies drift without anyone touching the repository, so also run on a
+  # schedule. A resolver failure is worth hearing about before a student does.
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  install:
+    name: install on ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Both ends of what setup.py permits. check_install.py verifies these
+        # agree with the range the documentation quotes.
+        python-version: ["3.10", "3.11"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: System libraries PsychoPy links against
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgl1 libglu1-mesa libegl1 libglib2.0-0 libsdl2-2.0-0 \
+            portaudio19-dev libasound2-dev libsndfile1
+
+      - name: Install the package as the guide says to
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+
+      - name: Check the documented install path
+        run: python tests/check_install.py
+
+  startup:
+    name: task startup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: System libraries, plus a virtual display
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xvfb libgl1 libglu1-mesa libegl1 libglib2.0-0 libsdl2-2.0-0 \
+            portaudio19-dev libasound2-dev libsndfile1
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+
+      # setup="test" drives a simulated pulse, so no oximeter is needed. This is
+      # the step that catches a broken window, a missing stimulus file or a
+      # PsychoPy API that moved.
+      - name: Build the task parameters under a virtual display
+        run: xvfb-run -a python tests/check_install.py

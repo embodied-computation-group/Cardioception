@@ -1,9 +1,12 @@
 name: cardioception
 dependencies:
-  - python=3.9
+  # 3.11 also works. The ceiling is pywinhook, which publishes wheels only up to
+  # cp311; psychopy itself allows 3.12.
+  - python=3.10
   - pip
+  # Prebuilt, so Windows does not need SWIG and a C toolchain to build it.
   - conda-forge::pywinhook=1.6.2
   - pip:
     - systole-core>=0.3.0
-    - psychopy==2022.2.5
+    - psychopy==2026.2.2
     - cardioception-toolbox

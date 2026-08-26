@@ -60,7 +60,10 @@ if __name__ == "__main__":
             "Programming Language :: Python :: 3",
             "Topic :: Scientific/Engineering",
         ],
-        python_requires=">=3.9,<3.10",
+        # Upper bound is pywinhook, not PsychoPy: pywinhook 1.6.2 publishes wheels only
+        # up to cp311, and without one it needs SWIG to build on Windows. psychopy
+        # 2026.2.2 itself allows up to 3.12.
+        python_requires=">=3.10,<3.12",
         version=VERSION,
         install_requires=get_requirements(),
         include_package_data=True,
