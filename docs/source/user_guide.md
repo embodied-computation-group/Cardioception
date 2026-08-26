@@ -4,9 +4,13 @@
 
 ### Using pip
 
-The package is published on PyPI under the name **`cardioception-toolbox`**:
+```{important}
+Install the package as **`cardioception-toolbox`**:
 
-  `pip install cardioception-toolbox`
+    pip install cardioception-toolbox
+
+This is the official package, maintained by the Embodied Computation Group at Aarhus University. It is the version described in this documentation and used in our publications. Make sure the package name you install is exactly `cardioception-toolbox`.
+```
 
 The *import* name is unchanged, so no existing script needs to be edited:
 

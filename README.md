@@ -64,9 +64,13 @@ If you have questions regarding the tasks, please contact Micah Allen directly.
 
 # Installation
 
-The package is published on PyPI under the name **`cardioception-toolbox`**:
-
-  `pip install cardioception-toolbox`
+> ### ✅ Install `cardioception-toolbox`
+>
+> ```
+> pip install cardioception-toolbox
+> ```
+>
+> This is the official package, maintained by the Embodied Computation Group at Aarhus University. It is the version described in this repository, documented at the link above, and used in the publications listed here. Make sure the package name you install is exactly `cardioception-toolbox`.
 
 The *import* name is unchanged, so no existing script needs to be edited:
 
