@@ -11,9 +11,15 @@ neither is a proxy for the other.
 ## What the ratings look like
 
 Confidence is a slider from 0 to 100, and people use both ends in earnest. In the
-example data, 15% of trials sit exactly on a bound.
+example data 15.0% of trials sit exactly on a bound: 3.9% at zero and 11.1% at
+one.
 
-![Distribution of confidence ratings](../images/confidence_distribution.png)
+![Distribution of confidence ratings, and whether the model reproduces the bounds](../images/tutorials/fig_confidence_distribution.png)
+
+The right panel is the check that matters, and it is worth looking at before the
+model is even introduced: reproducing that mass at the two ends is the entire
+reason for choosing this likelihood. A model that fits the interior beautifully
+and misses the bounds has failed at the one job it was picked for.
 
 That shape rules out the obvious models. A Gaussian puts probability outside the
 scale. A beta likelihood is undefined at exactly 0 and 1, so it forces you to
@@ -127,6 +133,51 @@ library(marginaleffects)
 avg_predictions(fit, by = "Accuracy")
 avg_comparisons(fit, variables = "Accuracy")
 ```
+
+## What the worked model found
+
+Fitted to 68,932 trials from 512 participants, with accuracy interacted with
+modality, gender and age. Coefficients are on the latent scale, so read the
+figure for anything in slider units.
+
+![Predicted confidence by accuracy, modality and gender](../images/tutorials/fig_confidence_accuracy.png)
+
+| Term | Estimate | 95% CI |
+|---|---|---|
+| `Accuracycorrect` | **+1.09** | [1.03, 1.15] |
+| `ModalityIntero` | **+0.36** | [0.30, 0.42] |
+| `Accuracycorrect:ModalityIntero` | **−0.76** | [−0.83, −0.70] |
+| `age_z` | **+0.13** per SD | [0.075, 0.179] |
+| `Accuracycorrect:age_z` | −0.02 | [−0.064, 0.017] |
+| `genderMale` | +0.08 | [−0.026, 0.192] |
+| `Accuracycorrect:genderMale` | +0.05 | [−0.036, 0.129] |
+
+`Accuracycorrect` is metacognitive sensitivity, stated directly rather than as a
+ratio, and it is clearly positive: confidence tracks accuracy.
+
+The interaction is the finding. Sensitivity in the cardiac condition is
+1.09 − 0.76 = 0.32, against 1.09 for tones: participants know when they are right
+about a sound far better than they know when they are right about their own heart.
+Overall confidence goes the other way, higher in the cardiac condition, which is
+worth pausing on. People are *more* confident and *less* well calibrated about
+their hearts, and those are two different coefficients rather than one ratio being
+pulled in opposite directions.
+
+### Bias and sensitivity come apart
+
+Age shows the same separation, and it is the clearest argument for this model over
+a single summary score.
+
+![Confidence and sensitivity across age](../images/tutorials/fig_confidence_age.png)
+
+Older participants are more confident overall (`age_z` = +0.13, interval excluding
+zero), but the gap between correct and incorrect trials does not change with age
+(`Accuracycorrect:age_z` = −0.02, interval spanning zero). Both lines rise
+together; the distance between them stays put.
+
+Confidence went up. Metacognition did not change. A measure that folds the two
+together has to report one number for that, and whichever number it reports will
+be wrong about something.
 
 ## Checking
 

@@ -18,6 +18,16 @@ distribution. Participants with sparse data are pulled toward the group, those
 with plenty are left alone, and the uncertainty travels through to the group-level
 effects instead of being discarded halfway.
 
+It also gives you the spread itself as a parameter rather than as a nuisance, and
+in this task that spread is the headline finding as much as any group mean:
+participants differ from one another far more than the conditions differ from
+each other.
+
+![Distribution of individual thresholds and slopes](../images/tutorials/fig_subject_spread.png)
+
+That width is worth holding onto, because it is the yardstick every group effect
+below is measured against.
+
 ```r
 bff <- bf(
   y | trials(n) ~ inv_logit(lambda) / 2 +
@@ -136,10 +146,23 @@ fit <- brm(
 
 Set `file`. It caches the fit, so an accidental rerun does not resample for hours.
 
-**Expect hours.** A few dozen participants is tens of minutes; several hundred with
-covariates is an overnight job. Develop the pipeline on a handful of participants
-with short chains first, confirm it runs end to end, and only then start the real
-fit.
+**Expect hours on a laptop.** A few dozen participants is tens of minutes; several
+hundred with covariates is an overnight job. Develop the pipeline on a handful of
+participants with short chains first, confirm it runs end to end, and only then
+start the real fit.
+
+The fits behind this page took 4 to 31 minutes each, but that was 8 chains across
+128 cores on a compute node, with within-chain threading. The useful lever there is
+`threads = threading(n)`, which splits the likelihood within each chain rather than
+adding more chains: the likelihood runs over tens of thousands of aggregated cells,
+so it parallelises well, while chains past about 8 mostly buy redundant samples.
+
+```r
+fit <- brm(..., chains = 4, cores = 4, threads = threading(2), backend = "cmdstanr")
+```
+
+Count your real cores before setting this. `chains * threads` above the core count
+oversubscribes and runs slower than leaving it alone.
 
 ## Checking, in this order
 
@@ -151,6 +174,99 @@ fit.
 3. **Posterior predictive checks**, and predicted curves against observed
    proportions for a few individual participants.
 4. Only then read the coefficients.
+
+On the third of those, compare like with like. The obvious check plots the pooled
+observed proportions against the fitted curve, and the points always miss. They
+are supposed to: see [the psychophysical model](psychophysics.md#two-averages)
+for why the average participant's curve is not the average of the participants'
+curves. The comparison that means something is against the model's predictive
+interval for each bin.
+
+![Posterior predictive check by modality and gender](../images/tutorials/fig_ppc_modality_gender.png)
+
+Use `posterior_predict()` for this, not `posterior_epred()`. The expectation
+carries uncertainty in the mean but no binomial sampling noise, so as a predictive
+interval it is far too narrow in thinly sampled bins and will report misfit that is
+nothing but noise.
+
+## What the worked model found
+
+Fitted to 512 participants in both conditions. The auditory condition is the
+reference level, so `alpha_Intercept` is the exteroceptive threshold and
+`alpha_ModalityIntero` is the shift when judging one's own heart.
+
+![Psychometric functions by modality and gender](../images/tutorials/fig_modality_gender.png)
+
+| Term | Estimate | 95% CI |
+|---|---|---|
+| `alpha_Intercept` (Extero) | +0.60 ΔBPM | [0.24, 0.97] |
+| `alpha_ModalityIntero` | **−9.60 ΔBPM** | [−10.77, −8.37] |
+| `alpha_genderMale` | −0.09 | [−0.69, 0.49] |
+| `alpha_age_z` | **−0.62** per SD | [−0.94, −0.32] |
+| `alpha_bmi_z` | −0.03 | [−0.33, 0.26] |
+| `beta_ModalityIntero` | **−0.42** | [−0.48, −0.36] |
+| `beta_ModalityIntero:genderMale` | **−0.10** | [−0.196, −0.014] |
+| `beta_ModalityIntero:age_z` | **+0.07** | [0.020, 0.124] |
+
+Two things to read off it. Judgements about tones are close to accurate, while
+judgements about one's own heart sit about 9.6 BPM below the truth. And
+interoception is the less precise of the two: σ is roughly 6.3 BPM for tones
+against 9.6 BPM for the heart.
+
+![Effects on threshold and slope](../images/tutorials/fig_effects.png)
+
+### Why the interaction earns its place
+
+Fitting the same predictors without their `Modality` interactions gives a tidy and
+completely misleading answer about gender:
+
+| Effect on slope | Main effects only | With the interaction |
+|---|---|---|
+| `beta_genderMale` | **−0.0007** [−0.060, 0.060] | +0.05 [−0.025, 0.125] |
+| `beta_ModalityIntero:genderMale` | not estimated | **−0.10** [−0.196, −0.014] |
+
+In the main-effects model the gender term is almost exactly zero. Not "small":
+zero to four decimal places, with an interval tight around it. It is tempting to
+report that as a clean null.
+
+It is zero because two opposing effects are being averaged. Men are slightly more
+precise than women in the auditory condition and less precise in the cardiac one,
+and a model with one gender term per parameter has nowhere to put that except in
+the average, where it cancels. Age does the same thing on the slope.
+
+This is why the table in [Adding your design](#adding-your-design) suggests
+interacting your grouping variable with `Modality` whenever you have both
+conditions. The auditory condition is not a formality: an effect that appears in
+both is telling you something about the task rather than about interoception.
+
+### A continuous covariate
+
+Age is the one covariate here with an effect on threshold, and it is easier to read
+on the parameters themselves than from a stack of overlapping sigmoids.
+
+![Age effects on threshold and slope](../images/tutorials/fig_age.png)
+
+Read this one carefully, because the main effect on its own would mislead you.
+`alpha_age_z` is −0.62 per SD [−0.94, −0.32], and that is the effect **in the
+auditory condition**, which is the reference level. The auditory line falls with
+age. The cardiac line does not: the interaction (+0.86 [−0.11, +1.94]) roughly
+cancels the main effect, leaving it flat or slightly rising.
+
+So "thresholds decrease with age" would be a true statement about the reference
+level presented as a statement about interoception. That interaction interval
+does span zero, so treat the divergence as suggestive rather than established —
+but not as absent, which is what quoting the main effect alone would imply.
+
+The slope panel is the cleaner case, and there the interaction is established
+(+0.07 [0.020, 0.124]): cardiac precision improves with age while auditory
+precision does not move.
+
+Note the axes. Both panels span a few ΔBPM, while individual participants range
+across tens. These are population means, and a real effect on a group mean can be
+small next to the spread it sits inside.
+
+A flat line is a result, not a missing finding. BMI produces one, and it is worth
+showing: it is a control, and the model says it controls for very little.
 
 ## Reporting
 

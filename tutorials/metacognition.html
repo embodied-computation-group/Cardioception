@@ -243,8 +243,13 @@ neither is a proxy for the other.</p>
 <section id="what-the-ratings-look-like">
 <h2>What the ratings look like<a class="headerlink" href="#what-the-ratings-look-like" title="Permalink to this heading">#</a></h2>
 <p>Confidence is a slider from 0 to 100, and people use both ends in earnest. In the
-example data, 15% of trials sit exactly on a bound.</p>
-<p><img alt="Distribution of confidence ratings" src="../_images/confidence_distribution.png" /></p>
+example data 15.0% of trials sit exactly on a bound: 3.9% at zero and 11.1% at
+one.</p>
+<p><img alt="Distribution of confidence ratings, and whether the model reproduces the bounds" src="../_images/fig_confidence_distribution.png" /></p>
+<p>The right panel is the check that matters, and it is worth looking at before the
+model is even introduced: reproducing that mass at the two ends is the entire
+reason for choosing this likelihood. A model that fits the interior beautifully
+and misses the bounds has failed at the one job it was picked for.</p>
 <p>That shape rules out the obvious models. A Gaussian puts probability outside the
 scale. A beta likelihood is undefined at exactly 0 and 1, so it forces you to
 nudge the bounds inward by some epsilon or drop those trials, and the trials you
@@ -362,6 +367,75 @@ report, compute predictions on the response scale:</p>
 </pre></div>
 </div>
 </section>
+<section id="what-the-worked-model-found">
+<h2>What the worked model found<a class="headerlink" href="#what-the-worked-model-found" title="Permalink to this heading">#</a></h2>
+<p>Fitted to 68,932 trials from 512 participants, with accuracy interacted with
+modality, gender and age. Coefficients are on the latent scale, so read the
+figure for anything in slider units.</p>
+<p><img alt="Predicted confidence by accuracy, modality and gender" src="../_images/fig_confidence_accuracy.png" /></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Term</p></th>
+<th class="head"><p>Estimate</p></th>
+<th class="head"><p>95% CI</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect</span></code></p></td>
+<td><p><strong>+1.09</strong></p></td>
+<td><p>[1.03, 1.15]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ModalityIntero</span></code></p></td>
+<td><p><strong>+0.36</strong></p></td>
+<td><p>[0.30, 0.42]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect:ModalityIntero</span></code></p></td>
+<td><p><strong>−0.76</strong></p></td>
+<td><p>[−0.83, −0.70]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">age_z</span></code></p></td>
+<td><p><strong>+0.13</strong> per SD</p></td>
+<td><p>[0.075, 0.179]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect:age_z</span></code></p></td>
+<td><p>−0.02</p></td>
+<td><p>[−0.064, 0.017]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">genderMale</span></code></p></td>
+<td><p>+0.08</p></td>
+<td><p>[−0.026, 0.192]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect:genderMale</span></code></p></td>
+<td><p>+0.05</p></td>
+<td><p>[−0.036, 0.129]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect</span></code> is metacognitive sensitivity, stated directly rather than as a
+ratio, and it is clearly positive: confidence tracks accuracy.</p>
+<p>The interaction is the finding. Sensitivity in the cardiac condition is
+1.09 − 0.76 = 0.32, against 1.09 for tones: participants know when they are right
+about a sound far better than they know when they are right about their own heart.
+Overall confidence goes the other way, higher in the cardiac condition, which is
+worth pausing on. People are <em>more</em> confident and <em>less</em> well calibrated about
+their hearts, and those are two different coefficients rather than one ratio being
+pulled in opposite directions.</p>
+<section id="bias-and-sensitivity-come-apart">
+<h3>Bias and sensitivity come apart<a class="headerlink" href="#bias-and-sensitivity-come-apart" title="Permalink to this heading">#</a></h3>
+<p>Age shows the same separation, and it is the clearest argument for this model over
+a single summary score.</p>
+<p><img alt="Confidence and sensitivity across age" src="../_images/fig_confidence_age.png" /></p>
+<p>Older participants are more confident overall (<code class="docutils literal notranslate"><span class="pre">age_z</span></code> = +0.13, interval excluding
+zero), but the gap between correct and incorrect trials does not change with age
+(<code class="docutils literal notranslate"><span class="pre">Accuracycorrect:age_z</span></code> = −0.02, interval spanning zero). Both lines rise
+together; the distance between them stays put.</p>
+<p>Confidence went up. Metacognition did not change. A measure that folds the two
+together has to report one number for that, and whichever number it reports will
+be wrong about something.</p>
+</section>
+</section>
 <section id="checking">
 <h2>Checking<a class="headerlink" href="#checking" title="Permalink to this heading">#</a></h2>
 <p>The usual diagnostics apply: no divergent transitions, <code class="docutils literal notranslate"><span class="pre">rhat</span> <span class="pre">&lt;</span> <span class="pre">1.01</span></code>, healthy ESS.</p>
@@ -449,6 +523,10 @@ accuracy and must be dropped, never recoded as incorrect.</p>
 <li><a class="reference internal" href="#the-quantity-of-interest">The quantity of interest</a></li>
 <li><a class="reference internal" href="#testing-a-hypothesis-about-it">Testing a hypothesis about it</a></li>
 <li><a class="reference internal" href="#reading-the-output">Reading the output</a></li>
+<li><a class="reference internal" href="#what-the-worked-model-found">What the worked model found</a><ul>
+<li><a class="reference internal" href="#bias-and-sensitivity-come-apart">Bias and sensitivity come apart</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#checking">Checking</a></li>
 <li><a class="reference internal" href="#before-you-fit">Before you fit</a></li>
 </ul>

@@ -47,7 +47,7 @@ Cardioception has been tested with Python 3.7. We recommend the latest Anaconda 
 Make sure that you have the following packages installed and up to date before running cardioception:
 
 * [psychopy](https://www.psychopy.org/) can be installed with `pip install psychopy`.
-* [systole](https://github.com/embodied-computation-group/systole) can be installed with `pip install git+https://github.com/embodied-computation-group/systole.git`.
+* [systole](https://systole-docs.github.io/) can be installed with `pip install systole`.
 
 The other main dependencies are:
 

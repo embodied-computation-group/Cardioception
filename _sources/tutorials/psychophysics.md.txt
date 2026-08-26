@@ -47,6 +47,10 @@ be badly wrong about their heart rate while discriminating changes in it very
 precisely, and someone else can be unbiased but unable to tell 60 from 75 BPM.
 Heartbeat counting scores confound the two; this separates them.
 
+Each parameter moves the curve in its own way:
+
+![What the three parameters do to the curve](../images/tutorials/fig_parameters.png)
+
 ```{warning}
 `beta` means the opposite thing in the model and in the original paper. In the brms
 model above, `exp(beta)` is 1/σ, so **larger `beta` is steeper, meaning better
@@ -108,6 +112,54 @@ Those priors are not arbitrary. They come from a population refit reported in
 threshold near -8.7 ΔBPM with a between-subject SD of 11.23, and a lapse rate
 around 1.3%. They carry real information, which matters most for the slope, since
 the staircase leaves few trials in the tails to constrain it.
+
+## What fitted participants look like
+
+Three participants from the example sample, ordered by threshold. The same three
+parameters describe all of them, and they are describing very different people.
+
+![Three fitted participants with their observed data](../images/tutorials/fig_single_subjects.png)
+
+Points are observed proportions, sized by how many trials the staircase actually
+spent there. Notice how few trials sit far from each participant's own threshold:
+that is the staircase doing its job, and it is also why individual slope estimates
+are shaky.
+
+(two-averages)=
+## Two averages that are not the same
+
+Put all 512 participants together and one thing becomes obvious and one thing
+becomes confusing.
+
+![All participants, and the two group averages](../images/tutorials/fig_population.png)
+
+The obvious part is on the left: people differ enormously. The confusing part is on
+the right, and it catches nearly everyone the first time.
+
+There are two different "group curves", and they are not interchangeable:
+
+- **The curve of the average participant.** Take the population-level `alpha`,
+  `beta` and `lambda` and push them through the likelihood. In brms this is
+  `re_formula = NA`. This is what the group-level coefficients describe, so it is
+  the curve to show next to a table of effects.
+- **The average of the participants' curves.** Predict each participant's own
+  curve, then average those. This is what pooled observed data estimate.
+
+With a threshold SD of about 11 ΔBPM these come apart visibly. Averaging many
+sigmoids that sit at very different thresholds gives something much shallower than
+one sigmoid at their mean threshold. That is Jensen's inequality, the same reason
+the mean of $e^x$ is not $e^{\text{mean}(x)}$, and it is a property of the curve
+rather than a sign of a bad fit.
+
+So when observed points miss the fitted curve, the first question is which curve
+they were compared against. The check that means something is the model's
+predictive interval for each bin, which the
+[hierarchical tutorial](hierarchical.md#checking-in-this-order) shows.
+
+There is a second reason those points are awkward here, specific to this task: the
+staircase concentrates trials near each participant's own threshold, so a bin at an
+extreme ΔBPM is not a fair sample of people. It is made up of whoever happened to
+have a threshold out there.
 
 ## Why you should not stop here
 

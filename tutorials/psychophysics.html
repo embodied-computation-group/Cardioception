@@ -293,6 +293,8 @@ different question, and the reason the HRD exists is that it separates them.</p>
 be badly wrong about their heart rate while discriminating changes in it very
 precisely, and someone else can be unbiased but unable to tell 60 from 75 BPM.
 Heartbeat counting scores confound the two; this separates them.</p>
+<p>Each parameter moves the curve in its own way:</p>
+<p><img alt="What the three parameters do to the curve" src="../_images/fig_parameters.png" /></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p><code class="docutils literal notranslate"><span class="pre">beta</span></code> means the opposite thing in the model and in the original paper. In the brms
@@ -351,6 +353,46 @@ this is why.</p>
 threshold near -8.7 ΔBPM with a between-subject SD of 11.23, and a lapse rate
 around 1.3%. They carry real information, which matters most for the slope, since
 the staircase leaves few trials in the tails to constrain it.</p>
+</section>
+<section id="what-fitted-participants-look-like">
+<h2>What fitted participants look like<a class="headerlink" href="#what-fitted-participants-look-like" title="Permalink to this heading">#</a></h2>
+<p>Three participants from the example sample, ordered by threshold. The same three
+parameters describe all of them, and they are describing very different people.</p>
+<p><img alt="Three fitted participants with their observed data" src="../_images/fig_single_subjects.png" /></p>
+<p>Points are observed proportions, sized by how many trials the staircase actually
+spent there. Notice how few trials sit far from each participant’s own threshold:
+that is the staircase doing its job, and it is also why individual slope estimates
+are shaky.</p>
+</section>
+<section id="two-averages-that-are-not-the-same">
+<span id="two-averages"></span><h2>Two averages that are not the same<a class="headerlink" href="#two-averages-that-are-not-the-same" title="Permalink to this heading">#</a></h2>
+<p>Put all 512 participants together and one thing becomes obvious and one thing
+becomes confusing.</p>
+<p><img alt="All participants, and the two group averages" src="../_images/fig_population.png" /></p>
+<p>The obvious part is on the left: people differ enormously. The confusing part is on
+the right, and it catches nearly everyone the first time.</p>
+<p>There are two different “group curves”, and they are not interchangeable:</p>
+<ul class="simple">
+<li><p><strong>The curve of the average participant.</strong> Take the population-level <code class="docutils literal notranslate"><span class="pre">alpha</span></code>,
+<code class="docutils literal notranslate"><span class="pre">beta</span></code> and <code class="docutils literal notranslate"><span class="pre">lambda</span></code> and push them through the likelihood. In brms this is
+<code class="docutils literal notranslate"><span class="pre">re_formula</span> <span class="pre">=</span> <span class="pre">NA</span></code>. This is what the group-level coefficients describe, so it is
+the curve to show next to a table of effects.</p></li>
+<li><p><strong>The average of the participants’ curves.</strong> Predict each participant’s own
+curve, then average those. This is what pooled observed data estimate.</p></li>
+</ul>
+<p>With a threshold SD of about 11 ΔBPM these come apart visibly. Averaging many
+sigmoids that sit at very different thresholds gives something much shallower than
+one sigmoid at their mean threshold. That is Jensen’s inequality, the same reason
+the mean of <span class="math notranslate nohighlight">\(e^x\)</span> is not <span class="math notranslate nohighlight">\(e^{\text{mean}(x)}\)</span>, and it is a property of the curve
+rather than a sign of a bad fit.</p>
+<p>So when observed points miss the fitted curve, the first question is which curve
+they were compared against. The check that means something is the model’s
+predictive interval for each bin, which the
+<a class="reference internal" href="hierarchical.html#checking-in-this-order"><span class="std std-ref">hierarchical tutorial</span></a> shows.</p>
+<p>There is a second reason those points are awkward here, specific to this task: the
+staircase concentrates trials near each participant’s own threshold, so a bin at an
+extreme ΔBPM is not a fair sample of people. It is made up of whoever happened to
+have a threshold out there.</p>
 </section>
 <section id="why-you-should-not-stop-here">
 <h2>Why you should not stop here<a class="headerlink" href="#why-you-should-not-stop-here" title="Permalink to this heading">#</a></h2>
@@ -439,6 +481,8 @@ uncertainty in one step.</p>
 <li><a class="reference internal" href="#three-parameters">Three parameters</a></li>
 <li><a class="reference internal" href="#the-data-the-model-wants">The data the model wants</a></li>
 <li><a class="reference internal" href="#one-participant">One participant</a></li>
+<li><a class="reference internal" href="#what-fitted-participants-look-like">What fitted participants look like</a></li>
+<li><a class="reference internal" href="#two-averages-that-are-not-the-same">Two averages that are not the same</a></li>
 <li><a class="reference internal" href="#why-you-should-not-stop-here">Why you should not stop here</a></li>
 <li><a class="reference internal" href="#do-not-analyse-the-online-estimates">Do not analyse the online estimates</a></li>
 </ul>
