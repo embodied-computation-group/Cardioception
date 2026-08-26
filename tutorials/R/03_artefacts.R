@@ -261,6 +261,23 @@ if (!is.null(fit) && !is.null(dat)) {
            file.path(small_dir, "psy_intero_examples_data.csv.gz"),
            "observed trials for those 3 subjects")
 
+  # Four participants spanning how precisely the model pins them down, for the
+  # figure that motivates pooling. Chosen by the posterior SD of the threshold
+  # rather than by the threshold itself: the point being made is that some
+  # participants are pinned down 16 times more tightly than others, and that a
+  # two-stage analysis discards exactly that.
+  se <- cf[, "Est.Error", "alpha_Intercept"]
+  ppick <- dimnames(cf)[[1]][order(se)[round(c(0.04, 0.4, 0.75, 0.98) * length(se))]]
+  gp <- expand.grid(x = seq(-40, 40, by = 1), subj = ppick, n = 1,
+                    stringsAsFactors = FALSE)
+  pb <- bands(posterior_epred(fit, newdata = gp, ndraws = NCURVE), gp)
+  pb$sd_alpha <- se[pb$subj]
+  write_gz(pb, file.path(small_dir, "psy_intero_pooling_curve.csv.gz"),
+           "4 participants spanning posterior precision, nested bands")
+  write_gz(d0[d0$subj %in% ppick, c("subj", "x", "y", "n")],
+           file.path(small_dir, "psy_intero_pooling_data.csv.gz"),
+           "observed trials for those 4 participants")
+
   # A grid of participants, each curve against that participant's own data.
   # This is the fit check the Hierarchical Interoception toolbox recommends, and
   # it is the one that answers the question cleanly: a pooled plot mixes people

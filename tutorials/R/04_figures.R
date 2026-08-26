@@ -192,6 +192,51 @@ if (have("psy_intero_curve_subjects.csv.gz")) {
                           "posterior-mean parameters")) + th
   save_fig("fig_all_participants", fig, 180, 76)
 
+  # The figure that motivates pooling: the sample and the group above, then
+  # individual participants with their posterior uncertainty below, each with
+  # the group curve behind them. Two things should be visible at once. The
+  # group curve is estimated from everybody, and how tightly any one person is
+  # pinned down varies enormously, which is the quantity a two-stage analysis
+  # silently discards.
+  if (have("psy_intero_pooling_curve.csv.gz")) {
+    pc <- rd("psy_intero_pooling_curve.csv.gz")
+    pd <- rd("psy_intero_pooling_data.csv.gz") %>%
+      group_by(subj, x) %>%
+      summarise(p = sum(y) / sum(n), n = sum(n), .groups = "drop")
+
+    ord <- pc %>% distinct(subj, sd_alpha) %>% arrange(sd_alpha)
+    lab <- setNames(sprintf("threshold SD %.1f dBPM", ord$sd_alpha), ord$subj)
+    pc$subj <- factor(pc$subj, ord$subj, lab[ord$subj])
+    pd$subj <- factor(pd$subj, ord$subj, lab[ord$subj])
+
+    top <- fig + labs(title = NULL, subtitle = NULL) +
+      annotate("text", x = -39, y = 0.96, hjust = 0, size = 2.5, colour = NAVY,
+               label = paste0("all ", length(unique(spag$subj)),
+                              " participants, and the group curve"))
+
+    bot <- ggplot(pc, aes(x)) +
+      geom_hline(yintercept = 0.5, linetype = "dotted", colour = GREY, linewidth = 0.25) +
+      geom_line(data = pop1, aes(x, m), colour = "grey60", linewidth = 0.5,
+                linetype = "dashed", inherit.aes = FALSE) +
+      geom_ribbon(aes(ymin = lo, ymax = hi, group = ci), fill = MODPAL[["Intero"]],
+                  alpha = 0.22) +
+      geom_line(aes(y = m), colour = MODPAL[["Intero"]], linewidth = 0.6) +
+      geom_point(data = pd, aes(x, p, size = n), colour = NAVY, alpha = 0.5,
+                 stroke = 0, inherit.aes = FALSE) +
+      scale_size_area(max_size = 1.8) +
+      scale_y_continuous(breaks = c(0, 0.5, 1)) +
+      coord_cartesian(ylim = c(0, 1)) +
+      facet_wrap(~subj, nrow = 1) +
+      labs(x = expression(Delta*"BPM (tone - true heart rate)"),
+           y = "P(\"faster\")",
+           subtitle = paste("four participants with their 50, 80 and 95%",
+                            "intervals. Grey dashed is the group curve.")) +
+      th + theme(strip.text = element_text(size = 7, colour = "grey35"),
+                 axis.text = element_text(size = 6.5))
+
+    save_fig("fig_pooling", top / bot + plot_layout(heights = c(1, 0.85)), 180, 120)
+  }
+
   # The aside figure. Kept out of the main flow, and referenced from one place.
   if (have("psy_intero_curve_marginal.csv.gz") && have("psy_intero_ppc_bins.csv.gz")) {
     marg <- rd("psy_intero_curve_marginal.csv.gz")

@@ -14,19 +14,32 @@ individual slopes are poorly constrained. Fitting separately and then testing th
 point estimates treats a barely identified slope as if it were known exactly.
 
 A hierarchical model draws each participant's parameters from a group
-distribution. Participants with sparse data are pulled toward the group, those
-with plenty are left alone, and the uncertainty travels through to the group-level
-effects instead of being discarded halfway.
+distribution, so every participant is fitted in the same pass that estimates the
+group, and each one's uncertainty travels through to the group-level effects
+instead of being discarded halfway.
 
-It also gives you the spread itself as a parameter rather than as a nuisance, and
-in this task that spread is the headline finding as much as any group mean:
-participants differ from one another far more than the conditions differ from
-each other.
+Both halves of that are in one picture.
+
+![Every participant, the group curve, and four participants with their uncertainty](../images/tutorials/fig_pooling.png)
+
+The top panel is the group curve, estimated from all 512 participants at once and
+drawn over them. Below it are four of those participants with their own posterior
+intervals, and the group curve behind each in grey.
+
+The widths are the thing to notice. The leftmost participant's threshold is pinned
+to about 1.4 ΔBPM and the rightmost to 5.2, and across all 512 the range runs from
+1.1 to 17.2. The model carries that difference into the group estimate. Fit
+everyone separately and feed the point estimates into a t-test, and a threshold
+known to ±1 counts the same as one barely known at all.
+
+The spread across participants comes out as a parameter too, rather than as a
+nuisance:
 
 ![Distribution of individual thresholds and slopes](../images/tutorials/fig_subject_spread.png)
 
-That width is worth holding onto, because it is the yardstick every group effect
-below is measured against.
+Participants differ from one another far more than the conditions differ from each
+other, and that width is the yardstick every group effect below is measured
+against.
 
 ```r
 bff <- bf(
