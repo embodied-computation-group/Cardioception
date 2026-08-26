@@ -74,10 +74,10 @@ dependent variable in a group-level test.
 ## Analysis
 
 For anything involving fitting psychometric functions, testing an effect on threshold
-or slope, choosing priors, or modelling confidence ratings, use the **`hrd-brms`
-skill** in `.claude/skills/hrd-brms/`. It carries the model specification, the
-normative priors, the mapping from experimental design to formula, and the
-diagnostics.
+or slope, choosing priors, or modelling confidence ratings, use the skills in
+`agent_skills/`. `hrd-psychophysics` covers threshold, slope and lapse rate, and
+`hrd-metacognition` covers confidence ratings. Both carry the model specification, the
+normative priors, the mapping from experimental design to formula, and the diagnostics.
 
 Two rules worth stating here because they are the most common errors:
 
