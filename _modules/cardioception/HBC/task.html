@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
     
@@ -237,7 +237,6 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 
@@ -363,6 +362,8 @@
 <span class="sd">    """</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">visual</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.._rating</span><span class="w"> </span><span class="kn">import</span> <span class="n">keyboard_rating</span>
 
     <span class="c1"># Initialize default values</span>
     <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
@@ -539,30 +540,27 @@
         <span class="c1"># Rating scale</span>
         <span class="c1">##############</span>
         <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"rating"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">markerStart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
-            <span class="p">)</span>
-            <span class="n">ratingScale</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">RatingScale</span><span class="p">(</span>
-                <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
-                <span class="n">low</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">high</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
-                <span class="n">noMouse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">labels</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">],</span>
-                <span class="n">acceptKeys</span><span class="o">=</span><span class="s2">"down"</span><span class="p">,</span>
-                <span class="n">markerStart</span><span class="o">=</span><span class="n">markerStart</span><span class="p">,</span>
-            <span class="p">)</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
                 <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
                 <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"confidence"</span><span class="p">],</span>
                 <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+                <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">][</span><span class="s2">"confidenceStart"</span><span class="p">]</span>
-            <span class="k">while</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">noResponse</span><span class="p">:</span>
-                <span class="n">message</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-                <span class="n">ratingScale</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-                <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-            <span class="n">confidence</span> <span class="o">=</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">getRating</span><span class="p">()</span>
-            <span class="n">confidenceRT</span> <span class="o">=</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">getRT</span><span class="p">()</span>
+
+            <span class="c1"># Arrow keys move the marker, the down key confirms. This was a</span>
+            <span class="c1"># visual.RatingScale until PsychoPy 2026 moved that class into the</span>
+            <span class="c1"># psychopy-legacy plugin, where constructing one raises</span>
+            <span class="c1"># PluginRequiredError. No max_time, because this scale waits for the</span>
+            <span class="c1"># participant rather than timing out, which is what it did before.</span>
+            <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">keyboard_rating</span><span class="p">(</span>
+                <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+                <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+                <span class="n">low</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">high</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">labels</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">],</span>
+                <span class="n">label_height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.6</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">][</span><span class="s2">"confidenceStop"</span><span class="p">]</span>
 
     <span class="n">finalCount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nCounts</span><span class="p">)</span> <span class="k">if</span> <span class="n">nCounts</span> <span class="k">else</span> <span class="kc">None</span>

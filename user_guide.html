@@ -10,7 +10,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css" />
     
@@ -272,7 +272,7 @@
 </section>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading">#</a></h2>
-<p>Cardioception requires <strong>Python 3.9</strong>, and only 3.9. <code class="docutils literal notranslate"><span class="pre">systole-core</span></code> needs 3.9 or later, while the pinned PsychoPy cannot be imported on 3.10 or later, so the two constraints meet at a single version. <code class="docutils literal notranslate"><span class="pre">pip</span></code> will refuse to install on anything else. See <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/issues/92">issue #92</a> for the plan to widen this.</p>
+<p>Cardioception requires <strong>Python 3.10 or 3.11</strong>. The upper bound is <code class="docutils literal notranslate"><span class="pre">pywinhook</span></code>, which publishes wheels only up to 3.11; PsychoPy itself allows 3.12. See the <a class="reference internal" href="installation.html"><span class="std std-doc">installation guide</span></a> for step-by-step instructions.</p>
 <p>Make sure that you have the following packages installed and up to date before running cardioception:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.psychopy.org/">psychopy</a> can be installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">psychopy</span></code>.</p></li>

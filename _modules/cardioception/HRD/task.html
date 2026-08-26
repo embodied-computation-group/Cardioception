@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
     
@@ -241,8 +241,9 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole.detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ppg_peaks</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
 
 
 <div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../generated/HRD.task/cardioception.HRD.task.run.html#cardioception.HRD.task.run">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
@@ -679,13 +680,11 @@
             <span class="c1"># Only use the last 5 seconds of the recording</span>
             <span class="n">bpm</span> <span class="o">=</span> <span class="mi">60000</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">peaks</span><span class="p">[</span><span class="o">-</span><span class="mi">5000</span><span class="p">:])[</span><span class="mi">0</span><span class="p">])</span>
 
-            
             <span class="c1"># # for Nonin3231USB</span>
             <span class="c1"># # Only use the last 5 seconds of the recording</span>
             <span class="c1"># bpm =  pd.Series(parameters["oxiTask"].read(duration=5.0).bpm)[-5:]</span>
             <span class="c1"># # use bpm as signal, Nonin3231USB gives no raw signal</span>
             <span class="c1"># signal = bpm</span>
-
 
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"... bpm: </span><span class="si">{</span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">bpm</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
@@ -1275,7 +1274,9 @@
             <span class="n">decision</span><span class="p">,</span> <span class="n">decisionRT</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
             <span class="c1"># Record participant response (+/-)</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-                <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span> <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"tooLate"</span><span class="p">]</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+                <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+                <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"tooLate"</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="n">message</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
             <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
@@ -1444,6 +1445,8 @@
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span><span class="p">,</span> <span class="n">visual</span>
 
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.._rating</span><span class="w"> </span><span class="kn">import</span> <span class="n">keyboard_rating</span>
+
     <span class="nb">print</span><span class="p">(</span><span class="s2">"...starting confidence rating."</span><span class="p">)</span>
 
     <span class="c1"># Initialise default values</span>
@@ -1451,40 +1454,34 @@
 
     <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"keyboard"</span><span class="p">:</span>
 
-        <span class="n">markerStart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
-        <span class="p">)</span>
-        <span class="n">ratingScale</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">RatingScale</span><span class="p">(</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
-            <span class="n">low</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-            <span class="n">high</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
-            <span class="n">noMouse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">labels</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">],</span>
-            <span class="n">acceptKeys</span><span class="o">=</span><span class="s2">"down"</span><span class="p">,</span>
-            <span class="n">markerStart</span><span class="o">=</span><span class="n">markerStart</span><span class="p">,</span>
-        <span class="p">)</span>
-
         <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
             <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
             <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+            <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
             <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Confidence"</span><span class="p">],</span>
         <span class="p">)</span>
 
-        <span class="c1"># Wait for response</span>
-        <span class="n">ratingProvided</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">clock</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
-        <span class="k">while</span> <span class="n">clock</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRatingTime"</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">noResponse</span><span class="p">:</span>
-                <span class="n">ratingScale</span><span class="o">.</span><span class="n">markerColor</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">clock</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"minRatingTime"</span><span class="p">]:</span>
-                    <span class="n">ratingProvided</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="k">break</span>
-            <span class="n">ratingScale</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-            <span class="n">message</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-
-        <span class="n">confidence</span> <span class="o">=</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">getRating</span><span class="p">()</span>
-        <span class="n">confidenceRT</span> <span class="o">=</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">getRT</span><span class="p">()</span>
+        <span class="c1"># Arrow keys move the marker, the down key confirms. This was a</span>
+        <span class="c1"># visual.RatingScale until PsychoPy 2026 moved that class into the</span>
+        <span class="c1"># psychopy-legacy plugin, where constructing one raises</span>
+        <span class="c1"># PluginRequiredError. Slider is the supported replacement and is what</span>
+        <span class="c1"># the mouse branch below already used, so both devices now show the</span>
+        <span class="c1"># same widget.</span>
+        <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span><span class="p">,</span> <span class="n">ratingProvided</span> <span class="o">=</span> <span class="n">keyboard_rating</span><span class="p">(</span>
+            <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+            <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">labels</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">],</span>
+            <span class="n">min_time</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"minRatingTime"</span><span class="p">],</span>
+            <span class="n">max_time</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRatingTime"</span><span class="p">],</span>
+            <span class="n">label_height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.6</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ratingProvided</span> <span class="ow">and</span> <span class="n">confidenceRT</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"... Confidence level: </span><span class="si">{</span><span class="n">confidence</span><span class="si">}</span><span class="s2">"</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">" with response time </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">confidenceRT</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> seconds"</span>
+            <span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"mouse"</span><span class="p">:</span>
 

@@ -10,7 +10,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css" />
     
@@ -241,27 +241,27 @@ rather than assuming it worked, because most of the ways this goes wrong are
 quiet ones.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Cardioception currently requires <strong>Python 3.9, and only 3.9</strong>. <code class="docutils literal notranslate"><span class="pre">systole-core</span></code>
-needs 3.9 or later, and the pinned PsychoPy cannot be imported on 3.10 or later,
-so the two constraints meet at a single version. <code class="docutils literal notranslate"><span class="pre">pip</span></code> will refuse to install on
-anything else, which is deliberate: the alternative is an install that appears to
-work and fails later. Widening this is
-<a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/issues/92">issue #92</a>.</p>
+<p>Cardioception needs <strong>Python 3.10 or 3.11</strong>. The upper bound is not PsychoPy,
+which allows 3.12, but <code class="docutils literal notranslate"><span class="pre">pywinhook</span></code>: it publishes wheels only up to 3.11, and
+without one it has to be compiled from source on Windows, which needs a C
+toolchain most people do not have. <code class="docutils literal notranslate"><span class="pre">pip</span></code> refuses anything outside that range
+rather than failing halfway through an install.</p>
 </div>
-<section id="install-python-3-9">
-<h2>1. Install Python 3.9<a class="headerlink" href="#install-python-3-9" title="Permalink to this heading">#</a></h2>
+<section id="install-python-3-10-or-3-11">
+<h2>1. Install Python 3.10 or 3.11<a class="headerlink" href="#install-python-3-10-or-3-11" title="Permalink to this heading">#</a></h2>
 <p>Download it from <a class="reference external" href="https://www.python.org/downloads/">python.org/downloads</a> and
-pick a 3.9 release. On Windows, tick <strong>Add Python to PATH</strong> in the installer.</p>
+pick a 3.10 or 3.11 release. On Windows, tick <strong>Add Python to PATH</strong> in the
+installer.</p>
 <p>If you already use Anaconda, skip to <a class="reference internal" href="#the-conda-route">the conda route</a> instead.</p>
 <p>Check which version you have:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>--version
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Python 3.9.13
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Python 3.10.11
 </pre></div>
 </div>
-<p>Anything that does not start with <code class="docutils literal notranslate"><span class="pre">3.9</span></code> means you are running a different
-interpreter. On Windows, <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">-3.9</span> <span class="pre">--version</span></code> selects one explicitly.</p>
+<p>Anything outside 3.10 and 3.11 means you are running a different interpreter.
+On Windows, <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">-3.10</span> <span class="pre">--version</span></code> selects one explicitly.</p>
 </section>
 <section id="make-a-virtual-environment">
 <h2>2. Make a virtual environment<a class="headerlink" href="#make-a-virtual-environment" title="Permalink to this heading">#</a></h2>
@@ -293,7 +293,7 @@ confusing failure part-way through installation.</p>
 </div>
 <p>Expect this to take a few minutes and to download roughly 140 MB, most of it the
 370 pre-generated tone files the Heart Rate Discrimination task plays.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Successfully installed cardioception-toolbox-0.6.1 psychopy-2022.2.5 systole-core-0.3.1 ...
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Successfully installed cardioception-toolbox-0.6.1 psychopy-2026.2.2 systole-core-0.3.1 ...
 </pre></div>
 </div>
 <div class="admonition note">
@@ -319,63 +319,58 @@ text usually names the cause precisely.</p>
 </section>
 <section id="check-the-recording-device">
 <h2>5. Check the recording device<a class="headerlink" href="#check-the-recording-device" title="Permalink to this heading">#</a></h2>
-<p>Plug the pulse oximeter in and confirm the computer can see it before you try to
-collect data. A beat count on its own is not enough: with an empty sensor the
-peak detector still reports beats, so a session can look fine and contain
-nothing.</p>
-<p>Find the port first:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"from serial.tools import list_ports; [print(p.device, p.description) for p in list_ports.comports()]"</span>
+<p>Plug the pulse oximeter in and confirm the computer can see a real signal
+before you try to collect data:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>cardioception.check_device
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>COM3 USB Serial Port (COM3)
-</pre></div>
-</div>
-<p>On macOS and Linux the name looks like <code class="docutils literal notranslate"><span class="pre">/dev/tty.usbserial-XXXX</span></code> or
-<code class="docutils literal notranslate"><span class="pre">/dev/ttyUSB0</span></code> instead.</p>
-<p>Then record for a few seconds <strong>with a finger in the sensor</strong> and look at the
-signal rather than the beat count:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="o">,</span><span class="w"> </span><span class="nn">serial</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">systole.recording</span><span class="w"> </span><span class="kn">import</span> <span class="n">Oximeter</span>
+<p>It finds the port on its own when there is only one, records for twenty
+seconds, and tells you plainly what it saw:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Using the only serial port found: COM3 (USB Serial Port (COM3))
+Recording 20 s from COM3. Keep a finger in the sensor.
 
-<span class="n">ser</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="s2">"COM3"</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">75</span><span class="p">,</span> <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">oxi</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span><span class="n">serial</span><span class="o">=</span><span class="n">ser</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">add_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">oxi</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-<span class="n">oxi</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-<span class="n">ser</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+  samples            1500 (20.0 s)
+  signal amplitude   242.7      (needs &gt; 20)
+  beats detected     29
+  heart rate         87 BPM
+  beat intervals     0.60 to 0.80 s, sd 0.045   (needs sd &lt; 0.15)
 
-<span class="n">rec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">oxi</span><span class="o">.</span><span class="n">recording</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-<span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">oxi</span><span class="o">.</span><span class="n">peaks</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">amplitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="mi">95</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"amplitude </span><span class="si">{</span><span class="n">amplitude</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, beats </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-    <span class="n">ibi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">/</span> <span class="mi">75</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"heart rate </span><span class="si">{</span><span class="mi">60</span><span class="o">/</span><span class="n">ibi</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> BPM, interval sd </span><span class="si">{</span><span class="n">ibi</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> s"</span><span class="p">)</span>
+  VERDICT: clean physiological signal
+  Ready to collect data.
 </pre></div>
 </div>
-<p>Read <strong>amplitude first</strong>, then the intervals:</p>
+<p>It exits 0 only for a clean signal, so it can be used in a startup script.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>Read the amplitude, not the beat count.</strong> With an empty sensor the peak
+detector still reports beats, and they look entirely reasonable. A real
+measurement on an empty Nonin gave 67 BPM from 16 detected beats, on a trace
+spanning a single ADC unit. Nothing about the beat count gave it away; the
+amplitude of 1.0 did.</p>
+</div>
+<p>The three cases it distinguishes:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>What you see</p></th>
+<tr class="row-odd"><th class="head"><p>Verdict</p></th>
 <th class="head"><p>What it means</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>amplitude near 1, intervals scattered</p></td>
-<td><p>No finger in the sensor. The trace is flat and the reported beats are noise.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">no</span> <span class="pre">finger</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">sensor</span></code></p></td>
+<td><p>Amplitude below 20. The trace is flat and any beats are noise.</p></td>
 </tr>
-<tr class="row-odd"><td><p>amplitude large, interval sd above about 0.15 s</p></td>
-<td><p>Finger present but detection is unreliable. Reseat the sensor and keep the hand still.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">signal</span> <span class="pre">present</span> <span class="pre">but</span> <span class="pre">detection</span> <span class="pre">unreliable</span></code></p></td>
+<td><p>Real signal, but the intervals between beats are too scattered to trust. Reseat the sensor, keep the hand still and below heart level.</p></td>
 </tr>
-<tr class="row-even"><td><p>amplitude large, intervals between roughly 0.5 and 1.2 s with small spread</p></td>
-<td><p>A clean physiological signal. You are ready.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">clean</span> <span class="pre">physiological</span> <span class="pre">signal</span></code></p></td>
+<td><p>Amplitude in the hundreds, intervals between 0.4 and 1.2 s with little spread. Ready.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>For reference, an empty sensor measured on our setup gave an amplitude of 1.0
-across a raw range of 99 to 100, and still reported 10 beats in 20 seconds with
-an interval spread of 2.1 seconds. Beat count alone would not have caught it.</p>
+<p>Useful options: <code class="docutils literal notranslate"><span class="pre">--list</span></code> prints the serial ports and exits, <code class="docutils literal notranslate"><span class="pre">--port</span> <span class="pre">COM3</span></code> picks
+one when several are attached, and <code class="docutils literal notranslate"><span class="pre">--duration</span></code> changes the recording length.</p>
 </section>
 <section id="you-are-ready">
 <h2>You are ready<a class="headerlink" href="#you-are-ready" title="Permalink to this heading">#</a></h2>
@@ -388,7 +383,7 @@ oximeter and opens a windowed rather than fullscreen display.</p>
 <span id="id1"></span><h2>The conda route<a class="headerlink" href="#the-conda-route" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> at the root of the repository is an alternative to steps 1 to
 3, not an addition to them. Use it if you already have Anaconda or Miniconda
-installed, in which case it is the shorter path: it pins the interpreter to 3.9
+installed, in which case it is the shorter path: it pins the interpreter to 3.10
 for you and installs <code class="docutils literal notranslate"><span class="pre">pywinhook</span></code> from conda-forge, which on Windows saves
 building it from source.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/embodied-computation-group/Cardioception.git
@@ -397,8 +392,8 @@ conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> <
 conda<span class="w"> </span>activate<span class="w"> </span>cardioception
 </pre></div>
 </div>
-<p>Then carry on from step 4. <code class="docutils literal notranslate"><span class="pre">environment_linux.yml</span></code> is the same thing with the
-Linux-specific packages, including wxPython and PyMC.</p>
+<p>Then carry on from step 4. <code class="docutils literal notranslate"><span class="pre">environment_linux.yml</span></code> is the same thing with PyMC added for the analysis
+notebooks.</p>
 <p>If you do not already use conda, do not install it just for this. The venv route
 above works and involves one fewer tool.</p>
 </section>
@@ -413,17 +408,17 @@ above works and involves one fewer tool.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ERROR:</span> <span class="pre">Package</span> <span class="pre">requires</span> <span class="pre">a</span> <span class="pre">different</span> <span class="pre">Python:</span> <span class="pre">3.x</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">'&gt;=3.9,&lt;3.10'</span></code></p></td>
-<td><p>Working as intended. Only 3.9 can satisfy every dependency. Install 3.9 and make the environment from it.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ERROR:</span> <span class="pre">Package</span> <span class="pre">requires</span> <span class="pre">a</span> <span class="pre">different</span> <span class="pre">Python:</span> <span class="pre">3.x</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">'&gt;=3.10,&lt;3.12'</span></code></p></td>
+<td><p>Working as intended. Install 3.10 or 3.11 and build the environment from it.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ModuleNotFoundError:</span> <span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">'pkg_resources'</span></code></p></td>
-<td><p>setuptools 82 or later removed it, and PsychoPy 2022.2.5 imports it. Fix with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;setuptools&lt;81&quot;</span></code>. A fresh install of the current release pins this for you.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">error:</span> <span class="pre">command</span> <span class="pre">'swig.exe'</span> <span class="pre">failed</span></code></p></td>
+<td><p>Python 3.12 or later on Windows, where <code class="docutils literal notranslate"><span class="pre">pywinhook</span></code> has no wheel and tries to build from source. Use 3.10 or 3.11, or take the conda route, which supplies it prebuilt.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OverflowError:</span> <span class="pre">line</span> <span class="pre">number</span> <span class="pre">table</span> <span class="pre">is</span> <span class="pre">too</span> <span class="pre">long</span></code></p></td>
-<td><p>Python 3.10 or later. PsychoPy 2022.2.5 cannot be imported there. Use 3.9.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ModuleNotFoundError:</span> <span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">'pkg_resources'</span></code></p></td>
+<td><p>An older Cardioception with PsychoPy 2022.2.5, which imported it. Upgrade, or pin <code class="docutils literal notranslate"><span class="pre">setuptools&lt;81</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AttributeError:</span> <span class="pre">module</span> <span class="pre">'pkgutil'</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'ImpImporter'</span></code></p></td>
-<td><p>Python 3.12 or later, where the pinned numpy has no wheel and tries to build. Use 3.9.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">OverflowError:</span> <span class="pre">line</span> <span class="pre">number</span> <span class="pre">table</span> <span class="pre">is</span> <span class="pre">too</span> <span class="pre">long</span></code></p></td>
+<td><p>An older PsychoPy on Python 3.10 or later. Upgrade Cardioception.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Could</span> <span class="pre">not</span> <span class="pre">install</span> <span class="pre">packages</span> <span class="pre">due</span> <span class="pre">to</span> <span class="pre">an</span> <span class="pre">OSError:</span> <span class="pre">[Errno</span> <span class="pre">2]</span> <span class="pre">No</span> <span class="pre">such</span> <span class="pre">file</span> <span class="pre">or</span> <span class="pre">directory:</span> <span class="pre">'...'</span></code> with a very long path</p></td>
 <td><p>The Windows 260-character path limit. Move the environment somewhere shallower, or enable long path support.</p></td>
@@ -431,13 +426,10 @@ above works and involves one fewer tool.</p>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Can't</span> <span class="pre">connect</span> <span class="pre">to</span> <span class="pre">HTTPS</span> <span class="pre">URL</span> <span class="pre">because</span> <span class="pre">the</span> <span class="pre">SSL</span> <span class="pre">module</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">available</span></code></p></td>
 <td><p>The virtual environment was built from an Anaconda interpreter. Build it from a python.org install, or use the conda route instead of <code class="docutils literal notranslate"><span class="pre">venv</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">error:</span> <span class="pre">command</span> <span class="pre">'swig.exe'</span> <span class="pre">failed</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">pywinhook</span></code> has no wheel for your Python and is trying to build. Use 3.9, which has one, or install it from conda-forge.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SerialException:</span> <span class="pre">could</span> <span class="pre">not</span> <span class="pre">open</span> <span class="pre">port</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SerialException:</span> <span class="pre">could</span> <span class="pre">not</span> <span class="pre">open</span> <span class="pre">port</span></code></p></td>
 <td><p>Wrong port name, or another program is holding the device. Close anything else reading it and re-run the port listing above.</p></td>
 </tr>
-<tr class="row-even"><td><p>Task runs but the recording is flat</p></td>
+<tr class="row-odd"><td><p>Task runs but the recording is flat</p></td>
 <td><p>Almost always the sensor rather than the software. Re-run step 5 and read the amplitude.</p></td>
 </tr>
 </tbody>
@@ -510,7 +502,7 @@ with the full error, your operating system, and the output of
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
-<li><a class="reference internal" href="#install-python-3-9">1. Install Python 3.9</a></li>
+<li><a class="reference internal" href="#install-python-3-10-or-3-11">1. Install Python 3.10 or 3.11</a></li>
 <li><a class="reference internal" href="#make-a-virtual-environment">2. Make a virtual environment</a></li>
 <li><a class="reference internal" href="#install-cardioception">3. Install Cardioception</a></li>
 <li><a class="reference internal" href="#check-that-it-imports">4. Check that it imports</a></li>

@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
     
@@ -240,12 +240,13 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">serial</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole</span><span class="w"> </span><span class="kn">import</span> <span class="n">serialSim</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole.recording</span><span class="w"> </span><span class="kn">import</span> <span class="n">Oximeter</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD.languages</span><span class="w"> </span><span class="kn">import</span> <span class="n">danish</span><span class="p">,</span> <span class="n">danish_children</span><span class="p">,</span> <span class="n">english</span><span class="p">,</span> <span class="n">french</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
 
 
 <div class="viewcode-block" id="getParameters"><a class="viewcode-back" href="../../../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html#cardioception.HRD.parameters.getParameters">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">getParameters</span><span class="p">(</span>
@@ -498,10 +499,23 @@
 
     <span class="c1"># Create and randomize condition vectors separately for each staircase</span>
     <span class="k">if</span> <span class="n">exteroception</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="c1"># Create a modality vector containing nTrials/2 Intero and Extero conditions</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">"Modality"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"Extero"</span><span class="p">,</span> <span class="s2">"Intero"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))]</span>
-        <span class="p">)</span>
+        <span class="c1"># Alternate the two modalities, then trim to exactly nTrials.</span>
+        <span class="c1">#</span>
+        <span class="c1"># This used to build `["Extero", "Intero"] * int(nTrials / 2)`, which is</span>
+        <span class="c1"># one entry short whenever nTrials is odd. The shuffle below then indexed</span>
+        <span class="c1"># past the end of it, so every odd nTrials failed at parameter setup with</span>
+        <span class="c1"># `IndexError: index 0 is out of bounds for axis 0 with size 0`, naming</span>
+        <span class="c1"># neither nTrials nor exteroception.</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># ceiling division</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"Modality"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"Extero"</span><span class="p">,</span> <span class="s2">"Intero"</span><span class="p">]</span> <span class="o">*</span> <span class="n">pairs</span><span class="p">)[</span>
+            <span class="p">:</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"... nTrials=</span><span class="si">{</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'nTrials'</span><span class="p">]</span><span class="si">}</span><span class="s2"> is odd, so the two modalities"</span>
+                <span class="s2">" cannot be balanced: there will be one more Extero trial than"</span>
+                <span class="s2">" Intero. Use an even number if you want them balanced."</span>
+            <span class="p">)</span>
     <span class="k">elif</span> <span class="n">exteroception</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="c1"># Create a modality vector containing nTrials/2 Intero and Extero conditions</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"Modality"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"Intero"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]))</span>
@@ -624,7 +638,7 @@
             <span class="n">serial</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">add_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">systole_kw</span>
         <span class="p">)</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        
+
         <span class="c1"># # for Nonin 3231 USB</span>
         <span class="c1"># parameters['oxiTask'] = Nonin3231USB(serial=port, add_channels=1).setup().read(1)</span>
 
