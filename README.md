@@ -107,9 +107,9 @@ pause
 
 ### Hierarchical Interoception toolbox
 
-For HRD data we now recommend the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), with the preprint [*Hierarchical Bayesian Modelling of Interoceptive Psychophysics*](https://www.biorxiv.org/content/10.1101/2025.08.27.672360v1) describing the models, the validation work and where the priors come from. It gives you hierarchical psychometric models for HRD and RRST data in Stan and BRMS, tested with parameter recovery; normative priors drawn from large reference datasets that you can drop into your own models; and a power analysis suite as an R Markdown document and a Shiny app for working out how many participants and trials you need.
+For HRD data we now recommend the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), described in [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3), which covers the models, the validation work and where the priors come from. It gives you hierarchical psychometric models for HRD and RRST data in Stan and BRMS, tested with parameter recovery; normative priors drawn from large reference datasets that you can drop into your own models; and a power analysis suite as an R Markdown document and a Shiny app for working out how many participants and trials you need.
 
-To get going, clone that repository and run `setup.R`, then open `app & demo/BRMS demo.Rmd` for a worked HRD analysis, or `app & demo/shiny app.R` to plan a study. Please cite the preprint for the modelling and Cardioception for the data collection.
+To get going, clone that repository and run `setup.R`, then open `app & demo/BRMS demo.Rmd` for a worked HRD analysis, or `app & demo/shiny app.R` to plan a study. Please cite Courtin et al. (2026) for the modelling and Cardioception for the data collection.
 
 ### R scripts
 
