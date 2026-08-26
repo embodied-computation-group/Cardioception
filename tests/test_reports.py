@@ -3,10 +3,12 @@
 
 import os
 import unittest
-from unittest import TestCase
-import pandas as pd
 from pathlib import Path
-from cardioception.reports import report, preprocessing
+from unittest import TestCase
+
+import pandas as pd
+
+from cardioception.reports import preprocessing, report
 
 
 class TestReports(TestCase):
@@ -15,9 +17,8 @@ class TestReports(TestCase):
         # load the main result data frame
         results = pd.read_csv(
             "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/examples/templates/data/HRD/HRD_final.txt"
-            )
+        )
         preprocessing(results=results)
-
 
     def test_report(self):
         """Test the report function"""
@@ -25,18 +26,22 @@ class TestReports(TestCase):
         #####
         # HRD
         #####
-        hrd_results_path = Path(Path.cwd(), "docs", "source", "examples", "templates", "data", "HRD")
+        hrd_results_path = Path(
+            Path.cwd(), "docs", "source", "examples", "templates", "data", "HRD"
+        )
         hrd_report_path = Path.cwd()
         report(result_path=hrd_results_path, report_path=hrd_report_path)
-        #os.remove(Path(hrd_report_path, "HRD_report.html"))
+        # os.remove(Path(hrd_report_path, "HRD_report.html"))
 
         #####
         # HBC
         #####
-        hbc_results_path = Path(Path.cwd(), "docs", "source", "examples", "templates", "data", "HBC")
+        hbc_results_path = Path(
+            Path.cwd(), "docs", "source", "examples", "templates", "data", "HBC"
+        )
         hbc_report_path = Path.cwd()
         report(result_path=hbc_results_path, report_path=hbc_report_path, task="HBC")
-        #os.remove(Path(hbc_report_path, "HBC_report.html"))
+        # os.remove(Path(hbc_report_path, "HBC_report.html"))
 
 
 if __name__ == "__main__":

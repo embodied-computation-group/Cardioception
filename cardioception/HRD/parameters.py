@@ -265,10 +265,23 @@ def getParameters(
 
     # Create and randomize condition vectors separately for each staircase
     if exteroception is True:
-        # Create a modality vector containing nTrials/2 Intero and Extero conditions
-        parameters["Modality"] = np.hstack(
-            [np.array(["Extero", "Intero"] * int(parameters["nTrials"] / 2))]
-        )
+        # Alternate the two modalities, then trim to exactly nTrials.
+        #
+        # This used to build `["Extero", "Intero"] * int(nTrials / 2)`, which is
+        # one entry short whenever nTrials is odd. The shuffle below then indexed
+        # past the end of it, so every odd nTrials failed at parameter setup with
+        # `IndexError: index 0 is out of bounds for axis 0 with size 0`, naming
+        # neither nTrials nor exteroception.
+        pairs = -(-parameters["nTrials"] // 2)  # ceiling division
+        parameters["Modality"] = np.array(["Extero", "Intero"] * pairs)[
+            : parameters["nTrials"]
+        ]
+        if parameters["nTrials"] % 2:
+            print(
+                f"... nTrials={parameters['nTrials']} is odd, so the two modalities"
+                " cannot be balanced: there will be one more Extero trial than"
+                " Intero. Use an even number if you want them balanced."
+            )
     elif exteroception is False:
         # Create a modality vector containing nTrials/2 Intero and Extero conditions
         parameters["Modality"] = np.array(["Intero"] * int(parameters["nTrials"]))
