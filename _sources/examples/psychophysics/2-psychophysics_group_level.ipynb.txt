@@ -13,13 +13,20 @@
   },
   {
    "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```{warning}\n",
+    "This notebook is archived. It predates the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), which supersedes it for modelling the psychometric function, and it is no longer maintained. It is kept so that published analyses that used it remain reproducible.\n",
+    "```\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
    "id": "89af87cd-42ef-44da-adcb-2eb02fd271e0",
    "metadata": {
     "id": "RS4nPf2SHuhG"
    },
-   "source": [
-    "Author: Nicolas Legrand <nicolas.legrand@cas.au.dk>"
-   ]
+   "source": []
   },
   {
    "cell_type": "code",

@@ -12,12 +12,19 @@
   },
   {
    "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```{note}\n",
+    "This notebook is the report template executed by `cardioception.reports.report()`. It is kept for data quality checks rather than for analysis; for modelling, see the [statistical analysis page](../../stats.md).\n",
+    "```\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
    "metadata": {
     "id": "RS4nPf2SHuhG"
    },
-   "source": [
-    "Author: Nicolas Legrand <nicolas.legrand@cas.au.dk>"
-   ]
+   "source": []
   },
   {
    "cell_type": "code",
