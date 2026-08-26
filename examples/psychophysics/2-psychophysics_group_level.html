@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Fitting a psychometric function at the group level &#8212; cardioception 0.4.5 documentation</title>
+    <title>Fitting a psychometric function at the group level &#8212; cardioception 0.6.1 documentation</title>
   
   
   
@@ -270,7 +270,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -422,7 +422,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -497,7 +497,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pymc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pm</span>
 
-<span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s1">&#39;talk&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s1">'talk'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -509,7 +509,7 @@ document.write(`
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;pytensor&#39;
+<span class="ne">ModuleNotFoundError</span>: No module named 'pytensor'
 </pre></div>
 </div>
 </div>
@@ -518,7 +518,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data frame</span>
-<span class="n">psychophysics_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;https://github.com/embodied-computation-group/CardioceptionPaper/raw/main/data/Del2_merged.txt&#39;</span><span class="p">)</span>
+<span class="n">psychophysics_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'https://github.com/embodied-computation-group/CardioceptionPaper/raw/main/data/Del2_merged.txt'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -526,7 +526,7 @@ document.write(`
 <p>First, let’s filter this data frame so we only keep the interoceptive condition (<code class="docutils literal notranslate"><span class="pre">Extero</span></code> label).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">this_df</span> <span class="o">=</span> <span class="n">psychophysics_df</span><span class="p">[</span><span class="n">psychophysics_df</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="s1">&#39;Extero&#39;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">this_df</span> <span class="o">=</span> <span class="n">psychophysics_df</span><span class="p">[</span><span class="n">psychophysics_df</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="s1">'Extero'</span><span class="p">]</span>
 <span class="n">this_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -702,7 +702,7 @@ document.write(`
 <p>This data frame contain a large number of columns, but here we will be interested in the <code class="docutils literal notranslate"><span class="pre">Alpha</span></code> column (the intensity value) and the <code class="docutils literal notranslate"><span class="pre">Decision</span></code> column (the response made by the participant).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">this_df</span> <span class="o">=</span> <span class="n">this_df</span><span class="p">[[</span><span class="s1">&#39;Alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;Decision&#39;</span><span class="p">,</span> <span class="s1">&#39;Subject&#39;</span><span class="p">]]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">this_df</span> <span class="o">=</span> <span class="n">this_df</span><span class="p">[[</span><span class="s1">'Alpha'</span><span class="p">,</span> <span class="s1">'Decision'</span><span class="p">,</span> <span class="s1">'Subject'</span><span class="p">]]</span>
 <span class="n">this_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -819,7 +819,7 @@ document.write(`
     <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">intensity</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">40.5</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)):</span>
         <span class="n">x</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">intensity</span>
         <span class="n">n</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sub_df</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">==</span> <span class="n">intensity</span><span class="p">)</span>
-        <span class="n">r</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">sub_df</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">==</span> <span class="n">intensity</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">sub_df</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s2">&quot;More&quot;</span><span class="p">))</span>
+        <span class="n">r</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">sub_df</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">==</span> <span class="n">intensity</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">sub_df</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s2">"More"</span><span class="p">))</span>
 
     <span class="c1"># remove no responses trials</span>
     <span class="n">validmask</span> <span class="o">=</span> <span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span>
@@ -839,20 +839,20 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">pm</span><span class="o">.</span><span class="n">Model</span><span class="p">()</span> <span class="k">as</span> <span class="n">group_psychophysics</span><span class="p">:</span>
 
-    <span class="n">mu_alpha</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="s2">&quot;mu_alpha&quot;</span><span class="p">,</span> <span class="n">lower</span><span class="o">=-</span><span class="mi">50</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-    <span class="n">sigma_alpha</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">HalfNormal</span><span class="p">(</span><span class="s2">&quot;sigma_alpha&quot;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">mu_alpha</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="s2">"mu_alpha"</span><span class="p">,</span> <span class="n">lower</span><span class="o">=-</span><span class="mi">50</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">sigma_alpha</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">HalfNormal</span><span class="p">(</span><span class="s2">"sigma_alpha"</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
-    <span class="n">mu_beta</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="s2">&quot;mu_beta&quot;</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-    <span class="n">sigma_beta</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">HalfNormal</span><span class="p">(</span><span class="s2">&quot;sigma_beta&quot;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">mu_beta</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="s2">"mu_beta"</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">sigma_beta</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">HalfNormal</span><span class="p">(</span><span class="s2">"sigma_beta"</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
-    <span class="n">alpha</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s2">&quot;alpha&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu_alpha</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma_alpha</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">nsubj</span><span class="p">)</span>
-    <span class="n">beta</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu_beta</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma_beta</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">nsubj</span><span class="p">)</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s2">"alpha"</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu_alpha</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma_alpha</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">nsubj</span><span class="p">)</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s2">"beta"</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu_beta</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma_beta</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">nsubj</span><span class="p">)</span>
 
     <span class="n">thetaij</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Deterministic</span><span class="p">(</span>
-        <span class="s2">&quot;thetaij&quot;</span><span class="p">,</span> <span class="n">cumulative_normal</span><span class="p">(</span><span class="n">x_total</span><span class="p">,</span> <span class="n">alpha</span><span class="p">[</span><span class="n">sub_total</span><span class="p">],</span> <span class="n">beta</span><span class="p">[</span><span class="n">sub_total</span><span class="p">])</span>
+        <span class="s2">"thetaij"</span><span class="p">,</span> <span class="n">cumulative_normal</span><span class="p">(</span><span class="n">x_total</span><span class="p">,</span> <span class="n">alpha</span><span class="p">[</span><span class="n">sub_total</span><span class="p">],</span> <span class="n">beta</span><span class="p">[</span><span class="n">sub_total</span><span class="p">])</span>
     <span class="p">)</span>
 
-    <span class="n">rij_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Binomial</span><span class="p">(</span><span class="s2">&quot;rij&quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">thetaij</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_total</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="n">r_total</span><span class="p">)</span>
+    <span class="n">rij_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Binomial</span><span class="p">(</span><span class="s2">"rij"</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">thetaij</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_total</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="n">r_total</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -909,7 +909,7 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">az</span><span class="o">.</span><span class="n">plot_trace</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_alpha&quot;</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">]);</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">az</span><span class="o">.</span><span class="n">plot_trace</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">"mu_alpha"</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">]);</span>
 </pre></div>
 </div>
 </div>
@@ -919,7 +919,7 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stats</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_alpha&quot;</span><span class="p">,</span> <span class="s2">&quot;mu_beta&quot;</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stats</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">"mu_alpha"</span><span class="p">,</span> <span class="s2">"mu_beta"</span><span class="p">])</span>
 <span class="n">stats</span>
 </pre></div>
 </div>
@@ -988,12 +988,12 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">az</span><span class="o">.</span><span class="n">plot_posterior</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_alpha&quot;</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">az</span><span class="o">.</span><span class="n">plot_posterior</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">"mu_alpha"</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={&#39;center&#39;: &#39;mu_alpha&#39;}&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={'center': 'mu_alpha'}&gt;
 </pre></div>
 </div>
 <img alt="../../_images/7b8273e43598398afc64c4b23808a6edb018b1ebbac85f105c81c28a8a05c971.png" src="../../_images/7b8273e43598398afc64c4b23808a6edb018b1ebbac85f105c81c28a8a05c971.png" />
@@ -1005,8 +1005,8 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
 <p>Extrace the individual parameters estimates.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alpha_samples</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">])[</span><span class="s2">&quot;mean&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="n">beta_samples</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">])[</span><span class="s2">&quot;mean&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alpha_samples</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">"alpha"</span><span class="p">])[</span><span class="s2">"mean"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">beta_samples</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">"beta"</span><span class="p">])[</span><span class="s2">"mean"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 </pre></div>
 </div>
 </div>
@@ -1020,23 +1020,23 @@ NUTS: [mu_alpha, sigma_alpha, mu_beta, sigma_beta, alpha, beta]
     <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> 
         <span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">b</span><span class="p">)),</span>
-        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.05</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span>
+        <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.05</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span>
     <span class="p">)</span>
 
 <span class="c1"># Plot psychometric function with average parameters</span>
-<span class="n">slope</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_beta&quot;</span><span class="p">])[</span><span class="s1">&#39;mean&#39;</span><span class="p">][</span><span class="s1">&#39;mu_beta&#39;</span><span class="p">]</span>
-<span class="n">threshold</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_alpha&quot;</span><span class="p">])[</span><span class="s1">&#39;mean&#39;</span><span class="p">][</span><span class="s1">&#39;mu_alpha&#39;</span><span class="p">]</span>
+<span class="n">slope</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">"mu_beta"</span><span class="p">])[</span><span class="s1">'mean'</span><span class="p">][</span><span class="s1">'mu_beta'</span><span class="p">]</span>
+<span class="n">threshold</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">"mu_alpha"</span><span class="p">])[</span><span class="s1">'mean'</span><span class="p">][</span><span class="s1">'mu_alpha'</span><span class="p">]</span>
 <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> 
         <span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">slope</span><span class="p">)),</span>
-         <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#4c72b0&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+         <span class="n">color</span><span class="o">=</span><span class="s1">'#4c72b0'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
-<span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">threshold</span><span class="p">,</span> <span class="n">threshold</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.5</span><span class="p">],</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#4c72b0&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">markeredgecolor</span><span class="o">=</span><span class="s1">&#39;#4c72b0&#39;</span><span class="p">,</span> 
+<span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">threshold</span><span class="p">,</span> <span class="n">threshold</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.5</span><span class="p">],</span> <span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'#4c72b0'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">'o'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'w'</span><span class="p">,</span> <span class="n">markeredgecolor</span><span class="o">=</span><span class="s1">'#4c72b0'</span><span class="p">,</span> 
          <span class="n">markersize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">markeredgewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;P$_{(Response = More|Intensity)}$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Intensity ($\Delta$ BPM)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Group level estimate of the psychometric function&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'P$_{(Response = More|Intensity)}$'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'Intensity ($\Delta$ BPM)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Group level estimate of the psychometric function'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
 </pre></div>

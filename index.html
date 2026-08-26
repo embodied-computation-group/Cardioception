@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Cardioception &#8212; cardioception 0.4.5 documentation</title>
+    <title>Cardioception &#8212; cardioception 0.6.1 documentation</title>
   
   
   
@@ -267,7 +267,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -421,7 +421,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -455,7 +455,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="cardioception">
 <h1>Cardioception<a class="headerlink" href="#cardioception" title="Permalink to this heading">#</a></h1>
-<p><a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/embodied-computation-group/Cardioception" /></a> <a class="reference external" href="https://GitHub.com/embodied-computation-group/Cardioception/releases/"><img alt="GitHub release" src="https://img.shields.io/github/release/embodied-computation-group/Cardioception" /></a> <a class="reference external" href="https://github.com/pre-commit/pre-commit"><img alt="pre-commit" src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&amp;logoColor=white" /></a> <a class="reference external" href="https://badge.fury.io/py/cardioception"><img alt="pip" src="https://badge.fury.io/py/cardioception.svg" /></a> <a class="reference external" href="https://github.com/psf/black"><img alt="black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a> <a class="reference external" href="http://mypy-lang.org/"><img alt="mypy" src="http://www.mypy-lang.org/static/mypy_badge.svg" /></a> <a class="reference external" href="https://pycqa.github.io/isort/"><img alt="Imports: isort" src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&amp;labelColor=ef8336" /></a></p>
+<p><a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/embodied-computation-group/Cardioception" /></a> <a class="reference external" href="https://GitHub.com/embodied-computation-group/Cardioception/releases/"><img alt="GitHub release" src="https://img.shields.io/github/release/embodied-computation-group/Cardioception" /></a> <a class="reference external" href="https://github.com/pre-commit/pre-commit"><img alt="pre-commit" src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&amp;logoColor=white" /></a> <a class="reference external" href="https://pypi.org/project/cardioception-toolbox/"><img alt="pip" src="https://badge.fury.io/py/cardioception-toolbox.svg" /></a> <a class="reference external" href="https://github.com/psf/black"><img alt="black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a> <a class="reference external" href="http://mypy-lang.org/"><img alt="mypy" src="http://www.mypy-lang.org/static/mypy_badge.svg" /></a> <a class="reference external" href="https://pycqa.github.io/isort/"><img alt="Imports: isort" src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&amp;labelColor=ef8336" /></a></p>
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="official-repository-notice">
@@ -471,6 +471,22 @@ document.write(`
 <li><p>The <strong>Heart Rate Discrimination task</strong> <span id="id2">[<a class="reference internal" href="references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span> implementing an adaptive psychophysical measure of cardiac interoception where participants have to estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. By manipulating the difference between the true heart rate and the presented tone using different staircase procedures, the bias (threshold) and precision (slope) of the psychometric function can be estimated either online or offline (see <em>Analyses</em> below), together with metacognitive efficiency.</p></li>
 </ol>
 <p>These tasks can run using minimal experimental settings: a computer and a recording device to monitor the heart rate of the participant. The default version of the task uses the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>. This sensor can be plugged directly into the stim PC via USB and will work with Cardioception without any additional coding required. The tasks can also integrate easily with other recording devices and experimental settings (ECG, M/EEG, fMRI…).</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Install the package as <strong><code class="docutils literal notranslate"><span class="pre">cardioception-toolbox</span></code></strong>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install cardioception-toolbox
+</pre></div>
+</div>
+<p>This is the official package, maintained by the Embodied Computation Group at Aarhus University. It is the version described in this documentation and used in our publications. Make sure the package name you install is exactly <code class="docutils literal notranslate"><span class="pre">cardioception-toolbox</span></code>.</p>
+</div>
+<p>The <em>import</em> name is unchanged, so no existing script needs to be edited:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD</span><span class="w"> </span><span class="kn">import</span> <span class="n">task</span>
+</pre></div>
+</div>
+<p>See the <a class="reference internal" href="user_guide.html"><span class="std std-doc">user guide</span></a> for conda environments, dependencies and the development version.</p>
+</section>
 <section id="data-analysis">
 <h2>📊 Data Analysis<a class="headerlink" href="#data-analysis" title="Permalink to this heading">#</a></h2>
 <section id="recommended-r-analysis">
@@ -557,6 +573,7 @@ Maintained by the Embodied Computation Group, Aarhus University.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Cardioception</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#official-repository-notice">🧠 Official Repository Notice</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-analysis">📊 Data Analysis</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#recommended-r-analysis">🎯 Recommended: R Analysis</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-analysis-outdated">📈 Python Analysis (Outdated)</a></li>

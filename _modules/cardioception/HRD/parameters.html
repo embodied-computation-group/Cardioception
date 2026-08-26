@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cardioception.HRD.parameters &#8212; cardioception 0.4.5 documentation</title>
+    <title>cardioception.HRD.parameters &#8212; cardioception 0.6.1 documentation</title>
   
   
   
@@ -265,7 +265,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -415,7 +415,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -485,7 +485,7 @@ document.write(`
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pkg_resources</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">serial</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole</span><span class="w"> </span><span class="kn">import</span> <span class="n">serialSim</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole.recording</span><span class="w"> </span><span class="kn">import</span> <span class="n">Oximeter</span>
@@ -494,23 +494,23 @@ document.write(`
 
 
 <div class="viewcode-block" id="getParameters"><a class="viewcode-back" href="../../../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html#cardioception.HRD.parameters.getParameters">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">getParameters</span><span class="p">(</span>
-    <span class="n">participant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;SubjectTest&quot;</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;001&quot;</span><span class="p">,</span>
-    <span class="n">serialPort</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;COM3&quot;</span><span class="p">,</span>
-    <span class="n">setup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;behavioral&quot;</span><span class="p">,</span>
-    <span class="n">stairType</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;psi&quot;</span><span class="p">,</span>
+    <span class="n">participant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"SubjectTest"</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"001"</span><span class="p">,</span>
+    <span class="n">serialPort</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"COM3"</span><span class="p">,</span>
+    <span class="n">setup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"behavioral"</span><span class="p">,</span>
+    <span class="n">stairType</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"psi"</span><span class="p">,</span>
     <span class="n">exteroception</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">catchTrials</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="n">nTrials</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">120</span><span class="p">,</span>
-    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mouse&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"mouse"</span><span class="p">,</span>
     <span class="n">screenNb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">fullscr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">nBreaking</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
     <span class="n">resultPath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;english&quot;</span><span class="p">,</span>
+    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"english"</span><span class="p">,</span>
     <span class="n">systole_kw</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create Heart Rate Discrimination task parameters.</span>
+<span class="w">    </span><span class="sd">"""Create Heart Rate Discrimination task parameters.</span>
 
 <span class="sd">    Many task parameters, aesthetics, and options are controlled by the</span>
 <span class="sd">    parameters dictonary defined herein. These are intended to provide</span>
@@ -522,14 +522,14 @@ document.write(`
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    device : str</span>
-<span class="sd">        Select how the participant provide responses. Can be `&#39;mouse&#39;` or `&#39;keyboard&#39;`.</span>
+<span class="sd">        Select how the participant provide responses. Can be `'mouse'` or `'keyboard'`.</span>
 <span class="sd">    exteroception : bool</span>
 <span class="sd">        If `True`, the task will include an exteroceptive (half of the trials).</span>
 <span class="sd">    fullscr : bool</span>
 <span class="sd">        If `True`, activate full screen mode.</span>
 <span class="sd">    language : str</span>
-<span class="sd">        The language used for the instruction. Can be `&quot;english&quot;`, `&quot;danish&quot;` or</span>
-<span class="sd">        `&quot;danish_children&quot;` (a slightly simplified danish version), or `&quot;french&quot;`.</span>
+<span class="sd">        The language used for the instruction. Can be `"english"`, `"danish"` or</span>
+<span class="sd">        `"danish_children"` (a slightly simplified danish version), or `"french"`.</span>
 <span class="sd">    nBreaking : int</span>
 <span class="sd">        Number of trials to run before the break.</span>
 <span class="sd">    nStaircase : int</span>
@@ -543,7 +543,7 @@ document.write(`
 <span class="sd">           contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,</span>
 <span class="sd">           the task contains 25 interoceptive trials and 25 exteroceptive trials.</span>
 <span class="sd">    participant : str</span>
-<span class="sd">        Subject ID. Default is &#39;Participant&#39;.</span>
+<span class="sd">        Subject ID. Default is 'Participant'.</span>
 <span class="sd">    catchTrials : float</span>
 <span class="sd">        Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with some</span>
 <span class="sd">        jitter) to control for range of stimuli presented. Default to `0.0` (no catch</span>
@@ -555,15 +555,15 @@ document.write(`
 <span class="sd">        to `0`.</span>
 <span class="sd">    serialPort: str</span>
 <span class="sd">        The USB port where the pulse oximeter is plugged. Should be written as a string</span>
-<span class="sd">        e.g. `&quot;COM3&quot;` for USB ports on Windows.</span>
+<span class="sd">        e.g. `"COM3"` for USB ports on Windows.</span>
 <span class="sd">    session : int</span>
-<span class="sd">        Session number. Default to &#39;001&#39;.</span>
+<span class="sd">        Session number. Default to '001'.</span>
 <span class="sd">    setup : str</span>
-<span class="sd">        Context of oximeter recording. `&quot;ehavioral&quot;` will record through a Nonin</span>
-<span class="sd">        pulse oximeter and `&quot;test&quot;` will use pre-recorded pulse time series (for</span>
+<span class="sd">        Context of oximeter recording. `"ehavioral"` will record through a Nonin</span>
+<span class="sd">        pulse oximeter and `"test"` will use pre-recorded pulse time series (for</span>
 <span class="sd">        testing only).</span>
 <span class="sd">    stairType : str</span>
-<span class="sd">        Staircase type. Can be &quot;psi&quot; or &quot;updown&quot;. Default set to &quot;psi&quot;.</span>
+<span class="sd">        Staircase type. Can be "psi" or "updown". Default set to "psi".</span>
 <span class="sd">    systole_kw : dict</span>
 <span class="sd">        Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.</span>
 
@@ -574,8 +574,8 @@ document.write(`
 <span class="sd">    confScale : list</span>
 <span class="sd">        The range of the confidence rating scale.</span>
 <span class="sd">    device : str</span>
-<span class="sd">        The device used for response and rating scale. Can be `&quot;keyboard&quot;` or</span>
-<span class="sd">        `&quot;mouse&quot;`.</span>
+<span class="sd">        The device used for response and rating scale. Can be `"keyboard"` or</span>
+<span class="sd">        `"mouse"`.</span>
 <span class="sd">    HRcutOff : list</span>
 <span class="sd">        Cut off for extreme heart rate values during recording.</span>
 <span class="sd">    ExteroCondition : bool</span>
@@ -611,7 +611,7 @@ document.write(`
 <span class="sd">        The number of trial with feedback during the tutorial phase (no</span>
 <span class="sd">        confidence rating).</span>
 <span class="sd">    nFinger : str or None</span>
-<span class="sd">        The finger number (&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot; or &quot;5&quot;) where the participant</span>
+<span class="sd">        The finger number ("1", "2", "3", "4" or "5") where the participant</span>
 <span class="sd">        decided to place the pulse oximeter (if relevant).</span>
 <span class="sd">    nTrials : int</span>
 <span class="sd">        The number of trials to run (UpDown and psi staircase).</span>
@@ -621,7 +621,7 @@ document.write(`
 <span class="sd">           contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,</span>
 <span class="sd">           the task contains 25 interoceptive trials and 25 exteroceptive trials.</span>
 <span class="sd">    participant : str</span>
-<span class="sd">        Subject ID. Default is &#39;Participant&#39;.</span>
+<span class="sd">        Subject ID. Default is 'Participant'.</span>
 <span class="sd">    path : str</span>
 <span class="sd">        The task working directory.</span>
 <span class="sd">    resultPath : str | None</span>
@@ -634,10 +634,10 @@ document.write(`
 <span class="sd">        Dataframe where the pulse signal recorded during the interoception</span>
 <span class="sd">        condition will be stored.</span>
 <span class="sd">    stairCase : dict</span>
-<span class="sd">        The staircase instances for &#39;psi&#39; and &#39;UpDown&#39;. Each entry contain</span>
-<span class="sd">        dictionary for &#39;Intero&#39; and &#39;Extero conditions&#39; (if relevant).</span>
+<span class="sd">        The staircase instances for 'psi' and 'UpDown'. Each entry contain</span>
+<span class="sd">        dictionary for 'Intero' and 'Extero conditions' (if relevant).</span>
 <span class="sd">    staircaseType : 1d array-like</span>
-<span class="sd">        Vector indexing stairce type (`&#39;UpDown&#39;`, `&#39;psi&#39;`, `&#39;psiCatchTrial&#39;`).</span>
+<span class="sd">        Vector indexing stairce type (`'UpDown'`, `'psi'`, `'psiCatchTrial'`).</span>
 <span class="sd">    startKey : str</span>
 <span class="sd">        The key to press to start the task and go to next steps.</span>
 <span class="sd">    response_keys : dict</span>
@@ -647,9 +647,9 @@ document.write(`
 <span class="sd">    results : str</span>
 <span class="sd">        The result directory.</span>
 <span class="sd">    session : int</span>
-<span class="sd">        Session number. Default to &#39;001&#39;.</span>
+<span class="sd">        Session number. Default to '001'.</span>
 <span class="sd">    setup : str</span>
-<span class="sd">        The context of recording. Can be `&#39;behavioral&#39;` or `&#39;test&#39;`.</span>
+<span class="sd">        The context of recording. Can be `'behavioral'` or `'test'`.</span>
 <span class="sd">    texts : dict</span>
 <span class="sd">        Long text elements.</span>
 <span class="sd">    textSize : float</span>
@@ -658,14 +658,14 @@ document.write(`
 <span class="sd">        Dictionary {str, callable or None}. The function will be executed</span>
 <span class="sd">        before the corresponding trial sequence. The default values are</span>
 <span class="sd">        `None` (no trigger sent).</span>
-<span class="sd">        * `&quot;trialStart&quot;`</span>
-<span class="sd">        * `&quot;trialStop&quot;`</span>
-<span class="sd">        * `&quot;listeningStart&quot;`</span>
-<span class="sd">        * `&quot;listeningStop&quot;`</span>
-<span class="sd">        * `&quot;decisionStart&quot;`</span>
-<span class="sd">        * `&quot;decisionStop&quot;`</span>
-<span class="sd">        * `&quot;confidenceStart&quot;`</span>
-<span class="sd">        * `&quot;confidenceStop&quot;`</span>
+<span class="sd">        * `"trialStart"`</span>
+<span class="sd">        * `"trialStop"`</span>
+<span class="sd">        * `"listeningStart"`</span>
+<span class="sd">        * `"listeningStop"`</span>
+<span class="sd">        * `"decisionStart"`</span>
+<span class="sd">        * `"decisionStop"`</span>
+<span class="sd">        * `"confidenceStart"`</span>
+<span class="sd">        * `"confidenceStop"`</span>
 <span class="sd">    win : `psychopy.visual.window`</span>
 <span class="sd">        The window in which to draw objects.</span>
 
@@ -681,127 +681,127 @@ document.write(`
 <span class="sd">    All these events, except trial start, have also their time stamps encoded in the</span>
 <span class="sd">    behavioral results data frame.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">visual</span>
 
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;ExteroCondition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">exteroception</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
-    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;keyboard&quot;</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;confScale&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;labelsRating&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Guess&quot;</span><span class="p">,</span> <span class="s2">&quot;Certain&quot;</span><span class="p">]</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;screenNb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">screenNb</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;monitor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;testMonitor&quot;</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nFeedback&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nConfidence&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;respMax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;minRatingTime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;maxRatingTime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;isi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;space&quot;</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;response_keys&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;More&quot;</span><span class="p">:</span> <span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="s2">&quot;Less&quot;</span><span class="p">:</span> <span class="s2">&quot;down&quot;</span><span class="p">}</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;allowedKeys&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;response_keys&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nTrials&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nTrials</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nBreaking&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nBreaking</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;lambdaIntero&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Save the history of lambda values</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;lambdaExtero&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Save the history of lambda values</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nFinger&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;signal_df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>  <span class="c1"># Physiological recording</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;results_df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>  <span class="c1"># Behavioral results</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"ExteroCondition"</span><span class="p">]</span> <span class="o">=</span> <span class="n">exteroception</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"keyboard"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Guess"</span><span class="p">,</span> <span class="s2">"Certain"</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"screenNb"</span><span class="p">]</span> <span class="o">=</span> <span class="n">screenNb</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"monitor"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"testMonitor"</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nFeedback"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nConfidence"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"respMax"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"minRatingTime"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRatingTime"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"isi"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"space"</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"response_keys"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"More"</span><span class="p">:</span> <span class="s2">"up"</span><span class="p">,</span> <span class="s2">"Less"</span><span class="p">:</span> <span class="s2">"down"</span><span class="p">}</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"allowedKeys"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"response_keys"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nTrials</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nBreaking"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nBreaking</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"lambdaIntero"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Save the history of lambda values</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"lambdaExtero"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Save the history of lambda values</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nFinger"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"signal_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>  <span class="c1"># Physiological recording</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>  <span class="c1"># Behavioral results</span>
 
-    <span class="c1"># Set default path /Results/ &#39;Subject ID&#39; /</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;participant&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">participant</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="c1"># Set default path /Results/ 'Subject ID' /</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"participant"</span><span class="p">]</span> <span class="o">=</span> <span class="n">participant</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"session"</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">resultPath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/data/&quot;</span> <span class="o">+</span> <span class="n">participant</span> <span class="o">+</span> <span class="n">session</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"/data/"</span> <span class="o">+</span> <span class="n">participant</span> <span class="o">+</span> <span class="n">session</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1"># Create Results directory if not already exists</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">])</span>
 
     <span class="c1"># Store posterior in a dictionary</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;staircaisePosteriors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;staircaisePosteriors&quot;</span><span class="p">][</span><span class="s2">&quot;Intero&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"staircaisePosteriors"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"staircaisePosteriors"</span><span class="p">][</span><span class="s2">"Intero"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">exteroception</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;staircaisePosteriors&quot;</span><span class="p">][</span><span class="s2">&quot;Extero&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"staircaisePosteriors"</span><span class="p">][</span><span class="s2">"Extero"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="n">nCatch</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nTrials&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">catchTrials</span><span class="p">)</span>
-    <span class="n">nStaircase</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nTrials&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">nCatch</span>
+    <span class="n">nCatch</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">*</span> <span class="n">catchTrials</span><span class="p">)</span>
+    <span class="n">nStaircase</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">-</span> <span class="n">nCatch</span>
 
     <span class="c1"># Vector encoding the staircase type</span>
-    <span class="k">if</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">&quot;psi&quot;</span><span class="p">:</span>
-        <span class="n">sc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;psi&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">nStaircase</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">&quot;updown&quot;</span><span class="p">:</span>
-        <span class="n">sc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;updown&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">nStaircase</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"psi"</span><span class="p">:</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"psi"</span><span class="p">]</span> <span class="o">*</span> <span class="n">nStaircase</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"updown"</span><span class="p">:</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"updown"</span><span class="p">]</span> <span class="o">*</span> <span class="n">nStaircase</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;stairType should be &#39;psi&#39; or &#39;updown&#39;&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"stairType should be 'psi' or 'updown'"</span><span class="p">)</span>
 
     <span class="c1"># Create and randomize condition vectors separately for each staircase</span>
     <span class="k">if</span> <span class="n">exteroception</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
         <span class="c1"># Create a modality vector containing nTrials/2 Intero and Extero conditions</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;Modality&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;Extero&quot;</span><span class="p">,</span> <span class="s2">&quot;Intero&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nTrials&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))]</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"Modality"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"Extero"</span><span class="p">,</span> <span class="s2">"Intero"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))]</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">exteroception</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="c1"># Create a modality vector containing nTrials/2 Intero and Extero conditions</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;Modality&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;Intero&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nTrials&quot;</span><span class="p">]))</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"Modality"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"Intero"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;exteroception should be a boolean&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"exteroception should be a boolean"</span><span class="p">)</span>
 
     <span class="c1"># Vector encoding the type of trial (psi, up/down or catch)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;staircaseType&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"staircaseType"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
         <span class="p">[</span>
             <span class="n">sc</span><span class="p">,</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;CatchTrial&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">((</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nTrials&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">catchTrials</span><span class="p">))),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"CatchTrial"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">((</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">*</span> <span class="n">catchTrials</span><span class="p">))),</span>
         <span class="p">]</span>
     <span class="p">)</span>
 
     <span class="c1"># Shuffle all trials</span>
-    <span class="n">shuffler</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nTrials&quot;</span><span class="p">])</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;Modality&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;Modality&quot;</span><span class="p">][</span><span class="n">shuffler</span><span class="p">]</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;staircaseType&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;staircaseType&quot;</span><span class="p">][</span><span class="n">shuffler</span><span class="p">]</span>
+    <span class="n">shuffler</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"Modality"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"Modality"</span><span class="p">][</span><span class="n">shuffler</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"staircaseType"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"staircaseType"</span><span class="p">][</span><span class="n">shuffler</span><span class="p">]</span>
 
     <span class="c1"># Default parameters for the basic staircase are set here. Please see</span>
     <span class="c1"># PsychoPy Staircase Handler Documentation for full options. By default,</span>
     <span class="c1"># the task implements a staircase using Psi method.</span>
     <span class="c1"># If UpDown is selected, 1 or 2 interleaved staircases are used (see</span>
-    <span class="c1"># options in parameters dictionary), one is initalized &#39;high&#39; and the other</span>
-    <span class="c1"># &#39;low&#39;.</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;stairCase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># options in parameters dictionary), one is initalized 'high' and the other</span>
+    <span class="c1"># 'low'.</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">if</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">&quot;updown&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"updown"</span><span class="p">:</span>
 
         <span class="n">conditions</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">{</span>
-                <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;startVal&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
-                <span class="s2">&quot;nUp&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="s2">&quot;nDown&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="s2">&quot;stepSizes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-                <span class="s2">&quot;stepType&quot;</span><span class="p">:</span> <span class="s2">&quot;lin&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;minVal&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
-                <span class="s2">&quot;maxVal&quot;</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+                <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"low"</span><span class="p">,</span>
+                <span class="s2">"startVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                <span class="s2">"nUp"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"nDown"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"stepSizes"</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="s2">"stepType"</span><span class="p">:</span> <span class="s2">"lin"</span><span class="p">,</span>
+                <span class="s2">"minVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                <span class="s2">"maxVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="p">{</span>
-                <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;startVal&quot;</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
-                <span class="s2">&quot;nUp&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="s2">&quot;nDown&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="s2">&quot;stepSizes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-                <span class="s2">&quot;stepType&quot;</span><span class="p">:</span> <span class="s2">&quot;lin&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;minVal&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
-                <span class="s2">&quot;maxVal&quot;</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+                <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"high"</span><span class="p">,</span>
+                <span class="s2">"startVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+                <span class="s2">"nUp"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"nDown"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"stepSizes"</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="s2">"stepType"</span><span class="p">:</span> <span class="s2">"lin"</span><span class="p">,</span>
+                <span class="s2">"minVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                <span class="s2">"maxVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">]</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;stairCase&quot;</span><span class="p">][</span><span class="s2">&quot;Intero&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">MultiStairHandler</span><span class="p">(</span>
-            <span class="n">conditions</span><span class="o">=</span><span class="n">conditions</span><span class="p">,</span> <span class="n">nTrials</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nTrials&quot;</span><span class="p">]</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">][</span><span class="s2">"Intero"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">MultiStairHandler</span><span class="p">(</span>
+            <span class="n">conditions</span><span class="o">=</span><span class="n">conditions</span><span class="p">,</span> <span class="n">nTrials</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span>
         <span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">&quot;psi&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"psi"</span><span class="p">:</span>
 
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;stairCase&quot;</span><span class="p">][</span><span class="s2">&quot;Intero&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">PsiHandler</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">][</span><span class="s2">"Intero"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">PsiHandler</span><span class="p">(</span>
             <span class="n">nTrials</span><span class="o">=</span><span class="n">nTrials</span><span class="p">,</span>
             <span class="n">intensRange</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">50.5</span><span class="p">,</span> <span class="mf">50.5</span><span class="p">],</span>
             <span class="n">alphaRange</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">50.5</span><span class="p">,</span> <span class="mf">50.5</span><span class="p">],</span>
@@ -810,42 +810,42 @@ document.write(`
             <span class="n">alphaPrecision</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">betaPrecision</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
             <span class="n">delta</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
-            <span class="n">stepType</span><span class="o">=</span><span class="s2">&quot;lin&quot;</span><span class="p">,</span>
+            <span class="n">stepType</span><span class="o">=</span><span class="s2">"lin"</span><span class="p">,</span>
             <span class="n">expectedMin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">exteroception</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">&quot;updown&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"updown"</span><span class="p">:</span>
 
             <span class="n">conditions</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;startVal&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
-                    <span class="s2">&quot;nUp&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                    <span class="s2">&quot;nDown&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                    <span class="s2">&quot;stepSizes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-                    <span class="s2">&quot;stepType&quot;</span><span class="p">:</span> <span class="s2">&quot;lin&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;minVal&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
-                    <span class="s2">&quot;maxVal&quot;</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+                    <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"low"</span><span class="p">,</span>
+                    <span class="s2">"startVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                    <span class="s2">"nUp"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s2">"nDown"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s2">"stepSizes"</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                    <span class="s2">"stepType"</span><span class="p">:</span> <span class="s2">"lin"</span><span class="p">,</span>
+                    <span class="s2">"minVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                    <span class="s2">"maxVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
                 <span class="p">},</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;startVal&quot;</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
-                    <span class="s2">&quot;nUp&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                    <span class="s2">&quot;nDown&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                    <span class="s2">&quot;stepSizes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-                    <span class="s2">&quot;stepType&quot;</span><span class="p">:</span> <span class="s2">&quot;lin&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;minVal&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
-                    <span class="s2">&quot;maxVal&quot;</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+                    <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"high"</span><span class="p">,</span>
+                    <span class="s2">"startVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+                    <span class="s2">"nUp"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s2">"nDown"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s2">"stepSizes"</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                    <span class="s2">"stepType"</span><span class="p">:</span> <span class="s2">"lin"</span><span class="p">,</span>
+                    <span class="s2">"minVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                    <span class="s2">"maxVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">]</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;stairCase&quot;</span><span class="p">][</span><span class="s2">&quot;Extero&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">MultiStairHandler</span><span class="p">(</span>
-                <span class="n">conditions</span><span class="o">=</span><span class="n">conditions</span><span class="p">,</span> <span class="n">nTrials</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nTrials&quot;</span><span class="p">]</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">][</span><span class="s2">"Extero"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">MultiStairHandler</span><span class="p">(</span>
+                <span class="n">conditions</span><span class="o">=</span><span class="n">conditions</span><span class="p">,</span> <span class="n">nTrials</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span>
             <span class="p">)</span>
 
-        <span class="k">elif</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">&quot;psi&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"psi"</span><span class="p">:</span>
 
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;stairCase&quot;</span><span class="p">][</span><span class="s2">&quot;Extero&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">PsiHandler</span><span class="p">(</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">][</span><span class="s2">"Extero"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">PsiHandler</span><span class="p">(</span>
                 <span class="n">nTrials</span><span class="o">=</span><span class="n">nTrials</span><span class="p">,</span>
                 <span class="n">intensRange</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">50.5</span><span class="p">,</span> <span class="mf">50.5</span><span class="p">],</span>
                 <span class="n">alphaRange</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">50.5</span><span class="p">,</span> <span class="mf">50.5</span><span class="p">],</span>
@@ -854,101 +854,101 @@ document.write(`
                 <span class="n">alphaPrecision</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                 <span class="n">betaPrecision</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
                 <span class="n">delta</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
-                <span class="n">stepType</span><span class="o">=</span><span class="s2">&quot;lin&quot;</span><span class="p">,</span>
+                <span class="n">stepType</span><span class="o">=</span><span class="s2">"lin"</span><span class="p">,</span>
                 <span class="n">expectedMin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;setup&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">setup</span>
-    <span class="k">if</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">&quot;behavioral&quot;</span><span class="p">:</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"setup"</span><span class="p">]</span> <span class="o">=</span> <span class="n">setup</span>
+    <span class="k">if</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">"behavioral"</span><span class="p">:</span>
         <span class="c1"># PPG recording</span>
         <span class="n">port</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">serialPort</span><span class="p">)</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span>
             <span class="n">serial</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">add_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">systole_kw</span>
         <span class="p">)</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         
         <span class="c1"># # for Nonin 3231 USB</span>
-        <span class="c1"># parameters[&#39;oxiTask&#39;] = Nonin3231USB(serial=port, add_channels=1).setup().read(1)</span>
+        <span class="c1"># parameters['oxiTask'] = Nonin3231USB(serial=port, add_channels=1).setup().read(1)</span>
 
-    <span class="k">elif</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">"test"</span><span class="p">:</span>
         <span class="c1"># Use pre-recorded pulse time series for testing</span>
         <span class="n">port</span> <span class="o">=</span> <span class="n">serialSim</span><span class="p">()</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span>
             <span class="n">serial</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">add_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">systole_kw</span>
         <span class="p">)</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1">##############</span>
     <span class="c1"># Load texts #</span>
     <span class="c1">##############</span>
-    <span class="k">if</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">&quot;english&quot;</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">english</span><span class="p">(</span>
+    <span class="k">if</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"english"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">english</span><span class="p">(</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">&quot;danish&quot;</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">danish</span><span class="p">(</span>
+    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"danish"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">danish</span><span class="p">(</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">&quot;danish_children&quot;</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">danish_children</span><span class="p">(</span>
+    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"danish_children"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">danish_children</span><span class="p">(</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">&quot;french&quot;</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">french</span><span class="p">(</span>
+    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"french"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">french</span><span class="p">(</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span>
         <span class="p">)</span>
 
     <span class="c1"># Open window</span>
-    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;setup&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"setup"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"test"</span><span class="p">:</span>
         <span class="n">fullscr</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">Window</span><span class="p">(</span>
-        <span class="n">monitor</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;monitor&quot;</span><span class="p">],</span>
-        <span class="n">screen</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;screenNb&quot;</span><span class="p">],</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">Window</span><span class="p">(</span>
+        <span class="n">monitor</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"monitor"</span><span class="p">],</span>
+        <span class="n">screen</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"screenNb"</span><span class="p">],</span>
         <span class="n">fullscr</span><span class="o">=</span><span class="n">fullscr</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;height&quot;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">"height"</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mouseVisible</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">mouseVisible</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="c1">###############</span>
     <span class="c1"># Image loading</span>
     <span class="c1">###############</span>
-    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;setup&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;behavioral&quot;</span><span class="p">]:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;pulseSchema&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
-            <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-            <span class="n">units</span><span class="o">=</span><span class="s2">&quot;height&quot;</span><span class="p">,</span>
-            <span class="n">image</span><span class="o">=</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;Images/pulseOximeter.png&quot;</span><span class="p">),</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"setup"</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"test"</span><span class="p">,</span> <span class="s2">"behavioral"</span><span class="p">]:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"pulseSchema"</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
+            <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+            <span class="n">units</span><span class="o">=</span><span class="s2">"height"</span><span class="p">,</span>
+            <span class="n">image</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">"cardioception.HRD"</span><span class="p">,</span> <span class="s2">"Images/pulseOximeter.png"</span><span class="p">),</span>
             <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;pulseSchema&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.2</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;handSchema&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
-            <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-            <span class="n">units</span><span class="o">=</span><span class="s2">&quot;height&quot;</span><span class="p">,</span>
-            <span class="n">image</span><span class="o">=</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;Images/hand.png&quot;</span><span class="p">),</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"pulseSchema"</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.2</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"handSchema"</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
+            <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+            <span class="n">units</span><span class="o">=</span><span class="s2">"height"</span><span class="p">,</span>
+            <span class="n">image</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">"cardioception.HRD"</span><span class="p">,</span> <span class="s2">"Images/hand.png"</span><span class="p">),</span>
             <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.08</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;handSchema&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.15</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"handSchema"</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.15</span>
 
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;listenLogo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
-        <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;height&quot;</span><span class="p">,</span>
-        <span class="n">image</span><span class="o">=</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;Images/listen.png&quot;</span><span class="p">),</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"listenLogo"</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
+        <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">"height"</span><span class="p">,</span>
+        <span class="n">image</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">"cardioception.HRD"</span><span class="p">,</span> <span class="s2">"Images/listen.png"</span><span class="p">),</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;listenLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.08</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"listenLogo"</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.08</span>
 
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;heartLogo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
-        <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;height&quot;</span><span class="p">,</span>
-        <span class="n">image</span><span class="o">=</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;Images/heartbeat.png&quot;</span><span class="p">),</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"heartLogo"</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
+        <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">"height"</span><span class="p">,</span>
+        <span class="n">image</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">"cardioception.HRD"</span><span class="p">,</span> <span class="s2">"Images/heartbeat.png"</span><span class="p">),</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;heartLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.04</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.04</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;HRcutOff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">120</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;keyboard&quot;</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;confScale&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;mouse&quot;</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;myMouse&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">Mouse</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"heartLogo"</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.04</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.04</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"HRcutOff"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">120</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"keyboard"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"mouse"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">Mouse</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">parameters</span></div>
 </pre></div>

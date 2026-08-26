@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cardioception.reports &#8212; cardioception 0.4.5 documentation</title>
+    <title>cardioception.reports &#8212; cardioception 0.6.1 documentation</title>
   
   
   
@@ -265,7 +265,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -415,7 +415,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -488,7 +488,7 @@ document.write(`
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pkg_resources</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">cumulative_normal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
@@ -499,7 +499,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="preprocessing"><a class="viewcode-back" href="../../generated/reports/cardioception.reports.preprocessing.html#cardioception.reports.preprocessing">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">preprocessing</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PathLike</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;From the main behavioural data frame, extract summary metrics of behavioural,</span>
+<span class="w">    </span><span class="sd">"""From the main behavioural data frame, extract summary metrics of behavioural,</span>
 <span class="sd">    metacognitive and interoceptive performances.</span>
 
 <span class="sd">    The slope and thresholds of the interoceptive/exteroceptive psychometric function</span>
@@ -511,7 +511,7 @@ document.write(`
 
 <span class="sd">    The d-prime and criterion are also computed using a classical SDT approach</span>
 <span class="sd">    (`dprime` and `criterion`), as well as a Bayesian estimation performed when</span>
-<span class="sd">    estimating the metacognitive sensitivity meta-d&#39; (`bayesian_dprime`,</span>
+<span class="sd">    estimating the metacognitive sensitivity meta-d' (`bayesian_dprime`,</span>
 <span class="sd">    `bayesian_criterion`, `bayesian_meta_d`, `bayesian_m_ratio`). The dprime and</span>
 <span class="sd">    criterion can vary between the two methods. It is recommended to use the estimates</span>
 <span class="sd">    consistently. Before the estimation of SDT and metacognitive metrics, the function</span>
@@ -550,7 +550,7 @@ document.write(`
 <span class="sd">        interoceptive beliefs. Biological Psychology, 108239.</span>
 <span class="sd">        https://doi.org/10.1016/j.biopsycho.2021.108239</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">pymc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pm</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">metadpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">bayesian</span><span class="p">,</span> <span class="n">sdt</span>
@@ -562,7 +562,7 @@ document.write(`
 
     <span class="n">summary_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>
 
-    <span class="k">for</span> <span class="n">modality</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Intero&quot;</span><span class="p">,</span> <span class="s2">&quot;Extero&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">modality</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"Intero"</span><span class="p">,</span> <span class="s2">"Extero"</span><span class="p">]:</span>
 
         <span class="n">this_modality</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">results</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="n">modality</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
@@ -578,14 +578,14 @@ document.write(`
 
             <span class="c1"># signal detection theory metrics</span>
             <span class="c1"># -------------------------------</span>
-            <span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">this_modality</span><span class="p">[</span><span class="s2">"Stimuli"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">this_modality</span><span class="o">.</span><span class="n">responseBPM</span> <span class="o">&gt;</span> <span class="n">this_modality</span><span class="o">.</span><span class="n">listenBPM</span>
             <span class="p">)</span>
-            <span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Responses&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_modality</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s2">&quot;More&quot;</span>
+            <span class="n">this_modality</span><span class="p">[</span><span class="s2">"Responses"</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_modality</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s2">"More"</span>
 
             <span class="c1"># check that both signals have at least 5 valid trials each</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span>
-                <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">"Stimuli"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span>
+                <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">"Stimuli"</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span>
             <span class="p">):</span>
 
                 <span class="n">hit</span><span class="p">,</span> <span class="n">miss</span><span class="p">,</span> <span class="n">fa</span><span class="p">,</span> <span class="n">cr</span> <span class="o">=</span> <span class="n">this_modality</span><span class="o">.</span><span class="n">scores</span><span class="p">()</span>
@@ -611,40 +611,40 @@ document.write(`
             <span class="n">this_modality</span> <span class="o">=</span> <span class="n">this_modality</span><span class="p">[</span>
                 <span class="o">~</span><span class="n">this_modality</span><span class="o">.</span><span class="n">Confidence</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
             <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Drop trials with NaN in confidence rating</span>
-            <span class="n">this_modality</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;Accuracy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="p">(</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Responses&quot;</span><span class="p">])</span>
-                <span class="o">|</span> <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Responses&quot;</span><span class="p">])</span>
+            <span class="n">this_modality</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"Accuracy"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">"Stimuli"</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">this_modality</span><span class="p">[</span><span class="s2">"Responses"</span><span class="p">])</span>
+                <span class="o">|</span> <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">"Stimuli"</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">"Responses"</span><span class="p">])</span>
             <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
             <span class="c1"># check that both signals have at least 5 valid trials each</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span>
-                <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">"Stimuli"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span>
+                <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">"Stimuli"</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span>
             <span class="p">):</span>
 
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">new_ratings</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">discreteRatings</span><span class="p">(</span>
                         <span class="n">this_modality</span><span class="o">.</span><span class="n">Confidence</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
                     <span class="p">)</span>
-                    <span class="n">this_modality</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;discrete_confidence&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_ratings</span>
+                    <span class="n">this_modality</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"discrete_confidence"</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_ratings</span>
 
                     <span class="n">metad</span> <span class="o">=</span> <span class="n">bayesian</span><span class="o">.</span><span class="n">hmetad</span><span class="p">(</span>
                         <span class="n">data</span><span class="o">=</span><span class="n">this_modality</span><span class="p">,</span>
-                        <span class="n">stimuli</span><span class="o">=</span><span class="s2">&quot;Stimuli&quot;</span><span class="p">,</span>
-                        <span class="n">accuracy</span><span class="o">=</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">,</span>
-                        <span class="n">confidence</span><span class="o">=</span><span class="s2">&quot;discrete_confidence&quot;</span><span class="p">,</span>
+                        <span class="n">stimuli</span><span class="o">=</span><span class="s2">"Stimuli"</span><span class="p">,</span>
+                        <span class="n">accuracy</span><span class="o">=</span><span class="s2">"Accuracy"</span><span class="p">,</span>
+                        <span class="n">confidence</span><span class="o">=</span><span class="s2">"discrete_confidence"</span><span class="p">,</span>
                         <span class="n">nRatings</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-                        <span class="n">output</span><span class="o">=</span><span class="s2">&quot;dataframe&quot;</span><span class="p">,</span>
+                        <span class="n">output</span><span class="o">=</span><span class="s2">"dataframe"</span><span class="p">,</span>
                     <span class="p">)</span>
-                    <span class="n">bayesian_dprime</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="n">bayesian_criterion</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="n">bayesian_meta_d</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;meta_d&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="n">bayesian_m_ratio</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">&quot;m_ratio&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">bayesian_dprime</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">"d"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">bayesian_criterion</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">"c"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">bayesian_meta_d</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">"meta_d"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">bayesian_m_ratio</span> <span class="o">=</span> <span class="n">metad</span><span class="p">[</span><span class="s2">"m_ratio"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span>
                         <span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Cannot discretize ratings for modality: </span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s2">. &quot;</span>
-                            <span class="s2">&quot;The metacognitive efficiency will not be reported.&quot;</span>
+                            <span class="sa">f</span><span class="s2">"Cannot discretize ratings for modality: </span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s2">. "</span>
+                            <span class="s2">"The metacognitive efficiency will not be reported."</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
 
@@ -657,22 +657,22 @@ document.write(`
                 <span class="n">n</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">this_modality</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">==</span> <span class="n">intensity</span><span class="p">)</span>
                 <span class="n">r</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
                     <span class="p">(</span><span class="n">this_modality</span><span class="o">.</span><span class="n">Alpha</span> <span class="o">==</span> <span class="n">intensity</span><span class="p">)</span>
-                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">this_modality</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s2">&quot;More&quot;</span><span class="p">)</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">this_modality</span><span class="o">.</span><span class="n">Decision</span> <span class="o">==</span> <span class="s2">"More"</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="n">validmask</span> <span class="o">=</span> <span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span>  <span class="c1"># remove no responses trials</span>
             <span class="n">xij</span><span class="p">,</span> <span class="n">nij</span><span class="p">,</span> <span class="n">rij</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">validmask</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="n">validmask</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="n">validmask</span><span class="p">]</span>
 
             <span class="k">with</span> <span class="n">pm</span><span class="o">.</span><span class="n">Model</span><span class="p">():</span>
-                <span class="n">alpha</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="s2">&quot;alpha&quot;</span><span class="p">,</span> <span class="n">lower</span><span class="o">=-</span><span class="mf">40.5</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">40.5</span><span class="p">)</span>
-                <span class="n">beta</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">HalfNormal</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="s2">"alpha"</span><span class="p">,</span> <span class="n">lower</span><span class="o">=-</span><span class="mf">40.5</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">40.5</span><span class="p">)</span>
+                <span class="n">beta</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">HalfNormal</span><span class="p">(</span><span class="s2">"beta"</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
                 <span class="n">thetaij</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Deterministic</span><span class="p">(</span>
-                    <span class="s2">&quot;thetaij&quot;</span><span class="p">,</span> <span class="n">cumulative_normal</span><span class="p">(</span><span class="n">xij</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+                    <span class="s2">"thetaij"</span><span class="p">,</span> <span class="n">cumulative_normal</span><span class="p">(</span><span class="n">xij</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
                 <span class="p">)</span>
-                <span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Binomial</span><span class="p">(</span><span class="s2">&quot;rij&quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">thetaij</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">nij</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="n">rij</span><span class="p">)</span>
+                <span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Binomial</span><span class="p">(</span><span class="s2">"rij"</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">thetaij</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">nij</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="n">rij</span><span class="p">)</span>
                 <span class="n">idata</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">chains</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cores</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>
-            <span class="n">bayesian_threshold</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">alpha</span>
-            <span class="n">bayesian_slope</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">beta</span>
+            <span class="n">bayesian_threshold</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">"mean"</span><span class="p">]</span><span class="o">.</span><span class="n">alpha</span>
+            <span class="n">bayesian_slope</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">"mean"</span><span class="p">]</span><span class="o">.</span><span class="n">beta</span>
 
             <span class="c1"># Psi estimates</span>
             <span class="n">threshold</span> <span class="o">=</span> <span class="n">this_modality</span><span class="o">.</span><span class="n">EstimatedThreshold</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -684,21 +684,21 @@ document.write(`
                     <span class="n">summary_df</span><span class="p">,</span>
                     <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
                         <span class="p">{</span>
-                            <span class="s2">&quot;modality&quot;</span><span class="p">:</span> <span class="n">modality</span><span class="p">,</span>
-                            <span class="s2">&quot;decision_mean_rt&quot;</span><span class="p">:</span> <span class="n">decision_mean_rt</span><span class="p">,</span>
-                            <span class="s2">&quot;decision_median_rt&quot;</span><span class="p">:</span> <span class="n">decision_median_rt</span><span class="p">,</span>
-                            <span class="s2">&quot;confidence_mean_rt&quot;</span><span class="p">:</span> <span class="n">confidence_mean_rt</span><span class="p">,</span>
-                            <span class="s2">&quot;confidence_median_rt&quot;</span><span class="p">:</span> <span class="n">confidence_median_rt</span><span class="p">,</span>
-                            <span class="s2">&quot;dprime&quot;</span><span class="p">:</span> <span class="n">d</span><span class="p">,</span>
-                            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="n">c</span><span class="p">,</span>
-                            <span class="s2">&quot;bayesian_dprime&quot;</span><span class="p">:</span> <span class="n">bayesian_dprime</span><span class="p">,</span>
-                            <span class="s2">&quot;bayesian_criterion&quot;</span><span class="p">:</span> <span class="n">bayesian_criterion</span><span class="p">,</span>
-                            <span class="s2">&quot;bayesian_meta_d&quot;</span><span class="p">:</span> <span class="n">bayesian_meta_d</span><span class="p">,</span>
-                            <span class="s2">&quot;bayesian_m_ratio&quot;</span><span class="p">:</span> <span class="n">bayesian_m_ratio</span><span class="p">,</span>
-                            <span class="s2">&quot;threshold&quot;</span><span class="p">:</span> <span class="n">threshold</span><span class="p">,</span>
-                            <span class="s2">&quot;slope&quot;</span><span class="p">:</span> <span class="n">slope</span><span class="p">,</span>
-                            <span class="s2">&quot;bayesian_threshold&quot;</span><span class="p">:</span> <span class="n">bayesian_threshold</span><span class="p">,</span>
-                            <span class="s2">&quot;bayesian_slope&quot;</span><span class="p">:</span> <span class="n">bayesian_slope</span><span class="p">,</span>
+                            <span class="s2">"modality"</span><span class="p">:</span> <span class="n">modality</span><span class="p">,</span>
+                            <span class="s2">"decision_mean_rt"</span><span class="p">:</span> <span class="n">decision_mean_rt</span><span class="p">,</span>
+                            <span class="s2">"decision_median_rt"</span><span class="p">:</span> <span class="n">decision_median_rt</span><span class="p">,</span>
+                            <span class="s2">"confidence_mean_rt"</span><span class="p">:</span> <span class="n">confidence_mean_rt</span><span class="p">,</span>
+                            <span class="s2">"confidence_median_rt"</span><span class="p">:</span> <span class="n">confidence_median_rt</span><span class="p">,</span>
+                            <span class="s2">"dprime"</span><span class="p">:</span> <span class="n">d</span><span class="p">,</span>
+                            <span class="s2">"criterion"</span><span class="p">:</span> <span class="n">c</span><span class="p">,</span>
+                            <span class="s2">"bayesian_dprime"</span><span class="p">:</span> <span class="n">bayesian_dprime</span><span class="p">,</span>
+                            <span class="s2">"bayesian_criterion"</span><span class="p">:</span> <span class="n">bayesian_criterion</span><span class="p">,</span>
+                            <span class="s2">"bayesian_meta_d"</span><span class="p">:</span> <span class="n">bayesian_meta_d</span><span class="p">,</span>
+                            <span class="s2">"bayesian_m_ratio"</span><span class="p">:</span> <span class="n">bayesian_m_ratio</span><span class="p">,</span>
+                            <span class="s2">"threshold"</span><span class="p">:</span> <span class="n">threshold</span><span class="p">,</span>
+                            <span class="s2">"slope"</span><span class="p">:</span> <span class="n">slope</span><span class="p">,</span>
+                            <span class="s2">"bayesian_threshold"</span><span class="p">:</span> <span class="n">bayesian_threshold</span><span class="p">,</span>
+                            <span class="s2">"bayesian_slope"</span><span class="p">:</span> <span class="n">bayesian_slope</span><span class="p">,</span>
                         <span class="p">},</span>
                         <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                     <span class="p">),</span>
@@ -710,9 +710,9 @@ document.write(`
 
 
 <div class="viewcode-block" id="report"><a class="viewcode-back" href="../../generated/reports/cardioception.reports.report.html#cardioception.reports.report">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span>
-    <span class="n">result_path</span><span class="p">:</span> <span class="n">PathLike</span><span class="p">,</span> <span class="n">report_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;HRD&quot;</span>
+    <span class="n">result_path</span><span class="p">:</span> <span class="n">PathLike</span><span class="p">,</span> <span class="n">report_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"HRD"</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;From the results folders, create HTML reports of behavioural and physiological</span>
+<span class="w">    </span><span class="sd">"""From the results folders, create HTML reports of behavioural and physiological</span>
 <span class="sd">    data.</span>
 
 <span class="sd">    Parameters</span>
@@ -723,29 +723,29 @@ document.write(`
 <span class="sd">        Where the HTML report should be saved. If `None`, default will be in the</span>
 <span class="sd">        provided `resultPath`.</span>
 <span class="sd">    task : str, optional</span>
-<span class="sd">        The task (&quot;HRD&quot; or &quot;HBC&quot;), by default &quot;HRD&quot;.</span>
+<span class="sd">        The task ("HRD" or "HBC"), by default "HRD".</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">papermill</span><span class="w"> </span><span class="kn">import</span> <span class="n">execute_notebook</span>
 
     <span class="k">if</span> <span class="n">report_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">report_path</span> <span class="o">=</span> <span class="n">result_path</span>
-    <span class="n">temp_notebook</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">report_path</span><span class="p">,</span> <span class="s2">&quot;temp.ipynb&quot;</span><span class="p">)</span>
-    <span class="n">htmlreport</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">report_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">_report.html&quot;</span><span class="p">)</span>
+    <span class="n">temp_notebook</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">report_path</span><span class="p">,</span> <span class="s2">"temp.ipynb"</span><span class="p">)</span>
+    <span class="n">htmlreport</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">report_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">_report.html"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;HRD&quot;</span><span class="p">:</span>
-        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;HeartRateDiscrimination.ipynb&quot;</span>
-    <span class="k">elif</span> <span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;HBC&quot;</span><span class="p">:</span>
-        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;HeartBeatCounting.ipynb&quot;</span>
+    <span class="k">if</span> <span class="n">task</span> <span class="o">==</span> <span class="s2">"HRD"</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="s2">"HeartRateDiscrimination.ipynb"</span>
+    <span class="k">elif</span> <span class="n">task</span> <span class="o">==</span> <span class="s2">"HBC"</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="s2">"HeartBeatCounting.ipynb"</span>
 
     <span class="n">execute_notebook</span><span class="p">(</span>
-        <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;cardioception.notebooks&quot;</span><span class="p">,</span> <span class="n">template</span><span class="p">),</span>
+        <span class="n">resource_filename</span><span class="p">(</span><span class="s2">"cardioception.notebooks"</span><span class="p">,</span> <span class="n">template</span><span class="p">),</span>
         <span class="n">temp_notebook</span><span class="p">,</span>
         <span class="n">parameters</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">resultPath</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">result_path</span><span class="p">),</span> <span class="n">reportPath</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">report_path</span><span class="p">)),</span>
     <span class="p">)</span>
     <span class="n">command</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;jupyter nbconvert --to html --execute &quot;</span>
-        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;--TemplateExporter.exclude_input=True </span><span class="si">{</span><span class="n">temp_notebook</span><span class="si">}</span><span class="s2"> --output </span><span class="si">{</span><span class="n">htmlreport</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="s2">"jupyter nbconvert --to html --execute "</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">"--TemplateExporter.exclude_input=True </span><span class="si">{</span><span class="n">temp_notebook</span><span class="si">}</span><span class="s2"> --output </span><span class="si">{</span><span class="n">htmlreport</span><span class="si">}</span><span class="s2">"</span>
     <span class="p">)</span>
     <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">temp_notebook</span><span class="p">)</span></div>

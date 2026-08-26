@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>User guide &#8212; cardioception 0.4.5 documentation</title>
+    <title>User guide &#8212; cardioception 0.6.1 documentation</title>
   
   
   
@@ -268,7 +268,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -420,7 +420,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -482,6 +482,21 @@ document.write(`
 <h1>User guide<a class="headerlink" href="#user-guide" title="Permalink to this heading">#</a></h1>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
+<section id="using-pip">
+<h3>Using pip<a class="headerlink" href="#using-pip" title="Permalink to this heading">#</a></h3>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Install the package as <strong><code class="docutils literal notranslate"><span class="pre">cardioception-toolbox</span></code></strong>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install cardioception-toolbox
+</pre></div>
+</div>
+<p>This is the official package, maintained by the Embodied Computation Group at Aarhus University. It is the version described in this documentation and used in our publications. Make sure the package name you install is exactly <code class="docutils literal notranslate"><span class="pre">cardioception-toolbox</span></code>.</p>
+</div>
+<p>The <em>import</em> name is unchanged, so no existing script needs to be edited:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD</span><span class="w"> </span><span class="kn">import</span> <span class="n">task</span>
+</pre></div>
+</div>
+</section>
 <section id="using-github">
 <h3>Using GitHub<a class="headerlink" href="#using-github" title="Permalink to this heading">#</a></h3>
 <p>The current development branch can be installed using:</p>
@@ -550,13 +565,13 @@ document.write(`
 
 <span class="c1"># Set global task parameters</span>
 <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">getParameters</span><span class="p">(</span>
-    <span class="n">participant</span><span class="o">=</span><span class="s1">&#39;Subject_01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;Test&#39;</span><span class="p">,</span> <span class="n">serialPort</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">setup</span><span class="o">=</span><span class="s1">&#39;behavioral&#39;</span><span class="p">,</span> <span class="n">nTrials</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">screenNb</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">participant</span><span class="o">=</span><span class="s1">'Subject_01'</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">'Test'</span><span class="p">,</span> <span class="n">serialPort</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'behavioral'</span><span class="p">,</span> <span class="n">nTrials</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">screenNb</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># Run task</span>
 <span class="n">task</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">confidenceRating</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">runTutorial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;win&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s1">'win'</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>This minimal example will run the Heart Rate Discrimination task with a total of 10 trials using a Psi staircase.</p>
@@ -578,10 +593,10 @@ pause
 <p>The results are saved in the <code class="docutils literal notranslate"><span class="pre">'resultPath'</span></code> folder defined in the parameters dictionary. For each task, we provide a comprehensive notebook detailing the main results, quality checks, and basic preprocessing steps. You can automatically generate the HTML reports using the following code snippet:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.reports</span><span class="w"> </span><span class="kn">import</span> <span class="n">report</span>
 
-<span class="n">resultPath</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span>  <span class="c1"># the folder containing the result files</span>
-<span class="n">reportPath</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span>  <span class="c1"># the folder where you want to save the HTML report</span>
+<span class="n">resultPath</span> <span class="o">=</span> <span class="s2">"./"</span>  <span class="c1"># the folder containing the result files</span>
+<span class="n">reportPath</span> <span class="o">=</span> <span class="s2">"./"</span>  <span class="c1"># the folder where you want to save the HTML report</span>
 
-<span class="n">report</span><span class="p">(</span><span class="n">resultPath</span><span class="p">,</span> <span class="n">reportPath</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;HRD&#39;</span><span class="p">)</span>
+<span class="n">report</span><span class="p">(</span><span class="n">resultPath</span><span class="p">,</span> <span class="n">reportPath</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">'HRD'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This code will generate the HTML reports for the Heart Rate Discrimination task in the <code class="docutils literal notranslate"><span class="pre">reportPath</span></code> folder using the results files located in <code class="docutils literal notranslate"><span class="pre">resultPath</span></code>. This will require <a class="reference external" href="https://papermill.readthedocs.io/en/latest/">papermill</a>.</p>
@@ -635,6 +650,7 @@ pause
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pip">Using pip</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-github">Using GitHub</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-a-conda-environment">Set up a conda environment</a></li>
 </ul>

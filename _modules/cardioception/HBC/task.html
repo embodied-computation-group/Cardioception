@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cardioception.HBC.task &#8212; cardioception 0.4.5 documentation</title>
+    <title>cardioception.HBC.task &#8212; cardioception 0.6.1 documentation</title>
   
   
   
@@ -265,7 +265,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -415,7 +415,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -490,7 +490,7 @@ document.write(`
     <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">runTutorial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the entire task sequence.</span>
+<span class="w">    </span><span class="sd">"""Run the entire task sequence.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -500,7 +500,7 @@ document.write(`
 <span class="sd">        If `True`, will present a tutorial with 10 training trial with feedback and 5</span>
 <span class="sd">        trials with confidence rating.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span><span class="p">,</span> <span class="n">visual</span>
 
@@ -509,35 +509,35 @@ document.write(`
         <span class="n">tutorial</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
 
     <span class="c1"># Rest</span>
-    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restPeriod&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">rest</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restLength&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"restPeriod"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">rest</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"restLength"</span><span class="p">])</span>
 
     <span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">nTrial</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;conditions&quot;</span><span class="p">],</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;times&quot;</span><span class="p">],</span>
-        <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;conditions&quot;</span><span class="p">])),</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"conditions"</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"times"</span><span class="p">],</span>
+        <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"conditions"</span><span class="p">])),</span>
     <span class="p">):</span>
 
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;trialStart&quot;</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">][</span><span class="s2">"trialStart"</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
 
         <span class="n">nCount</span><span class="p">,</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span> <span class="o">=</span> <span class="n">trial</span><span class="p">(</span>
             <span class="n">condition</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">nTrial</span><span class="p">,</span> <span class="n">parameters</span>
         <span class="p">)</span>
 
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;trialStop&quot;</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">][</span><span class="s2">"trialStop"</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
 
         <span class="c1"># Store results in a DataFrame</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;results_df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;results_df&quot;</span><span class="p">],</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">],</span>
                 <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="s2">&quot;nTrial&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">nTrial</span><span class="p">],</span>
-                        <span class="s2">&quot;Reported&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">nCount</span><span class="p">],</span>
-                        <span class="s2">&quot;Condition&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">condition</span><span class="p">],</span>
-                        <span class="s2">&quot;Duration&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">duration</span><span class="p">],</span>
-                        <span class="s2">&quot;Confidence&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">confidence</span><span class="p">],</span>
-                        <span class="s2">&quot;ConfidenceRT&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">confidenceRT</span><span class="p">],</span>
+                        <span class="s2">"nTrial"</span><span class="p">:</span> <span class="p">[</span><span class="n">nTrial</span><span class="p">],</span>
+                        <span class="s2">"Reported"</span><span class="p">:</span> <span class="p">[</span><span class="n">nCount</span><span class="p">],</span>
+                        <span class="s2">"Condition"</span><span class="p">:</span> <span class="p">[</span><span class="n">condition</span><span class="p">],</span>
+                        <span class="s2">"Duration"</span><span class="p">:</span> <span class="p">[</span><span class="n">duration</span><span class="p">],</span>
+                        <span class="s2">"Confidence"</span><span class="p">:</span> <span class="p">[</span><span class="n">confidence</span><span class="p">],</span>
+                        <span class="s2">"ConfidenceRT"</span><span class="p">:</span> <span class="p">[</span><span class="n">confidenceRT</span><span class="p">],</span>
                     <span class="p">}</span>
                 <span class="p">),</span>
             <span class="p">],</span>
@@ -545,34 +545,34 @@ document.write(`
         <span class="p">)</span>
 
         <span class="c1"># Save the results at each iteration</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;results_df&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
-            <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;participant&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span>
-            <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="s2">"/"</span>
+            <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"participant"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"session"</span><span class="p">]</span>
+            <span class="o">+</span> <span class="s2">".txt"</span><span class="p">,</span>
             <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="c1"># Save results</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;results_df&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
-        <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;participant&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="s2">&quot;_final.txt&quot;</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="s2">"/"</span>
+        <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"participant"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"session"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="s2">"_final.txt"</span><span class="p">,</span>
         <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># End of the task</span>
     <span class="n">end</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;You have completed the task. Thank you for your participation.&quot;</span><span class="p">,</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">"You have completed the task. Thank you for your participation."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">end</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
     <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></div>
 
 
@@ -582,12 +582,12 @@ document.write(`
     <span class="n">nTrial</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run one trial.</span>
+<span class="w">    </span><span class="sd">"""Run one trial.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    condition : str</span>
-<span class="sd">        The trial condition, can be `&quot;Rest&quot;` or `&quot;Count&quot;`.</span>
+<span class="sd">        The trial condition, can be `"Rest"` or `"Count"`.</span>
 <span class="sd">    duration : int</span>
 <span class="sd">        The lenght of the recording (in seconds).</span>
 <span class="sd">    ntrial : int</span>
@@ -605,163 +605,163 @@ document.write(`
 <span class="sd">    confidenceRT : float</span>
 <span class="sd">        The response time to provide confidence rating.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">visual</span>
 
     <span class="c1"># Initialize default values</span>
     <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-    <span class="n">nCounts</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">nCounts</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
 
-    <span class="c1"># Ask the participant to press &#39;Space&#39; (default) to start the trial</span>
+    <span class="c1"># Ask the participant to press 'Space' (default) to start the trial</span>
     <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Press space to continue&quot;</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span> <span class="n">text</span><span class="o">=</span><span class="s2">"Press space to continue"</span>
     <span class="p">)</span>
     <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
 
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="c1"># Show instructions</span>
-    <span class="k">if</span> <span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Rest&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">condition</span> <span class="o">==</span> <span class="s2">"Rest"</span><span class="p">:</span>
         <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Rest&quot;</span><span class="p">],</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Rest"</span><span class="p">],</span>
             <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
-            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="n">message</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Count&quot;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Training&quot;</span><span class="p">):</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"restLogo"</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">"Count"</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">"Training"</span><span class="p">):</span>
         <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Count&quot;</span><span class="p">],</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Count"</span><span class="p">],</span>
             <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
-            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="n">message</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;heartLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"heartLogo"</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
 
     <span class="c1"># Wait for a beat to start the task</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">waitBeat</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">waitBeat</span><span class="p">()</span>
     <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 
     <span class="c1"># Sound signaling trial start</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Count&quot;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Training&quot;</span><span class="p">):</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">readInWaiting</span><span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">"Count"</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">"Training"</span><span class="p">):</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">readInWaiting</span><span class="p">()</span>
         <span class="c1"># Add event marker</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s2">&quot;Channel_0&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;noteStart&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;listeningStart&quot;</span><span class="p">]</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s2">"Channel_0"</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"noteStart"</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">][</span><span class="s2">"listeningStart"</span><span class="p">]</span>
         <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># Record for a desired time length</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># Sound signaling trial stop</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Count&quot;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Training&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">"Count"</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">"Training"</span><span class="p">):</span>
         <span class="c1"># Add event marker</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">readInWaiting</span><span class="p">()</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s2">&quot;Channel_0&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;noteStop&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;listeningStop&quot;</span><span class="p">]</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">readInWaiting</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s2">"Channel_0"</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"noteStop"</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">][</span><span class="s2">"listeningStop"</span><span class="p">]</span>
         <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">readInWaiting</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">readInWaiting</span><span class="p">()</span>
 
     <span class="c1"># Hide instructions</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
 
     <span class="c1"># Save recording</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
-        <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;participant&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="s2">"/"</span>
+        <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"participant"</span><span class="p">]</span>
         <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nTrial</span><span class="p">)</span>
-        <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+        <span class="o">+</span> <span class="s2">"_"</span>
         <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nTrial</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1">###############################</span>
     <span class="c1"># Record participant estimation</span>
     <span class="c1">###############################</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Count&quot;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;Training&quot;</span><span class="p">):</span>
-        <span class="c1"># Ask the participant to press &#39;Space&#39; (default) to start the trial</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">"Count"</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">condition</span> <span class="o">==</span> <span class="s2">"Training"</span><span class="p">):</span>
+        <span class="c1"># Ask the participant to press 'Space' (default) to start the trial</span>
         <span class="n">messageCount</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
             <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
-            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;nCount&quot;</span><span class="p">],</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"nCount"</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="n">messageCount</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
 
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;decisionStart&quot;</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">][</span><span class="s2">"decisionStart"</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
 
-        <span class="n">nCounts</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">nCounts</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
 
             <span class="c1"># Record new key</span>
             <span class="n">key</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span>
                 <span class="n">keyList</span><span class="o">=</span><span class="p">[</span>
-                    <span class="s2">&quot;escape&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;backspace&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;return&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;1&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;2&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;3&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;4&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;5&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;6&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;7&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;8&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;9&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;num_1&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;num_2&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;num_3&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;num_4&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;num_5&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;num_6&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;num_7&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;num_8&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;num_9&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;num_0&quot;</span><span class="p">,</span>
+                    <span class="s2">"escape"</span><span class="p">,</span>
+                    <span class="s2">"backspace"</span><span class="p">,</span>
+                    <span class="s2">"return"</span><span class="p">,</span>
+                    <span class="s2">"1"</span><span class="p">,</span>
+                    <span class="s2">"2"</span><span class="p">,</span>
+                    <span class="s2">"3"</span><span class="p">,</span>
+                    <span class="s2">"4"</span><span class="p">,</span>
+                    <span class="s2">"5"</span><span class="p">,</span>
+                    <span class="s2">"6"</span><span class="p">,</span>
+                    <span class="s2">"7"</span><span class="p">,</span>
+                    <span class="s2">"8"</span><span class="p">,</span>
+                    <span class="s2">"9"</span><span class="p">,</span>
+                    <span class="s2">"0"</span><span class="p">,</span>
+                    <span class="s2">"num_1"</span><span class="p">,</span>
+                    <span class="s2">"num_2"</span><span class="p">,</span>
+                    <span class="s2">"num_3"</span><span class="p">,</span>
+                    <span class="s2">"num_4"</span><span class="p">,</span>
+                    <span class="s2">"num_5"</span><span class="p">,</span>
+                    <span class="s2">"num_6"</span><span class="p">,</span>
+                    <span class="s2">"num_7"</span><span class="p">,</span>
+                    <span class="s2">"num_8"</span><span class="p">,</span>
+                    <span class="s2">"num_9"</span><span class="p">,</span>
+                    <span class="s2">"num_0"</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;escape&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"escape"</span><span class="p">:</span>
                 <span class="n">keys</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">getKeys</span><span class="p">()</span>
-                <span class="k">if</span> <span class="s2">&quot;escape&quot;</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;User abort&quot;</span><span class="p">)</span>
-                    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">if</span> <span class="s2">"escape"</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"User abort"</span><span class="p">)</span>
+                    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                     <span class="n">core</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;backspace&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"backspace"</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">nCounts</span><span class="p">:</span>
                     <span class="n">nCounts</span> <span class="o">=</span> <span class="n">nCounts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;return&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"return"</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">nCounts</span><span class="p">):</span>
                     <span class="n">messageError</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-                        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-                        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+                        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+                        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
                         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
-                        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;You should only provide numbers&quot;</span><span class="p">,</span>
+                        <span class="n">text</span><span class="o">=</span><span class="s2">"You should only provide numbers"</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">messageError</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-                    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+                    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
                     <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">nCounts</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">nCounts</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
                     <span class="n">messageError</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-                        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-                        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+                        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+                        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
                         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
-                        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;You should provide numbers&quot;</span><span class="p">,</span>
+                        <span class="n">text</span><span class="o">=</span><span class="s2">"You should provide numbers"</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">messageError</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-                    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+                    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
                     <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">break</span>
@@ -772,43 +772,43 @@ document.write(`
 
             <span class="c1"># Show the text on the screen</span>
             <span class="n">recordedText</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span> <span class="n">text</span><span class="o">=</span><span class="n">nCounts</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span> <span class="n">text</span><span class="o">=</span><span class="n">nCounts</span>
             <span class="p">)</span>
             <span class="n">recordedText</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
             <span class="n">messageCount</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
 
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;decisionStop&quot;</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">][</span><span class="s2">"decisionStop"</span><span class="p">]</span>  <span class="c1"># Send trigger or None</span>
 
         <span class="c1">##############</span>
         <span class="c1"># Rating scale</span>
         <span class="c1">##############</span>
-        <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;rating&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"rating"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">markerStart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;confScale&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;confScale&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
             <span class="p">)</span>
             <span class="n">ratingScale</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">RatingScale</span><span class="p">(</span>
-                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-                <span class="n">low</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;confScale&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">high</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;confScale&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+                <span class="n">low</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">high</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
                 <span class="n">noMouse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">labels</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;labelsRating&quot;</span><span class="p">],</span>
-                <span class="n">acceptKeys</span><span class="o">=</span><span class="s2">&quot;down&quot;</span><span class="p">,</span>
+                <span class="n">labels</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">],</span>
+                <span class="n">acceptKeys</span><span class="o">=</span><span class="s2">"down"</span><span class="p">,</span>
                 <span class="n">markerStart</span><span class="o">=</span><span class="n">markerStart</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-                <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;confidence&quot;</span><span class="p">],</span>
-                <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+                <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"confidence"</span><span class="p">],</span>
+                <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
             <span class="p">)</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;confidenceStart&quot;</span><span class="p">]</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">][</span><span class="s2">"confidenceStart"</span><span class="p">]</span>
             <span class="k">while</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">noResponse</span><span class="p">:</span>
                 <span class="n">message</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
                 <span class="n">ratingScale</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-                <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
             <span class="n">confidence</span> <span class="o">=</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">getRating</span><span class="p">()</span>
             <span class="n">confidenceRT</span> <span class="o">=</span> <span class="n">ratingScale</span><span class="o">.</span><span class="n">getRT</span><span class="p">()</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">][</span><span class="s2">&quot;confidenceStop&quot;</span><span class="p">]</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">][</span><span class="s2">"confidenceStop"</span><span class="p">]</span>
 
     <span class="n">finalCount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nCounts</span><span class="p">)</span> <span class="k">if</span> <span class="n">nCounts</span> <span class="k">else</span> <span class="kc">None</span>
 
@@ -816,7 +816,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="tutorial"><a class="viewcode-back" href="../../../generated/HBC.task/cardioception.HBC.task.tutorial.html#cardioception.HBC.task.tutorial">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">tutorial</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run tutorial for the Heartbeat Counting Task.</span>
+<span class="w">    </span><span class="sd">"""Run tutorial for the Heartbeat Counting Task.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -824,176 +824,176 @@ document.write(`
 <span class="sd">        Task parameters.</span>
 <span class="sd">    win : `psychopy.visual.window` or None</span>
 <span class="sd">        The window in which to draw objects.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">event</span><span class="p">,</span> <span class="n">visual</span>
 
     <span class="c1"># Tutorial 1</span>
     <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial1&quot;</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial1"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
     <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">"Please press SPACE to continue"</span><span class="p">,</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">])</span>
 
     <span class="c1"># Tutorial 2</span>
     <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial2&quot;</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial2"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;heartLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"heartLogo"</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
     <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">"Please press SPACE to continue"</span><span class="p">,</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">])</span>
 
     <span class="c1"># Tutorial 3</span>
-    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;taskVersion&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Shandry&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"taskVersion"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"Shandry"</span><span class="p">:</span>
 
         <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
             <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
-            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial3&quot;</span><span class="p">],</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial3"</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"restLogo"</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
         <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-            <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+            <span class="n">text</span><span class="o">=</span><span class="s2">"Please press SPACE to continue"</span><span class="p">,</span>
             <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-        <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">])</span>
 
     <span class="c1"># Tutorial 4</span>
     <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial4&quot;</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial4"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
     <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">"Please press SPACE to continue"</span><span class="p">,</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
 
-    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">])</span>
 
     <span class="c1"># Tutorial 5</span>
     <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial5&quot;</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial5"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
     <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">"Please press SPACE to continue"</span><span class="p">,</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">])</span>
 
     <span class="c1"># Tutorial 6</span>
     <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial6&quot;</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial6"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
     <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">"Please press SPACE to continue"</span><span class="p">,</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">])</span>
 
     <span class="c1"># Tutorial 7</span>
     <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial7&quot;</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial7"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
     <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">"Please press SPACE to continue"</span><span class="p">,</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">])</span>
 
     <span class="c1"># Tutorial 8</span>
     <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial8&quot;</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial8"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
     <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">"Please press SPACE to continue"</span><span class="p">,</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">])</span>
 
     <span class="c1"># Practice trial</span>
-    <span class="n">_</span> <span class="o">=</span> <span class="n">trial</span><span class="p">(</span><span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">trial</span><span class="p">(</span><span class="s2">"Count"</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 
     <span class="c1"># Tutorial 9</span>
     <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial9&quot;</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial9"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
     <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
-        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Please press SPACE to continue&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">"Please press SPACE to continue"</span><span class="p">,</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">])</span></div>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="rest"><a class="viewcode-back" href="../../../generated/HBC.task/cardioception.HBC.task.rest.html#cardioception.HBC.task.rest">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">rest</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run a resting state period for heart rate variability before running the Heart</span>
+<span class="w">    </span><span class="sd">"""Run a resting state period for heart rate variability before running the Heart</span>
 <span class="sd">    Beat Counting Task.</span>
 
 <span class="sd">    Parameters</span>
@@ -1003,28 +1003,28 @@ document.write(`
 <span class="sd">    duration : float</span>
 <span class="sd">        Duration or the recording (seconds).</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">visual</span>
 
     <span class="c1"># Show the resting state instructions</span>
     <span class="n">messageStart</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
-        <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Calibrating... Please sit quietly&quot;</span> <span class="s2">&quot; until the end of the recording.&quot;</span><span class="p">),</span>
+        <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s2">"Calibrating... Please sit quietly"</span> <span class="s2">" until the end of the recording."</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">messageStart</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"restLogo"</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
 
     <span class="c1"># Record PPG signal</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
 
     <span class="c1"># Save recording</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;participant&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_Rest&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"/"</span> <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"participant"</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"_Rest"</span>
     <span class="p">)</span></div>
 </pre></div>
 

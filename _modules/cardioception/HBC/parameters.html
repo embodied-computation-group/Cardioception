@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cardioception.HBC.parameters &#8212; cardioception 0.4.5 documentation</title>
+    <title>cardioception.HBC.parameters &#8212; cardioception 0.6.1 documentation</title>
   
   
   
@@ -265,7 +265,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -415,7 +415,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -485,29 +485,29 @@ document.write(`
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pkg_resources</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">serial</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole</span><span class="w"> </span><span class="kn">import</span> <span class="n">serialSim</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole.recording</span><span class="w"> </span><span class="kn">import</span> <span class="n">Oximeter</span>
 
 
 <div class="viewcode-block" id="getParameters"><a class="viewcode-back" href="../../../generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html#cardioception.HBC.parameters.getParameters">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">getParameters</span><span class="p">(</span>
-    <span class="n">participant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Participant&quot;</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;001&quot;</span><span class="p">,</span>
-    <span class="n">serialPort</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;COM3&quot;</span><span class="p">,</span>
-    <span class="n">taskVersion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Garfinkel&quot;</span><span class="p">,</span>
-    <span class="n">setup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;behavioral&quot;</span><span class="p">,</span>
+    <span class="n">participant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Participant"</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"001"</span><span class="p">,</span>
+    <span class="n">serialPort</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"COM3"</span><span class="p">,</span>
+    <span class="n">taskVersion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Garfinkel"</span><span class="p">,</span>
+    <span class="n">setup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"behavioral"</span><span class="p">,</span>
     <span class="n">screenNb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">fullscr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">resultPath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">systole_kw</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create Heartbeat Counting task parameters.</span>
+<span class="w">    </span><span class="sd">"""Create Heartbeat Counting task parameters.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    participant : str</span>
-<span class="sd">        Subject ID. Default is &#39;exteroStairCase&#39;.</span>
+<span class="sd">        Subject ID. Default is 'exteroStairCase'.</span>
 <span class="sd">    resultPath : str or None</span>
 <span class="sd">        Where to save the results.</span>
 <span class="sd">    screenNb : int</span>
@@ -515,22 +515,22 @@ document.write(`
 <span class="sd">        Default is set to 0.</span>
 <span class="sd">    serialPort: str</span>
 <span class="sd">        The USB port where the pulse oximeter is plugged. Should be written as a string</span>
-<span class="sd">        e.g. `&quot;COM3&quot;` for USB ports on Windows.</span>
+<span class="sd">        e.g. `"COM3"` for USB ports on Windows.</span>
 <span class="sd">    session : int</span>
-<span class="sd">        Session number. Default to &#39;001&#39;.</span>
+<span class="sd">        Session number. Default to '001'.</span>
 <span class="sd">    setup : str</span>
-<span class="sd">        Context of oximeter recording. `&quot;behavioral&quot;` will record through a Nonin</span>
-<span class="sd">        pulse oximeter, `&quot;test&quot;` will use pre-recorded pulse time series (for testing</span>
+<span class="sd">        Context of oximeter recording. `"behavioral"` will record through a Nonin</span>
+<span class="sd">        pulse oximeter, `"test"` will use pre-recorded pulse time series (for testing</span>
 <span class="sd">        only).</span>
 <span class="sd">    systole_kw : dict</span>
 <span class="sd">        Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.</span>
 <span class="sd">    taskVersion : str or None</span>
-<span class="sd">        Task version to run. Can be &#39;Garfinkel&#39;, &#39;Shandry&#39;, &#39;test&#39; or None.</span>
+<span class="sd">        Task version to run. Can be 'Garfinkel', 'Shandry', 'test' or None.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    conditions : 1d array-like of str</span>
-<span class="sd">        The conditions. Can be &#39;Rest&#39;, &#39;Training&#39; or &#39;Count&#39;.</span>
+<span class="sd">        The conditions. Can be 'Rest', 'Training' or 'Count'.</span>
 <span class="sd">    confScale : list</span>
 <span class="sd">        The range of the confidence rating scale.</span>
 <span class="sd">    heartLogo : `psychopy.visual.ImageStim`</span>
@@ -563,7 +563,7 @@ document.write(`
 <span class="sd">    startKey : str</span>
 <span class="sd">        The key to press to start the task and go to next steps.</span>
 <span class="sd">    taskVersion : str or None</span>
-<span class="sd">        Task version to run. Can be &#39;Garfinkel&#39;, &#39;Shandry&#39;, &#39;test&#39; or None.</span>
+<span class="sd">        Task version to run. Can be 'Garfinkel', 'Shandry', 'test' or None.</span>
 <span class="sd">    texts : dict</span>
 <span class="sd">        Dictionary containing the texts to be presented.</span>
 <span class="sd">    textSize : float</span>
@@ -572,215 +572,215 @@ document.write(`
 <span class="sd">        Dictionary {str, callable or None}. The function will be executed</span>
 <span class="sd">        before the corresponding trial sequence. The default values are</span>
 <span class="sd">        `None` (no trigger sent).</span>
-<span class="sd">        * `&quot;trialStart&quot;`</span>
-<span class="sd">        * `&quot;trialStop&quot;`</span>
-<span class="sd">        * `&quot;listeningStart&quot;`</span>
-<span class="sd">        * `&quot;listeningStop&quot;`</span>
-<span class="sd">        * `&quot;decisionStart&quot;`</span>
-<span class="sd">        * `&quot;decisionStop&quot;`</span>
-<span class="sd">        * `&quot;confidenceStart&quot;`</span>
-<span class="sd">        * `&quot;confidenceStop&quot;`</span>
+<span class="sd">        * `"trialStart"`</span>
+<span class="sd">        * `"trialStop"`</span>
+<span class="sd">        * `"listeningStart"`</span>
+<span class="sd">        * `"listeningStop"`</span>
+<span class="sd">        * `"decisionStart"`</span>
+<span class="sd">        * `"decisionStop"`</span>
+<span class="sd">        * `"confidenceStart"`</span>
+<span class="sd">        * `"confidenceStop"`</span>
 <span class="sd">    times : 1d array-like of int</span>
 <span class="sd">        Length of trials, in seconds.</span>
 <span class="sd">    win : `psychopy.visual.window`</span>
 <span class="sd">        The window in which to draw objects.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">sound</span><span class="p">,</span> <span class="n">visual</span>
 
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restPeriod&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restLength&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">30</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;randomize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;startKey&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;space&quot;</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;rating&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;confScale&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;labelsRating&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Guess&quot;</span><span class="p">,</span> <span class="s2">&quot;Certain&quot;</span><span class="p">]</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;taskVersion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">taskVersion</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;results_df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({})</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;setup&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">setup</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"restPeriod"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"restLength"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"randomize"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"space"</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"rating"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Guess"</span><span class="p">,</span> <span class="s2">"Certain"</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"taskVersion"</span><span class="p">]</span> <span class="o">=</span> <span class="n">taskVersion</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({})</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"setup"</span><span class="p">]</span> <span class="o">=</span> <span class="n">setup</span>
 
     <span class="c1"># Initialize triggers dictionary with None</span>
     <span class="c1"># Some or all can later be overwrited with callable</span>
     <span class="c1"># sending the information needed.</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;triggers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;trialStart&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;trialStop&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;listeningStart&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;listeningStop&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;decisionStart&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;decisionStop&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;confidenceStart&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;confidenceStop&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"trialStart"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">"trialStop"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">"listeningStart"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">"listeningStop"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">"decisionStart"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">"decisionStop"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">"confidenceStart"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">"confidenceStop"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="c1"># Experimental design - can choose between a version based on recent</span>
-    <span class="c1"># papers from Sarah Garfinkel&#39;s group, or the classic Schandry approach.</span>
+    <span class="c1"># papers from Sarah Garfinkel's group, or the classic Schandry approach.</span>
     <span class="c1"># The primary difference ebtween the two is the order of trials and the</span>
     <span class="c1"># use of resting periods between trials.</span>
-    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;taskVersion&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Garfinkel&quot;</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;times&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;times&quot;</span><span class="p">])</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;conditions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;Count&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Count&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Count&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Count&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Count&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Count&quot;</span><span class="p">,</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"taskVersion"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"Garfinkel"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"times"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"times"</span><span class="p">])</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"conditions"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"Count"</span><span class="p">,</span>
+            <span class="s2">"Count"</span><span class="p">,</span>
+            <span class="s2">"Count"</span><span class="p">,</span>
+            <span class="s2">"Count"</span><span class="p">,</span>
+            <span class="s2">"Count"</span><span class="p">,</span>
+            <span class="s2">"Count"</span><span class="p">,</span>
         <span class="p">]</span>
 
-    <span class="k">elif</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;taskVersion&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Schandry&quot;</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;times&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">60</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">45</span><span class="p">])</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;conditions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Rest&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="s2">&quot;Rest&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="s2">&quot;Rest&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"taskVersion"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"Schandry"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"times"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">60</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">45</span><span class="p">])</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"conditions"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Rest"</span><span class="p">,</span> <span class="s2">"Count"</span><span class="p">,</span> <span class="s2">"Rest"</span><span class="p">,</span> <span class="s2">"Count"</span><span class="p">,</span> <span class="s2">"Rest"</span><span class="p">,</span> <span class="s2">"Count"</span><span class="p">]</span>
 
-    <span class="k">elif</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;taskVersion&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;times&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;conditions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Rest&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"taskVersion"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"test"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"times"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"conditions"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Rest"</span><span class="p">,</span> <span class="s2">"Count"</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid task condition&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid task condition"</span><span class="p">)</span>
 
-    <span class="c1"># Set default path /Results/ &#39;Subject ID&#39; /</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;participant&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">participant</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="c1"># Set default path /Results/ 'Subject ID' /</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"participant"</span><span class="p">]</span> <span class="o">=</span> <span class="n">participant</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"session"</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">resultPath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/data/&quot;</span> <span class="o">+</span> <span class="n">participant</span> <span class="o">+</span> <span class="n">session</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"/data/"</span> <span class="o">+</span> <span class="n">participant</span> <span class="o">+</span> <span class="n">session</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resultPath</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resultPath</span>
     <span class="c1"># Create Results directory of not already exists</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">]):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;resultPath&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">])</span>
 
     <span class="c1"># Set note played at trial start</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;noteStart&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sound</span><span class="o">.</span><span class="n">Sound</span><span class="p">(</span>
-        <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;cardioception.HBC&quot;</span><span class="p">,</span> <span class="s2">&quot;Sounds/start.wav&quot;</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"noteStart"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sound</span><span class="o">.</span><span class="n">Sound</span><span class="p">(</span>
+        <span class="n">resource_filename</span><span class="p">(</span><span class="s2">"cardioception.HBC"</span><span class="p">,</span> <span class="s2">"Sounds/start.wav"</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;noteStop&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sound</span><span class="o">.</span><span class="n">Sound</span><span class="p">(</span>
-        <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;cardioception.HBC&quot;</span><span class="p">,</span> <span class="s2">&quot;Sounds/stop.wav&quot;</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"noteStop"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sound</span><span class="o">.</span><span class="n">Sound</span><span class="p">(</span>
+        <span class="n">resource_filename</span><span class="p">(</span><span class="s2">"cardioception.HBC"</span><span class="p">,</span> <span class="s2">"Sounds/stop.wav"</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># Open window</span>
-    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;setup&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"setup"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"test"</span><span class="p">:</span>
         <span class="n">fullscr</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">Window</span><span class="p">(</span><span class="n">screen</span><span class="o">=</span><span class="n">screenNb</span><span class="p">,</span> <span class="n">fullscr</span><span class="o">=</span><span class="n">fullscr</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;height&quot;</span><span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mouseVisible</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">Window</span><span class="p">(</span><span class="n">screen</span><span class="o">=</span><span class="n">screenNb</span><span class="p">,</span> <span class="n">fullscr</span><span class="o">=</span><span class="n">fullscr</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">"height"</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">mouseVisible</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restLogo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
-        <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;height&quot;</span><span class="p">,</span>
-        <span class="n">image</span><span class="o">=</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;Images/rest.png&quot;</span><span class="p">),</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"restLogo"</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
+        <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">"height"</span><span class="p">,</span>
+        <span class="n">image</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">"cardioception.HBC"</span><span class="p">,</span> <span class="s2">"Images/rest.png"</span><span class="p">),</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">),</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;restLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.15</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;heartLogo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
-        <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">],</span>
-        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;height&quot;</span><span class="p">,</span>
-        <span class="n">image</span><span class="o">=</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;Images/heartbeat.png&quot;</span><span class="p">),</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"restLogo"</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.15</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"heartLogo"</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">ImageStim</span><span class="p">(</span>
+        <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">"height"</span><span class="p">,</span>
+        <span class="n">image</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">"cardioception.HBC"</span><span class="p">,</span> <span class="s2">"Images/heartbeat.png"</span><span class="p">),</span>
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">),</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;heartLogo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.05</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"heartLogo"</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.05</span>
 
-    <span class="k">if</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">&quot;behavioral&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">"behavioral"</span><span class="p">:</span>
         <span class="c1"># PPG recording</span>
         <span class="n">port</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">serialPort</span><span class="p">)</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span>
             <span class="n">serial</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">add_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">systole_kw</span>
         <span class="p">)</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">"test"</span><span class="p">:</span>
         <span class="c1"># Use pre-recorded pulse time series for testing</span>
         <span class="n">port</span> <span class="o">=</span> <span class="n">serialSim</span><span class="p">()</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span>
             <span class="n">serial</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">add_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">systole_kw</span>
         <span class="p">)</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;oxiTask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1">#######</span>
     <span class="c1"># Texts</span>
     <span class="c1">#######</span>
 
     <span class="c1"># Task instructions</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Rest&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Please sit quietly until the next session&quot;</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;After you hear START, try to count your heartbeats&quot;</span>
-        <span class="s2">&quot; by concentrating on your body feelings.&quot;</span>
-        <span class="s2">&quot; Stop counting when you hear STOP&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Rest"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Please sit quietly until the next session"</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Count"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"After you hear START, try to count your heartbeats"</span>
+        <span class="s2">" by concentrating on your body feelings."</span>
+        <span class="s2">" Stop counting when you hear STOP"</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Training&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;After you hear START, try to count your heartbeats&quot;</span>
-        <span class="s2">&quot; by concentrating on your body feelings&quot;</span>
-        <span class="s2">&quot; Stop counting when you hear STOP&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Training"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"After you hear START, try to count your heartbeats"</span>
+        <span class="s2">" by concentrating on your body feelings"</span>
+        <span class="s2">" Stop counting when you hear STOP"</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;nCount&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;How many heartbeats did you count?&quot;</span>
-        <span class="s2">&quot; Write a number and press ENTER to validate.&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"nCount"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"How many heartbeats did you count?"</span>
+        <span class="s2">" Write a number and press ENTER to validate."</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;confidence&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;How confident are you about your count?&quot;</span>
-        <span class="s2">&quot;Use the RIGHT/LEFT keys to select and the DOWN key to confirm&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"confidence"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"How confident are you about your count?"</span>
+        <span class="s2">"Use the RIGHT/LEFT keys to select and the DOWN key to confirm"</span>
     <span class="p">)</span>
 
     <span class="c1"># Tutorial instructions</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;During this experiment, we will ask you to silently&quot;</span>
-        <span class="s2">&quot; count your heartbeats for different intervals of time.&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial1"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"During this experiment, we will ask you to silently"</span>
+        <span class="s2">" count your heartbeats for different intervals of time."</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;When you see this &quot;heart&quot; icon, you will silently count your&#39;</span>
-        <span class="s2">&quot; heartbeats by focusing on your body sensations.&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial2"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">'When you see this "heart" icon, you will silently count your'</span>
+        <span class="s2">" heartbeats by focusing on your body sensations."</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial3&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;Sometime, you will also encounter this &quot;rest&quot; icon.&#39;</span>
-        <span class="s2">&quot; In this case your task will just be to sit quietly until the next&quot;</span>
-        <span class="s2">&quot; session.&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial3"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">'Sometime, you will also encounter this "rest" icon.'</span>
+        <span class="s2">" In this case your task will just be to sit quietly until the next"</span>
+        <span class="s2">" session."</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial4&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;The beginning and the end of the task will be signalled when you hear&quot;</span>
-        <span class="s2">&quot; the words &#39;START&#39;&#39; and &#39;STOP&#39;. While counting your heartbeats, you&quot;</span>
-        <span class="s2">&quot; may close your eyes if you find that helpful. Please keep your hand&quot;</span>
-        <span class="s2">&quot; still during the counting period, to avoid interfering with&quot;</span>
-        <span class="s2">&quot; the heartbeat recording.&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial4"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"The beginning and the end of the task will be signalled when you hear"</span>
+        <span class="s2">" the words 'START'' and 'STOP'. While counting your heartbeats, you"</span>
+        <span class="s2">" may close your eyes if you find that helpful. Please keep your hand"</span>
+        <span class="s2">" still during the counting period, to avoid interfering with"</span>
+        <span class="s2">" the heartbeat recording."</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial5&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;After the counting part of the task, you will be asked to report the&quot;</span>
-        <span class="s2">&quot; exact number of heartbeats you felt during the interval between&quot;</span>
-        <span class="s2">&quot; &#39;START&#39; and &#39;STOP&#39;. Please do not try to estimate the number of&quot;</span>
-        <span class="s2">&quot; heartbeats, but instead only report the heartbeats you actually felt&quot;</span>
-        <span class="s2">&quot; during the interval. You will input your response using the number&quot;</span>
-        <span class="s2">&quot; pad and press return when done. You can also correct your response&quot;</span>
-        <span class="s2">&quot; using backspace.&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial5"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"After the counting part of the task, you will be asked to report the"</span>
+        <span class="s2">" exact number of heartbeats you felt during the interval between"</span>
+        <span class="s2">" 'START' and 'STOP'. Please do not try to estimate the number of"</span>
+        <span class="s2">" heartbeats, but instead only report the heartbeats you actually felt"</span>
+        <span class="s2">" during the interval. You will input your response using the number"</span>
+        <span class="s2">" pad and press return when done. You can also correct your response"</span>
+        <span class="s2">" using backspace."</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial6&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;Once you have made your response, you will estimate your subjective&quot;</span>
-        <span class="s2">&quot; feeling of confidence in how accurate your count was&quot;</span>
-        <span class="s2">&quot; for that interval. A large number here means that you are totally&quot;</span>
-        <span class="s2">&quot; certain you counted the exact number of heartbeats that occured,&quot;</span>
-        <span class="s2">&quot; and a small number means that you are totally uncertain or felt that&quot;</span>
-        <span class="s2">&quot; you were guessing about the&quot;</span>
-        <span class="s2">&quot; number of heartbeats. You should use the RIGHT and LEFT&quot;</span>
-        <span class="s2">&quot; key to select your response and the DOWN key to confirm.&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial6"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"Once you have made your response, you will estimate your subjective"</span>
+        <span class="s2">" feeling of confidence in how accurate your count was"</span>
+        <span class="s2">" for that interval. A large number here means that you are totally"</span>
+        <span class="s2">" certain you counted the exact number of heartbeats that occured,"</span>
+        <span class="s2">" and a small number means that you are totally uncertain or felt that"</span>
+        <span class="s2">" you were guessing about the"</span>
+        <span class="s2">" number of heartbeats. You should use the RIGHT and LEFT"</span>
+        <span class="s2">" key to select your response and the DOWN key to confirm."</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial7&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;Before the main task begins there is a short resting period of&quot;</span>
-        <span class="s2">&quot; several minutes, during which we will calibrate the heartbeat&quot;</span>
-        <span class="s2">&quot; recording. During this period, please sit quietly with your&quot;</span>
-        <span class="s2">&quot; hands still to avoid interfering with the calibration.&quot;</span>
-        <span class="s2">&quot; Afterwards, the counting task will begin, and will take about&quot;</span>
-        <span class="s2">&quot; 6 minutes in total.&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial7"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"Before the main task begins there is a short resting period of"</span>
+        <span class="s2">" several minutes, during which we will calibrate the heartbeat"</span>
+        <span class="s2">" recording. During this period, please sit quietly with your"</span>
+        <span class="s2">" hands still to avoid interfering with the calibration."</span>
+        <span class="s2">" Afterwards, the counting task will begin, and will take about"</span>
+        <span class="s2">" 6 minutes in total."</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial8&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;You will now complete a short practice task.&quot;</span>
-        <span class="s2">&quot; Please ask the experimenter if you have any questions before&quot;</span>
-        <span class="s2">&quot; continuing to the main experiment.&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial8"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"You will now complete a short practice task."</span>
+        <span class="s2">" Please ask the experimenter if you have any questions before"</span>
+        <span class="s2">" continuing to the main experiment."</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;texts&quot;</span><span class="p">][</span><span class="s2">&quot;Tutorial9&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;Good job! If you have any question, ask the experimenter now,&quot;</span>
-        <span class="s2">&quot; otherwise press SPACE to continue to the experiment.&quot;</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial9"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"Good job! If you have any question, ask the experimenter now,"</span>
+        <span class="s2">" otherwise press SPACE to continue to the experiment."</span>
     <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;textSize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.04</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.04</span>
 
     <span class="k">return</span> <span class="n">parameters</span></div>
 </pre></div>

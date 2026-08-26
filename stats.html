@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Statistical analysis &#8212; cardioception 0.4.5 documentation</title>
+    <title>Statistical analysis &#8212; cardioception 0.6.1 documentation</title>
   
   
   
@@ -268,7 +268,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -420,7 +420,7 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/Cardioception/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+          <a href="https://pypi.org/project/cardioception-toolbox/" title="Pypi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Pypi</span></a>
         </li>
 </ul></div>
@@ -519,14 +519,14 @@ document.write(`
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.reports</span><span class="w"> </span><span class="kn">import</span> <span class="n">report</span>
 
-<span class="n">data_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span>  <span class="c1"># path to the data folder</span>
+<span class="n">data_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="s2">"data"</span><span class="p">)</span>  <span class="c1"># path to the data folder</span>
 
 <span class="c1"># for each file found in the result folder, create the HTML report</span>
 <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_folder</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
 
     <span class="c1"># all the preprocessing happens here</span>
     <span class="c1"># the input is a file name at it returns a summary dataframe</span>
-    <span class="n">results_df</span> <span class="o">=</span> <span class="n">report</span><span class="p">(</span><span class="n">result_path</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">report_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">data_folder</span><span class="p">,</span> <span class="s2">&quot;reports&quot;</span><span class="p">))</span>
+    <span class="n">results_df</span> <span class="o">=</span> <span class="n">report</span><span class="p">(</span><span class="n">result_path</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">report_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">data_folder</span><span class="p">,</span> <span class="s2">"reports"</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
@@ -536,13 +536,13 @@ document.write(`
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.reports</span><span class="w"> </span><span class="kn">import</span> <span class="n">report</span>
 
-<span class="n">data_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span>  <span class="c1"># path to the data folder</span>
+<span class="n">data_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="s2">"data"</span><span class="p">)</span>  <span class="c1"># path to the data folder</span>
 
 <span class="c1"># for each folder, create the HTML report from the files it contains</span>
 <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_folder</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
 
     <span class="c1"># this command runs the notebook and converts it into HTML</span>
-    <span class="n">results_df</span> <span class="o">=</span> <span class="n">report</span><span class="p">(</span><span class="n">result_path</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">report_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">data_folder</span><span class="p">,</span> <span class="s2">&quot;reports&quot;</span><span class="p">))</span>
+    <span class="n">results_df</span> <span class="o">=</span> <span class="n">report</span><span class="p">(</span><span class="n">result_path</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">report_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">data_folder</span><span class="p">,</span> <span class="s2">"reports"</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
