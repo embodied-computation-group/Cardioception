@@ -190,24 +190,29 @@ recommends, and it should be your primary one.
 cf <- coef(fit)$subj[, "Estimate", ]
 ```
 
-**Then the pooled check, with its caveat.** Pooling observed proportions across
-participants and drawing them against the fitted curve is tempting, and the points
-will miss. Usually that is not misfit. Pooled data estimate the *average of the
-participants' curves*, while the population curve is the curve *of the average
-participant*, and with a threshold SD near 11 ΔBPM those are visibly different
-lines. See [two averages that are not the same](psychophysics.md#two-averages).
+**Then the pooled check.** Pool the observed proportions into bins and ask the
+model what it predicts for those same bins.
 
 ![Posterior predictive check by modality and gender](../images/tutorials/fig_ppc_modality_gender.png)
 
-The points track the solid line, not the dashed one. What actually decides the
-question is the bars: the model's predictive interval for each bin, computed over
-the real trials. On the worked model 60 of 61 bins fall inside their 95% interval,
-and the one that does not misses by 0.003. The model fits.
+Everything on that figure is either data or a prediction of it: the points are
+observed, and the bars and the line are what the model expects for them. On the
+worked model **60 of 61 bins fall inside their 95% interval**, and the one that
+does not misses by 0.003. The model fits.
 
 Use `posterior_predict()` for those bars, not `posterior_epred()`. The expectation
 carries uncertainty in the mean but no binomial sampling noise, so as a predictive
 interval it is far too narrow in thinly sampled bins and will report misfit that is
 nothing but noise.
+
+```{warning}
+Do not check pooled data against the population curve. `re_formula = NA` gives
+the curve *of the average participant*, while pooled proportions estimate the
+*average of the participants' curves*, and with a threshold SD near 11 ΔBPM those
+are different lines. Comparing them makes a model that fits look badly wrong. The
+prediction to use here is one made over the participants and trials that actually
+produced each bin. See [two averages that are not the same](psychophysics.md#two-averages).
+```
 
 A third effect shows up at the extremes of this task specifically. The staircase
 concentrates trials near each participant's own threshold, so a bin at −40 ΔBPM

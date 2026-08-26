@@ -414,21 +414,26 @@ recommends, and it should be your primary one.</p>
 <span class="n">cf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">coef</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span><span class="o">$</span><span class="n">subj</span><span class="p">[,</span><span class="w"> </span><span class="s">"Estimate"</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
 </pre></div>
 </div>
-<p><strong>Then the pooled check, with its caveat.</strong> Pooling observed proportions across
-participants and drawing them against the fitted curve is tempting, and the points
-will miss. Usually that is not misfit. Pooled data estimate the <em>average of the
-participants’ curves</em>, while the population curve is the curve <em>of the average
-participant</em>, and with a threshold SD near 11 ΔBPM those are visibly different
-lines. See <a class="reference internal" href="psychophysics.html#two-averages"><span class="std std-ref">two averages that are not the same</span></a>.</p>
+<p><strong>Then the pooled check.</strong> Pool the observed proportions into bins and ask the
+model what it predicts for those same bins.</p>
 <p><img alt="Posterior predictive check by modality and gender" src="../_images/fig_ppc_modality_gender.png" /></p>
-<p>The points track the solid line, not the dashed one. What actually decides the
-question is the bars: the model’s predictive interval for each bin, computed over
-the real trials. On the worked model 60 of 61 bins fall inside their 95% interval,
-and the one that does not misses by 0.003. The model fits.</p>
+<p>Everything on that figure is either data or a prediction of it: the points are
+observed, and the bars and the line are what the model expects for them. On the
+worked model <strong>60 of 61 bins fall inside their 95% interval</strong>, and the one that
+does not misses by 0.003. The model fits.</p>
 <p>Use <code class="docutils literal notranslate"><span class="pre">posterior_predict()</span></code> for those bars, not <code class="docutils literal notranslate"><span class="pre">posterior_epred()</span></code>. The expectation
 carries uncertainty in the mean but no binomial sampling noise, so as a predictive
 interval it is far too narrow in thinly sampled bins and will report misfit that is
 nothing but noise.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not check pooled data against the population curve. <code class="docutils literal notranslate"><span class="pre">re_formula</span> <span class="pre">=</span> <span class="pre">NA</span></code> gives
+the curve <em>of the average participant</em>, while pooled proportions estimate the
+<em>average of the participants’ curves</em>, and with a threshold SD near 11 ΔBPM those
+are different lines. Comparing them makes a model that fits look badly wrong. The
+prediction to use here is one made over the participants and trials that actually
+produced each bin. See <a class="reference internal" href="psychophysics.html#two-averages"><span class="std std-ref">two averages that are not the same</span></a>.</p>
+</div>
 <p>A third effect shows up at the extremes of this task specifically. The staircase
 concentrates trials near each participant’s own threshold, so a bin at −40 ΔBPM
 is made up of whoever happened to have a threshold out there rather than a fair
