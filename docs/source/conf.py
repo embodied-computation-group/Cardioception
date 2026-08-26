@@ -14,9 +14,6 @@ import os
 import re
 import time
 
-import sphinx_bootstrap_theme
-
-
 def get_version():
     """Read __version__ from the package without importing it.
 
@@ -117,42 +114,39 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages. See the documentation for
 # a list of builtin themes.
 
-html_theme = "pydata_sphinx_theme"
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+html_theme = "furo"
+html_title = "Cardioception Toolbox"
+
 html_theme_options = {
-    "icon_links": [
-        dict(
-            name="GitHub",
-            url="https://github.com/embodied-computation-group/Cardioception",
-            icon="fab fa-github-square",
-        ),
-        dict(
-            name="Twitter",
-            url="https://twitter.com/visceral_mind",
-            icon="fab fa-twitter-square",
-        ),
-        dict(
-            name="Pypi",
-            url="https://pypi.org/project/cardioception-toolbox/",
-            icon="fas fa-box",
-        ),
-    ],
-    "logo": {
-        "text": "Cardioception",
+    "sidebar_hide_name": True,
+    "light_css_variables": {
+        "color-brand-primary": "#1f3352",
+        "color-brand-content": "#2f4b73",
     },
+    "dark_css_variables": {
+        "color-brand-primary": "#9fc0e8",
+        "color-brand-content": "#9fc0e8",
+    },
+    "footer_icons": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/embodied-computation-group/Cardioception",
+            "html": "GitHub",
+            "class": "",
+        },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/cardioception-toolbox/",
+            "html": "PyPI",
+            "class": "",
+        },
+    ],
 }
 
-html_sidebars = {"**": []}
-
-html_css_files = [
-    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-]
-html_logo = "images/logo_small.svg"
-html_favicon = "images/logo_small.svg"
-
-
-def setup(app):
-    app.add_css_file("style.css")
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
+html_logo = "images/cardioception_icon.png"
+html_favicon = "images/favicon.png"
 
 
 # -- Intersphinx ------------------------------------------------

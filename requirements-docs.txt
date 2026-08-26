@@ -8,14 +8,13 @@ matplotlib
 
 # Documentation dependencies (minimal set to avoid conflicts)
 sphinx==5.3.0
-sphinx-bootstrap-theme>=0.8.1
 sphinxcontrib-bibtex>=2.4.2
 numpydoc>=1.4.0
 myst-parser
 myst-nb>=0.16.0
 
-# Theme
-pydata-sphinx-theme>=0.12.0
+# Theme. Pinned because furo 2023.5+ requires Sphinx 6, and Sphinx is held at 5.3.
+furo==2023.3.27
 
 # Visualization (compatible versions)
 graphviz

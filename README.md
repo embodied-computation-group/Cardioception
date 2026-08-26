@@ -1,6 +1,6 @@
 [![GitHub license](https://img.shields.io/github/license/embodied-computation-group/Cardioception)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE) [![GitHub release](https://img.shields.io/github/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/) [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit) [![pip](https://badge.fury.io/py/cardioception-toolbox.svg)](https://pypi.org/project/cardioception-toolbox/) [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/) [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
-# Cardioception
+# Cardioception Toolbox
 
 <img src="images/cardioception_icon.png" align="left" alt="cardioception" height="230" HSPACE=30>
 
@@ -11,6 +11,20 @@ You do not need much equipment. A computer and a device that reads the participa
 Documentation lives at <https://www.the-ecg.org/Cardioception/>.
 
 > **Official repository.** This is the original Cardioception, created by Micah Allen and the Embodied Computation Group at Aarhus University between 2019 and 2022, funded by a Lundbeckfonden Fellowship to Micah Allen. It is the version used in the papers listed below. We cannot vouch for unofficial forks, so we recommend working from this repository for research, installation and citation.
+
+## Contents
+
+- [The Heart Rate Discrimination task](#the-heart-rate-discrimination-task)
+- [Installation](#installation)
+- [Recording devices](#recording-devices)
+- [Running a task](#running-a-task)
+- [Analysing your data](#analysing-your-data)
+- [The Heartbeat Counting task](#the-heartbeat-counting-task)
+- [Getting help](#getting-help)
+- [How to cite](#how-to-cite)
+- [Publications using the HRD](#publications-using-the-hrd)
+- [References](#references)
+- [Development and credit](#development-and-credit)
 
 ## The Heart Rate Discrimination task
 

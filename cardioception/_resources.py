@@ -1,5 +1,6 @@
 # Copyright (C) 2020–2025 Micah Allen, Embodied Computation Group, Aarhus University
-from importlib.resources import files
+import importlib
+import os
 
 
 def resource_filename(package: str, resource: str) -> str:
@@ -13,11 +14,15 @@ def resource_filename(package: str, resource: str) -> str:
     package :
         The package holding the file (e.g. ``"cardioception.HRD"``).
     resource :
-        Path of the file relative to that package (e.g. ``"Sounds/start.wav"``).
+        Path of the file relative to that package, using forward slashes
+        (e.g. ``"Sounds/start.wav"``).
 
     Returns
     -------
     The absolute path to the file.
 
     """
-    return str(files(package).joinpath(resource))
+    module = importlib.import_module(package)
+    if module.__file__ is None:
+        raise ValueError(f"Cannot locate the files shipped with {package}")
+    return os.path.join(os.path.dirname(module.__file__), *resource.split("/"))
