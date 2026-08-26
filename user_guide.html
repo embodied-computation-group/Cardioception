@@ -271,7 +271,7 @@
 </section>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading">#</a></h2>
-<p>Cardioception has been tested with Python 3.7. We recommend the latest Anaconda install for Python 3.7 or newer (see <a class="reference external" href="https://www.anaconda.com/products/individual#download-section">this link</a>).</p>
+<p>Cardioception requires <strong>Python 3.9</strong>, and only 3.9. <code class="docutils literal notranslate"><span class="pre">systole-core</span></code> needs 3.9 or later, while the pinned PsychoPy cannot be imported on 3.10 or later, so the two constraints meet at a single version. <code class="docutils literal notranslate"><span class="pre">pip</span></code> will refuse to install on anything else. See <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/issues/92">issue #92</a> for the plan to widen this.</p>
 <p>Make sure that you have the following packages installed and up to date before running cardioception:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.psychopy.org/">psychopy</a> can be installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">psychopy</span></code>.</p></li>
