@@ -17,6 +17,9 @@
 #
 # Submitted rather than run on the login node because building CmdStan compiles a
 # fair amount of C++. Idempotent: re-running skips whatever is already present.
+#
+# Note on `set -u`: conda's own activate.d hooks reference variables before
+# setting them, so nounset has to come off around any activation.
 
 set -euo pipefail
 
@@ -34,13 +37,15 @@ if [ ! -x "$FORGE/bin/conda" ]; then
     https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
   bash /tmp/miniforge_$$.sh -b -p "$FORGE"
   rm -f /tmp/miniforge_$$.sh
-  # Do not auto-activate base: the docs are explicit that base must stay clean.
+  # The docs are explicit that base must stay clean.
   "$FORGE/bin/conda" config --set auto_activate_base false
 else
   echo "[setup] Miniforge already present"
 fi
 
+set +u
 source "$FORGE/etc/profile.d/conda.sh"
+set -u
 
 # --- environment -----------------------------------------------------------
 # A named prefix under the project, never base. r-ordbetareg is not on
@@ -63,20 +68,35 @@ else
   echo "[setup] environment already present"
 fi
 
+set +u
 conda activate "$ENV_PREFIX"
+set -u
 
-# conda-forge ships CmdStan inside the env; cmdstanr must be told where.
-CMDSTAN_PATH=$(ls -d "$ENV_PREFIX"/bin/cmdstan 2>/dev/null \
-  || ls -d "$ENV_PREFIX"/opt/cmdstan* 2>/dev/null | head -1)
+# The conda cmdstan package sets CMDSTAN in its activation hook. Only go looking
+# for it if that did not happen.
+CMDSTAN_PATH="${CMDSTAN:-}"
+if [ -z "$CMDSTAN_PATH" ]; then
+  CMDSTAN_PATH=$(ls -d "$ENV_PREFIX"/bin/cmdstan 2>/dev/null || true)
+fi
+if [ -z "$CMDSTAN_PATH" ]; then
+  CMDSTAN_PATH=$(ls -d "$ENV_PREFIX"/opt/cmdstan* 2>/dev/null | head -1 || true)
+fi
 echo "[setup] CMDSTAN=$CMDSTAN_PATH"
-export CMDSTAN=$CMDSTAN_PATH
+export CMDSTAN="$CMDSTAN_PATH"
 
-cat > "$PROJECT_ROOT/env.sh" <<EOF
+# env.sh is sourced by jobs that run with `set -u`, so it lifts nounset for the
+# activation and restores whatever the caller had.
+cat > "$PROJECT_ROOT/env.sh" <<ENVEOF
 # Source this before running anything R here.
+__hrd_had_u=0
+case \$- in *u*) __hrd_had_u=1 ;; esac
+set +u
 source $FORGE/etc/profile.d/conda.sh
 conda activate $ENV_PREFIX
-export CMDSTAN=$CMDSTAN_PATH
-EOF
+export CMDSTAN="\${CMDSTAN:-$CMDSTAN_PATH}"
+if [ "\$__hrd_had_u" = 1 ]; then set -u; fi
+unset __hrd_had_u
+ENVEOF
 echo "[setup] wrote env.sh"
 
 # --- packages not on conda-forge -------------------------------------------

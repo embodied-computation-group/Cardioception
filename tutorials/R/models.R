@@ -13,9 +13,33 @@ suppressPackageStartupMessages({
 
 inv_logit <- function(x) 1 / (1 + exp(-x))
 
-# Population SDs from the normative priors, used to scale effect priors.
+# Stan provides erf(); R does not. brms compiles the non-linear formula for
+# sampling, so fitting works without this, but posterior_epred() evaluates the
+# same expression in R and fails at post-processing time without it.
+erf <- function(x) 2 * pnorm(x * sqrt(2)) - 1
+
+# Population values from the normative refit (Fit population.R in the toolbox).
+# SD_* are the between-subject SDs; SE_* are the standard errors of the
+# population estimates, which the toolbox widens tenfold for the group-level SD
+# priors. Kept as expressions rather than products so the intent stays visible.
 SD_ALPHA <- 11.23   # threshold, dBPM
 SD_BETA <- 0.34     # log slope
+SE_ALPHA <- 0.37
+SE_BETA <- 0.02
+
+# How wide a prior an effect gets depends on what kind of effect it is.
+#
+#   binary contrast   the toolbox's own choice: a group difference could
+#                     plausibly be as large as the between-subject SD
+#   continuous (z)    a *per SD of the covariate* effect that large would be
+#                     implausible, so halve it. age and bmi are z-scored in
+#                     00_prepare.R, so these are per-SD effects
+#   interaction       a difference of differences, tighter again
+PRIOR_SCALE <- function(coef, sd_pop) {
+  if (grepl(":", coef, fixed = TRUE)) return(sd_pop / 4)   # interaction
+  if (grepl("_z$", coef)) return(sd_pop / 2)               # continuous covariate
+  sd_pop                                                    # binary contrast
+}
 
 # --- psychometric function -------------------------------------------------
 # y successes out of n trials at intensity x.
@@ -46,15 +70,19 @@ psychometric_priors <- function(effect_coefs) {
     set_prior("normal(-8.67, 11.23)", class = "b", nlpar = "alpha", coef = "Intercept"),
     set_prior("normal(-2.3, 0.34)", class = "b", nlpar = "beta", coef = "Intercept"),
     set_prior("normal(-4.32, 1.96)", class = "b", nlpar = "lambda"),
-    set_prior("normal(11.23, 3.7)", class = "sd", nlpar = "alpha", group = "subj", lb = 0),
-    set_prior("normal(0.34, 0.2)", class = "sd", nlpar = "beta", group = "subj", lb = 0),
+    set_prior(sprintf("normal(%s, %s)", SD_ALPHA, SE_ALPHA * 10),
+              class = "sd", nlpar = "alpha", group = "subj", lb = 0),
+    set_prior(sprintf("normal(%s, %s)", SD_BETA, SE_BETA * 10),
+              class = "sd", nlpar = "beta", group = "subj", lb = 0),
     set_prior("normal(1.96, 0.19)", class = "sd", nlpar = "lambda", group = "subj", lb = 0)
   )
   for (co in effect_coefs) {
     p <- c(
       p,
-      set_prior(sprintf("normal(0, %s)", SD_ALPHA), class = "b", nlpar = "alpha", coef = co),
-      set_prior(sprintf("normal(0, %s)", SD_BETA), class = "b", nlpar = "beta", coef = co)
+      set_prior(sprintf("normal(0, %s)", PRIOR_SCALE(co, SD_ALPHA)),
+                class = "b", nlpar = "alpha", coef = co),
+      set_prior(sprintf("normal(0, %s)", PRIOR_SCALE(co, SD_BETA)),
+                class = "b", nlpar = "beta", coef = co)
     )
   }
   p

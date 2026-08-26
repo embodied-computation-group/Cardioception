@@ -60,6 +60,18 @@ dat <- switch(spec$data,
 )
 message(sprintf("data: %d rows, %d subjects", nrow(dat), dplyr::n_distinct(dat$subj)))
 
+# HRD_MAX_SUBJ cuts the data down to a handful of participants. This exists for
+# rehearsing the pipeline end to end before committing a node for a day. Results
+# from a subset are not reportable, so the run is labelled loudly.
+max_subj <- suppressWarnings(as.integer(Sys.getenv("HRD_MAX_SUBJ", "")))
+if (!is.na(max_subj) && max_subj > 0) {
+  keep <- head(levels(droplevels(dat$subj)), max_subj)
+  dat <- dat[dat$subj %in% keep, , drop = FALSE]
+  dat$subj <- droplevels(dat$subj)
+  message(sprintf("SMOKE TEST: cut to %d subjects, %d rows -- not reportable",
+                  dplyr::n_distinct(dat$subj), nrow(dat)))
+}
+
 # --- priors ----------------------------------------------------------------
 # Verify the coefficient names before sampling. A prior naming a coefficient
 # that brms does not generate is silently ignored, and the effect then samples
