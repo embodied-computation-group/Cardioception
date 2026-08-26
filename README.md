@@ -64,6 +64,18 @@ If you have questions regarding the tasks, please contact Micah Allen directly.
 
 # Installation
 
+The package is published on PyPI under the name **`cardioception-toolbox`**:
+
+  `pip install cardioception-toolbox`
+
+The *import* name is unchanged, so no existing script needs to be edited:
+
+```python
+from cardioception.HRD import task
+```
+
+> **A note on the `cardioception` name on PyPI.** The PyPI project called `cardioception` is a separate third-party fork. It is not maintained by the Embodied Computation Group, it is not the version described in this repository, and it is not the version cited in our publications. Install `cardioception-toolbox`, or install directly from this repository, to get the official version.
+
 The current development branch can be installed using
   `pip install git+https://github.com/embodied-computation-group/Cardioception.git`
 
@@ -84,8 +96,6 @@ Note: If you are using the shortcut method described bellow, you will have to ac
 Cardioception has been tested with Python 3.7. We recommend to use the last install of Anaconda for Python 3.7 or latest (see <https://www.anaconda.com/products/individual#download-section>).
 
 Make sure that you have the following packages installed and up to date before running cardioception:
-
-The package can be installed by downloading the repository and following the instructions therein.  **Note: do not use "pip install cardioception" as this is an unverified fork created by a third party**. We are looking into the matter but cannot verify the security or integrity of that installation. For the latest version of cardioception, please install directly from this repository. 
 
 * [systole](https://systole-docs.github.io/) can be installed with `pip install systole`.
 

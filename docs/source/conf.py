@@ -102,7 +102,7 @@ html_theme_options = {
         ),
         dict(
             name="Pypi",
-            url="https://pypi.org/project/Cardioception/",
+            url="https://pypi.org/project/cardioception-toolbox/",
             icon="fas fa-box",
         ),
     ],

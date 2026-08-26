@@ -2,6 +2,22 @@
 
 ## Installation
 
+### Using pip
+
+The package is published on PyPI under the name **`cardioception-toolbox`**:
+
+  `pip install cardioception-toolbox`
+
+The *import* name is unchanged, so no existing script needs to be edited:
+
+```python
+from cardioception.HRD import task
+```
+
+```{warning}
+The PyPI project called `cardioception` is a separate third-party fork. It is not maintained by the Embodied Computation Group, it is not the version described in this documentation, and it is not the version cited in our publications. Install `cardioception-toolbox`, or install directly from the repository, to get the official version.
+```
+
 ### Using GitHub
 
 The current development branch can be installed using:
