@@ -256,13 +256,13 @@ with the underlying task code.</p>
 <dt><strong>nStaircase</strong><span class="classifier">int</span></dt><dd><p>Number of staircase to use per condition (exteroceptive and
 interoceptive).</p>
 </dd>
-<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run (UpDown and psi staircase).
-.. note:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This number indicates the total number of trials that will be presented
-during the experiment. If `nTrials=50` and `exteroception=False`, the task
-contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,
-the task contains 25 interoceptive trials and 25 exteroceptive trials.
-</pre></div>
+<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run (UpDown and psi staircase).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This number indicates the total number of trials that will be presented
+during the experiment. If <cite>nTrials=50</cite> and <cite>exteroception=False</cite>, the task
+contains 50 interoceptive trials. If <cite>nTrials=50</cite> and <cite>exteroception=True</cite>,
+the task contains 25 interoceptive trials and 25 exteroceptive trials.</p>
 </div>
 </dd>
 <dt><strong>participant</strong><span class="classifier">str</span></dt><dd><p>Subject ID. Default is ‘Participant’.</p>
@@ -294,13 +294,15 @@ testing only).</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>When using the <cite>behavioral</cite> setup, triggers will be sent to the PPG  recording. The
-trigger channel is coding for different events during the task as follows:
-- Trial start: 1
-- recording trigger: 2
-- sound trigger : 3
-- rating trigger: 4
-- end trigger: 5
-All these events, except trial start, have also their time stamps encoded in the
+trigger channel is coding for different events during the task as follows:</p>
+<ul class="simple">
+<li><p>Trial start: 1</p></li>
+<li><p>recording trigger: 2</p></li>
+<li><p>sound trigger : 3</p></li>
+<li><p>rating trigger: 4</p></li>
+<li><p>end trigger: 5</p></li>
+</ul>
+<p>All these events, except trial start, have also their time stamps encoded in the
 behavioral results data frame.</p>
 <dl class="field-list">
 <dt class="field-odd">Attributes</dt>
@@ -349,13 +351,13 @@ confidence rating).</p>
 <dt><strong>nFinger</strong><span class="classifier">str or None</span></dt><dd><p>The finger number (“1”, “2”, “3”, “4” or “5”) where the participant
 decided to place the pulse oximeter (if relevant).</p>
 </dd>
-<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run (UpDown and psi staircase).
-.. note:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This number indicates the total number of trials that will be presented
-during the experiment. If `nTrials=50` and `exteroception=False`, the task
-contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,
-the task contains 25 interoceptive trials and 25 exteroceptive trials.
-</pre></div>
+<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run (UpDown and psi staircase).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This number indicates the total number of trials that will be presented
+during the experiment. If <cite>nTrials=50</cite> and <cite>exteroception=False</cite>, the task
+contains 50 interoceptive trials. If <cite>nTrials=50</cite> and <cite>exteroception=True</cite>,
+the task contains 25 interoceptive trials and 25 exteroceptive trials.</p>
 </div>
 </dd>
 <dt><strong>participant</strong><span class="classifier">str</span></dt><dd><p>Subject ID. Default is ‘Participant’.</p>
