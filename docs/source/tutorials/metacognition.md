@@ -1,202 +1,331 @@
 # Metacognition
 
-Modelling the confidence rating collected on every trial, and asking whether
-confidence tracks accuracy.
+Author: Micah G. Allen
 
-Perception and metacognition are different questions. A participant can
-discriminate their heart rate well while having no idea when they are right, and
-the reverse happens too. An effect can appear in one with the other unchanged, so
-neither is a proxy for the other.
+The Heart Rate Discrimination task records a confidence rating after every
+choice. These ratings let us ask whether participants know when their judgements
+are likely to be correct. This is a separate question from whether they can
+discriminate changes in heart rate.
 
-## What the ratings look like
+The [previous tutorial](hierarchical.md) used faster and slower choices to
+estimate psychophysical bias, precision, and lapse rate. Here we fit a second
+hierarchical model in which confidence is the outcome. The principles of partial
+pooling and random effects remain the same, but the likelihood and the
+scientific interpretation are different.
 
-Confidence is a slider from 0 to 100, and people use both ends in earnest. In the
-example data 15.0% of trials sit exactly on a bound: 3.9% at zero and 11.1% at
-one.
+## Confidence bias and metacognitive calibration
 
-![Distribution of confidence ratings, and whether the model reproduces the bounds](../images/tutorials/fig_confidence_distribution.png)
+We use the confidence ratings to distinguish two quantities.
 
-The right panel is the check that matters, and it is worth looking at before the
-model is even introduced: reproducing that mass at the two ends is the entire
-reason for choosing this likelihood. A model that fits the interior beautifully
-and misses the bounds has failed at the one job it was picked for.
+- Confidence bias describes how participants use the rating scale. A participant
+  may tend to report high or low confidence regardless of whether a response was
+  correct.
 
-That shape rules out the obvious models. A Gaussian puts probability outside the
-scale. A beta likelihood is undefined at exactly 0 and 1, so it forces you to
-nudge the bounds inward by some epsilon or drop those trials, and the trials you
-would drop are the most and least confident ones. Binning into a Likert scale
-throws away information and makes the answer depend on where you cut.
+- Metacognitive calibration describes the association between confidence and
+  accuracy. In this tutorial, it is the difference in expected confidence between
+  correct and incorrect trials.
 
-## Why not the m-ratio
+These quantities can vary independently. A participant can be confident but
+poorly calibrated, or cautious while still assigning higher confidence to their
+correct responses. In the regression model, the intercept and other main effects
+describe confidence bias, while the coefficient for `Accuracy` describes
+calibration in the reference condition. Interactions with `Accuracy` test whether
+calibration changes across conditions or participant characteristics.
 
-The m-ratio, meta-d′ divided by d′, is the usual summary of metacognitive
-efficiency, and the original HRD paper reported it. We no longer recommend it for
-this task, and the reason is specific to how the staircase works.
+We reserve the terms metacognitive sensitivity and metacognitive efficiency for
+signal detection measures such as meta-d-prime and M-ratio. Ordered beta
+regression does not fit a signal detection model, so calibration is the more
+accurate name for the quantity estimated here.
 
-**The HRD does not hold accuracy constant.** The Psi procedure converges on the
-participant's point of subjective equality: the Δ-BPM at which they are equally
-likely to answer "faster" or "slower". That is a *subjective* staircase, tracking
-the very bias the task exists to measure, not a performance-tracking one aiming at
-some fixed percentage correct.
+## The confidence distribution determines the likelihood
 
-**Accuracy, though, is scored against the true heart rate.** A "faster" response
-counts as correct only when Δ-BPM is above zero, and "slower" only when it is
-below.
+Confidence is recorded on a continuous slider from 0 to 100. Participants can
+select either endpoint, and those observations are meaningful. In the example
+data, 15.0% of ratings fall exactly on a bound, with 3.9% at zero and 11.1% at
+100.
 
-Those two facts come apart for exactly the participants who are most interesting.
-Someone whose threshold sits at −15 Δ-BPM spends the session being played tones
-around 15 BPM below their true rate, because that is where the staircase has
-decided to put them. Almost every trial then has "slower" as the objectively
-correct answer. One stimulus class barely occurs, and the type-1 hit and
-false-alarm rates that d′ and meta-d′ are built from rest on a handful of trials,
-or none. **The more biased the participant, the worse this gets**, so the measure
-degrades precisely where the task has found something worth reporting.
+![Observed confidence ratings and posterior predictions at the scale bounds](../images/tutorials/fig_confidence_distribution.png)
 
-There is a further problem underneath. Under this design d′ is not a clean index
-of perceptual sensitivity anyway: it mixes bias with precision, which is the
-confound the psychometric function was introduced to resolve. Dividing by it
-reintroduces what the HRD was built to separate.
+Several familiar likelihoods are poorly suited to these data.
 
-Finally, meta-d′ expects confidence in a few discrete bins, so a continuous slider
-has to be cut into categories. The original analysis used four. That discards
-information and makes the result depend on where the cut points fall.
+| Likelihood | Problem for HRD confidence |
+|---|---|
+| Gaussian | Assigns probability to values below 0 and above 1 |
+| Beta | Excludes observations at exactly 0 and 1 |
+| Ordinal after binning | Discards the resolution of the confidence slider |
 
-None of this makes meta-d′ a poor measure in general. It makes it a poor fit for a
-subjective staircase scored against an objective truth.
+Ordered beta regression retains the continuous ratings and their exact bounds
+([Kubinec, 2023](https://doi.org/10.1017/pan.2022.20)). It models zero, the open
+interval between zero and one, and one within a single likelihood. Two ordered
+cutpoints govern the probability of a response at either bound, while a beta
+distribution describes ratings in the interior. We therefore do not need to
+move endpoint ratings inward or convert the scale into categories.
 
-## Ordered beta regression
+The right panel above is an important posterior predictive check. A suitable
+model should reproduce both the interior distribution and the observed
+proportions at zero and one.
 
-Ordered beta regression models the interior of the scale with a beta likelihood
-and the two bounds as separate outcomes, in one generative model. Nothing is
-nudged and nothing is dropped
-([Kubinec, 2023](https://doi.org/10.1017/pan.2022.20)).
+## Why we do not use M-ratio for HRD data
+
+M-ratio, defined as meta-d-prime divided by d-prime, is a useful measure of
+metacognitive efficiency for experiments that support its signal detection
+assumptions. The HRD design creates a specific problem for that analysis.
+
+The Psi staircase places trials near each participant's point of subjective
+equality. It is designed to estimate the cardiac bias described in the
+[psychophysics tutorial](psychophysics.md), rather than to maintain a fixed
+level of objective accuracy. Accuracy is nevertheless scored relative to the
+participant's measured heart rate. A faster response is correct above zero
+delta BPM, and a slower response is correct below zero.
+
+Consider a participant with a threshold of -15 delta BPM. The staircase will
+present many trials near -15 because this is where their faster and slower
+responses are balanced. Most of those trials have slower as the objectively
+correct answer. The two stimulus classes required to estimate type 1 hit and
+false alarm rates are consequently very uneven. For participants with large
+cardiac biases, one class may contain only a few trials.
+
+Under this design, d-prime also combines response bias with psychophysical
+precision. Dividing meta-d-prime by d-prime would reintroduce a distinction that
+the psychometric model was used to resolve. Finally, estimating meta-d-prime
+requires us to bin the continuous confidence ratings, making the result depend
+on arbitrary cutpoints.
+
+This argument is specific to the task design. M-ratio remains appropriate for
+experiments with adequately sampled stimulus classes, suitable control over type
+1 performance, and confidence ratings designed for an SDT analysis. For HRD, we
+model the trial-level confidence ratings directly and describe the
+accuracy-confidence association as metacognitive calibration.
+
+## Prepare trial-level confidence data
+
+Begin with the trial data described in the [inspection
+tutorial](inspecting-data.md). Remove trials without a decision or confidence
+rating, preserve the exact slider endpoints, and code incorrect trials as the
+reference level.
 
 ```r
-library(ordbetareg)
+library(dplyr)
 
-data <- data |>
-  filter(Decision %in% c("More", "Less"), !is.na(Confidence), !is.na(ResponseCorrect)) |>
+confidence_data <- raw |>
+  filter(
+    Decision %in% c("More", "Less"),
+    !is.na(Confidence),
+    !is.na(ResponseCorrect)
+  ) |>
   mutate(
-    Accuracy   = factor(ResponseCorrect, levels = c(0, 1),
-                        labels = c("incorrect", "correct")),
-    Confidence = Confidence / 100          # keep exact 0 and 1
+    subj = factor(Subject),
+    Accuracy = factor(
+      if_else(
+        tolower(as.character(ResponseCorrect)) %in% c("true", "1"),
+        "correct",
+        "incorrect"
+      ),
+      levels = c("incorrect", "correct")
+    ),
+    Modality = factor(Modality, levels = c("Extero", "Intero")),
+    Confidence = Confidence / 100
   )
 
-fit <- ordbetareg(
-  formula = bf(Confidence ~ Accuracy + (Accuracy | Subject)),
-  data = data,
-  chains = 4, cores = 4,
+stopifnot(all(confidence_data$Confidence >= 0 &
+              confidence_data$Confidence <= 1))
+```
+
+Do not recode a missed decision as incorrect. There is no choice to score on
+such a trial. Before fitting the model, inspect the range and scale use for each
+participant.
+
+```r
+confidence_data |>
+  group_by(subj) |>
+  summarise(
+    trials = n(),
+    mean_confidence = mean(Confidence),
+    sd_confidence = sd(Confidence),
+    at_zero = mean(Confidence == 0),
+    at_one = mean(Confidence == 1),
+    .groups = "drop"
+  )
+```
+
+A participant who selected one confidence value throughout the task provides no
+within-person information about calibration. Review these sessions before
+analysis and document any exclusion rule. Scale use is also worth plotting,
+because a standard deviation alone does not show whether a participant relied
+almost entirely on one endpoint.
+
+The worked model also uses gender, age, and BMI. Set the gender reference level
+and join the participant-level standardized age and BMI variables prepared in
+the [hierarchical modelling tutorial](hierarchical.md). Standardize these
+variables over one row per participant, rather than over the trial table.
+
+## Specify the hierarchical ordered beta model
+
+A useful starting model is
+
+```text
+Confidence ~ Accuracy + (Accuracy | subj)
+```
+
+The population coefficient for `Accuracy` estimates average metacognitive
+calibration. The participant intercepts allow confidence bias to vary, and the
+participant slopes allow the accuracy-confidence association to vary. Partial
+pooling regularizes both estimates.
+
+The worked example extends this model to ask whether calibration differs between
+the cardiac and exteroceptive conditions, between genders, or with age. BMI is
+included as a covariate.
+
+```r
+library(brms)
+library(ordbetareg)
+
+confidence_formula <- bf(
+  Confidence ~ Accuracy * (Modality + gender + age_z) + bmi_z +
+    (Accuracy * Modality | subj)
+)
+
+fit_confidence <- ordbetareg(
+  formula = confidence_formula,
+  data = confidence_data,
+  chains = 4,
+  cores = 4,
+  control = list(adapt_delta = 0.95, max_treedepth = 12),
   file = "fit_confidence"
 )
 ```
 
-`ordbetareg` wraps brms, so the formula syntax, priors and post-processing are all
-the usual ones.
+`Accuracy` and `Modality` vary within participants, so the model includes their
+random slopes and interaction. Gender, age, and BMI vary between participants
+and cannot receive participant-level random slopes. The same design rule is
+explained in the [hierarchical modelling tutorial](hierarchical.md).
 
-## The quantity of interest
+The worked model uses the package defaults for its priors. For a new study, use
+`get_prior()` to inspect the parameters created by your exact formula and carry
+out prior predictive checks before sampling. Ordered beta models can take
+several hours to fit, so cache the model with `file` and begin with a small test
+run to identify coding problems.
 
-The coefficient on `Accuracy` is how much higher confidence runs on correct trials
-than incorrect ones. That is metacognitive sensitivity, stated directly rather
-than as a ratio, and it needs no division by a staircase-determined d′.
+## Interpret interactions through predictions
 
-Because the intercept absorbs overall confidence, sensitivity and bias stay
-separate. You do not have to choose between "how confident are they" and "does
-confidence track accuracy": the model gives both.
+Regression coefficients are reported on the model's latent scale. Their meaning
+also depends on the reference levels and interactions in the formula.
 
-In the example data the raw gap is large and near-universal: mean confidence is
-about 25 points higher on correct trials, and 99% of participants show a gap in
-that direction.
-
-## Testing a hypothesis about it
-
-| Question | Formula |
+| Term | Interpretation in the worked model |
 |---|---|
-| Does confidence track accuracy | `Confidence ~ Accuracy + (Accuracy \| Subject)` |
-| Does that differ between conditions | `Confidence ~ Accuracy * Modality + (Accuracy * Modality \| Subject)` |
-| Does it differ between groups | `Confidence ~ Accuracy * gender + (Accuracy \| Subject)` |
-| Does it change with age | `Confidence ~ Accuracy * age_z + (Accuracy \| Subject)` |
+| `Accuracycorrect` | Calibration for Extero trials among participants at the reference levels of the other predictors |
+| `ModalityIntero` | Intero versus Extero difference on incorrect trials |
+| `Accuracycorrect:ModalityIntero` | Change in calibration from Extero to Intero trials |
+| `age_z` | Association between age and confidence on incorrect trials |
+| `Accuracycorrect:age_z` | Association between age and calibration |
 
-The interaction is usually the actual hypothesis. "Group A had lower metacognitive
-sensitivity" is a claim about `Accuracy × group`, not about `group`.
-
-The random effects rule is the same as in the [hierarchical
-model](hierarchical.md): a term gets a random slope only if it varies within a
-participant. `Accuracy` and `Modality` do. `gender` and `age` do not.
-
-## Reading the output
-
-Coefficients are on the latent scale and are not slider points. For anything you
-report, compute predictions on the response scale:
+The main effect of `Modality` is therefore not an overall modality difference,
+and the main effect of age is not an overall age effect. Once interactions are
+present, we should use posterior predictions to express the result on the
+confidence scale.
 
 ```r
 library(marginaleffects)
-avg_predictions(fit, by = "Accuracy")
-avg_comparisons(fit, variables = "Accuracy")
+
+# Expected confidence for each accuracy by modality combination
+avg_predictions(
+  fit_confidence,
+  by = c("Accuracy", "Modality")
+)
+
+# Correct minus incorrect confidence within each modality
+avg_comparisons(
+  fit_confidence,
+  variables = "Accuracy",
+  by = "Modality"
+)
 ```
 
-## What the worked model found
+These summaries average over the requested observations. For a continuous
+moderator such as age, create a grid over the observed age range and plot the
+predictions for correct and incorrect trials. The distance between those lines
+is calibration.
 
-Fitted to 68,932 trials from 512 participants, with accuracy interacted with
-modality, gender and age. Coefficients are on the latent scale, so read the
-figure for anything in slider units.
+## Results from the worked model
 
-![Predicted confidence by accuracy, modality and gender](../images/tutorials/fig_confidence_accuracy.png)
+The example model was fitted to 68,932 trials from 512 participants. The table
+shows selected population coefficients on the latent scale.
 
-| Term | Estimate | 95% CI |
-|---|---|---|
-| `Accuracycorrect` | **+1.09** | [1.03, 1.15] |
-| `ModalityIntero` | **+0.36** | [0.30, 0.42] |
-| `Accuracycorrect:ModalityIntero` | **−0.76** | [−0.83, −0.70] |
-| `age_z` | **+0.13** per SD | [0.075, 0.179] |
-| `Accuracycorrect:age_z` | −0.02 | [−0.064, 0.017] |
-| `genderMale` | +0.08 | [−0.026, 0.192] |
-| `Accuracycorrect:genderMale` | +0.05 | [−0.036, 0.129] |
+| Term | Estimate | 95% interval |
+|---|---:|---:|
+| `Accuracycorrect` | 1.09 | [1.03, 1.15] |
+| `ModalityIntero` | 0.36 | [0.30, 0.41] |
+| `Accuracycorrect:ModalityIntero` | -0.76 | [-0.83, -0.70] |
+| `age_z` | 0.13 | [0.08, 0.18] |
+| `Accuracycorrect:age_z` | -0.02 | [-0.06, 0.02] |
+| `genderMale` | 0.08 | [-0.02, 0.19] |
+| `Accuracycorrect:genderMale` | 0.05 | [-0.04, 0.13] |
 
-`Accuracycorrect` is metacognitive sensitivity, stated directly rather than as a
-ratio, and it is clearly positive: confidence tracks accuracy.
+The response-scale predictions make these coefficients easier to interpret.
 
-The interaction is the finding. Sensitivity in the cardiac condition is
-1.09 − 0.76 = 0.32, against 1.09 for tones: participants know when they are right
-about a sound far better than they know when they are right about their own heart.
-Overall confidence goes the other way, higher in the cardiac condition, which is
-worth pausing on. People are *more* confident and *less* well calibrated about
-their hearts, and those are two different coefficients rather than one ratio being
-pulled in opposite directions.
+![Predicted confidence by accuracy, modality, and gender](../images/tutorials/fig_confidence_accuracy.png)
 
-### Bias and sensitivity come apart
+For women at the mean age and BMI, expected confidence on Extero trials was
+0.67 after correct responses and 0.38 after incorrect responses. The calibration
+gap was therefore 0.29. On Intero trials, the corresponding predictions were
+0.56 and 0.47, giving a gap of 0.09. The negative
+`Accuracycorrect:ModalityIntero` interaction captures this reduction in cardiac
+metacognitive calibration.
 
-Age shows the same separation, and it is the clearest argument for this model over
-a single summary score.
+Notice how the modality comparison changes with accuracy. Predicted confidence
+was higher for Intero than Extero trials following an incorrect response, but
+lower following a correct response. Reporting `ModalityIntero` as an overall
+increase in cardiac confidence would miss this interaction. The estimated
+gender interaction was small and its interval included zero, so this analysis
+provides little evidence that calibration differed by gender.
 
-![Confidence and sensitivity across age](../images/tutorials/fig_confidence_age.png)
+### Age and confidence bias
 
-Older participants are more confident overall (`age_z` = +0.13, interval excluding
-zero), but the gap between correct and incorrect trials does not change with age
-(`Accuracycorrect:age_z` = −0.02, interval spanning zero). Both lines rise
-together; the distance between them stays put.
+![Confidence bias and metacognitive calibration across age](../images/tutorials/fig_confidence_age.png)
 
-Confidence went up. Metacognition did not change. A measure that folds the two
-together has to report one number for that, and whichever number it reports will
-be wrong about something.
+Expected confidence increased with age for both correct and incorrect trials.
+The two lines remained approximately parallel, and the interval for
+`Accuracycorrect:age_z` included zero. In this sample, age was associated with
+confidence bias but provided little evidence of a change in metacognitive
+calibration. This is why we examine the predicted confidence levels and their
+gap separately.
 
-## Checking
+## Check the fitted model
 
-The usual diagnostics apply: no divergent transitions, `rhat < 1.01`, healthy ESS.
+Begin with the standard sampling diagnostics. Check for divergent transitions,
+verify that R-hat is below 1.01, and inspect effective sample sizes and trace
+plots. If the model has convergence problems, do not interpret its coefficients.
 
-One check is specific to this model. The posterior predictive must reproduce the
-**mass at 0 and 1**, not just the interior. Handling those bounds properly is the
-entire reason for using ordered beta, so if `pp_check()` misses them, the model is
-not doing the job you chose it for.
+Posterior predictive checks should then address the features that motivated the
+likelihood.
 
-## Before you fit
+- Compare predicted and observed confidence distributions within each modality
+  and accuracy condition.
 
-Look at scale usage per participant. Someone who left the slider at one value all
-session contributes nothing about metacognition, and the model will quietly absorb
-them:
+- Compare the predicted and observed proportions at exactly zero and one.
 
-```r
-data |> group_by(Subject) |> summarise(sd = sd(Confidence))
-```
+- Check whether the model reproduces large differences in scale use between
+  participants.
 
-Decide explicitly whether to exclude them. Trials with no response have no
-accuracy and must be dropped, never recoded as incorrect.
+- Plot participant-level predictions to identify sessions that the population
+  model describes poorly.
+
+The first figure on this page illustrates the bound check. The observed
+proportions should fall within plausible posterior predictive intervals. A
+density plot of the interior ratings cannot establish this on its own.
+
+## Report the model and result
+
+A clear report should state the number of participants and trials, the amount of
+confidence mass at both bounds, the fixed and random effect formula, the priors,
+and the sampling and posterior predictive diagnostics. Report the scientific
+result as response-scale expected confidence and calibration contrasts with
+uncertainty for each condition of interest. Latent coefficients can accompany
+these summaries, but should not replace them.
+
+The two hierarchical tutorials now provide complementary descriptions of HRD
+performance. The [psychophysical model](hierarchical.md) estimates cardiac bias,
+precision, and lapse rate from choices. The ordered beta model estimates
+confidence bias and metacognitive calibration from ratings. The [theory
+page](../measuring.md) explains how these measurements fit into the broader
+account of cardiac interoception.

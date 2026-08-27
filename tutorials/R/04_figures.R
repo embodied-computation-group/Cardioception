@@ -523,7 +523,7 @@ if (have("psy_intero_subject.csv.gz")) {
 
 # ===========================================================================
 # 7. Why confidence needs an ordered beta model.
-# A quarter of the ratings sit exactly on a bound. Gaussian puts mass outside
+# Some of the ratings sit exactly on a bound. Gaussian puts mass outside
 # the scale, beta is undefined at the ends, and binning throws the ends away.
 # ===========================================================================
 if (have("meta_full_confidence_hist.csv.gz")) {
@@ -536,8 +536,8 @@ if (have("meta_full_confidence_hist.csv.gz")) {
     scale_x_continuous(breaks = c(0, 0.5, 1)) +   # 0.25 steps collide across facets
     facet_wrap(~Modality) +
     labs(x = "confidence", y = "trials",
-         title = "The ratings pile up at both ends",
-         subtitle = "which is what rules out a Gaussian or a plain beta") +
+         title = "Confidence ratings include both scale bounds",
+         subtitle = "observed distribution by modality") +
     th + theme(panel.spacing.x = unit(6, "mm"))
 
   fig <- left
@@ -557,15 +557,15 @@ if (have("meta_full_confidence_hist.csv.gz")) {
       scale_x_discrete(expand = expansion(add = c(0.5, 1.5))) +
       expand_limits(y = 0) +
       labs(x = NULL, y = "proportion of trials",
-           title = "Are they reproduced?",
-           subtitle = "observed, with 95% predicted") + th
+           title = "Predictions at the bounds",
+           subtitle = "observed and 95% predictive intervals") + th
     fig <- (left | right) + plot_layout(widths = c(2.1, 1))
   }
   save_fig("fig_confidence_distribution", fig, 180, 66)
 }
 
 # ===========================================================================
-# 8. Metacognitive sensitivity, stated directly.
+# 8. Metacognitive calibration, stated directly.
 # The gap between correct and incorrect is the quantity the m-ratio is usually
 # used for, on the response scale, without a ratio and without binning.
 # ===========================================================================
@@ -582,16 +582,16 @@ if (have("meta_full_epred_accuracy.csv.gz")) {
     facet_wrap(~Modality) +
     labs(x = NULL, y = "predicted confidence",
          title = "Confidence tracks accuracy",
-         subtitle = "the gap is metacognitive sensitivity, on the response scale") +
+         subtitle = "the gap is metacognitive calibration, on the response scale") +
     th
   save_fig("fig_confidence_accuracy",
            fig / word_legend(PAL) + plot_layout(heights = c(1, 0.09)), 180, 70)
 }
 
 # ===========================================================================
-# 8b. Does metacognition change with age?
-# The gap between the two lines is metacognitive sensitivity. If it stays the
-# same width across the axis, sensitivity does not change with age, whatever
+# 8b. Does metacognitive calibration change with age?
+# The gap between the two lines is metacognitive calibration. If it stays the
+# same width across the axis, calibration does not change with age, whatever
 # overall confidence does. Two questions that a single ratio would confound.
 # ===========================================================================
 if (have("meta_full_epred_age.csv.gz") && have("scaling.csv.gz")) {
@@ -607,8 +607,8 @@ if (have("meta_full_epred_age.csv.gz") && have("scaling.csv.gz")) {
     scale_fill_manual(values = c(incorrect = "#8a94a3", correct = MODPAL[["Intero"]])) +
     facet_wrap(~Modality) +
     labs(x = "age (years)", y = "predicted confidence",
-         title = "Confidence and metacognitive sensitivity across age",
-         subtitle = "the gap between the lines is sensitivity; its width is the question") +
+         title = "Confidence bias and calibration across age",
+         subtitle = "calibration is the correct versus incorrect confidence gap") +
     th
   save_fig("fig_confidence_age",
            fig / word_legend(c(correct = MODPAL[["Intero"]], incorrect = "#8a94a3"),

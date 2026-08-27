@@ -1,5 +1,7 @@
 # Inspecting and plotting an HRD session
 
+Author: Micah G. Allen
+
 While your study is running, you should be able to open a participant's folder
 and understand the session within a few minutes. This is especially important during
 piloting, when an error in the instructions or response mapping can affect every
