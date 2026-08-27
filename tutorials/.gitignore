@@ -10,3 +10,7 @@ results/*.txt
 
 # Participant-level data is added deliberately, not by accident.
 data/*.csv
+
+# Full internal source sessions used to make deidentified tutorial artefacts.
+data/vmp2_0341/
+data/vmp2_sessions/
