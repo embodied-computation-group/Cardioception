@@ -1,7 +1,9 @@
 # Tutorials
 
+Author: Micah G. Allen
+
 Working with Heart Rate Discrimination data, from opening the files the task
-wrote through to a hierarchical model with covariates.
+wrote through to hierarchical models of psychophysical choices and confidence.
 
 Read them in order if the whole workflow is new to you. They build on each other:
 each one assumes the data preparation from the one before.
@@ -10,8 +12,8 @@ each one assumes the data preparation from the one before.
 |---|---|
 | [Inspecting and plotting data](inspecting-data.md) | Reading task files and checking a session's stimuli, choices, timing, confidence, heart rate, and Psi posterior. In Python and R. |
 | [The psychophysical model](psychophysics.md) | What threshold, slope and lapse rate are, and fitting one participant. |
-| [Hierarchical modelling](hierarchical.md) | Fitting everyone at once, and testing covariates and between-group effects. |
-| [Metacognition](metacognition.md) | Modelling confidence ratings, and whether confidence tracks accuracy. |
+| [Hierarchical modelling](hierarchical.md) | Fitting psychometric functions for everyone at once, and testing covariates and group effects. |
+| [Metacognition](metacognition.md) | Fitting a hierarchical ordered beta model of confidence bias and metacognitive calibration. |
 
 ## What you need
 

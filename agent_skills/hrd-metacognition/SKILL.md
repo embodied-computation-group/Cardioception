@@ -1,6 +1,6 @@
 ---
 name: hrd-metacognition
-description: Model confidence ratings from the Heart Rate Discrimination Task (HRD) using ordered beta regression in brms via ordbetareg. Use when analysing HRD confidence data, testing whether confidence tracks accuracy (metacognitive sensitivity), comparing confidence or metacognition between groups or conditions, or deciding how to handle a 0-100 confidence slider with responses piled up at both ends.
+description: Model confidence ratings from the Heart Rate Discrimination Task (HRD) using ordered beta regression in brms via ordbetareg. Use when analysing HRD confidence data, testing whether confidence tracks accuracy (metacognitive calibration), comparing confidence or metacognition between groups or conditions, or deciding how to handle a 0-100 confidence slider with responses piled up at both ends.
 ---
 
 # HRD metacognition
@@ -107,7 +107,7 @@ Check these before fitting:
 ## Choosing the formula
 
 The core question is whether confidence tracks accuracy. That is the coefficient on
-`Accuracy`, and it is metacognitive sensitivity stated directly rather than as a ratio.
+`Accuracy`, and it is metacognitive calibration stated directly rather than as a ratio.
 
 | Question | Formula |
 |---|---|
@@ -125,11 +125,11 @@ if you want the intercept to mean the grand mean rather than one group.
 
 ## Reading the output
 
-- The **coefficient on `Accuracy`** is metacognitive sensitivity: how much higher
+- The **coefficient on `Accuracy`** is metacognitive calibration: how much higher
   confidence runs on correct trials than incorrect ones.
-- The **intercept** is overall confidence, so bias and sensitivity stay separate. This is
+- The **intercept** is overall confidence, so bias and calibration stay separate. This is
   the practical advantage over a ratio measure: you do not have to choose between them.
-- An **interaction with group or condition** is the difference in sensitivity, which is
+- An **interaction with group or condition** is the difference in calibration, which is
   usually the actual hypothesis.
 
 Coefficients are on the latent scale and are not directly interpretable as slider
