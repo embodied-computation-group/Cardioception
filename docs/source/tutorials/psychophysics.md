@@ -275,7 +275,7 @@ we want to report.
 
 ## Part III. Fitting one participant in `brms`
 
-I will use one participant here because it keeps the connection between trials,
+We use one participant here because it keeps the connection between trials,
 parameters, and the fitted curve visible. This is a complete descriptive model
 for that session. Questions about a sample, a condition effect, or a group
 difference require the model in the next tutorial.

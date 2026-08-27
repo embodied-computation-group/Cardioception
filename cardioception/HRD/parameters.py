@@ -65,6 +65,7 @@ def getParameters(
            during the experiment. If `nTrials=50` and `exteroception=False`, the task
            contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,
            the task contains 25 interoceptive trials and 25 exteroceptive trials.
+
     participant : str
         Subject ID. Default is 'Participant'.
     catchTrials : float
@@ -182,6 +183,7 @@ def getParameters(
         Dictionary {str, callable or None}. The function will be executed
         before the corresponding trial sequence. The default values are
         `None` (no trigger sent).
+
         * `"trialStart"`
         * `"trialStop"`
         * `"listeningStart"`
@@ -190,6 +192,7 @@ def getParameters(
         * `"decisionStop"`
         * `"confidenceStart"`
         * `"confidenceStop"`
+
     win : `psychopy.visual.window`
         The window in which to draw objects.
 
@@ -203,6 +206,7 @@ def getParameters(
     - sound trigger : 3
     - rating trigger: 4
     - end trigger: 5
+
     All these events, except trial start, have also their time stamps encoded in the
     behavioral results data frame.
 

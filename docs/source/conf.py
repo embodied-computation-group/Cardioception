@@ -60,14 +60,15 @@ extensions = [
     "matplotlib.sphinxext.plot_directive",
     "numpydoc",
     "myst_nb",
-    "sphinxcontrib.bibtex"
+    "sphinxcontrib.bibtex",
+    "sphinx_design",
 ]
 
 bibtex_bibfiles = ['refs.bib']
 bibtex_reference_style = "author_year"
 bibtex_default_style = "unsrt"
 
-myst_enable_extensions = ["dollarmath"]
+myst_enable_extensions = ["dollarmath", "colon_fence"]
 # Give headings real anchors, so a link like (page.md#some-heading) resolves.
 # Several pages cross-reference each other by heading slug.
 myst_heading_anchors = 3

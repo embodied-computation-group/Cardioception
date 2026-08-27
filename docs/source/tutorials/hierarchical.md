@@ -76,7 +76,7 @@ itself.
 
 ## Translate the design into a formula
 
-Predictors can affect threshold, slope, or both. For the worked example I put
+Predictors can affect threshold, slope, or both. For the worked example we put
 the same design terms on `alpha` and `beta`. This allows the data to distinguish
 a horizontal shift in the curve from a change in its steepness. Holding one
 parameter fixed can force an effect into the other.
@@ -237,7 +237,7 @@ cores allocated to the job.
 
 ## Check the fit
 
-I recommend checking the fit in the following order:
+We recommend checking the fit in the following order:
 
 1. Confirm that there are no divergent transitions after warmup.
 2. Check whether any transitions reached the maximum tree depth and inspect

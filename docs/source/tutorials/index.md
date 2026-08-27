@@ -8,7 +8,7 @@ each one assumes the data preparation from the one before.
 
 | Tutorial | What it covers |
 |---|---|
-| [Inspecting and plotting data](inspecting-data.md) | Loading sessions, checking what is missing, the staircase, the confidence distribution. In Python and R. |
+| [Inspecting and plotting data](inspecting-data.md) | Reading task files and checking a session's stimuli, choices, timing, confidence, heart rate, and Psi posterior. In Python and R. |
 | [The psychophysical model](psychophysics.md) | What threshold, slope and lapse rate are, and fitting one participant. |
 | [Hierarchical modelling](hierarchical.md) | Fitting everyone at once, and testing covariates and between-group effects. |
 | [Metacognition](metacognition.md) | Modelling confidence ratings, and whether confidence tracks accuracy. |
