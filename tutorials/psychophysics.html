@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Hierarchical modelling" href="hierarchical.html" /><link rel="prev" title="Inspecting your results" href="inspecting-data.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Hierarchical modelling" href="hierarchical.html" /><link rel="prev" title="Inspecting and plotting an HRD session" href="inspecting-data.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>The psychophysical model - Cardioception Toolbox</title>
@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -235,167 +236,593 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="the-psychophysical-model">
 <h1>The psychophysical model<a class="headerlink" href="#the-psychophysical-model" title="Permalink to this heading">#</a></h1>
-<p>What the Heart Rate Discrimination task measures, and how to get it out of the data
-for a single participant.</p>
-<p>Start with <a class="reference internal" href="inspecting-data.html"><span class="std std-doc">inspecting and plotting data</span></a> if you have not
-already: this page assumes the aggregated data frame prepared there.</p>
-<section id="what-the-task-produces">
-<h2>What the task produces<a class="headerlink" href="#what-the-task-produces" title="Permalink to this heading">#</a></h2>
-<p>On each trial the participant hears tones played at their own heart rate plus or
-minus some offset, and judges whether the tones were faster or slower than their
-heart. The offset is the stimulus intensity, in ΔBPM, and an adaptive Bayesian
-procedure (Psi) chooses it from trial to trial.</p>
-<p>Psi is converging on the participant’s <strong>point of subjective equality</strong>: the offset
-at which they are equally likely to answer “faster” or “slower”. That point is the
-threshold, and it is the quantity the task exists to measure. Note what this means:
-the staircase tracks the participant’s belief about their heart rate, not a target
-level of accuracy. For a biased participant it settles well away from their true
-heart rate, and it is supposed to.</p>
-<p>Plotting the proportion of “faster” responses against that intensity gives the
-shape the model has to describe:</p>
-<p><img alt="Responses against stimulus intensity for one participant" src="../_images/psychometric_example.png" /></p>
-</section>
-<section id="three-parameters">
-<h2>Three parameters<a class="headerlink" href="#three-parameters" title="Permalink to this heading">#</a></h2>
-<p>The curve is a cumulative normal with a lapse rate:</p>
+<p>The Heart Rate Discrimination task turns a simple judgement into a model of
+cardiac belief. A participant attends to their heart, hears a sequence of tones,
+and reports whether the tones were faster or slower. Across trials, we vary the
+difference between the tones and the measured heart rate. The pattern of
+responses tells us where the participant believes their heart rate lies and how
+precisely they can discriminate changes around that belief.</p>
+<p>There are two Bayesian procedures in this workflow. Psi runs during the task and
+chooses informative stimuli. We then refit the response model in <code class="docutils literal notranslate"><span class="pre">brms</span></code>, where
+we can estimate lapse rate, use cleaned trials, and retain posterior uncertainty.
+The two procedures use closely related psychometric functions, but they have
+different jobs.</p>
+<p>This tutorial is organized accordingly:</p>
+<ol class="arabic simple">
+<li><p>the measurement model and its psychological interpretation;</p></li>
+<li><p>adaptive measurement with Psi;</p></li>
+<li><p>a worked <code class="docutils literal notranslate"><span class="pre">brms</span></code> analysis of one participant.</p></li>
+</ol>
+<p>Begin with <a class="reference internal" href="inspecting-data.html"><span class="std std-doc">inspecting your results</span></a> if you are working with
+your own data and have not yet checked missing responses or recording quality.</p>
+<section id="part-i-the-measurement-model">
+<h2>Part I. The measurement model<a class="headerlink" href="#part-i-the-measurement-model" title="Permalink to this heading">#</a></h2>
+<section id="a-trial-is-a-comparison">
+<h3>A trial is a comparison<a class="headerlink" href="#a-trial-is-a-comparison" title="Permalink to this heading">#</a></h3>
+<p>For participant <span class="math notranslate nohighlight">\(s\)</span> on trial <span class="math notranslate nohighlight">\(i\)</span>, define the stimulus intensity as</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[
-P(\text{faster}) = \frac{\lambda}{2} + (1-\lambda)\,\Phi\!\left(e^{\beta}(x - \alpha)\right)
+x_{is} = \text{tone rate} - \text{reference rate}
 \]</div>
 </div>
-<p>where <span class="math notranslate nohighlight">\(\lambda\)</span> is on a logit scale in the model. Each parameter answers a
-different question, and the reason the HRD exists is that it separates them.</p>
+<p>in ΔBPM. The reference is the measured heart rate in an interoceptive trial and
+the first tone sequence in an exteroceptive trial. A negative value means the
+comparison tones were slower than the reference; a positive value means they
+were faster.</p>
+<p>The response is coded</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}
+y_{is} =
+\begin{cases}
+1 &amp; \text{if the participant responds &quot;faster&quot;},\\
+0 &amp; \text{if the participant responds &quot;slower&quot;}.
+\end{cases}
+\end{split}\]</div>
+</div>
+<p>The model concerns <span class="math notranslate nohighlight">\(P(y=1)\)</span>, the probability of a “faster” response. It does not
+model <code class="docutils literal notranslate"><span class="pre">ResponseCorrect</span></code>. This distinction is central to understanding the HRD.</p>
+<p>Suppose a participant underestimates their heart rate by 10 BPM. Their responses
+will be divided equally between “faster” and “slower” when the tones are around
+<span class="math notranslate nohighlight">\(-10\)</span> ΔBPM. This is their subjective match even though the tones are objectively
+slower than the measured heart rate. Accuracy is therefore low near the
+participant’s subjective threshold and high for sufficiently extreme stimuli.</p>
+<p><img alt="Response probability is monotonic, whereas objective accuracy is not" src="../_images/fig_response_vs_accuracy.png" /></p>
+<p>The left panel is the monotonic function fitted by the model. The right panel is
+what happens if those same responses are scored against the sign of ΔBPM.
+Correctness switches from a “slower” response to a “faster” response at zero,
+so it is not described by a single cumulative Gaussian. Fitting accuracy would
+answer a different question and would not recover the participant’s subjective
+heart-rate belief.</p>
+</section>
+<section id="the-psychometric-function">
+<h3>The psychometric function<a class="headerlink" href="#the-psychometric-function" title="Permalink to this heading">#</a></h3>
+<p>We use a cumulative Gaussian with a lapse component. Let <span class="math notranslate nohighlight">\(\ell_s\)</span> be the
+probability that participant <span class="math notranslate nohighlight">\(s\)</span> responds independently of the stimulus. The
+probability of a “faster” response is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+p_{is} = \frac{\ell_s}{2} + (1-\ell_s)
+  \Phi\!\left[e^{\beta_s}(x_{is}-\alpha_s)\right],
+\]</div>
+</div>
+<p>and the observed response follows</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+y_{is} \sim \operatorname{Bernoulli}(p_{is}).
+\]</div>
+</div>
+<p><span class="math notranslate nohighlight">\(\Phi\)</span> is the standard normal cumulative distribution function. On a lapse
+trial, a random choice produces a “faster” response half the time. On the
+remaining trials, response probability follows the cumulative Gaussian.</p>
+<p>The three parameters separate properties that would otherwise be confounded.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Parameter</p></th>
 <th class="head"><p>Scale</p></th>
-<th class="head"><p>Question it answers</p></th>
+<th class="head"><p>Psychological interpretation</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">alpha</span></code></p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\alpha\)</span></p></td>
 <td><p>ΔBPM</p></td>
-<td><p><strong>Where is the curve?</strong> The bias in what the participant believes their heart rate to be. Negative means they judge their heart as slower than it is.</p></td>
+<td><p>Threshold, or point of subjective equality. It locates the participant’s bias.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">beta</span></code></p></td>
-<td><p>log</p></td>
-<td><p><strong>How steep is it?</strong> <code class="docutils literal notranslate"><span class="pre">exp(beta)</span></code> is the inverse of the psychometric sigma, so <strong>larger <code class="docutils literal notranslate"><span class="pre">beta</span></code> means finer discrimination</strong>.</p></td>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\beta\)</span></p></td>
+<td><p>log inverse-σ</p></td>
+<td><p>Slope. Larger values indicate a steeper transition and finer discrimination.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lambda</span></code></p></td>
-<td><p>logit</p></td>
-<td><p><strong>How much of the data is noise?</strong> <code class="docutils literal notranslate"><span class="pre">inv_logit(lambda)</span></code> is the proportion of trials answered without regard to the stimulus.</p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\ell\)</span></p></td>
+<td><p>probability</p></td>
+<td><p>Lapse probability. It controls stimulus-independent responses and the asymptotes.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>The distinction between <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code> is the whole point. A participant can
-be badly wrong about their heart rate while discriminating changes in it very
-precisely, and someone else can be unbiased but unable to tell 60 from 75 BPM.
-Heartbeat counting scores confound the two; this separates them.</p>
-<p>Each parameter moves the curve in its own way:</p>
-<p><img alt="What the three parameters do to the curve" src="../_images/fig_parameters.png" /></p>
+<p>At <span class="math notranslate nohighlight">\(x=\alpha\)</span>, the argument of <span class="math notranslate nohighlight">\(\Phi\)</span> is zero and
+<span class="math notranslate nohighlight">\(P(\text{&quot;faster&quot;})=0.5\)</span>, regardless of the lapse rate. In the interoceptive
+condition:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\alpha&lt;0\)</span> indicates underestimation of heart rate;</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha=0\)</span> indicates little bias relative to the measured rate;</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha&gt;0\)</span> indicates overestimation.</p></li>
+</ul>
+<p>The log-slope can be returned to ΔBPM by computing</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\sigma_s = e^{-\beta_s}.
+\]</div>
+</div>
+<p><span class="math notranslate nohighlight">\(\sigma\)</span> is the standard deviation of the underlying Gaussian. Small values
+produce a sharp response transition; large values produce a gradual one. The
+slope at the threshold is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\left.\frac{dp}{dx}\right|_{x=\alpha}
+= \frac{(1-\ell)e^\beta}{\sqrt{2\pi}}.
+\]</div>
+</div>
+<p>This expression makes the direction of <span class="math notranslate nohighlight">\(\beta\)</span> explicit: larger <span class="math notranslate nohighlight">\(\beta\)</span> means a
+steeper curve.</p>
+<p><img alt="How threshold, slope, and lapse rate change the psychometric function" src="../_images/fig_parameters.png" /></p>
+<p>The dark curve is held fixed in each panel. Threshold moves the function
+horizontally, slope changes the width of its transition, and lapse rate pulls
+the lower and upper asymptotes towards 0.5.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p><code class="docutils literal notranslate"><span class="pre">beta</span></code> means the opposite thing in the model and in the original paper. In the brms
-model above, <code class="docutils literal notranslate"><span class="pre">exp(beta)</span></code> is 1/σ, so <strong>larger <code class="docutils literal notranslate"><span class="pre">beta</span></code> is steeper, meaning better
-precision</strong>. In <a class="reference external" href="https://doi.org/10.1016/j.biopsycho.2021.108239">Legrand et al. (2022)</a>
-the slope parameter is σ itself, where “a larger slope value reflects a less steep
-psychometric function”, so <strong>larger is worse</strong>. Same Greek letter, inverted meaning.
-Check which convention a number is on before comparing it to anything.</p>
+<p>The online Psi output and the model use different slope parameterizations.
+PsychoPy’s Psi estimate is <span class="math notranslate nohighlight">\(\sigma\)</span>, for which larger values mean poorer
+discrimination. The offline <code class="docutils literal notranslate"><span class="pre">brms</span></code> model estimates <span class="math notranslate nohighlight">\(\beta=-\log(\sigma)\)</span>, for
+which larger values mean better discrimination. The slope reported in
+<a class="reference external" href="https://doi.org/10.1016/j.biopsycho.2021.108239">Legrand et al. (2022)</a> follows
+the Psi convention.</p>
 </div>
 </section>
-<section id="the-data-the-model-wants">
-<h2>The data the model wants<a class="headerlink" href="#the-data-the-model-wants" title="Permalink to this heading">#</a></h2>
-<p>Aggregated binomial: <code class="docutils literal notranslate"><span class="pre">y</span></code> successes out of <code class="docutils literal notranslate"><span class="pre">n</span></code> trials at intensity <code class="docutils literal notranslate"><span class="pre">x</span></code>, per
-participant and condition.</p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">model_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="o">|&gt;</span>
-<span class="w">  </span><span class="nf">filter</span><span class="p">(</span><span class="n">Decision</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"More"</span><span class="p">,</span><span class="w"> </span><span class="s">"Less"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span>
-<span class="w">  </span><span class="nf">mutate</span><span class="p">(</span><span class="n">resp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.integer</span><span class="p">(</span><span class="n">Decision</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"More"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span>
-<span class="w">  </span><span class="nf">group_by</span><span class="p">(</span><span class="n">subj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Subject</span><span class="p">,</span><span class="w"> </span><span class="n">condition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modality</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Alpha</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
-<span class="w">  </span><span class="nf">summarise</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">resp</span><span class="p">),</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dplyr</span><span class="o">::</span><span class="nf">n</span><span class="p">(),</span><span class="w"> </span><span class="n">.groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"drop"</span><span class="p">)</span>
+<section id="what-the-parameters-measure">
+<h3>What the parameters measure<a class="headerlink" href="#what-the-parameters-measure" title="Permalink to this heading">#</a></h3>
+<p>Threshold and slope describe judgements about heart rate. They should not be
+treated as pure measures of ascending cardiac afferent sensitivity. A
+participant may draw on cardiac sensations, somatic cues, prior beliefs about
+resting heart rate, temporal estimation, and memory for the listening interval.</p>
+<p>The exteroceptive condition helps identify general temporal comparison biases,
+but it does not turn the interoceptive estimate into a process-pure measure.
+Interoceptive and exteroceptive trials differ in their reference signals, and the
+comparison between them should be stated at the level of the fitted parameters.</p>
+<p>Threshold and slope must also be interpreted separately. A participant can hold
+a biased but precise cardiac belief, or an unbiased but imprecise one. Evidence
+for an effect on threshold is not evidence for an effect on discrimination
+precision.</p>
+</section>
+</section>
+<section id="part-ii-adaptive-measurement-with-psi">
+<h2>Part II. Adaptive measurement with Psi<a class="headerlink" href="#part-ii-adaptive-measurement-with-psi" title="Permalink to this heading">#</a></h2>
+<section id="the-state-of-the-staircase">
+<h3>The state of the staircase<a class="headerlink" href="#the-state-of-the-staircase" title="Permalink to this heading">#</a></h3>
+<p>Psi maintains a joint probability distribution over possible thresholds and
+slopes. With the current Cardioception defaults, this grid covers:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="text-right head"><p>Range</p></th>
+<th class="text-right head"><p>Resolution</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>stimulus <span class="math notranslate nohighlight">\(x\)</span></p></td>
+<td class="text-right"><p>-50.5 to 50.5 ΔBPM</p></td>
+<td class="text-right"><p>1 ΔBPM</p></td>
+</tr>
+<tr class="row-odd"><td><p>threshold <span class="math notranslate nohighlight">\(\alpha\)</span></p></td>
+<td class="text-right"><p>-50.5 to 50.5 ΔBPM</p></td>
+<td class="text-right"><p>1 ΔBPM</p></td>
+</tr>
+<tr class="row-even"><td><p>Psi slope <span class="math notranslate nohighlight">\(\sigma\)</span></p></td>
+<td class="text-right"><p>0.1 to 25 ΔBPM</p></td>
+<td class="text-right"><p>0.1 ΔBPM</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The online lapse fraction is fixed at 0.02. For a response-coded Yes/No Psi
+staircase, the function used online is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+P(\text{&quot;faster&quot;}\mid x,\alpha,\sigma)
+= \frac{0.02}{2} + (1-0.02)
+  \Phi\!\left(\frac{x-\alpha}{\sigma}\right).
+\]</div>
+</div>
+<p>Cardioception delegates the grid update and stimulus selection to
+<a class="reference external" href="https://psychopy.org/api/data.html#psychopy.data.PsiHandler">PsychoPy’s <code class="docutils literal notranslate"><span class="pre">PsiHandler</span></code></a>.
+The HRD trial contains two intervals, but <code class="docutils literal notranslate"><span class="pre">expectedMin=0</span></code> selects PsychoPy’s
+Yes/No form because the staircase models which response was made. An
+accuracy-coded 2AFC function would instead have a lower asymptote of 0.5 and
+would not describe the point of subjective equality.</p>
+<p>Interoceptive and exteroceptive conditions have separate grids because their
+thresholds and slopes may differ. Optional catch trials present predetermined
+extreme intensities and do not update either grid.</p>
+</section>
+<section id="choosing-the-next-stimulus">
+<h3>Choosing the next stimulus<a class="headerlink" href="#choosing-the-next-stimulus" title="Permalink to this heading">#</a></h3>
+<p>After <span class="math notranslate nohighlight">\(t\)</span> adaptive trials, let <span class="math notranslate nohighlight">\(q_t(\alpha,\sigma)\)</span> denote the current joint
+posterior. Psi considers every intensity the task can present. For each candidate
+<span class="math notranslate nohighlight">\(x\)</span>, it asks how the posterior would change after either possible response and
+computes the expected remaining entropy:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}[H\mid x,D_t]
+= \sum_{y\in\{0,1\}}
+  P(y\mid x,D_t)\,
+  H\!\left[q(\alpha,\sigma\mid D_t,x,y)\right].
+\]</div>
+</div>
+<p>The next intensity is the one that minimizes this quantity:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+x_{t+1}
+= \underset{x}{\operatorname{argmin}}\;
+  \mathbb{E}[H\mid x,D_t].
+\]</div>
+</div>
+<p>After the participant responds, Bayes’ rule updates the grid:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+q_{t+1}(\alpha,\sigma)
+\propto
+P(y_{t+1}\mid x_{t+1},\alpha,\sigma)\,
+q_t(\alpha,\sigma).
+\]</div>
+</div>
+<p>The figure below applies this calculation to the example session bundled with
+Cardioception. After eight trials, uncertainty remains about both threshold and
+slope. Psi evaluates the expected information gain at every available ΔBPM. It
+selects <span class="math notranslate nohighlight">\(+11.5\)</span> ΔBPM, having averaged over the posterior that would follow a
+“slower” response and the posterior that would follow a “faster” response.</p>
+<p><img alt="Psi chooses a stimulus by expected information gain" src="../_images/fig_psi_information.png" /></p>
+<p>This is more efficient than drawing intensities uniformly. Trials are allocated
+where they are expected to distinguish plausible psychometric functions. Some
+will fall near the current threshold estimate; others are placed away from it
+because the tails carry information about slope. An efficient Psi trace does not
+have to settle into a flat line.</p>
+</section>
+<section id="from-the-trace-to-the-function">
+<h3>From the trace to the function<a class="headerlink" href="#from-the-trace-to-the-function" title="Permalink to this heading">#</a></h3>
+<p>The next figure follows the layout of Fig. 1 in the <a class="reference external" href="https://doi.org/10.1016/j.biopsycho.2021.108239">original HRD methods
+paper</a>.
+It uses a complete session shipped with this repository. Triangles in the left
+panel show the selected intensities and responses. The red line and band show
+the evolving marginal posterior for the threshold. The middle panel retains the
+joint uncertainty in threshold and slope. The right panel maps that posterior
+through the psychometric function.</p>
+<p><img alt="The adaptive trace, joint Psi posterior, and resulting psychometric function" src="../_images/fig_psi_adaptation.png" /></p>
+<p>At the end of this session the online posterior is centred near
+<span class="math notranslate nohighlight">\(\alpha=+9.9\)</span> ΔBPM and <span class="math notranslate nohighlight">\(\sigma=15.5\)</span> ΔBPM. These are summaries of a distribution,
+not parameters read directly from the visual trace. The trace contains many
+stimuli below the final threshold because those trials helped the algorithm
+learn the response transition.</p>
+<p>The animation shows the same calculation after every adaptive trial. The broad
+initial family of plausible functions contracts as responses accumulate. An
+unexpected response can widen or move the posterior temporarily, which is an
+appropriate revision of uncertainty rather than a failure to converge.</p>
+<p><img alt="Animation of the Psi posterior and psychometric function updating over 48 trials" src="../_images/fig_psi_adaptation.gif" /></p>
+<p>The example also contains catch trials, but they are omitted here because they
+do not update Psi. The figure and animation can be regenerated with
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">tutorials/plot_psi_adaptation.py</span></code>.</p>
+</section>
+<section id="what-psi-gives-us">
+<h3>What Psi gives us<a class="headerlink" href="#what-psi-gives-us" title="Permalink to this heading">#</a></h3>
+<p>Adaptive measurement has three practical advantages:</p>
+<ol class="arabic simple">
+<li><p>it estimates threshold and slope jointly;</p></li>
+<li><p>it spends fewer trials on stimuli that are predictable under every plausible
+function;</p></li>
+<li><p>it produces a running posterior that can be inspected for range problems and
+poor identification.</p></li>
+</ol>
+<p>The online estimates remain part of the experimental procedure. They answer
+“which stimulus should be presented next?” very well. They are not the analysis
+we want to report.</p>
+</section>
+</section>
+<section id="part-iii-fitting-one-participant-in-brms">
+<h2>Part III. Fitting one participant in <code class="docutils literal notranslate"><span class="pre">brms</span></code><a class="headerlink" href="#part-iii-fitting-one-participant-in-brms" title="Permalink to this heading">#</a></h2>
+<p>We use one participant here because it keeps the connection between trials,
+parameters, and the fitted curve visible. This is a complete descriptive model
+for that session. Questions about a sample, a condition effect, or a group
+difference require the model in the next tutorial.</p>
+<section id="why-refit-the-trials">
+<h3>Why refit the trials<a class="headerlink" href="#why-refit-the-trials" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">EstimatedThreshold</span></code> and <code class="docutils literal notranslate"><span class="pre">EstimatedSlope</span></code> summarize the online Psi grid. They
+are useful for checking that a session ran as expected. The offline fit gives us
+several things that the staircase was not designed to provide:</p>
+<ul class="simple">
+<li><p>the lapse rate is estimated rather than fixed at 0.02;</p></li>
+<li><p>planned trial exclusions can be applied before fitting;</p></li>
+<li><p>the parameters are no longer restricted to the Psi grid;</p></li>
+<li><p>uncertainty is carried through to the fitted function and every summary.</p></li>
+</ul>
+<p>The presented intensities remain valid observations. Conditional on an
+intensity, the likelihood of the response has the same form whether Psi chose
+that intensity or it was fixed in advance. We therefore retain the actual
+intensities and responses, apply the data-quality criteria, and fit them again.</p>
+</section>
+<section id="prepare-the-participant-s-responses">
+<h3>Prepare the participant’s responses<a class="headerlink" href="#prepare-the-participant-s-responses" title="Permalink to this heading">#</a></h3>
+<p>The example below reads the session distributed with Cardioception. It has 58
+usable interoceptive trials at 34 exact intensities. Catch trials did not update
+Psi, but they are valid observations of the response function and can be
+included if they pass the same quality checks as the other trials.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">brms</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">readr</span><span class="p">)</span>
+
+<span class="n">raw</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span>
+<span class="w">  </span><span class="s">"docs/source/examples/templates/data/HRD/HRD_final.txt"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">show_col_types</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span>
+<span class="p">)</span>
+
+<span class="n">trials</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">filter</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Modality</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"Intero"</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Decision</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"More"</span><span class="p">,</span><span class="w"> </span><span class="s">"Less"</span><span class="p">),</span>
+<span class="w">    </span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">Alpha</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate</span><span class="p">(</span>
+<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Alpha</span><span class="p">,</span>
+<span class="w">    </span><span class="n">resp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.integer</span><span class="p">(</span><span class="n">Decision</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"More"</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="n">model_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trials</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">group_by</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">summarise</span><span class="p">(</span>
+<span class="w">    </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">resp</span><span class="p">),</span>
+<span class="w">    </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dplyr</span><span class="o">::</span><span class="nf">n</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">.groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"drop"</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="nf">stopifnot</span><span class="p">(</span>
+<span class="w">  </span><span class="nf">all</span><span class="p">(</span><span class="n">model_df</span><span class="o">$</span><span class="n">y</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">  </span><span class="nf">all</span><span class="p">(</span><span class="n">model_df</span><span class="o">$</span><span class="n">y</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">model_df</span><span class="o">$</span><span class="n">n</span><span class="p">),</span>
+<span class="w">  </span><span class="nf">all</span><span class="p">(</span><span class="n">model_df</span><span class="o">$</span><span class="n">n</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>With a Psi staircase almost every intensity is visited once, so <code class="docutils literal notranslate"><span class="pre">n</span></code> is usually 1.
-That is expected. Do not bin <code class="docutils literal notranslate"><span class="pre">x</span></code> to make <code class="docutils literal notranslate"><span class="pre">n</span></code> larger: the staircase spent the whole
-session choosing those intensities, and binning throws that away.</p>
-<p>Check the direction of the coding before fitting. <code class="docutils literal notranslate"><span class="pre">y</span></code> must count responses in the
-direction that increases with <code class="docutils literal notranslate"><span class="pre">x</span></code>; if the fitted curve comes out running downhill,
-this is why.</p>
+<p><code class="docutils literal notranslate"><span class="pre">y</span></code> counts “faster” responses. Its proportion should generally increase with
+<code class="docutils literal notranslate"><span class="pre">x</span></code>; a decreasing pattern is a cue to check the response coding. Exact repeats
+are combined as
+<span class="math notranslate nohighlight">\(Y_x\sim\operatorname{Binomial}(n_x,p_x)\)</span>. Nearby intensities are left
+separate because arbitrary bins discard information.</p>
 </section>
-<section id="one-participant">
-<h2>One participant<a class="headerlink" href="#one-participant" title="Permalink to this heading">#</a></h2>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">brms</span><span class="p">)</span>
-<span class="n">inv_logit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="m">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+<section id="define-the-response-model">
+<h3>Define the response model<a class="headerlink" href="#define-the-response-model" title="Permalink to this heading">#</a></h3>
+<p>For this one participant, each nonlinear parameter needs only an intercept:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">inv_logit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="m">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+<span class="n">erf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">pnorm</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">sqrt</span><span class="p">(</span><span class="m">2</span><span class="p">))</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="m">1</span>
 
 <span class="n">bff</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">bf</span><span class="p">(</span>
 <span class="w">  </span><span class="n">y</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nf">trials</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="nf">inv_logit</span><span class="p">(</span><span class="n">lambda</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">+</span>
-<span class="w">    </span><span class="p">(</span><span class="m">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nf">inv_logit</span><span class="p">(</span><span class="n">lambda</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="m">0.5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">erf</span><span class="p">(</span><span class="nf">exp</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">alpha</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nf">sqrt</span><span class="p">(</span><span class="m">2</span><span class="p">))),</span>
-<span class="w">  </span><span class="n">alpha</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">beta</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">lambda</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">    </span><span class="p">(</span><span class="m">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nf">inv_logit</span><span class="p">(</span><span class="n">lambda</span><span class="p">))</span><span class="w"> </span><span class="o">*</span>
+<span class="w">      </span><span class="p">(</span><span class="m">0.5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">erf</span><span class="p">(</span><span class="nf">exp</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">alpha</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nf">sqrt</span><span class="p">(</span><span class="m">2</span><span class="p">))),</span>
+<span class="w">  </span><span class="n">alpha</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">beta</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">lambda</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
 <span class="w">  </span><span class="n">nl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span>
 <span class="w">  </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">binomial</span><span class="p">(</span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"identity"</span><span class="p">)</span>
 <span class="p">)</span>
-
-<span class="n">fit_one</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">brm</span><span class="p">(</span>
-<span class="w">  </span><span class="n">bff</span><span class="p">,</span>
-<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="n">model_df</span><span class="p">,</span><span class="w"> </span><span class="n">subj</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"sub-0019"</span><span class="p">,</span><span class="w"> </span><span class="n">condition</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"Intero"</span><span class="p">),</span>
-<span class="w">  </span><span class="n">prior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span>
-<span class="w">    </span><span class="nf">set_prior</span><span class="p">(</span><span class="s">"normal(-8.67, 11.23)"</span><span class="p">,</span><span class="w"> </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"b"</span><span class="p">,</span><span class="w"> </span><span class="n">nlpar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"alpha"</span><span class="p">,</span><span class="w"> </span><span class="n">coef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Intercept"</span><span class="p">),</span>
-<span class="w">    </span><span class="nf">set_prior</span><span class="p">(</span><span class="s">"normal(-2.3, 0.34)"</span><span class="p">,</span><span class="w">   </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"b"</span><span class="p">,</span><span class="w"> </span><span class="n">nlpar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"beta"</span><span class="p">,</span><span class="w">  </span><span class="n">coef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Intercept"</span><span class="p">),</span>
-<span class="w">    </span><span class="nf">set_prior</span><span class="p">(</span><span class="s">"normal(-4.32, 1.96)"</span><span class="p">,</span><span class="w">  </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"b"</span><span class="p">,</span><span class="w"> </span><span class="n">nlpar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"lambda"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">erf()</span></code> expression is the cumulative Gaussian from Part I. Stan provides
+<code class="docutils literal notranslate"><span class="pre">erf()</span></code> during sampling, while the short R definition lets <code class="docutils literal notranslate"><span class="pre">brms</span></code> evaluate the
+same expression when making predictions. The nonlinear formula already returns
+a probability, so the binomial family uses an identity link.</p>
+</section>
+<section id="specify-and-inspect-the-priors">
+<h3>Specify and inspect the priors<a class="headerlink" href="#specify-and-inspect-the-priors" title="Permalink to this heading">#</a></h3>
+<p>These priors come from the normative HRD refit reported by
+<a class="reference external" href="https://doi.org/10.3758/s13428-026-03137-3">Courtin et al. (2026)</a>:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">priors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span>
+<span class="w">  </span><span class="nf">set_prior</span><span class="p">(</span>
+<span class="w">    </span><span class="s">"normal(-8.67, 11.23)"</span><span class="p">,</span>
+<span class="w">    </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"b"</span><span class="p">,</span><span class="w"> </span><span class="n">nlpar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"alpha"</span><span class="p">,</span><span class="w"> </span><span class="n">coef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Intercept"</span>
 <span class="w">  </span><span class="p">),</span>
-<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">cores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"cmdstanr"</span>
+<span class="w">  </span><span class="nf">set_prior</span><span class="p">(</span>
+<span class="w">    </span><span class="s">"normal(-2.3, 0.34)"</span><span class="p">,</span>
+<span class="w">    </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"b"</span><span class="p">,</span><span class="w"> </span><span class="n">nlpar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"beta"</span><span class="p">,</span><span class="w"> </span><span class="n">coef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Intercept"</span>
+<span class="w">  </span><span class="p">),</span>
+<span class="w">  </span><span class="nf">set_prior</span><span class="p">(</span>
+<span class="w">    </span><span class="s">"normal(-4.32, 1.96)"</span><span class="p">,</span>
+<span class="w">    </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"b"</span><span class="p">,</span><span class="w"> </span><span class="n">nlpar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"lambda"</span><span class="p">,</span><span class="w"> </span><span class="n">coef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Intercept"</span>
+<span class="w">  </span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Those priors are not arbitrary. They come from a population refit reported in
-<a class="reference external" href="https://doi.org/10.3758/s13428-026-03137-3">Courtin et al. (2026)</a>: a mean
-threshold near -8.7 ΔBPM with a between-subject SD of 11.23, and a lapse rate
-around 1.3%. They carry real information, which matters most for the slope, since
-the staircase leaves few trials in the tails to constrain it.</p>
+<p>The threshold prior is centred at <span class="math notranslate nohighlight">\(-8.67\)</span> ΔBPM. The prior mean of <span class="math notranslate nohighlight">\(-2.3\)</span> for
+log inverse-<span class="math notranslate nohighlight">\(\sigma\)</span> corresponds to <span class="math notranslate nohighlight">\(\sigma\approx10\)</span> ΔBPM. The logit-lapse
+prior is centred at a lapse probability of about 1.3%. Check that the names
+match the coefficients generated by the formula:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">get_prior</span><span class="p">(</span><span class="n">bff</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model_df</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A coefficient name in a nonlinear model is easy to mistype, which can leave an
+unintended flat prior. Before seeing the responses, sample from the prior and
+draw the implied psychometric curves across the task range:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">prior_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">brm</span><span class="p">(</span>
+<span class="w">  </span><span class="n">bff</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model_df</span><span class="p">,</span>
+<span class="w">  </span><span class="n">prior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">priors</span><span class="p">,</span>
+<span class="w">  </span><span class="n">sample_prior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"only"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">cores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"cmdstanr"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5101</span><span class="p">,</span>
+<span class="w">  </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"fits/hrd_single_prior"</span>
+<span class="p">)</span>
+
+<span class="n">grid</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">-50.5</span><span class="p">,</span><span class="w"> </span><span class="m">50.5</span><span class="p">,</span><span class="w"> </span><span class="n">length.out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">200</span><span class="p">),</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+<span class="n">prior_curves</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">posterior_epred</span><span class="p">(</span><span class="n">prior_fit</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span>
+<span class="nf">matplot</span><span class="p">(</span>
+<span class="w">  </span><span class="n">grid</span><span class="o">$</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="nf">t</span><span class="p">(</span><span class="n">prior_curves</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">100</span><span class="p">,</span><span class="w"> </span><span class="p">]),</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"l"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">lty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rgb</span><span class="p">(</span><span class="m">0.3</span><span class="p">,</span><span class="w"> </span><span class="m">0.35</span><span class="p">,</span><span class="w"> </span><span class="m">0.4</span><span class="p">,</span><span class="w"> </span><span class="m">0.12</span><span class="p">),</span>
+<span class="w">  </span><span class="n">xlab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"ΔBPM"</span><span class="p">,</span><span class="w"> </span><span class="n">ylab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"P(response 'faster')"</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This check is more informative than inspecting three prior densities in
+isolation. It shows whether their combination assigns probability to plausible
+response curves over the intensities the participant could encounter.</p>
 </section>
-<section id="what-fitted-participants-look-like">
-<h2>What fitted participants look like<a class="headerlink" href="#what-fitted-participants-look-like" title="Permalink to this heading">#</a></h2>
-<p>Three participants from the example sample, ordered by threshold. The same three
-parameters describe all of them, and they are describing very different people.</p>
-<p><img alt="Three fitted participants with their observed data" src="../_images/fig_single_subjects.png" /></p>
-<p>Points are observed proportions, sized by how many trials the staircase actually
-spent there. Notice how few trials sit far from each participant’s own threshold:
-that is the staircase doing its job, and it is also why individual slope estimates
-are shaky.</p>
+<section id="sample-the-posterior">
+<h3>Sample the posterior<a class="headerlink" href="#sample-the-posterior" title="Permalink to this heading">#</a></h3>
+<p>Bayesian fitting combines the parameter priors with the likelihood of the 58
+responses:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+p(\alpha,\beta,\lambda\mid y,x)
+\propto
+p(y\mid x,\alpha,\beta,\lambda)
+p(\alpha)p(\beta)p(\lambda).
+\]</div>
+</div>
+<p>We use four independent chains to explore this posterior. <code class="docutils literal notranslate"><span class="pre">sample_prior</span> <span class="pre">=</span> <span class="pre">&quot;yes&quot;</span></code> also stores draws from the priors, which makes a direct comparison with
+the posterior possible.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">brm</span><span class="p">(</span>
+<span class="w">  </span><span class="n">bff</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model_df</span><span class="p">,</span>
+<span class="w">  </span><span class="n">prior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">priors</span><span class="p">,</span>
+<span class="w">  </span><span class="n">sample_prior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"yes"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">cores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">warmup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">control</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">adapt_delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">,</span><span class="w"> </span><span class="n">max_treedepth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">),</span>
+<span class="w">  </span><span class="n">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"cmdstanr"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5102</span><span class="p">,</span>
+<span class="w">  </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"fits/hrd_single"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">file_refit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"on_change"</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The upper row below compares marginal prior draws with posterior draws from this
+fit. The participant’s responses move the threshold well away from the prior
+centre and narrow it substantially. The width is also learned from the data.
+Lapse remains less certain because very low lapse rates make similar predictions
+in a session of this length.</p>
+<p>The lower row shows post-warmup draws in sampling order. These traces are a
+computational diagnostic, not a record of how the participant learned during
+the task. All four chains should explore the same region without trends or long
+periods of sticking.</p>
+<p><img alt="From priors to the sampled posterior for one participant" src="../_images/fig_single_subject_sampling.png" /></p>
+<p>The cached <code class="docutils literal notranslate"><span class="pre">brms</span></code> object can be large. Keep it out of version control. The script
+used for this example, including its cache and compact output tables, is
+<code class="docutils literal notranslate"><span class="pre">tutorials/R/05_single_subject.R</span></code>.</p>
 </section>
-<section id="and-everyone-else">
-<h2>And everyone else<a class="headerlink" href="#and-everyone-else" title="Permalink to this heading">#</a></h2>
-<p>The same three parameters, fitted to all 512 participants, with the group curve
-drawn over them.</p>
-<p><img alt="All participants, and the group curve" src="../_images/fig_all_participants.png" /></p>
-<p>People differ enormously. Thresholds run from tens of BPM below the true heart
-rate to somewhat above it, and slopes vary alongside them. That spread is the
-thing most worth taking away from this page: it is far larger than any group
-difference you are likely to be testing for, which is exactly why the next
-tutorial fits everyone in a single model instead of one at a time.</p>
+<section id="check-the-sampling">
+<h3>Check the sampling<a class="headerlink" href="#check-the-sampling" title="Permalink to this heading">#</a></h3>
+<p>Read the diagnostics before interpreting the curve:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">nuts_params</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="n">draw_summary</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">posterior</span><span class="o">::</span><span class="nf">summarise_draws</span><span class="p">(</span>
+<span class="w">  </span><span class="n">posterior</span><span class="o">::</span><span class="nf">as_draws_array</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="nf">sum</span><span class="p">(</span><span class="n">np</span><span class="o">$</span><span class="n">Value</span><span class="p">[</span><span class="n">np</span><span class="o">$</span><span class="n">Parameter</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"divergent__"</span><span class="p">])</span>
+<span class="nf">max</span><span class="p">(</span><span class="n">np</span><span class="o">$</span><span class="n">Value</span><span class="p">[</span><span class="n">np</span><span class="o">$</span><span class="n">Parameter</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"treedepth__"</span><span class="p">])</span>
+<span class="nf">max</span><span class="p">(</span><span class="n">draw_summary</span><span class="o">$</span><span class="n">rhat</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+<span class="nf">min</span><span class="p">(</span><span class="n">draw_summary</span><span class="o">$</span><span class="n">ess_bulk</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+<span class="nf">min</span><span class="p">(</span><span class="n">draw_summary</span><span class="o">$</span><span class="n">ess_tail</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For this fit there were no divergent transitions, maximum tree depth was 4,
+maximum <span class="math notranslate nohighlight">\(\widehat{R}\)</span> was 1.001, and the minimum bulk and tail effective sample
+sizes were 3,309 and 4,266. Minimum E-BFMI across chains was 1.00. These values
+give no indication of a sampling problem. As general checks, require no
+divergences, <span class="math notranslate nohighlight">\(\widehat{R}&lt;1.01\)</span>, effective sample sizes in at least the hundreds,
+and E-BFMI above 0.3.</p>
 </section>
-<section id="why-you-should-not-stop-here">
-<h2>Why you should not stop here<a class="headerlink" href="#why-you-should-not-stop-here" title="Permalink to this heading">#</a></h2>
-<p>Fitting participants one at a time is the obvious thing to do and it is not what we
-recommend. Two reasons.</p>
-<p>The staircase concentrates trials near each person’s threshold, so there is little
-data far from it and the slope is poorly determined. Individual slope estimates are
-noisy, sometimes wildly so.</p>
-<p>Worse, taking those point estimates into a second-stage t-test or regression
-throws away how uncertain each one was. A participant whose slope is barely
-identified counts exactly as much as one with a clean fit.</p>
-<p>Fitting everyone in one model solves both, and that is the
-<a class="reference internal" href="hierarchical.html"><span class="std std-doc">next tutorial</span></a>.</p>
+<section id="plot-the-fitted-participant">
+<h3>Plot the fitted participant<a class="headerlink" href="#plot-the-fitted-participant" title="Permalink to this heading">#</a></h3>
+<p>We now carry each posterior draw through the psychometric function. At every
+value of ΔBPM this gives a distribution of response probabilities, from which
+we can plot a median and credible bands.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">-50.5</span><span class="p">,</span><span class="w"> </span><span class="m">50.5</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.25</span><span class="p">),</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+<span class="n">p_draws</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">posterior_epred</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span>
+
+<span class="n">curve</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">tibble</span><span class="p">(</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">grid</span><span class="o">$</span><span class="n">x</span><span class="p">,</span>
+<span class="w">  </span><span class="n">q2.5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.025</span><span class="p">),</span>
+<span class="w">  </span><span class="n">q10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.10</span><span class="p">),</span>
+<span class="w">  </span><span class="n">q25</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.25</span><span class="p">),</span>
+<span class="w">  </span><span class="n">median</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">median</span><span class="p">),</span>
+<span class="w">  </span><span class="n">q75</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.75</span><span class="p">),</span>
+<span class="w">  </span><span class="n">q90</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.90</span><span class="p">),</span>
+<span class="w">  </span><span class="n">q97.5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.975</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><img alt="One participant's observed responses and posterior psychometric function" src="../_images/fig_single_subject_brms.png" /></p>
+<p>Each point is the observed proportion of “faster” responses at one exact
+intensity; larger points represent repeated presentations. The line is the
+posterior median function. The nested bands contain 50%, 80%, and 95% of the
+posterior probability at each intensity. The vertical dashed line marks the
+median threshold.</p>
+<p>This participant’s threshold is <span class="math notranslate nohighlight">\(+9.1\)</span> ΔBPM, with a 95% credible interval from
+<span class="math notranslate nohighlight">\(+4.0\)</span> to <span class="math notranslate nohighlight">\(+13.8\)</span> ΔBPM. Their tones had to be about 9 BPM faster than the
+measured heart rate before “faster” and “slower” responses were equally likely,
+which indicates overestimation relative to the measured rate. The median
+<span class="math notranslate nohighlight">\(\sigma\)</span> is 11.2 ΔBPM, with a 95% interval from 7.3 to 17.3 ΔBPM. The median
+lapse probability is 1.1%, although its 95% interval is broad, from 0.03% to
+17.9%. The posterior bands make that remaining uncertainty visible in a way that
+the final Psi point estimates cannot.</p>
 </section>
-<section id="do-not-analyse-the-online-estimates">
-<h2>Do not analyse the online estimates<a class="headerlink" href="#do-not-analyse-the-online-estimates" title="Permalink to this heading">#</a></h2>
-<p>The task writes <code class="docutils literal notranslate"><span class="pre">EstimatedThreshold</span></code> and <code class="docutils literal notranslate"><span class="pre">EstimatedSlope</span></code> on every row. These are
-the Psi algorithm’s running estimates, used to decide what to present next. They
-are useful for checking that a session behaved, and they are not an analysis.
-Using them as a dependent variable discards the trial-level data and its
-uncertainty in one step.</p>
+<section id="return-to-scientific-scales">
+<h3>Return to scientific scales<a class="headerlink" href="#return-to-scientific-scales" title="Permalink to this heading">#</a></h3>
+<p>Transform slope and lapse draws before reporting them:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">draws</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">posterior</span><span class="o">::</span><span class="nf">as_draws_df</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">as.data.frame</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">transmute</span><span class="p">(</span>
+<span class="w">    </span><span class="n">threshold_dBPM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b_alpha_Intercept</span><span class="p">,</span>
+<span class="w">    </span><span class="n">log_slope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b_beta_Intercept</span><span class="p">,</span>
+<span class="w">    </span><span class="n">sigma_dBPM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">exp</span><span class="p">(</span><span class="o">-</span><span class="n">b_beta_Intercept</span><span class="p">),</span>
+<span class="w">    </span><span class="n">lapse_probability</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">plogis</span><span class="p">(</span><span class="n">b_lambda_Intercept</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="n">draws</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="n">tidyr</span><span class="o">::</span><span class="nf">pivot_longer</span><span class="p">(</span>
+<span class="w">    </span><span class="nf">everything</span><span class="p">(),</span><span class="w"> </span><span class="n">names_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"parameter"</span><span class="p">,</span><span class="w"> </span><span class="n">values_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"value"</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">group_by</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">summarise</span><span class="p">(</span>
+<span class="w">    </span><span class="n">median</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+<span class="w">    </span><span class="n">q2.5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">quantile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="m">0.025</span><span class="p">),</span>
+<span class="w">    </span><span class="n">q97.5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">quantile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="m">0.975</span><span class="p">),</span>
+<span class="w">    </span><span class="n">.groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"drop"</span>
+<span class="w">  </span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="where-the-single-participant-analysis-ends">
+<h3>Where the single-participant analysis ends<a class="headerlink" href="#where-the-single-participant-analysis-ends" title="Permalink to this heading">#</a></h3>
+<p>This fit is useful for understanding the model, describing an individual
+session, and diagnosing whether the response function is identified. It is not
+a route to a group analysis. Fitting every participant separately and testing
+their posterior means would discard their different levels of uncertainty.</p>
+<p>Continue to <a class="reference internal" href="hierarchical.html"><span class="std std-doc">hierarchical modelling</span></a> when the scientific
+question concerns participants as a sample, experimental conditions, groups,
+or covariates. That tutorial starts from the same trial likelihood and develops
+the population model in full.</p>
+</section>
 </section>
 </section>
 
@@ -420,7 +847,7 @@ uncertainty in one step.</p>
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Inspecting your results</div>
+                <div class="title">Inspecting and plotting an HRD session</div>
                 
               </div>
             </a>
@@ -459,14 +886,31 @@ uncertainty in one step.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">The psychophysical model</a><ul>
-<li><a class="reference internal" href="#what-the-task-produces">What the task produces</a></li>
-<li><a class="reference internal" href="#three-parameters">Three parameters</a></li>
-<li><a class="reference internal" href="#the-data-the-model-wants">The data the model wants</a></li>
-<li><a class="reference internal" href="#one-participant">One participant</a></li>
-<li><a class="reference internal" href="#what-fitted-participants-look-like">What fitted participants look like</a></li>
-<li><a class="reference internal" href="#and-everyone-else">And everyone else</a></li>
-<li><a class="reference internal" href="#why-you-should-not-stop-here">Why you should not stop here</a></li>
-<li><a class="reference internal" href="#do-not-analyse-the-online-estimates">Do not analyse the online estimates</a></li>
+<li><a class="reference internal" href="#part-i-the-measurement-model">Part I. The measurement model</a><ul>
+<li><a class="reference internal" href="#a-trial-is-a-comparison">A trial is a comparison</a></li>
+<li><a class="reference internal" href="#the-psychometric-function">The psychometric function</a></li>
+<li><a class="reference internal" href="#what-the-parameters-measure">What the parameters measure</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#part-ii-adaptive-measurement-with-psi">Part II. Adaptive measurement with Psi</a><ul>
+<li><a class="reference internal" href="#the-state-of-the-staircase">The state of the staircase</a></li>
+<li><a class="reference internal" href="#choosing-the-next-stimulus">Choosing the next stimulus</a></li>
+<li><a class="reference internal" href="#from-the-trace-to-the-function">From the trace to the function</a></li>
+<li><a class="reference internal" href="#what-psi-gives-us">What Psi gives us</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#part-iii-fitting-one-participant-in-brms">Part III. Fitting one participant in <code class="docutils literal notranslate"><span class="pre">brms</span></code></a><ul>
+<li><a class="reference internal" href="#why-refit-the-trials">Why refit the trials</a></li>
+<li><a class="reference internal" href="#prepare-the-participant-s-responses">Prepare the participant’s responses</a></li>
+<li><a class="reference internal" href="#define-the-response-model">Define the response model</a></li>
+<li><a class="reference internal" href="#specify-and-inspect-the-priors">Specify and inspect the priors</a></li>
+<li><a class="reference internal" href="#sample-the-posterior">Sample the posterior</a></li>
+<li><a class="reference internal" href="#check-the-sampling">Check the sampling</a></li>
+<li><a class="reference internal" href="#plot-the-fitted-participant">Plot the fitted participant</a></li>
+<li><a class="reference internal" href="#return-to-scientific-scales">Return to scientific scales</a></li>
+<li><a class="reference internal" href="#where-the-single-participant-analysis-ends">Where the single-participant analysis ends</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -485,6 +929,7 @@ uncertainty in one step.</p>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/design-tabs.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>

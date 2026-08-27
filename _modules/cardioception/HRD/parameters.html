@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
     
@@ -299,6 +300,7 @@
 <span class="sd">           during the experiment. If `nTrials=50` and `exteroception=False`, the task</span>
 <span class="sd">           contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,</span>
 <span class="sd">           the task contains 25 interoceptive trials and 25 exteroceptive trials.</span>
+
 <span class="sd">    participant : str</span>
 <span class="sd">        Subject ID. Default is 'Participant'.</span>
 <span class="sd">    catchTrials : float</span>
@@ -416,6 +418,7 @@
 <span class="sd">        Dictionary {str, callable or None}. The function will be executed</span>
 <span class="sd">        before the corresponding trial sequence. The default values are</span>
 <span class="sd">        `None` (no trigger sent).</span>
+
 <span class="sd">        * `"trialStart"`</span>
 <span class="sd">        * `"trialStop"`</span>
 <span class="sd">        * `"listeningStart"`</span>
@@ -424,6 +427,7 @@
 <span class="sd">        * `"decisionStop"`</span>
 <span class="sd">        * `"confidenceStart"`</span>
 <span class="sd">        * `"confidenceStop"`</span>
+
 <span class="sd">    win : `psychopy.visual.window`</span>
 <span class="sd">        The window in which to draw objects.</span>
 
@@ -437,6 +441,7 @@
 <span class="sd">    - sound trigger : 3</span>
 <span class="sd">    - rating trigger: 4</span>
 <span class="sd">    - end trigger: 5</span>
+
 <span class="sd">    All these events, except trial start, have also their time stamps encoded in the</span>
 <span class="sd">    behavioral results data frame.</span>
 
@@ -766,5 +771,6 @@
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
     </body>
 </html>
