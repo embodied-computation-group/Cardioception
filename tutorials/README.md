@@ -1,7 +1,8 @@
 # Tutorial analyses
 
-The analysis behind the modelling tutorials in the documentation. Everything here
-runs as ordinary R on an ordinary machine.
+The analysis behind the modelling tutorials in the documentation. The model
+pipeline runs as ordinary R. A small Python script reconstructs the online Psi
+figures and plots the compact single-participant posterior output.
 
 ## What this is for
 
@@ -20,6 +21,8 @@ R/
   00_prepare.R    trials -> aggregated binomial cells, covariate coding, checks
   01_fit.R        fit one model by name, verify priors, write summary + diagnostics
   02_summarise.R  fitted models -> the tables and figures the docs read
+  05_single_subject.R  fit the worked participant in the psychophysics tutorial
+plot_psi_adaptation.py  Psi figures plus the worked participant's posterior plots
 slurm/            how we ran these on a cluster. Not needed to follow the tutorials.
 data/             input trial data
 results/          posterior summaries, diagnostics and figures
@@ -37,6 +40,22 @@ Rscript R/00_prepare.R data/hrd_tutorial.csv data/model_data.rds
 Rscript R/01_fit.R psy_intero      # the minimal example
 Rscript R/01_fit.R psy_full        # the full model
 Rscript R/02_summarise.R
+```
+
+The single-participant model takes only a few minutes on a current desktop. Run
+it from the repository root; its full `brms` object is cached locally and only
+compact posterior output is written under `results/small/`:
+
+```bash
+Rscript tutorials/R/05_single_subject.R
+```
+
+The plotting script uses that compact output for the final two psychophysics
+figures. It also reconstructs the Psi figures from the example `final.txt` and
+trial-by-trial posterior arrays under `docs/source/examples/templates/`:
+
+```bash
+python tutorials/plot_psi_adaptation.py
 ```
 
 `01_fit.R` skips any model whose summary already exists, so it is safe to rerun.

@@ -73,7 +73,10 @@ A handful of missed trials is normal. A participant missing a quarter of them wa
 
 ## The staircase
 
-This is the single most useful plot. It shows the intensity offered on each trial, and it should start wide and settle towards the participant's threshold.
+This is the single most useful plot. It shows the intensity offered on each trial.
+A Psi staircase should explore broadly at first and then devote more trials to
+the informative region. It need not become flat: trials away from the current
+threshold estimate can still help identify the slope.
 
 ![Staircase trajectory for one participant](../images/staircase_trajectory.png)
 
@@ -104,7 +107,11 @@ clean |>
   theme_classic()
 ```
 
-Two failure modes are obvious here. A trace that wanders without settling means the responses carried little information. A trace that runs to the edge of the range and stays pinned there means the participant was at ceiling or floor, and the threshold for that session is not identified.
+Two failure modes are easier to see here. A trace that reaches the edge of the
+available range and stays there suggests that the threshold is not identified.
+A trace whose "faster" and "slower" responses show no relation to intensity may
+indicate that the participant's responses carried little information. Movement
+in the trace by itself is not evidence of a failed staircase.
 
 ## Responses against intensity
 

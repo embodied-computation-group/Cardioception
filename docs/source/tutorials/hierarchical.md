@@ -1,50 +1,64 @@
 # Hierarchical modelling
 
-Fitting every participant in one model, and testing whether a covariate or a group
-membership moves interoceptive bias or precision.
+Most HRD studies concern a population. You may want to estimate the average
+cardiac bias in a sample, compare two groups, or ask whether age is associated
+with discrimination precision. These questions are best addressed by fitting
+the trial data in one hierarchical model.
 
-This is the tutorial most studies need. It assumes the
-[psychophysical model](psychophysics.md) and the data preparation from
-[inspecting and plotting data](inspecting-data.md).
+The model estimates a psychometric function for each participant while also
+estimating the population from which those functions vary. This preserves the
+uncertainty in each participant's parameters and allows information to be
+shared across the sample.
 
-## Why one model rather than many
+This tutorial assumes that you have read [the psychophysical
+model](psychophysics.md) and prepared the data as described in [inspecting your
+results](inspecting-data.md).
 
-The staircase gives each participant few trials far from their threshold, so
-individual slopes are poorly constrained. Fitting separately and then testing the
-point estimates treats a barely identified slope as if it were known exactly.
+```{note}
+The HRD measures the bias and precision of judgements about heart rate. Its
+parameters should not be interpreted as pure measures of ascending cardiac
+afferent sensitivity. Participants may also draw on prior beliefs, somatic
+cues, temporal estimation, and memory for the listening interval.
+```
 
-A hierarchical model draws each participant's parameters from a group
-distribution, so every participant is fitted in the same pass that estimates the
-group, and each one's uncertainty travels through to the group-level effects
-instead of being discarded halfway.
+## Why use a hierarchical model
 
-Both halves of that are in one picture.
+The Psi staircase concentrates trials near each participant's point of
+subjective equality. This is efficient for estimating the threshold, but it
+leaves relatively few observations in the tails of the psychometric function.
+Slopes can therefore be weakly constrained at the participant level.
 
-![Every participant, the group curve, and four participants with their uncertainty](../images/tutorials/fig_pooling.png)
+A separate fit for every participant gives no way to carry this variation in
+uncertainty into a group analysis. Once the resulting point estimates are put
+into a t-test or regression, a threshold known within 1 BPM receives the same
+weight as one known within 10 BPM.
 
-The top panel is the group curve, estimated from all 512 participants at once and
-drawn over them. Below it are four of those participants with their own posterior
-intervals, and the group curve behind each in grey.
+The hierarchical model avoids that loss of information. The figure below shows
+all 512 participant curves from the worked dataset together with the population
+curve. The four lower panels were selected to span the posterior uncertainty in
+individual thresholds.
 
-The widths are the thing to notice. The leftmost participant's threshold is pinned
-to about 1.4 ΔBPM and the rightmost to 5.2, and across all 512 the range runs from
-1.1 to 17.2. The model carries that difference into the group estimate. Fit
-everyone separately and feed the point estimates into a t-test, and a threshold
-known to ±1 counts the same as one barely known at all.
+![Every participant, the population curve, and four participants with different levels of uncertainty](../images/tutorials/fig_pooling.png)
 
-The spread across participants comes out as a parameter too, rather than as a
-nuisance:
+The values above the lower panels are posterior standard deviations of the
+threshold. They range from 1.4 ΔBPM for the first participant to 5.2 ΔBPM for
+the fourth. Across the full sample they range from approximately 1.1 to 17.2
+ΔBPM. These numbers describe how precisely a threshold is known, not where the
+threshold lies.
 
-![Distribution of individual thresholds and slopes](../images/tutorials/fig_subject_spread.png)
+Partial pooling also regularizes poorly constrained individual fits. Each
+participant is estimated mainly from their own responses, with increasing
+support from the population distribution as their data become less
+informative. Participants with clear data remain largely unchanged.
 
-Participants differ from one another far more than the conditions differ from each
-other, and that width is the yardstick every group effect below is measured
-against.
+The simplest model has one population distribution and one participant-level
+deviation for each psychometric parameter:
 
 ```r
 bff <- bf(
   y | trials(n) ~ inv_logit(lambda) / 2 +
-    (1 - inv_logit(lambda)) * (0.5 + 0.5 * erf(exp(beta) * (x - alpha) / sqrt(2))),
+    (1 - inv_logit(lambda)) *
+      (0.5 + 0.5 * erf(exp(beta) * (x - alpha) / sqrt(2))),
   alpha  ~ 1 + (1 | subj),
   beta   ~ 1 + (1 | subj),
   lambda ~ 1 + (1 | subj),
@@ -53,309 +67,361 @@ bff <- bf(
 )
 ```
 
-## Adding your design
+The distribution of participant posterior means gives a first impression of
+the heterogeneity in the sample. It is not a substitute for the posterior of
+the population standard deviations, which should be reported from the model
+itself.
 
-Predictors go on `alpha` and on `beta`, separately. Put them on both even when your
-hypothesis concerns only one: an effect that looks like a threshold shift in a
-threshold-only model can turn out to be a slope effect once both are free to move.
+![Posterior means of individual thresholds and slopes](../images/tutorials/fig_subject_spread.png)
 
-The rule that governs the random effects: **a term gets a random slope only if it
-varies within a participant.**
+## Translate the design into a formula
 
-| What you are testing | Formula for `alpha` and `beta` |
+Predictors can affect threshold, slope, or both. For the worked example I put
+the same design terms on `alpha` and `beta`. This allows the data to distinguish
+a horizontal shift in the curve from a change in its steepness. Holding one
+parameter fixed can force an effect into the other.
+
+The random-effects structure follows the experimental design. A term receives
+a participant-level slope when it varies within participants. `Modality`, a
+pre-post contrast, and a crossover treatment meet this criterion. Gender, age,
+BMI, and diagnostic group do not.
+
+| Study design | Formula for `alpha` and `beta` |
 |---|---|
-| Nothing, just the population | `~ 1 + (1 \| subj)` |
-| Intero vs Extero, pre vs post, drug vs placebo | `~ condition + (condition \| subj)` |
-| Patients vs controls, or gender | `~ group + (1 \| subj)` |
-| Age, BMI, a questionnaire score | `~ age_z + (1 \| subj)` |
-| A covariate and a group and a within-subject condition | `~ Modality + gender + age_z + bmi_z + (Modality \| subj)` |
-| Whether an effect is specific to interoception | `~ Modality * gender + (Modality \| subj)` |
+| One condition and one group | `~ 1 + (1 \| subj)` |
+| Intero and Extero, pre and post, or drug and placebo | `~ condition + (condition \| subj)` |
+| Patients and controls, or gender | `~ group + (1 \| subj)` |
+| Age, BMI, or a questionnaire score | `~ age_z + (1 \| subj)` |
+| Covariates plus a within-participant condition | `~ Modality + gender + age_z + bmi_z + (Modality \| subj)` |
+| A group difference specific to interoception | `~ Modality * group + (Modality \| subj)` |
 
-`(gender | subj)` is a specification error. A participant has one gender, so there
-is no within-subject variance for the model to find. It does not raise an error: it
-produces divergent transitions and group SDs pinned near zero, which is a much
-worse way to discover the problem.
+A term such as `(gender | subj)` asks the model to estimate how a participant's
+gender changes across trials. There is no such variation. In a complex model,
+this error may appear as divergences or a group standard deviation close to
+zero rather than as a helpful error message.
 
-Centre continuous covariates, or the intercept becomes the threshold of a
-participant aged zero:
+Continuous covariates are centered and scaled over participants:
 
 ```r
 model_df$age_z <- as.numeric(scale(model_df$age))
 model_df$bmi_z <- as.numeric(scale(model_df$bmi))
 ```
 
-Scale them over participants, not over trials, or people with more trials pull the
-mean.
+Do this using one row per participant. Scaling the trial table gives more
+weight to participants with more usable trials. After scaling, the intercept
+describes a participant at the sample mean of the covariates, and each
+coefficient is expressed per sample standard deviation.
 
-## The worked model
+## The worked design
 
-The example study has both conditions, gender as a between-subject factor, and age
-and BMI as subject-level covariates. All of it goes in one model, because covariates
-only control for each other when they are fitted together:
+The worked dataset contains 512 participants who completed both HRD conditions.
+The model includes gender, age, and BMI. `Modality` varies within participants;
+the other predictors vary between participants.
 
 ```r
-alpha ~ Modality * (gender + age_z) + bmi_z + (Modality | subj)
-beta  ~ Modality * (gender + age_z) + bmi_z + (Modality | subj)
+alpha  ~ Modality * (gender + age_z) + bmi_z + (Modality | subj)
+beta   ~ Modality * (gender + age_z) + bmi_z + (Modality | subj)
 lambda ~ 1 + (1 | subj)
 ```
 
-Reading that formula: `Modality` is within-subject and gets a random slope. `gender`
-is between-subject and does not. `age_z` and `bmi_z` are subject-level covariates.
-The `Modality` interactions ask the question that matters for an interoception
-claim: does the effect appear specifically when judging one's own heart, or does it
-show up in the auditory control condition too? An effect present in both is telling
-you something about the task, not about interoception.
+The interactions with `Modality` address a specific scientific question. They
+ask whether the associations with gender and age differ between judgements of
+the heart and judgements of the auditory control stimulus. A model containing
+only main effects assumes that these associations are identical in the two
+conditions.
 
-BMI enters as a main effect only. It is there as a control, not as a hypothesis.
+That assumption may be reasonable for some studies. It should follow from the
+research question rather than from a preference for the shortest formula. In
+the worked model, BMI is included as a covariate without a modality interaction.
 
-## Priors
+Treatment coding makes the auditory condition and women the reference levels.
+The population intercepts therefore describe an exteroceptive judgement by a
+woman at the sample mean of age and BMI. Every coefficient below must be read
+relative to that reference cell.
 
-Every predictor needs its own prior. A prior naming a coefficient brms does not
-generate is **silently ignored**, and that coefficient then samples under a flat
-default. Check what you actually specified:
+## Choose and check the priors
+
+The intercept and population-scale priors come from the population refit in
+[Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3). They provide
+useful information about plausible HRD thresholds, slopes, lapse rates, and
+between-participant variation.
+
+Each additional coefficient also needs a prior. The worked analysis centers
+these priors on zero and scales them relative to the between-participant
+standard deviation of the relevant psychometric parameter:
+
+```r
+set_prior("normal(0, 11.23)", class = "b", nlpar = "alpha",
+          coef = "genderMale")
+set_prior("normal(0, 5.62)", class = "b", nlpar = "alpha",
+          coef = "age_z")
+set_prior("normal(0, 2.81)", class = "b", nlpar = "alpha",
+          coef = "ModalityIntero:genderMale")
+```
+
+The first prior allows a binary group contrast to be as large as the population
+spread in thresholds. The prior for a one-standard-deviation change in age is
+half as wide, and the interaction prior is narrower again. These scales are
+choices made for this worked example. They should not be presented as
+population estimates from Courtin et al.
+
+Check that the priors correspond to coefficients generated by the formula:
 
 ```r
 get_prior(bff, model_df)
 ```
 
-The intercept priors come from the population refit in
-[Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3). Effect priors
-are centred on zero and scaled to the between-subject SD of the parameter, with
-narrower scales where a wide one would be implausible:
+The scripts accompanying this tutorial perform this check before sampling.
+This is worth doing explicitly whenever the formula changes.
+
+A prior predictive check examines what the model implies before seeing the
+responses:
 
 ```r
-set_prior("normal(0, 11.23)", class = "b", nlpar = "alpha", coef = "genderMale")
-set_prior("normal(0, 5.62)",  class = "b", nlpar = "alpha", coef = "age_z")
-set_prior("normal(0, 2.81)",  class = "b", nlpar = "alpha", coef = "ModalityIntero:genderMale")
+fit_prior <- brm(
+  bff,
+  data = model_df,
+  prior = priors,
+  sample_prior = "only",
+  chains = 4,
+  cores = 4,
+  backend = "cmdstanr"
+)
 ```
 
-The logic: a difference between two groups could plausibly be about as large as the
-spread between individuals, so a binary contrast gets the full SD. A *per standard
-deviation of age* effect that large would not be plausible, so it gets half. An
-interaction is a difference of differences, so it gets less again.
+Plot the implied psychometric curves and inspect the threshold distribution. A
+prior that places most thresholds outside the stimulus range describes effects
+that the experiment cannot identify.
 
-Check the choice rather than trusting it. Sampling with the likelihood switched off
-shows what the priors alone imply:
-
-```r
-fit_prior <- brm(bff, data = model_df, prior = priors, sample_prior = "only", ...)
-```
-
-If most of the prior mass puts thresholds outside the range of intensities the task
-can present, the prior is asserting something the experiment could never show.
-
-## Fitting
+## Fit and cache the model
 
 ```r
 fit <- brm(
-  bff, data = model_df, prior = priors,
-  chains = 4, cores = 4,
-  warmup = 2000, iter = 4000,
+  bff,
+  data = model_df,
+  prior = priors,
+  chains = 4,
+  cores = 4,
+  warmup = 2000,
+  iter = 4000,
   control = list(adapt_delta = 0.95, max_treedepth = 12),
   backend = "cmdstanr",
+  seed = 12345,
   file = "fit_hrd"
 )
 ```
 
-Set `file`. It caches the fit, so an accidental rerun does not resample for hours.
+Always set `file`. A full HRD model can take hours, depending on the number of
+participants, the formula, the processor, and the Stan configuration. Caching
+prevents an accidental rerun from starting the sampler again.
 
-**Expect hours on a laptop.** A few dozen participants is tens of minutes; several
-hundred with covariates is an overnight job. Develop the pipeline on a handful of
-participants with short chains first, confirm it runs end to end, and only then
-start the real fit.
+Develop the pipeline on a small subset with short chains. This checks the data
+preparation, formula, priors, and post-processing, but it does not produce
+reportable estimates. Run the final model with the full dataset and planned
+sampling settings.
 
-The fits behind this page took 4 to 31 minutes each, but that was 8 chains across
-128 cores on a compute node, with within-chain threading. The useful lever there is
-`threads = threading(n)`, which splits the likelihood within each chain rather than
-adding more chains: the likelihood runs over tens of thousands of aggregated cells,
-so it parallelises well, while chains past about 8 mostly buy redundant samples.
+On a compute node, within-chain threading can reduce elapsed time:
 
 ```r
-fit <- brm(..., chains = 4, cores = 4, threads = threading(2), backend = "cmdstanr")
+fit <- brm(
+  ...,
+  chains = 4,
+  cores = 4,
+  threads = threading(2),
+  backend = "cmdstanr"
+)
 ```
 
-Count your real cores before setting this. `chains * threads` above the core count
-oversubscribes and runs slower than leaving it alone.
+The product of `chains` and `threads` should not exceed the number of physical
+cores allocated to the job.
 
-## Checking, in this order
+## Check the fit
 
-1. **Divergent transitions.** Any at all means the sampler is not exploring the
-   posterior properly. Raise `adapt_delta` to 0.99. If they persist, look at the
-   formula before the sampler, and check for a random slope on a between-subject
-   term.
-2. **`rhat < 1.01`**, with bulk and tail ESS in the hundreds at least.
-3. **Posterior predictive checks**, and predicted curves against observed
-   proportions for a few individual participants.
-4. Only then read the coefficients.
+I recommend checking the fit in the following order:
 
-On the third, do both of these.
+1. Confirm that there are no divergent transitions after warmup.
+2. Check whether any transitions reached the maximum tree depth and inspect
+   E-BFMI for each chain.
+3. Confirm that all relevant `rhat` values are below 1.01 and that bulk and tail
+   effective sample sizes are adequate.
+4. Examine posterior predictive checks at both the participant and population
+   levels.
+5. Interpret the coefficients only after these checks are satisfactory.
 
-**Each participant against their own data.** Plot every participant's fitted
-curve over that participant's own trials. This is the check the
-[Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception)
-recommends, and it is the one to trust: nothing is pooled, so what you see is
-the fit and nothing else.
+Increasing `adapt_delta` to 0.99 can help with occasional divergences. Persistent
+divergences usually call for another look at the model structure and data. A
+random slope on a between-participant factor is one common cause.
 
-![Sixteen participants, each against their own data](../images/tutorials/fig_subject_fits.png)
+### Participant-level checks
 
-```r
-cf <- coef(fit)$subj[, "Estimate", ]   # each participant's own parameters
-```
+Plot fitted curves against the observations for a range of participants. The
+panels below span the fitted threshold distribution rather than showing only
+the cleanest examples.
 
-Look for curves that sit away from their points, and for participants whose data
-cannot constrain a curve at all. A handful of imperfect panels in a sample this
-size is normal.
+![Sixteen participant-level fits](../images/tutorials/fig_subject_fits.png)
 
-**The group, against pooled data.** Bin the observed proportions and ask the
-model what it predicts for those same bins.
+Look for systematic departures between the curve and the responses. Some
+participants will have wide posterior uncertainty because the staircase did
+not obtain enough informative trials. That is expected and should be visible.
+
+### Population-level checks
+
+The pooled check bins the observed responses and compares them with predictions
+for the same participants and trials.
 
 ![Posterior predictive check by modality and gender](../images/tutorials/fig_ppc_modality_gender.png)
 
-Points are observed; the line and bars are what the model predicts for them. On
-the worked model **60 of 61 bins fall inside their 95% interval**, and the one
-that misses does so by 0.003.
+The points are observed response proportions. The line and intervals are model
+predictions. This is a graphical check of where the model reproduces the data;
+the number of bins covered by a 95% interval is not a test of model validity.
 
-Use `posterior_predict()` for those bars, not `posterior_epred()`. The expectation
-carries uncertainty in the mean but no binomial sampling noise, so as a predictive
-interval it is far too narrow in thinly sampled bins and will report misfit that is
-nothing but noise.
+Use `posterior_predict()` for predictive intervals. `posterior_epred()` describes
+uncertainty in the expected response and omits binomial sampling variation. Its
+intervals are therefore too narrow for this particular comparison. Predictions
+should also retain participant effects because the adaptive staircase sends
+different participants to different parts of the intensity range.
 
-Generate the prediction over the participants and trials that actually produced
-each bin, which is what `posterior_predict(fit)` does by default. Predicting from
-population parameters alone answers a different question, and
-[the note at the end of this page](#two-averages) explains why that matters here.
+## Interpret the worked model
 
-## What the worked model found
-
-Fitted to 512 participants in both conditions. The auditory condition is the
-reference level, so `alpha_Intercept` is the exteroceptive threshold and
-`alpha_ModalityIntero` is the shift when judging one's own heart.
+The fitted curves below show population-level predictions at the sample mean of
+age and BMI, separately for gender and modality.
 
 ![Psychometric functions by modality and gender](../images/tutorials/fig_modality_gender.png)
 
-| Term | Estimate | 95% CI |
-|---|---|---|
-| `alpha_Intercept` (Extero) | +0.60 ΔBPM | [0.24, 0.97] |
-| `alpha_ModalityIntero` | **−9.60 ΔBPM** | [−10.77, −8.37] |
-| `alpha_genderMale` | −0.09 | [−0.69, 0.49] |
-| `alpha_age_z` | **−0.62** per SD | [−0.94, −0.32] |
-| `alpha_bmi_z` | −0.03 | [−0.33, 0.26] |
-| `beta_ModalityIntero` | **−0.42** | [−0.48, −0.36] |
-| `beta_ModalityIntero:genderMale` | **−0.10** | [−0.196, −0.014] |
-| `beta_ModalityIntero:age_z` | **+0.07** | [0.020, 0.124] |
+Selected coefficients from the worked model are shown below. The auditory
+condition and women are the reference levels.
 
-Two things to read off it. Judgements about tones are close to accurate, while
-judgements about one's own heart sit about 9.6 BPM below the truth. And
-interoception is the less precise of the two: σ is roughly 6.3 BPM for tones
-against 9.6 BPM for the heart.
+| Term | Posterior mean | 95% credible interval |
+|---|---:|---:|
+| `alpha_Intercept` | +0.60 ΔBPM | [0.24, 0.97] |
+| `alpha_ModalityIntero` | -9.60 ΔBPM | [-10.77, -8.37] |
+| `alpha_genderMale` | -0.09 ΔBPM | [-0.69, 0.49] |
+| `alpha_age_z` | -0.62 ΔBPM per SD | [-0.94, -0.32] |
+| `alpha_bmi_z` | -0.03 ΔBPM per SD | [-0.33, 0.26] |
+| `beta_ModalityIntero` | -0.42 | [-0.48, -0.36] |
+| `beta_ModalityIntero:genderMale` | -0.10 | [-0.196, -0.014] |
+| `beta_ModalityIntero:age_z` | +0.07 | [0.020, 0.124] |
+
+For the reference participant, the estimated auditory threshold is close to
+zero. Adding the modality coefficient gives a cardiac threshold of about -9.0
+ΔBPM. This corresponds to judging tones approximately 9 BPM below the true
+heart rate as equally likely to be faster or slower.
+
+The negative modality coefficient on `beta` indicates a shallower cardiac
+psychometric function. On the more interpretable sigma scale, the fitted values
+are approximately 6.3 BPM for the auditory condition and 9.6 BPM for the
+cardiac condition. A larger sigma means poorer discrimination.
+
+These are reference-cell estimates. Population-average statements should come
+from marginal predictions or contrasts averaged over the sample distribution
+of the covariates.
+
+The next figure standardizes each coefficient by the corresponding
+between-participant standard deviation. The native-scale estimates remain
+printed beside the intervals.
 
 ![Effects on threshold and slope](../images/tutorials/fig_effects.png)
 
-### Why the interaction earns its place
+## Read interactions through simple effects
 
-Fitting the same predictors without their `Modality` interactions gives a tidy and
-completely misleading answer about gender:
+Once an interaction is present, a main-effect coefficient describes the
+reference condition. For example, `beta_genderMale` is the gender contrast in
+the auditory condition. The corresponding cardiac contrast is the sum of
+`beta_genderMale` and `beta_ModalityIntero:genderMale`.
 
-| Effect on slope | Main effects only | With the interaction |
-|---|---|---|
-| `beta_genderMale` | **−0.0007** [−0.060, 0.060] | +0.05 [−0.025, 0.125] |
-| `beta_ModalityIntero:genderMale` | not estimated | **−0.10** [−0.196, −0.014] |
+The same rule applies to continuous covariates. `alpha_age_z` is the age slope
+in the auditory condition. The cardiac age slope is:
 
-In the main-effects model the gender term is almost exactly zero. Not "small":
-zero to four decimal places, with an interval tight around it. It is tempting to
-report that as a clean null.
+```r
+draws <- posterior::as_draws_df(fit)
 
-It is zero because two opposing effects are being averaged. Men are slightly more
-precise than women in the auditory condition and less precise in the cardiac one,
-and a model with one gender term per parameter has nowhere to put that except in
-the average, where it cancels. Age does the same thing on the slope.
+age_effects <- draws |>
+  dplyr::transmute(
+    alpha_age_extero = b_alpha_age_z,
+    alpha_age_intero = b_alpha_age_z +
+      `b_alpha_ModalityIntero:age_z`,
+    beta_age_extero = b_beta_age_z,
+    beta_age_intero = b_beta_age_z +
+      `b_beta_ModalityIntero:age_z`
+  )
+```
 
-This is why the table in [Adding your design](#adding-your-design) suggests
-interacting your grouping variable with `Modality` whenever you have both
-conditions. The auditory condition is not a formality: an effect that appears in
-both is telling you something about the task rather than about interoception.
+Summarize these derived posterior distributions directly. The interaction tells
+you how much the two condition-specific effects differ. It does not, on its
+own, establish that either simple effect differs from zero.
 
-### A continuous covariate
+The age figure shows the same calculation on the parameter scales, averaged
+over the observed gender composition of the sample.
 
-Age is the one covariate here with an effect on threshold, and it is easier to read
-on the parameters themselves than from a stack of overlapping sigmoids.
+![Age associations with threshold and slope](../images/tutorials/fig_age.png)
 
-![Age effects on threshold and slope](../images/tutorials/fig_age.png)
+The auditory threshold decreases with age in this dataset. The cardiac trend is
+flatter because the modality interaction offsets much of that association. On
+the sigma scale, auditory discrimination changes little across age, while the
+cardiac curve becomes steeper. Formal claims should be based on the posterior
+intervals and probabilities of the simple effects calculated above.
 
-Read this one carefully, because the main effect on its own would mislead you.
-`alpha_age_z` is −0.62 per SD [−0.94, −0.32], and that is the effect **in the
-auditory condition**, which is the reference level. The auditory line falls with
-age. The cardiac line does not: the interaction (+0.86 [−0.11, +1.94]) roughly
-cancels the main effect, leaving it flat or slightly rising.
+## Report the model
 
-So "thresholds decrease with age" would be a true statement about the reference
-level presented as a statement about interoception. That interaction interval
-does span zero, so treat the divergence as suggestive rather than established —
-but not as absent, which is what quoting the main effect alone would imply.
+A report should include:
 
-The slope panel is the cleaner case, and there the interaction is established
-(+0.07 [0.020, 0.124]): cardiac precision improves with age while auditory
-precision does not move.
+- the psychometric function and response coding;
+- the formulas for `alpha`, `beta`, and `lambda`;
+- the prior distributions and their justification;
+- the number of participants, trials, and aggregated cells;
+- sampler settings and diagnostics;
+- posterior estimates with credible intervals;
+- condition-specific contrasts when interactions are present; and
+- participant-level and population-level predictive checks.
 
-Note the axes. Both panels span a few ΔBPM, while individual participants range
-across tens. These are population means, and a real effect on a group mean can be
-small next to the spread it sits inside.
+Report threshold and slope together. They describe different properties of the
+psychometric function, and evidence about one does not imply evidence about the
+other.
 
-A flat line is a result, not a missing finding. BMI produces one, and it is worth
-showing: it is a control, and the model says it controls for very little.
-
-## Reporting
-
-Give posterior means with credible intervals. For a directional claim, the
-posterior probability is more informative than whether an interval excludes zero:
+For a directional claim, report the posterior probability in addition to the
+interval:
 
 ```r
 hypothesis(fit, "alpha_genderMale > 0")
-mean(as_draws_df(fit)$b_alpha_genderMale > 0)
+mean(posterior::as_draws_df(fit)$b_alpha_genderMale > 0)
 ```
 
-Report threshold and slope together, and say which condition an effect appeared in.
-"Gender affected interoceptive bias" means something quite different depending on
-whether the same difference showed up in the auditory control.
+Whenever possible, accompany latent-scale coefficients with marginal
+predictions or contrasts in ΔBPM and sigma. These are easier to relate to the
+task and less dependent on the chosen reference levels.
 
 (two-averages)=
-## A note on group curves
+## Population curves and pooled observations
 
-You can skip this on a first reading. It matters when you draw a group-level
-curve yourself and wonder why the data will not sit on it.
+This distinction is useful when a population curve appears not to pass through
+pooled observations.
 
-There are two different "group curves", and they answer different questions:
+The population-level coefficients describe the psychometric function of a
+participant whose random effects are zero. In brms, this is obtained with
+`re_formula = NA`. Pooled observations describe a different quantity: the
+average response across participants, each with their own threshold, slope, and
+lapse rate.
 
-- **The curve of the average participant.** Take the population-level `alpha`,
-  `beta` and `lambda` and push them through the likelihood. In brms,
-  `re_formula = NA`. This is what the group-level coefficients describe, so it
-  is the curve to put beside a table of effects, and it is what
-  [the figure above](#what-the-worked-model-found) shows.
-- **The average of the participants' curves.** Predict each participant's own
-  curve, then average those. This is what pooled observed data estimate, because
-  every trial in the pool belongs to a real participant.
+These quantities differ because the psychometric function is nonlinear.
+Averaging curves with different thresholds produces a shallower function than
+evaluating one curve at the average parameters.
 
-They are not the same, because the curve is not a straight line. Averaging many
-sigmoids that sit at different thresholds gives something shallower than one
-sigmoid at their mean threshold: Jensen's inequality, the same reason the mean of
-$e^x$ is not $e^{\text{mean}(x)}$.
+![A population curve and the average of participant curves](../images/tutorials/fig_two_averages.png)
 
-![Two group averages that are not the same](../images/tutorials/fig_two_averages.png)
+The difference is small in the auditory condition and larger in the cardiac
+condition, where participants vary more in threshold:
 
-How far apart they fall depends on how much participants differ, which is why
-this bites in the cardiac condition and barely shows in the auditory one:
-
-| Condition | Between-participant SD of threshold | Largest gap between the curves |
-|---|---|---|
+| Condition | Between-participant threshold SD | Largest difference between curves |
+|---|---:|---:|
 | Auditory | 2.44 ΔBPM | 0.026 |
 | Cardiac | 10.97 ΔBPM | 0.099 |
 
-The practical consequence is short: **do not judge fit by laying pooled data over
-a population curve.** Compare each participant to their own curve, or compare
-pooled bins to a prediction made over the participants and trials that produced
-them. Both are in [Checking](#checking-in-this-order).
+For model checking, compare each participant with their own fitted curve, or
+compare pooled bins with predictions made over the participants and trials that
+produced those bins. Avoid comparing pooled observations with the curve of a
+zero-random-effect participant.
 
-One more thing works this way in the HRD specifically. The staircase concentrates
-trials near each participant's own threshold, so a bin at an extreme ΔBPM is made
-up of whoever happened to have a threshold out there rather than a fair sample of
-the group. A prediction over the real trials carries that; a smooth curve cannot.
+The adaptive staircase adds a second reason for care. Trials at an extreme
+ΔBPM tend to come from participants whose thresholds lie near that value. Those
+trials are not a representative sample of the population, and a prediction
+over the observed trial structure should preserve that selection.
