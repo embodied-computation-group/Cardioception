@@ -1,5 +1,7 @@
 # Hierarchical modelling
 
+Author: Micah G. Allen
+
 Most HRD studies concern a population. You may want to estimate the average
 cardiac bias in a sample, compare two groups, or ask whether age is associated
 with discrimination precision. These questions are best addressed by fitting
@@ -13,6 +15,10 @@ shared across the sample.
 This tutorial assumes that you have read [the psychophysical
 model](psychophysics.md) and prepared the data as described in [inspecting your
 results](inspecting-data.md).
+
+The outcome on this page is the participant's "faster" or "slower" choice. The
+[metacognition tutorial](metacognition.md) applies the same hierarchical logic
+to confidence ratings after the psychophysical model is in place.
 
 ```{note}
 The HRD measures the bias and precision of judgements about heart rate. Its
@@ -425,3 +431,18 @@ The adaptive staircase adds a second reason for care. Trials at an extreme
 ΔBPM tend to come from participants whose thresholds lie near that value. Those
 trials are not a representative sample of the population, and a prediction
 over the observed trial structure should preserve that selection.
+
+## Continue to the confidence model
+
+The [metacognition tutorial](metacognition.md) is the second hierarchical model
+in this workflow. This page modelled choices with a nonlinear binomial
+psychometric function. The next page models trial-level confidence with ordered
+beta regression, including responses at 0 and 100.
+
+The design principles carry over. Participants receive varying effects for
+predictors that change within person, group-level predictors receive no
+participant slope, and interactions answer whether an effect differs by
+condition or group. The outcome and likelihood change, and so does the quantity
+we interpret. In the confidence model, `Accuracy` and its interactions describe
+metacognitive calibration, while the remaining main effects describe confidence
+bias.

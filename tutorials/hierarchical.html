@@ -236,6 +236,7 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="hierarchical-modelling">
 <h1>Hierarchical modelling<a class="headerlink" href="#hierarchical-modelling" title="Permalink to this heading">#</a></h1>
+<p>Author: Micah G. Allen</p>
 <p>Most HRD studies concern a population. You may want to estimate the average
 cardiac bias in a sample, compare two groups, or ask whether age is associated
 with discrimination precision. These questions are best addressed by fitting
@@ -247,6 +248,9 @@ shared across the sample.</p>
 <p>This tutorial assumes that you have read <a class="reference internal" href="psychophysics.html"><span class="std std-doc">the psychophysical
 model</span></a> and prepared the data as described in <a class="reference internal" href="inspecting-data.html"><span class="std std-doc">inspecting your
 results</span></a>.</p>
+<p>The outcome on this page is the participant’s “faster” or “slower” choice. The
+<a class="reference internal" href="metacognition.html"><span class="std std-doc">metacognition tutorial</span></a> applies the same hierarchical logic
+to confidence ratings after the psychophysical model is in place.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The HRD measures the bias and precision of judgements about heart rate. Its
@@ -667,6 +671,20 @@ zero-random-effect participant.</p>
 trials are not a representative sample of the population, and a prediction
 over the observed trial structure should preserve that selection.</p>
 </section>
+<section id="continue-to-the-confidence-model">
+<h2>Continue to the confidence model<a class="headerlink" href="#continue-to-the-confidence-model" title="Permalink to this heading">#</a></h2>
+<p>The <a class="reference internal" href="metacognition.html"><span class="std std-doc">metacognition tutorial</span></a> is the second hierarchical model
+in this workflow. This page modelled choices with a nonlinear binomial
+psychometric function. The next page models trial-level confidence with ordered
+beta regression, including responses at 0 and 100.</p>
+<p>The design principles carry over. Participants receive varying effects for
+predictors that change within person, group-level predictors receive no
+participant slope, and interactions answer whether an effect differs by
+condition or group. The outcome and likelihood change, and so does the quantity
+we interpret. In the confidence model, <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code> and its interactions describe
+metacognitive calibration, while the remaining main effects describe confidence
+bias.</p>
+</section>
 </section>
 
         </article>
@@ -743,6 +761,7 @@ over the observed trial structure should preserve that selection.</p>
 <li><a class="reference internal" href="#read-interactions-through-simple-effects">Read interactions through simple effects</a></li>
 <li><a class="reference internal" href="#report-the-model">Report the model</a></li>
 <li><a class="reference internal" href="#population-curves-and-pooled-observations">Population curves and pooled observations</a></li>
+<li><a class="reference internal" href="#continue-to-the-confidence-model">Continue to the confidence model</a></li>
 </ul>
 </li>
 </ul>

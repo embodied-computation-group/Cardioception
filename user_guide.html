@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Measuring cardiac interoception" href="measuring.html" /><link rel="prev" title="Installation" href="installation.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Theory" href="measuring.html" /><link rel="prev" title="Installation" href="installation.html" />
 
     <link rel="shortcut icon" href="_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>User guide - Cardioception Toolbox</title>
@@ -333,6 +333,33 @@
 <p>This minimal example runs the Heart Rate Discrimination task with 10 trials and a Psi staircase.</p>
 <p>Standard scripts are available in the <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers">wrappers</a> folder. Copy the one you need into your local task folder and edit it there. A task can then be run by executing its wrapper file, for example from a terminal.</p>
 </section>
+<section id="the-two-tasks">
+<h3>The two tasks<a class="headerlink" href="#the-two-tasks" title="Permalink to this heading">#</a></h3>
+<p><strong>The Heart Rate Discrimination task</strong> <span id="id1">[<a class="reference internal" href="references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:https://doi.org/10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span> is an adaptive psychophysical measure in which participants estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. Manipulating the difference between the true heart rate and the presented tone gives the bias (threshold) and precision (slope) of the psychometric function, estimated either online or offline, together with metacognitive performance. See <a class="reference internal" href="measuring.html"><span class="std std-doc">Theory</span></a> for what these quantities mean.</p>
+<p><strong>The Heartbeat Counting task</strong> <span id="id2">[<a class="reference internal" href="references.html#id2" title="Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. Perceptual and Motor Skills, 47(1):79-85, 1978. PMID: 704264. URL: https://doi.org/10.2466/pms.1978.47.1.79, arXiv:https://doi.org/10.2466/pms.1978.47.1.79, doi:10.2466/pms.1978.47.1.79.">Dale and Anderson, 1978</a>, <a class="reference internal" href="references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1469-8986.1981.tb02486.x, doi:https://doi.org/10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>]</span> asks participants to attend to their heartbeats over intervals of various lengths and count the beats they feel. An accuracy score compares the reported number with the true number, following Hart et al. <span id="id3">[<a class="reference internal" href="references.html#id5" title="Nova Hart, John McGowan, Ludovico Minati, and Hugo D. Critchley. Emotional regulation and bodily sensation: interoceptive awareness is intact in borderline personality disorder. Journal of Personality Disorders, 27(4):506-518, 2013. PMID: 22928847. URL: https://doi.org/10.1521/pedi_2012_26_049, arXiv:https://doi.org/10.1521/pedi_2012_26_049, doi:10.1521/pedi\_2012\_26\_049.">Hart <em>et al.</em>, 2013</a>]</span>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[   Accuracy = 1-\frac{\left | N_{real} - N_{reported} \right |}{\frac{N_{real} + N_{reported}}{2}}\]</div>
+</div>
+<p>By default cardioception implements a 20-second training trial followed by 6 experimental trials (25, 30, 35, 40, 45 and 50 s) in randomised order. Trial length, condition (<code class="docutils literal notranslate"><span class="pre">'Rest'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Count'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Training'</span></code>) and randomisation are set in the parameters dictionary; the version is selected with <code class="docutils literal notranslate"><span class="pre">&quot;taskVersion&quot;</span></code>. With the default settings the task takes about 4 minutes. We keep this task because much of the literature rests on it, but for new studies we recommend the HRD — <a class="reference internal" href="measuring.html"><span class="std std-doc">Theory</span></a> explains why.</p>
+</section>
+<section id="staircase-procedures">
+<h3>Staircase procedures<a class="headerlink" href="#staircase-procedures" title="Permalink to this heading">#</a></h3>
+<p>If you run the task in behavioural mode, the Nonin pulse oximeter is read from the port provided. Two staircase procedures are implemented, controlled through the <code class="docutils literal notranslate"><span class="pre">stairType</span></code> parameter.</p>
+<section id="psi">
+<h4>Psi<a class="headerlink" href="#psi" title="Permalink to this heading">#</a></h4>
+<p>The default. This uses Kontsevich and Tyler’s <span id="id4">[<a class="reference internal" href="references.html#id12" title="Leonid L. Kontsevich and Christopher W. Tyler. Bayesian adaptive estimation of psychometric slope and threshold. Vision Research, 39(16):2729-2737, 1999. URL: https://www.sciencedirect.com/science/article/pii/S0042698998002855, doi:https://doi.org/10.1016/S0042-6989(98)00285-5.">Kontsevich and Tyler, 1999</a>]</span> psi-method to estimate the point of subjective equality for faster versus slower cardiac feedback, based on a cumulative Gaussian psychometric function. Tones are presented at the relative <span class="math notranslate nohighlight">\(\Delta\)</span>-BPM and this stimulus intensity is adjusted between <span class="math notranslate nohighlight">\(\Delta\)</span>-BPM = [-40 40]. The staircase is response-coded, so the function converges on the point of subjective equality between faster and slower stimuli. The threshold is then an estimate of subjective cardiac bias, and the slope an estimate of interoceptive precision. Nuisance parameters (guess and lapse rate) are fixed at values corresponding to a standard 1-alternative forced choice paradigm.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Psi converges on the participant’s point of subjective equality — their bias — not on a target level of accuracy. That is what the task is designed to measure, but it has consequences for any measure scored against the true heart rate. See the <a class="reference internal" href="tutorials/metacognition.html"><span class="std std-doc">metacognition tutorial</span></a>.</p>
+</div>
+</section>
+<section id="nup-ndown">
+<h4>nUp/nDown<a class="headerlink" href="#nup-ndown" title="Permalink to this heading">#</a></h4>
+<p>A classical adaptive thresholding procedure <span id="id5">[<a class="reference internal" href="references.html#id13" title="Tom N. Cornsweet. The staircase-method in psychophysics. The American Journal of Psychology, 75(3):485–491, 1962. URL: http://www.jstor.org/stable/1419876 (visited on 2022-09-08).">Cornsweet, 1962</a>]</span>. The staircase adjusts the absolute difference between the frequency of the auditory feedback stimulus and the estimated heart rate during the listening interval (absolute <span class="math notranslate nohighlight">\(\Delta\)</span>-BPM), and responses are coded by accuracy relative to the ground truth heart rate. It converges on the smallest difference a participant can reliably discriminate, according to the stepping rule; a 1-down 2-up procedure converges at ~71% accuracy at the limit. Two or more randomly interleaved staircases can start at low versus high values.</p>
+<p>This is a simple and reasonably robust way to estimate the accuracy of interoceptive belief, but it should <strong>not</strong> be used to estimate precision (slope). Use Psi for that.</p>
+</section>
+</section>
 <section id="creating-a-shortcut-windows">
 <h3>Creating a shortcut (Windows)<a class="headerlink" href="#creating-a-shortcut-windows" title="Permalink to this heading">#</a></h3>
 <p>Once you have adapted the scripts, you can create a shortcut (on the Desktop, say) so the task starts with a click, without any coding or command line interaction.</p>
@@ -369,7 +396,7 @@ pause
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Measuring cardiac interoception</div>
+                <div class="title">Theory</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -429,6 +456,12 @@ pause
 <li><a class="reference internal" href="#physiological-recording">Physiological recording</a></li>
 <li><a class="reference internal" href="#running-the-tasks">Running the tasks</a><ul>
 <li><a class="reference internal" href="#using-a-script">Using a script</a></li>
+<li><a class="reference internal" href="#the-two-tasks">The two tasks</a></li>
+<li><a class="reference internal" href="#staircase-procedures">Staircase procedures</a><ul>
+<li><a class="reference internal" href="#psi">Psi</a></li>
+<li><a class="reference internal" href="#nup-ndown">nUp/nDown</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#creating-a-shortcut-windows">Creating a shortcut (Windows)</a></li>
 </ul>
 </li>
@@ -452,5 +485,7 @@ pause
     <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     <script src="_static/design-tabs.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

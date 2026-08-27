@@ -236,226 +236,360 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="metacognition">
 <h1>Metacognition<a class="headerlink" href="#metacognition" title="Permalink to this heading">#</a></h1>
-<p>Modelling the confidence rating collected on every trial, and asking whether
-confidence tracks accuracy.</p>
-<p>Perception and metacognition are different questions. A participant can
-discriminate their heart rate well while having no idea when they are right, and
-the reverse happens too. An effect can appear in one with the other unchanged, so
-neither is a proxy for the other.</p>
-<section id="what-the-ratings-look-like">
-<h2>What the ratings look like<a class="headerlink" href="#what-the-ratings-look-like" title="Permalink to this heading">#</a></h2>
-<p>Confidence is a slider from 0 to 100, and people use both ends in earnest. In the
-example data 15.0% of trials sit exactly on a bound: 3.9% at zero and 11.1% at
-one.</p>
-<p><img alt="Distribution of confidence ratings, and whether the model reproduces the bounds" src="../_images/fig_confidence_distribution.png" /></p>
-<p>The right panel is the check that matters, and it is worth looking at before the
-model is even introduced: reproducing that mass at the two ends is the entire
-reason for choosing this likelihood. A model that fits the interior beautifully
-and misses the bounds has failed at the one job it was picked for.</p>
-<p>That shape rules out the obvious models. A Gaussian puts probability outside the
-scale. A beta likelihood is undefined at exactly 0 and 1, so it forces you to
-nudge the bounds inward by some epsilon or drop those trials, and the trials you
-would drop are the most and least confident ones. Binning into a Likert scale
-throws away information and makes the answer depend on where you cut.</p>
+<p>Author: Micah G. Allen</p>
+<p>The Heart Rate Discrimination task records a confidence rating after every
+choice. These ratings let us ask whether participants know when their judgements
+are likely to be correct. This is a separate question from whether they can
+discriminate changes in heart rate.</p>
+<p>The <a class="reference internal" href="hierarchical.html"><span class="std std-doc">previous tutorial</span></a> used faster and slower choices to
+estimate psychophysical bias, precision, and lapse rate. Here we fit a second
+hierarchical model in which confidence is the outcome. The principles of partial
+pooling and random effects remain the same, but the likelihood and the
+scientific interpretation are different.</p>
+<section id="confidence-bias-and-metacognitive-calibration">
+<h2>Confidence bias and metacognitive calibration<a class="headerlink" href="#confidence-bias-and-metacognitive-calibration" title="Permalink to this heading">#</a></h2>
+<p>We use the confidence ratings to distinguish two quantities.</p>
+<ul class="simple">
+<li><p>Confidence bias describes how participants use the rating scale. A participant
+may tend to report high or low confidence regardless of whether a response was
+correct.</p></li>
+<li><p>Metacognitive calibration describes the association between confidence and
+accuracy. In this tutorial, it is the difference in expected confidence between
+correct and incorrect trials.</p></li>
+</ul>
+<p>These quantities can vary independently. A participant can be confident but
+poorly calibrated, or cautious while still assigning higher confidence to their
+correct responses. In the regression model, the intercept and other main effects
+describe confidence bias, while the coefficient for <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code> describes
+calibration in the reference condition. Interactions with <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code> test whether
+calibration changes across conditions or participant characteristics.</p>
+<p>We reserve the terms metacognitive sensitivity and metacognitive efficiency for
+signal detection measures such as meta-d-prime and M-ratio. Ordered beta
+regression does not fit a signal detection model, so calibration is the more
+accurate name for the quantity estimated here.</p>
 </section>
-<section id="why-not-the-m-ratio">
-<h2>Why not the m-ratio<a class="headerlink" href="#why-not-the-m-ratio" title="Permalink to this heading">#</a></h2>
-<p>The m-ratio, meta-d′ divided by d′, is the usual summary of metacognitive
-efficiency, and the original HRD paper reported it. We no longer recommend it for
-this task, and the reason is specific to how the staircase works.</p>
-<p><strong>The HRD does not hold accuracy constant.</strong> The Psi procedure converges on the
-participant’s point of subjective equality: the Δ-BPM at which they are equally
-likely to answer “faster” or “slower”. That is a <em>subjective</em> staircase, tracking
-the very bias the task exists to measure, not a performance-tracking one aiming at
-some fixed percentage correct.</p>
-<p><strong>Accuracy, though, is scored against the true heart rate.</strong> A “faster” response
-counts as correct only when Δ-BPM is above zero, and “slower” only when it is
-below.</p>
-<p>Those two facts come apart for exactly the participants who are most interesting.
-Someone whose threshold sits at −15 Δ-BPM spends the session being played tones
-around 15 BPM below their true rate, because that is where the staircase has
-decided to put them. Almost every trial then has “slower” as the objectively
-correct answer. One stimulus class barely occurs, and the type-1 hit and
-false-alarm rates that d′ and meta-d′ are built from rest on a handful of trials,
-or none. <strong>The more biased the participant, the worse this gets</strong>, so the measure
-degrades precisely where the task has found something worth reporting.</p>
-<p>There is a further problem underneath. Under this design d′ is not a clean index
-of perceptual sensitivity anyway: it mixes bias with precision, which is the
-confound the psychometric function was introduced to resolve. Dividing by it
-reintroduces what the HRD was built to separate.</p>
-<p>Finally, meta-d′ expects confidence in a few discrete bins, so a continuous slider
-has to be cut into categories. The original analysis used four. That discards
-information and makes the result depend on where the cut points fall.</p>
-<p>None of this makes meta-d′ a poor measure in general. It makes it a poor fit for a
-subjective staircase scored against an objective truth.</p>
+<section id="the-confidence-distribution-determines-the-likelihood">
+<h2>The confidence distribution determines the likelihood<a class="headerlink" href="#the-confidence-distribution-determines-the-likelihood" title="Permalink to this heading">#</a></h2>
+<p>Confidence is recorded on a continuous slider from 0 to 100. Participants can
+select either endpoint, and those observations are meaningful. In the example
+data, 15.0% of ratings fall exactly on a bound, with 3.9% at zero and 11.1% at
+100.</p>
+<p><img alt="Observed confidence ratings and posterior predictions at the scale bounds" src="../_images/fig_confidence_distribution.png" /></p>
+<p>Several familiar likelihoods are poorly suited to these data.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Likelihood</p></th>
+<th class="head"><p>Problem for HRD confidence</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Gaussian</p></td>
+<td><p>Assigns probability to values below 0 and above 1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Beta</p></td>
+<td><p>Excludes observations at exactly 0 and 1</p></td>
+</tr>
+<tr class="row-even"><td><p>Ordinal after binning</p></td>
+<td><p>Discards the resolution of the confidence slider</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Ordered beta regression retains the continuous ratings and their exact bounds
+(<a class="reference external" href="https://doi.org/10.1017/pan.2022.20">Kubinec, 2023</a>). It models zero, the open
+interval between zero and one, and one within a single likelihood. Two ordered
+cutpoints govern the probability of a response at either bound, while a beta
+distribution describes ratings in the interior. We therefore do not need to
+move endpoint ratings inward or convert the scale into categories.</p>
+<p>The right panel above is an important posterior predictive check. A suitable
+model should reproduce both the interior distribution and the observed
+proportions at zero and one.</p>
 </section>
-<section id="ordered-beta-regression">
-<h2>Ordered beta regression<a class="headerlink" href="#ordered-beta-regression" title="Permalink to this heading">#</a></h2>
-<p>Ordered beta regression models the interior of the scale with a beta likelihood
-and the two bounds as separate outcomes, in one generative model. Nothing is
-nudged and nothing is dropped
-(<a class="reference external" href="https://doi.org/10.1017/pan.2022.20">Kubinec, 2023</a>).</p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">ordbetareg</span><span class="p">)</span>
+<section id="why-we-do-not-use-m-ratio-for-hrd-data">
+<h2>Why we do not use M-ratio for HRD data<a class="headerlink" href="#why-we-do-not-use-m-ratio-for-hrd-data" title="Permalink to this heading">#</a></h2>
+<p>M-ratio, defined as meta-d-prime divided by d-prime, is a useful measure of
+metacognitive efficiency for experiments that support its signal detection
+assumptions. The HRD design creates a specific problem for that analysis.</p>
+<p>The Psi staircase places trials near each participant’s point of subjective
+equality. It is designed to estimate the cardiac bias described in the
+<a class="reference internal" href="psychophysics.html"><span class="std std-doc">psychophysics tutorial</span></a>, rather than to maintain a fixed
+level of objective accuracy. Accuracy is nevertheless scored relative to the
+participant’s measured heart rate. A faster response is correct above zero
+delta BPM, and a slower response is correct below zero.</p>
+<p>Consider a participant with a threshold of -15 delta BPM. The staircase will
+present many trials near -15 because this is where their faster and slower
+responses are balanced. Most of those trials have slower as the objectively
+correct answer. The two stimulus classes required to estimate type 1 hit and
+false alarm rates are consequently very uneven. For participants with large
+cardiac biases, one class may contain only a few trials.</p>
+<p>Under this design, d-prime also combines response bias with psychophysical
+precision. Dividing meta-d-prime by d-prime would reintroduce a distinction that
+the psychometric model was used to resolve. Finally, estimating meta-d-prime
+requires us to bin the continuous confidence ratings, making the result depend
+on arbitrary cutpoints.</p>
+<p>This argument is specific to the task design. M-ratio remains appropriate for
+experiments with adequately sampled stimulus classes, suitable control over type
+1 performance, and confidence ratings designed for an SDT analysis. For HRD, we
+model the trial-level confidence ratings directly and describe the
+accuracy-confidence association as metacognitive calibration.</p>
+</section>
+<section id="prepare-trial-level-confidence-data">
+<h2>Prepare trial-level confidence data<a class="headerlink" href="#prepare-trial-level-confidence-data" title="Permalink to this heading">#</a></h2>
+<p>Begin with the trial data described in the <a class="reference internal" href="inspecting-data.html"><span class="std std-doc">inspection
+tutorial</span></a>. Remove trials without a decision or confidence
+rating, preserve the exact slider endpoints, and code incorrect trials as the
+reference level.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span>
 
-<span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">|&gt;</span>
-<span class="w">  </span><span class="nf">filter</span><span class="p">(</span><span class="n">Decision</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"More"</span><span class="p">,</span><span class="w"> </span><span class="s">"Less"</span><span class="p">),</span><span class="w"> </span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">Confidence</span><span class="p">),</span><span class="w"> </span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">ResponseCorrect</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="n">confidence_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">filter</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Decision</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"More"</span><span class="p">,</span><span class="w"> </span><span class="s">"Less"</span><span class="p">),</span>
+<span class="w">    </span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">Confidence</span><span class="p">),</span>
+<span class="w">    </span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">ResponseCorrect</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
 <span class="w">  </span><span class="nf">mutate</span><span class="p">(</span>
-<span class="w">    </span><span class="n">Accuracy</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nf">factor</span><span class="p">(</span><span class="n">ResponseCorrect</span><span class="p">,</span><span class="w"> </span><span class="n">levels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">),</span>
-<span class="w">                        </span><span class="n">labels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"incorrect"</span><span class="p">,</span><span class="w"> </span><span class="s">"correct"</span><span class="p">)),</span>
-<span class="w">    </span><span class="n">Confidence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Confidence</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">100</span><span class="w">          </span><span class="c1"># keep exact 0 and 1</span>
+<span class="w">    </span><span class="n">subj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">factor</span><span class="p">(</span><span class="n">Subject</span><span class="p">),</span>
+<span class="w">    </span><span class="n">Accuracy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">factor</span><span class="p">(</span>
+<span class="w">      </span><span class="nf">if_else</span><span class="p">(</span>
+<span class="w">        </span><span class="nf">tolower</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">ResponseCorrect</span><span class="p">))</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"true"</span><span class="p">,</span><span class="w"> </span><span class="s">"1"</span><span class="p">),</span>
+<span class="w">        </span><span class="s">"correct"</span><span class="p">,</span>
+<span class="w">        </span><span class="s">"incorrect"</span>
+<span class="w">      </span><span class="p">),</span>
+<span class="w">      </span><span class="n">levels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"incorrect"</span><span class="p">,</span><span class="w"> </span><span class="s">"correct"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">),</span>
+<span class="w">    </span><span class="n">Modality</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">factor</span><span class="p">(</span><span class="n">Modality</span><span class="p">,</span><span class="w"> </span><span class="n">levels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"Extero"</span><span class="p">,</span><span class="w"> </span><span class="s">"Intero"</span><span class="p">)),</span>
+<span class="w">    </span><span class="n">Confidence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Confidence</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">100</span>
 <span class="w">  </span><span class="p">)</span>
 
-<span class="n">fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ordbetareg</span><span class="p">(</span>
-<span class="w">  </span><span class="n">formula</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bf</span><span class="p">(</span><span class="n">Confidence</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">Accuracy</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">Accuracy</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Subject</span><span class="p">)),</span>
-<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="p">,</span>
-<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">cores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="nf">stopifnot</span><span class="p">(</span><span class="nf">all</span><span class="p">(</span><span class="n">confidence_data</span><span class="o">$</span><span class="n">Confidence</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">&amp;</span>
+<span class="w">              </span><span class="n">confidence_data</span><span class="o">$</span><span class="n">Confidence</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="m">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Do not recode a missed decision as incorrect. There is no choice to score on
+such a trial. Before fitting the model, inspect the range and scale use for each
+participant.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">confidence_data</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">group_by</span><span class="p">(</span><span class="n">subj</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">summarise</span><span class="p">(</span>
+<span class="w">    </span><span class="n">trials</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">n</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">mean_confidence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">Confidence</span><span class="p">),</span>
+<span class="w">    </span><span class="n">sd_confidence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sd</span><span class="p">(</span><span class="n">Confidence</span><span class="p">),</span>
+<span class="w">    </span><span class="n">at_zero</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">Confidence</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">at_one</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">Confidence</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="p">),</span>
+<span class="w">    </span><span class="n">.groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"drop"</span>
+<span class="w">  </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A participant who selected one confidence value throughout the task provides no
+within-person information about calibration. Review these sessions before
+analysis and document any exclusion rule. Scale use is also worth plotting,
+because a standard deviation alone does not show whether a participant relied
+almost entirely on one endpoint.</p>
+<p>The worked model also uses gender, age, and BMI. Set the gender reference level
+and join the participant-level standardized age and BMI variables prepared in
+the <a class="reference internal" href="hierarchical.html"><span class="std std-doc">hierarchical modelling tutorial</span></a>. Standardize these
+variables over one row per participant, rather than over the trial table.</p>
+</section>
+<section id="specify-the-hierarchical-ordered-beta-model">
+<h2>Specify the hierarchical ordered beta model<a class="headerlink" href="#specify-the-hierarchical-ordered-beta-model" title="Permalink to this heading">#</a></h2>
+<p>A useful starting model is</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Confidence ~ Accuracy + (Accuracy | subj)
+</pre></div>
+</div>
+<p>The population coefficient for <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code> estimates average metacognitive
+calibration. The participant intercepts allow confidence bias to vary, and the
+participant slopes allow the accuracy-confidence association to vary. Partial
+pooling regularizes both estimates.</p>
+<p>The worked example extends this model to ask whether calibration differs between
+the cardiac and exteroceptive conditions, between genders, or with age. BMI is
+included as a covariate.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">brms</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">ordbetareg</span><span class="p">)</span>
+
+<span class="n">confidence_formula</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">bf</span><span class="p">(</span>
+<span class="w">  </span><span class="n">Confidence</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">Accuracy</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">Modality</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">gender</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">age_z</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">bmi_z</span><span class="w"> </span><span class="o">+</span>
+<span class="w">    </span><span class="p">(</span><span class="n">Accuracy</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">Modality</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">subj</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">fit_confidence</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ordbetareg</span><span class="p">(</span>
+<span class="w">  </span><span class="n">formula</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">confidence_formula</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">confidence_data</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">cores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">control</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">adapt_delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">,</span><span class="w"> </span><span class="n">max_treedepth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">),</span>
 <span class="w">  </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"fit_confidence"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">ordbetareg</span></code> wraps brms, so the formula syntax, priors and post-processing are all
-the usual ones.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Accuracy</span></code> and <code class="docutils literal notranslate"><span class="pre">Modality</span></code> vary within participants, so the model includes their
+random slopes and interaction. Gender, age, and BMI vary between participants
+and cannot receive participant-level random slopes. The same design rule is
+explained in the <a class="reference internal" href="hierarchical.html"><span class="std std-doc">hierarchical modelling tutorial</span></a>.</p>
+<p>The worked model uses the package defaults for its priors. For a new study, use
+<code class="docutils literal notranslate"><span class="pre">get_prior()</span></code> to inspect the parameters created by your exact formula and carry
+out prior predictive checks before sampling. Ordered beta models can take
+several hours to fit, so cache the model with <code class="docutils literal notranslate"><span class="pre">file</span></code> and begin with a small test
+run to identify coding problems.</p>
 </section>
-<section id="the-quantity-of-interest">
-<h2>The quantity of interest<a class="headerlink" href="#the-quantity-of-interest" title="Permalink to this heading">#</a></h2>
-<p>The coefficient on <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code> is how much higher confidence runs on correct trials
-than incorrect ones. That is metacognitive sensitivity, stated directly rather
-than as a ratio, and it needs no division by a staircase-determined d′.</p>
-<p>Because the intercept absorbs overall confidence, sensitivity and bias stay
-separate. You do not have to choose between “how confident are they” and “does
-confidence track accuracy”: the model gives both.</p>
-<p>In the example data the raw gap is large and near-universal: mean confidence is
-about 25 points higher on correct trials, and 99% of participants show a gap in
-that direction.</p>
-</section>
-<section id="testing-a-hypothesis-about-it">
-<h2>Testing a hypothesis about it<a class="headerlink" href="#testing-a-hypothesis-about-it" title="Permalink to this heading">#</a></h2>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="colwidths-auto docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Question</p></th>
-<th class="head"><p>Formula</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Does confidence track accuracy</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Confidence</span> <span class="pre">~</span> <span class="pre">Accuracy</span> <span class="pre">+</span> <span class="pre">(Accuracy</span> <span class="pre">|</span> <span class="pre">Subject)</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Does that differ between conditions</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Confidence</span> <span class="pre">~</span> <span class="pre">Accuracy</span> <span class="pre">*</span> <span class="pre">Modality</span> <span class="pre">+</span> <span class="pre">(Accuracy</span> <span class="pre">*</span> <span class="pre">Modality</span> <span class="pre">|</span> <span class="pre">Subject)</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Does it differ between groups</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Confidence</span> <span class="pre">~</span> <span class="pre">Accuracy</span> <span class="pre">*</span> <span class="pre">gender</span> <span class="pre">+</span> <span class="pre">(Accuracy</span> <span class="pre">|</span> <span class="pre">Subject)</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Does it change with age</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Confidence</span> <span class="pre">~</span> <span class="pre">Accuracy</span> <span class="pre">*</span> <span class="pre">age_z</span> <span class="pre">+</span> <span class="pre">(Accuracy</span> <span class="pre">|</span> <span class="pre">Subject)</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>The interaction is usually the actual hypothesis. “Group A had lower metacognitive
-sensitivity” is a claim about <code class="docutils literal notranslate"><span class="pre">Accuracy</span> <span class="pre">×</span> <span class="pre">group</span></code>, not about <code class="docutils literal notranslate"><span class="pre">group</span></code>.</p>
-<p>The random effects rule is the same as in the <a class="reference internal" href="hierarchical.html"><span class="std std-doc">hierarchical
-model</span></a>: a term gets a random slope only if it varies within a
-participant. <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code> and <code class="docutils literal notranslate"><span class="pre">Modality</span></code> do. <code class="docutils literal notranslate"><span class="pre">gender</span></code> and <code class="docutils literal notranslate"><span class="pre">age</span></code> do not.</p>
-</section>
-<section id="reading-the-output">
-<h2>Reading the output<a class="headerlink" href="#reading-the-output" title="Permalink to this heading">#</a></h2>
-<p>Coefficients are on the latent scale and are not slider points. For anything you
-report, compute predictions on the response scale:</p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">marginaleffects</span><span class="p">)</span>
-<span class="nf">avg_predictions</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Accuracy"</span><span class="p">)</span>
-<span class="nf">avg_comparisons</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span><span class="w"> </span><span class="n">variables</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Accuracy"</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="what-the-worked-model-found">
-<h2>What the worked model found<a class="headerlink" href="#what-the-worked-model-found" title="Permalink to this heading">#</a></h2>
-<p>Fitted to 68,932 trials from 512 participants, with accuracy interacted with
-modality, gender and age. Coefficients are on the latent scale, so read the
-figure for anything in slider units.</p>
-<p><img alt="Predicted confidence by accuracy, modality and gender" src="../_images/fig_confidence_accuracy.png" /></p>
+<section id="interpret-interactions-through-predictions">
+<h2>Interpret interactions through predictions<a class="headerlink" href="#interpret-interactions-through-predictions" title="Permalink to this heading">#</a></h2>
+<p>Regression coefficients are reported on the model’s latent scale. Their meaning
+also depends on the reference levels and interactions in the formula.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Term</p></th>
-<th class="head"><p>Estimate</p></th>
-<th class="head"><p>95% CI</p></th>
+<th class="head"><p>Interpretation in the worked model</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect</span></code></p></td>
-<td><p><strong>+1.09</strong></p></td>
-<td><p>[1.03, 1.15]</p></td>
+<td><p>Calibration for Extero trials among participants at the reference levels of the other predictors</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ModalityIntero</span></code></p></td>
-<td><p><strong>+0.36</strong></p></td>
-<td><p>[0.30, 0.42]</p></td>
+<td><p>Intero versus Extero difference on incorrect trials</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect:ModalityIntero</span></code></p></td>
-<td><p><strong>−0.76</strong></p></td>
-<td><p>[−0.83, −0.70]</p></td>
+<td><p>Change in calibration from Extero to Intero trials</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">age_z</span></code></p></td>
-<td><p><strong>+0.13</strong> per SD</p></td>
-<td><p>[0.075, 0.179]</p></td>
+<td><p>Association between age and confidence on incorrect trials</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect:age_z</span></code></p></td>
-<td><p>−0.02</p></td>
-<td><p>[−0.064, 0.017]</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">genderMale</span></code></p></td>
-<td><p>+0.08</p></td>
-<td><p>[−0.026, 0.192]</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect:genderMale</span></code></p></td>
-<td><p>+0.05</p></td>
-<td><p>[−0.036, 0.129]</p></td>
+<td><p>Association between age and calibration</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect</span></code> is metacognitive sensitivity, stated directly rather than as a
-ratio, and it is clearly positive: confidence tracks accuracy.</p>
-<p>The interaction is the finding. Sensitivity in the cardiac condition is
-1.09 − 0.76 = 0.32, against 1.09 for tones: participants know when they are right
-about a sound far better than they know when they are right about their own heart.
-Overall confidence goes the other way, higher in the cardiac condition, which is
-worth pausing on. People are <em>more</em> confident and <em>less</em> well calibrated about
-their hearts, and those are two different coefficients rather than one ratio being
-pulled in opposite directions.</p>
-<section id="bias-and-sensitivity-come-apart">
-<h3>Bias and sensitivity come apart<a class="headerlink" href="#bias-and-sensitivity-come-apart" title="Permalink to this heading">#</a></h3>
-<p>Age shows the same separation, and it is the clearest argument for this model over
-a single summary score.</p>
-<p><img alt="Confidence and sensitivity across age" src="../_images/fig_confidence_age.png" /></p>
-<p>Older participants are more confident overall (<code class="docutils literal notranslate"><span class="pre">age_z</span></code> = +0.13, interval excluding
-zero), but the gap between correct and incorrect trials does not change with age
-(<code class="docutils literal notranslate"><span class="pre">Accuracycorrect:age_z</span></code> = −0.02, interval spanning zero). Both lines rise
-together; the distance between them stays put.</p>
-<p>Confidence went up. Metacognition did not change. A measure that folds the two
-together has to report one number for that, and whichever number it reports will
-be wrong about something.</p>
-</section>
-</section>
-<section id="checking">
-<h2>Checking<a class="headerlink" href="#checking" title="Permalink to this heading">#</a></h2>
-<p>The usual diagnostics apply: no divergent transitions, <code class="docutils literal notranslate"><span class="pre">rhat</span> <span class="pre">&lt;</span> <span class="pre">1.01</span></code>, healthy ESS.</p>
-<p>One check is specific to this model. The posterior predictive must reproduce the
-<strong>mass at 0 and 1</strong>, not just the interior. Handling those bounds properly is the
-entire reason for using ordered beta, so if <code class="docutils literal notranslate"><span class="pre">pp_check()</span></code> misses them, the model is
-not doing the job you chose it for.</p>
-</section>
-<section id="before-you-fit">
-<h2>Before you fit<a class="headerlink" href="#before-you-fit" title="Permalink to this heading">#</a></h2>
-<p>Look at scale usage per participant. Someone who left the slider at one value all
-session contributes nothing about metacognition, and the model will quietly absorb
-them:</p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nf">group_by</span><span class="p">(</span><span class="n">Subject</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nf">summarise</span><span class="p">(</span><span class="n">sd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sd</span><span class="p">(</span><span class="n">Confidence</span><span class="p">))</span>
+<p>The main effect of <code class="docutils literal notranslate"><span class="pre">Modality</span></code> is therefore not an overall modality difference,
+and the main effect of age is not an overall age effect. Once interactions are
+present, we should use posterior predictions to express the result on the
+confidence scale.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">marginaleffects</span><span class="p">)</span>
+
+<span class="c1"># Expected confidence for each accuracy by modality combination</span>
+<span class="nf">avg_predictions</span><span class="p">(</span>
+<span class="w">  </span><span class="n">fit_confidence</span><span class="p">,</span>
+<span class="w">  </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"Accuracy"</span><span class="p">,</span><span class="w"> </span><span class="s">"Modality"</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Correct minus incorrect confidence within each modality</span>
+<span class="nf">avg_comparisons</span><span class="p">(</span>
+<span class="w">  </span><span class="n">fit_confidence</span><span class="p">,</span>
+<span class="w">  </span><span class="n">variables</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Accuracy"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Modality"</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>Decide explicitly whether to exclude them. Trials with no response have no
-accuracy and must be dropped, never recoded as incorrect.</p>
+<p>These summaries average over the requested observations. For a continuous
+moderator such as age, create a grid over the observed age range and plot the
+predictions for correct and incorrect trials. The distance between those lines
+is calibration.</p>
+</section>
+<section id="results-from-the-worked-model">
+<h2>Results from the worked model<a class="headerlink" href="#results-from-the-worked-model" title="Permalink to this heading">#</a></h2>
+<p>The example model was fitted to 68,932 trials from 512 participants. The table
+shows selected population coefficients on the latent scale.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Term</p></th>
+<th class="text-right head"><p>Estimate</p></th>
+<th class="text-right head"><p>95% interval</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect</span></code></p></td>
+<td class="text-right"><p>1.09</p></td>
+<td class="text-right"><p>[1.03, 1.15]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ModalityIntero</span></code></p></td>
+<td class="text-right"><p>0.36</p></td>
+<td class="text-right"><p>[0.30, 0.41]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect:ModalityIntero</span></code></p></td>
+<td class="text-right"><p>-0.76</p></td>
+<td class="text-right"><p>[-0.83, -0.70]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">age_z</span></code></p></td>
+<td class="text-right"><p>0.13</p></td>
+<td class="text-right"><p>[0.08, 0.18]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect:age_z</span></code></p></td>
+<td class="text-right"><p>-0.02</p></td>
+<td class="text-right"><p>[-0.06, 0.02]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">genderMale</span></code></p></td>
+<td class="text-right"><p>0.08</p></td>
+<td class="text-right"><p>[-0.02, 0.19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Accuracycorrect:genderMale</span></code></p></td>
+<td class="text-right"><p>0.05</p></td>
+<td class="text-right"><p>[-0.04, 0.13]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The response-scale predictions make these coefficients easier to interpret.</p>
+<p><img alt="Predicted confidence by accuracy, modality, and gender" src="../_images/fig_confidence_accuracy.png" /></p>
+<p>For women at the mean age and BMI, expected confidence on Extero trials was
+0.67 after correct responses and 0.38 after incorrect responses. The calibration
+gap was therefore 0.29. On Intero trials, the corresponding predictions were
+0.56 and 0.47, giving a gap of 0.09. The negative
+<code class="docutils literal notranslate"><span class="pre">Accuracycorrect:ModalityIntero</span></code> interaction captures this reduction in cardiac
+metacognitive calibration.</p>
+<p>Notice how the modality comparison changes with accuracy. Predicted confidence
+was higher for Intero than Extero trials following an incorrect response, but
+lower following a correct response. Reporting <code class="docutils literal notranslate"><span class="pre">ModalityIntero</span></code> as an overall
+increase in cardiac confidence would miss this interaction. The estimated
+gender interaction was small and its interval included zero, so this analysis
+provides little evidence that calibration differed by gender.</p>
+<section id="age-and-confidence-bias">
+<h3>Age and confidence bias<a class="headerlink" href="#age-and-confidence-bias" title="Permalink to this heading">#</a></h3>
+<p><img alt="Confidence bias and metacognitive calibration across age" src="../_images/fig_confidence_age.png" /></p>
+<p>Expected confidence increased with age for both correct and incorrect trials.
+The two lines remained approximately parallel, and the interval for
+<code class="docutils literal notranslate"><span class="pre">Accuracycorrect:age_z</span></code> included zero. In this sample, age was associated with
+confidence bias but provided little evidence of a change in metacognitive
+calibration. This is why we examine the predicted confidence levels and their
+gap separately.</p>
+</section>
+</section>
+<section id="check-the-fitted-model">
+<h2>Check the fitted model<a class="headerlink" href="#check-the-fitted-model" title="Permalink to this heading">#</a></h2>
+<p>Begin with the standard sampling diagnostics. Check for divergent transitions,
+verify that R-hat is below 1.01, and inspect effective sample sizes and trace
+plots. If the model has convergence problems, do not interpret its coefficients.</p>
+<p>Posterior predictive checks should then address the features that motivated the
+likelihood.</p>
+<ul class="simple">
+<li><p>Compare predicted and observed confidence distributions within each modality
+and accuracy condition.</p></li>
+<li><p>Compare the predicted and observed proportions at exactly zero and one.</p></li>
+<li><p>Check whether the model reproduces large differences in scale use between
+participants.</p></li>
+<li><p>Plot participant-level predictions to identify sessions that the population
+model describes poorly.</p></li>
+</ul>
+<p>The first figure on this page illustrates the bound check. The observed
+proportions should fall within plausible posterior predictive intervals. A
+density plot of the interior ratings cannot establish this on its own.</p>
+</section>
+<section id="report-the-model-and-result">
+<h2>Report the model and result<a class="headerlink" href="#report-the-model-and-result" title="Permalink to this heading">#</a></h2>
+<p>A clear report should state the number of participants and trials, the amount of
+confidence mass at both bounds, the fixed and random effect formula, the priors,
+and the sampling and posterior predictive diagnostics. Report the scientific
+result as response-scale expected confidence and calibration contrasts with
+uncertainty for each condition of interest. Latent coefficients can accompany
+these summaries, but should not replace them.</p>
+<p>The two hierarchical tutorials now provide complementary descriptions of HRD
+performance. The <a class="reference internal" href="hierarchical.html"><span class="std std-doc">psychophysical model</span></a> estimates cardiac bias,
+precision, and lapse rate from choices. The ordered beta model estimates
+confidence bias and metacognitive calibration from ratings. The <a class="reference internal" href="../measuring.html"><span class="std std-doc">theory
+page</span></a> explains how these measurements fit into the broader
+account of cardiac interoception.</p>
 </section>
 </section>
 
@@ -519,18 +653,18 @@ accuracy and must be dropped, never recoded as incorrect.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Metacognition</a><ul>
-<li><a class="reference internal" href="#what-the-ratings-look-like">What the ratings look like</a></li>
-<li><a class="reference internal" href="#why-not-the-m-ratio">Why not the m-ratio</a></li>
-<li><a class="reference internal" href="#ordered-beta-regression">Ordered beta regression</a></li>
-<li><a class="reference internal" href="#the-quantity-of-interest">The quantity of interest</a></li>
-<li><a class="reference internal" href="#testing-a-hypothesis-about-it">Testing a hypothesis about it</a></li>
-<li><a class="reference internal" href="#reading-the-output">Reading the output</a></li>
-<li><a class="reference internal" href="#what-the-worked-model-found">What the worked model found</a><ul>
-<li><a class="reference internal" href="#bias-and-sensitivity-come-apart">Bias and sensitivity come apart</a></li>
+<li><a class="reference internal" href="#confidence-bias-and-metacognitive-calibration">Confidence bias and metacognitive calibration</a></li>
+<li><a class="reference internal" href="#the-confidence-distribution-determines-the-likelihood">The confidence distribution determines the likelihood</a></li>
+<li><a class="reference internal" href="#why-we-do-not-use-m-ratio-for-hrd-data">Why we do not use M-ratio for HRD data</a></li>
+<li><a class="reference internal" href="#prepare-trial-level-confidence-data">Prepare trial-level confidence data</a></li>
+<li><a class="reference internal" href="#specify-the-hierarchical-ordered-beta-model">Specify the hierarchical ordered beta model</a></li>
+<li><a class="reference internal" href="#interpret-interactions-through-predictions">Interpret interactions through predictions</a></li>
+<li><a class="reference internal" href="#results-from-the-worked-model">Results from the worked model</a><ul>
+<li><a class="reference internal" href="#age-and-confidence-bias">Age and confidence bias</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#checking">Checking</a></li>
-<li><a class="reference internal" href="#before-you-fit">Before you fit</a></li>
+<li><a class="reference internal" href="#check-the-fitted-model">Check the fitted model</a></li>
+<li><a class="reference internal" href="#report-the-model-and-result">Report the model and result</a></li>
 </ul>
 </li>
 </ul>

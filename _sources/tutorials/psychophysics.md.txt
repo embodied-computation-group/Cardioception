@@ -1,5 +1,7 @@
 # The psychophysical model
 
+Author: Micah G. Allen
+
 The Heart Rate Discrimination task turns a simple judgement into a model of
 cardiac belief. A participant attends to their heart, hears a sequence of tones,
 and reports whether the tones were faster or slower. Across trials, we vary the
