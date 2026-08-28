@@ -96,6 +96,20 @@ class ConfidenceScale:
     def bounds(self) -> Tuple[float, float]:
         return (self.low, self.high)
 
+    @property
+    def ticks(self) -> Tuple[float, ...]:
+        """Tick positions for a slider, one per label.
+
+        PsychoPy places labels with ``linspace(left, right, num=len(labels))``
+        and then snaps each to the nearest tick. Give it three labels and two
+        ticks -- as a signed scale does, with a midpoint reading -- and the
+        middle label snaps onto an end and is drawn over it. The tick count
+        has to match the label count.
+        """
+        if len(self.labels) == 3:
+            return (self.low, self.midpoint, self.high)
+        return self.bounds
+
     def clamp(self, value: float) -> float:
         """Snap a raw position onto the scale."""
         stepped = round((value - self.low) / self.granularity) * self.granularity
