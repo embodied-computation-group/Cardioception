@@ -22,6 +22,7 @@ from cardioception._autopilot import AutoResponder
 from cardioception.devices import ReplayRecorder
 from cardioception.HRD.parameters import getParameters
 from cardioception.HRD.task import run
+from cardioception.validate import check_trials
 
 N_TRIALS = 8
 SEED = 4242
@@ -140,6 +141,18 @@ class TestHeadlessSession(unittest.TestCase):
         params, _ = _session(self.tmp, "keyboard")
         # One save at the single break, one at the end of the session.
         self.assertEqual(params["recorder"].n_saves, 2)
+
+    def test_every_session_invariant_holds(self):
+        """The same checks used to validate a real hardware session.
+
+        These are relationships between recorded numbers, not expected values,
+        so they survive a refactor that legitimately changes the values.
+        """
+        params, df = _session(self.tmp, "keyboard")
+        failures = [
+            c for c in check_trials(df, resp_max=params["respMax"]) if not c.passed
+        ]
+        self.assertEqual(failures, [], f"invariants broken: {failures}")
 
     def test_same_seed_gives_the_same_design(self):
         p1, _ = _session(self.tmp, "keyboard", seed=99)

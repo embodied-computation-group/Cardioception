@@ -1,0 +1,68 @@
+name: Tests
+
+# The test suite has never run in CI. It could not: run() blocks in waitInput,
+# so both test_run tests waited forever for a keypress that no runner would
+# provide. The autopilot and the replay recorder remove that, so the tasks can
+# now be exercised end to end without hardware or a human.
+#
+# Two jobs, because they fail for different reasons and take very different
+# amounts of time. `fast` needs no display and returns in seconds. `session`
+# runs whole sessions under a virtual display and takes a few minutes.
+
+on:
+  push:
+    branches: [master, "dev/**", "phase*/**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  fast:
+    name: unit and property tests on ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: System libraries PsychoPy links against
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgl1 libglu1-mesa libegl1 libglib2.0-0 libsdl2-2.0-0 \
+            portaudio19-dev libasound2-dev libsndfile1
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install . pytest pytest-cov
+      # These touch no window and no device, so they are the fast feedback loop.
+      - name: Run
+        run: pytest tests/test_rng.py tests/test_stimuli.py -v
+
+  session:
+    name: full sessions under a virtual display
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: System libraries, plus a virtual display
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xvfb libgl1 libglu1-mesa libegl1 libglib2.0-0 libsdl2-2.0-0 \
+            portaudio19-dev libasound2-dev libsndfile1
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install . pytest pytest-cov
+      # A whole HRD session, both input devices, against the replay recorder.
+      # This is the first time any CI job has run the task itself.
+      - name: Run
+        run: >
+          xvfb-run -a pytest tests/test_headless.py -v
+          --cov=cardioception --cov-report=term-missing
