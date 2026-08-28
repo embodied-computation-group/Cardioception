@@ -66,6 +66,10 @@ jobs:
       # Neither one plays anything, which is all the task needs.
       - name: A sound device for the tones to open
         run: |
+          # snd-dummy is not in the runner's stock kernel; the module package
+          # carries it. PulseAudio's null sink loads fine without it but
+          # PortAudio does not enumerate it, so it is only a last resort.
+          sudo apt-get install -y --no-install-recommends "linux-modules-extra-$(uname -r)" || true
           sudo modprobe snd-dummy || true
           if ! aplay -l 2>/dev/null | grep -q '^card'; then
             pulseaudio --start --exit-idle-time=-1
@@ -79,6 +83,6 @@ jobs:
       # A whole HRD session, both input devices, against the replay recorder.
       # This is the first time any CI job has run the task itself.
       - name: Run
-        run: >
-          xvfb-run -a pytest tests/test_headless.py -v
-          --cov=cardioception --cov-report=term-missing
+        run: |
+          python -c "import psychtoolbox as ptb; d = ptb.audio.get_devices(); print('PTB sees', len(d), 'devices')" || true
+          xvfb-run -a pytest tests/test_headless.py -v --cov=cardioception --cov-report=term-missing
