@@ -180,6 +180,13 @@ def getParameters(
     parameters["participant"] = participant
     parameters["session"] = session
     parameters["path"] = os.getcwd()
+    # Validated here, before anything is created. Raising in the recorder
+    # block below is too late: by then the session directory exists, the log
+    # file is open and the window is on screen, so a typo leaves an empty run
+    # directory behind and flashes a window at the participant.
+    if setup not in ("behavioral", "test"):
+        raise ValueError(f"setup should be 'behavioral' or 'test', got {setup!r}.")
+
     parameters["paths"] = SessionPaths(
         root=(
             resultPath

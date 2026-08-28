@@ -6,6 +6,7 @@
 import shutil
 import tempfile
 import unittest
+from pathlib import Path
 from unittest import TestCase
 
 import pytest
@@ -59,10 +60,28 @@ class TestSetupIsValidated(unittest.TestCase):
     since the audit; HBC did not.
     """
 
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
     def test_an_unknown_setup_raises_and_says_what_is_valid(self):
         with pytest.raises(ValueError, match="behavioral"):
-            getParameters(setup="behavioural")  # the British spelling
+            getParameters(setup="behavioural", resultPath=self.tmp)
 
     def test_the_error_names_the_value_it_was_given(self):
         with pytest.raises(ValueError, match="nonsense"):
-            getParameters(setup="nonsense")
+            getParameters(setup="nonsense", resultPath=self.tmp)
+
+    def test_it_leaves_no_run_directory_behind(self):
+        """The check has to come before the session directory is created.
+
+        It used to raise in the recorder block, by which point the directory,
+        the log file and the window all existed -- so a typo left an empty run
+        directory in the results tree and flashed a window at the participant.
+        """
+        before = set(Path(self.tmp).glob("**/run-*"))
+        with pytest.raises(ValueError):
+            getParameters(setup="nonsense", resultPath=self.tmp)
+        self.assertEqual(set(Path(self.tmp).glob("**/run-*")), before)
