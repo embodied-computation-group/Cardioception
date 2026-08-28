@@ -21,6 +21,10 @@ authors:
       Denmark
   - name: Embodied Computation Group, Aarhus University
 identifiers:
+  - type: doi
+    value: 10.5281/zenodo.22139105
+    description: >-
+      The concept DOI, which always resolves to the most recent archived release
   - type: url
     value: 'https://pypi.org/project/cardioception-toolbox/'
     description: The package on PyPI
