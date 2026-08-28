@@ -26,13 +26,21 @@ def hold(win, duration: float, *stims) -> float:
     Stimuli must be passed in and are redrawn every frame: PsychoPy clears the
     back buffer on flip, so flipping without drawing blanks the screen.
 
+    A non-positive ``duration`` still paints one frame. The code this replaced
+    drew, flipped, and only then called ``core.wait``, so the frame appeared
+    however short the wait was; testing the clock first skipped it entirely.
+    That reaches the participant in ``responseDecision``, where the feedback
+    is held for ``respMax - trialdur`` and a response landing on the deadline
+    makes that zero or negative: an accepted answer drew no confirmation.
+
     Returns the time held, quantised up to the next frame boundary.
     """
     from psychopy import core
 
     clock = core.Clock()
-    while clock.getTime() < duration:
+    while True:
         for stim in stims:
             stim.draw()
         win.flip()
-    return clock.getTime()
+        if clock.getTime() >= duration:
+            return clock.getTime()

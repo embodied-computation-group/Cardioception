@@ -20,6 +20,13 @@ from typing import List, Optional, Sequence, Tuple
 import numpy as np
 
 
+def _ticks_for(low: float, high: float, labels: Sequence[str]):
+    """One tick per label, or PsychoPy snaps the midpoint label onto an end."""
+    if len(labels) == 3:
+        return (low, (low + high) / 2, high)
+    return (low, high)
+
+
 def keyboard_rating(
     win,
     message,
@@ -93,7 +100,7 @@ def keyboard_rating(
         size=(0.7, 0.1),
         labels=list(labels),
         granularity=granularity,
-        ticks=(low, high),
+        ticks=_ticks_for(low, high, labels),
         style="rating",
         color="LightGray",
         flip=False,

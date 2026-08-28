@@ -17,10 +17,8 @@ from .._screens import fixation as fixation_cross
 from .._screens import text
 from .._triggers import fire
 from ._constants import (
-    ANALYSIS_WINDOW,
-    LISTENING_DURATION,
+    ANALYSIS_MARGIN,
     OXIMETER_SFREQ,
-    PEAK_WINDOW_SAMPLES,
     PPG_SFREQ,
     TONE_BPM_MAX,
     TONE_BPM_MIN,
@@ -426,6 +424,7 @@ def trial(
         decisionRT,
         isCorrect,
     ) = responseDecision(responseSound, parameters, feedback, condition)
+    fire(parameters, "decisionStop")
     press.autoDraw = False
     message.autoDraw = False
     if modality == "Intero":
@@ -453,6 +452,7 @@ def trial(
             ratingProvided,
             ratingEndTrigger,
         ) = confidenceRatingTask(parameters)
+        fire(parameters, "confidenceStop")
     else:
         ratingStartTrigger, ratingEndTrigger = None, None
 
@@ -558,19 +558,23 @@ def listen_to_heart(parameters: dict) -> HeartRateReading:
             parameters["win"].close()
             core.quit()
 
+        # The window is `listeningDuration`, not a constant: it is documented
+        # as matching the exteroceptive tone so both modalities give the same
+        # listening time, and it did not. Shortening it moved the tone only,
+        # leaving the control condition quietly unmatched to the recording.
+        duration = parameters["listeningDuration"]
+        kept = int(OXIMETER_SFREQ * (duration + ANALYSIS_MARGIN))
+        peak_window = int(duration * PPG_SFREQ)
+
         # Adapt these lines for a different setup, provided it can produce
         # `bpm`, the per-beat rates over the listening window.
-        signal = (
-            parameters["oxiTask"]
-            .read(duration=LISTENING_DURATION)
-            .recording[-OXIMETER_SFREQ * ANALYSIS_WINDOW :]  # noqa
-        )
+        signal = parameters["oxiTask"].read(duration=duration).recording[-kept:]  # noqa
         signal, peaks = ppg_peaks(
             signal, sfreq=OXIMETER_SFREQ, new_sfreq=PPG_SFREQ, clipping=True
         )
         recordedAt = time.time()
 
-        ibi = np.diff(np.where(peaks[-PEAK_WINDOW_SAMPLES:])[0])
+        ibi = np.diff(np.where(peaks[-peak_window:])[0])
         bpm = 60000 / ibi
         logger.info(f"... bpm: {[round(i) for i in bpm]}")
 
@@ -608,6 +612,7 @@ def listen_to_heart(parameters: dict) -> HeartRateReading:
             round(float(np.nanmean(bpm)) * 2) / 2 if usable else fallback
         )
 
+    fire(parameters, "listeningStop")
     return HeartRateReading(
         bpm=listenBPM,
         bpm_arithmetic=listenBPM_arithmetic,
@@ -658,6 +663,7 @@ def listen_to_tone(parameters: dict) -> HeartRateReading:
     )
     listenSound.stop()
 
+    fire(parameters, "listeningStop")
     return HeartRateReading(bpm=listenBPM, bpm_arithmetic=listenBPM, started=started)
 
 
@@ -1144,7 +1150,7 @@ def confidenceRatingTask(
             size=(0.7, 0.1),
             labels=parameters["confidenceScale"].labels,
             granularity=parameters["confidenceScale"].granularity,
-            ticks=parameters["confidenceScale"].bounds,
+            ticks=parameters["confidenceScale"].ticks,
             style=("rating"),
             color="LightGray",
             flip=False,

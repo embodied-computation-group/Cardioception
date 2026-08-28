@@ -14,6 +14,7 @@ from pathlib import Path
 import pandas as pd
 
 from cardioception._autopilot import AutoResponder
+from cardioception._triggers import EVENTS
 from cardioception.devices import ReplayRecorder
 from cardioception.HRD.config import TaskConfig
 from cardioception.HRD.parameters import getParameters
@@ -23,10 +24,13 @@ from cardioception.validate import check_trials
 N_TRIALS = 4
 SEED = 4242
 BPM = 72.0
-# The task blocks in real time while an exteroceptive tone plays. At the default
-# of 5 seconds that is about 70% of a session's wall clock and none of it
-# exercises anything these tests assert on.
-LISTENING = 0.05
+# The task blocks in real time while an exteroceptive tone plays, so the
+# default 5 seconds is most of a session's wall clock and none of it exercises
+# anything these tests assert on. It cannot go much lower: `listeningDuration`
+# now sets the interoceptive recording window too, as its docstring always
+# claimed, and below about 2.5 s there are too few beats to measure a rate.
+# The old 0.05 worked only because the recording window ignored it.
+LISTENING = 3.0
 
 EXPECTED_COLUMNS = [
     "TrialType",
@@ -376,3 +380,32 @@ class TestStaircaseIsNotExhausted(unittest.TestCase):
         _, df = run_session(self.tmp, device="keyboard", accuracy=1.0, n_trials=4)
         self.assertTrue(df["DecisionProvided"].all())
         self.assertTrue(df["ResponseCorrect"].all())
+
+
+class TestEveryTriggerFires(unittest.TestCase):
+    """`validate()` accepts a callback for any declared event.
+
+    Registering one it never fires is worse than rejecting it: an EEG or LSL
+    marker wired to `decisionStop` produced no error at launch and no markers
+    at all. HRD fired five of the eight; HBC fired all eight, so the two tasks
+    disagreed silently.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_a_session_fires_every_event_the_registry_declares(self):
+        seen = {name: 0 for name in EVENTS}
+
+        def counter(name):
+            def fired():
+                seen[name] += 1
+
+            return fired
+
+        run_session(self.tmp, triggers={name: counter(name) for name in EVENTS})
+        never = sorted(name for name, count in seen.items() if count == 0)
+        self.assertEqual(never, [], f"declared but never fired: {never}")
