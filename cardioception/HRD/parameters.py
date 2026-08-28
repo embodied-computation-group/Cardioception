@@ -146,7 +146,9 @@ def _open_recording(
         parameters["oxiTask"].setup().read(duration=1)
     elif setup == "behavioral":
         # PPG recording
-        port = serial.Serial(serialPort)
+        # A read that finds no data returns after a second rather than blocking
+        # forever, so an unplugged or stalled oximeter fails visibly.
+        port = serial.Serial(serialPort, timeout=1)
         parameters["oxiTask"] = Oximeter(
             serial=port, sfreq=75, add_channels=1, **systole_kw
         )
