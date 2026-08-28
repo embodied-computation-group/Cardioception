@@ -19,48 +19,36 @@ and run the code against it.
 
 ## Files in a participant folder
 
-Since 0.8.0 each run has a directory of its own, named for the participant,
-the session and the moment the run started, and every file inside repeats all
-three. A repeated session can no longer overwrite an earlier one.
-
-For a participant named `0341` in session `001`, a completed run looks like
-this:
+For a participant named `0341` in a session named `HRD`, a completed folder may
+contain files like these:
 
 ```text
-data/sub-0341/ses-001/run-20260828-142530/
-├── manifest.json
-├── session.log
-├── sub-0341_ses-001_run-20260828-142530_behaviour.txt
-├── sub-0341_ses-001_run-20260828-142530_final.txt
-├── sub-0341_ses-001_run-20260828-142530_signal.txt
-├── sub-0341_ses-001_run-20260828-142530_posterior-Intero.npy
-├── sub-0341_ses-001_run-20260828-142530_posterior-Extero.npy
-├── sub-0341_ses-001_run-20260828-142530_ppg-20.txt
-└── sub-0341_ses-001_run-20260828-142530_parameters.pickle
+0341HRD/
+├── 0341HRD.txt
+├── 0341HRD_final.txt
+├── 0341Intero_posterior.npy
+├── 0341Extero_posterior.npy
+├── 0341_signal.txt
+├── 0341_ppg_20.txt
+└── 0341_parameters.pickle
 ```
 
-The rolling trial log is the `_behaviour.txt` file. Cardioception rewrites it
-after every trial, which makes it the recovery copy if a session is
-interrupted. On normal completion the same table is written as `_final.txt`.
-Prefer `_final.txt` when it exists.
-
-`manifest.json` is written at the *start* of the session and records the
-configuration the run was launched with, so an aborted run still says what it
-was going to be.
+The raw trial log is `0341HRD.txt`. It has no `_raw` suffix. Cardioception
+rewrites this file after every trial, which makes it the recovery copy if a
+session is interrupted. On normal completion, the same trial table is written
+as `0341HRD_final.txt`. Prefer the `_final.txt` file when it exists.
 
 | File | What it contains | Use during collection |
 |---|---|---|
-| `manifest.json` | The configuration, written before the first trial | Confirm what an aborted run was set up to do |
-| `*_behaviour.txt` | Rolling trial-level log | Recover an interrupted session |
+| `<participant><session>.txt` | Rolling trial-level log | Recover an interrupted session |
 | `*_final.txt` | Completed trial-level log | Main file for the checks on this page |
-| `*_posterior-Intero.npy`, `*_posterior-Extero.npy` | Joint Psi posterior after each adaptive trial | Check uncertainty and parameter-grid boundaries |
-| `*_signal.txt` | PPG samples collected during cardiac listening intervals, with trial numbers and sample times | Investigate suspicious trial-level heart rates |
-| `*_ppg-*.txt` | Pulse-oximeter segments saved at breaks and at the end | Inspect the physiological recording in detail |
+| `*Intero_posterior.npy`, `*Extero_posterior.npy` | Joint Psi posterior after each adaptive trial | Check uncertainty and parameter-grid boundaries |
+| `*_signal.txt` | PPG samples collected during cardiac listening intervals, with trial numbers | Investigate suspicious trial-level heart rates |
+| `*_ppg_*.txt` | Pulse-oximeter segments saved at breaks and at the end | Inspect the physiological recording in detail |
 | `*_parameters.pickle` | Parameters used for that session | Confirm the intended task settings |
-| `session.log` | Everything the run logged, including rejected heart rates | Work out why a trial behaved oddly |
 
-Match files by suffix rather than assuming a fixed prefix: the prefix carries
-the participant, session and run identifiers passed to `getParameters()`.
+File names depend on the participant and session labels passed to
+`getParameters()`. Match them by suffix rather than assuming a fixed prefix.
 
 ## The trial table
 
@@ -103,9 +91,7 @@ from pathlib import Path
 
 import pandas as pd
 
-session_file = Path("data/sub-0341/ses-001/run-20260828-142530")
-# Match by suffix: the run identifier is a timestamp.
-session_file = next(session_file.glob("*_final.txt"))
+session_file = Path("data/0341HRD/0341HRD_final.txt")
 data = pd.read_csv(session_file).sort_values("nTrials")
 data["Trial"] = data["nTrials"] + 1
 
@@ -129,8 +115,7 @@ data[["Trial", "Modality", "Alpha", "Decision"]].head()
 ```r
 library(tidyverse)
 
-run_dir <- "data/sub-0341/ses-001/run-20260828-142530"
-session_file <- list.files(run_dir, pattern = "_final\.txt$", full.names = TRUE)[1]
+session_file <- "data/0341HRD/0341HRD_final.txt"
 data <- read_csv(session_file, show_col_types = FALSE) |>
   arrange(nTrials) |>
   mutate(Trial = nTrials + 1)

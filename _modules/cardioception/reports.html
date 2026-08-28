@@ -235,7 +235,8 @@
         </div>
         <article role="main">
           <h1>Source code for cardioception.reports</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University</span>
+<span></span><span class="c1"># Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk</span>
+<span class="c1"># Maintained by the Embodied Computation Group, Aarhus University</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
@@ -321,9 +322,11 @@
     <span class="n">summary_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>
 
     <span class="k">for</span> <span class="n">modality</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"Intero"</span><span class="p">,</span> <span class="s2">"Extero"</span><span class="p">]:</span>
+
         <span class="n">this_modality</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">results</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="n">modality</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_modality</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+
             <span class="c1"># response time</span>
             <span class="c1"># -------------</span>
             <span class="n">decision_mean_rt</span> <span class="o">=</span> <span class="n">this_modality</span><span class="o">.</span><span class="n">DecisionRT</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
@@ -343,6 +346,7 @@
             <span class="k">if</span> <span class="p">(</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">"Stimuli"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span>
                 <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">"Stimuli"</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span>
             <span class="p">):</span>
+
                 <span class="n">hit</span><span class="p">,</span> <span class="n">miss</span><span class="p">,</span> <span class="n">fa</span><span class="p">,</span> <span class="n">cr</span> <span class="o">=</span> <span class="n">this_modality</span><span class="o">.</span><span class="n">scores</span><span class="p">()</span>
                 <span class="n">hr</span><span class="p">,</span> <span class="n">far</span> <span class="o">=</span> <span class="n">sdt</span><span class="o">.</span><span class="n">rates</span><span class="p">(</span><span class="n">hits</span><span class="o">=</span><span class="n">hit</span><span class="p">,</span> <span class="n">misses</span><span class="o">=</span><span class="n">miss</span><span class="p">,</span> <span class="n">fas</span><span class="o">=</span><span class="n">fa</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">cr</span><span class="p">)</span>
                 <span class="n">d</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">sdt</span><span class="o">.</span><span class="n">dprime</span><span class="p">(</span><span class="n">hit_rate</span><span class="o">=</span><span class="n">hr</span><span class="p">,</span> <span class="n">fa_rate</span><span class="o">=</span><span class="n">far</span><span class="p">),</span> <span class="n">sdt</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span>
@@ -378,6 +382,7 @@
             <span class="k">if</span> <span class="p">(</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">"Stimuli"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span>
                 <span class="p">(</span><span class="o">~</span><span class="n">this_modality</span><span class="p">[</span><span class="s2">"Stimuli"</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span>
             <span class="p">):</span>
+
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">new_ratings</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">discreteRatings</span><span class="p">(</span>
                         <span class="n">this_modality</span><span class="o">.</span><span class="n">Confidence</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>

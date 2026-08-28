@@ -257,7 +257,7 @@
 <h1>cardioception.HRD.parameters.getParameters<a class="headerlink" href="#cardioception-hrd-parameters-getparameters" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="cardioception.HRD.parameters.getParameters">
-<span class="sig-prename descclassname"><span class="pre">cardioception.HRD.parameters.</span></span><span class="sig-name descname"><span class="pre">getParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">participant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SubjectTest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'001'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialPort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'COM3'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'behavioral'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stairType</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'psi'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exteroception</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchTrials</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nTrials</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">120</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mouse'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">screenNb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fullscr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nBreaking</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resultPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidenceScale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfidenceScale</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'english'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">systole_kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autopilot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onMissedTrial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'represent'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxRepresentations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxHeartRateAttempts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triggers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">TaskConfig</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/cardioception/HRD/parameters.html#getParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cardioception.HRD.parameters.getParameters" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cardioception.HRD.parameters.</span></span><span class="sig-name descname"><span class="pre">getParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">participant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SubjectTest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'001'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialPort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'COM3'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'behavioral'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stairType</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'psi'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exteroception</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchTrials</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nTrials</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">120</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mouse'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">screenNb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fullscr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nBreaking</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resultPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'english'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">systole_kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/cardioception/HRD/parameters.html#getParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cardioception.HRD.parameters.getParameters" title="Permalink to this definition">#</a></dt>
 <dd><p>Create Heart Rate Discrimination task parameters.</p>
 <p>Many task parameters, aesthetics, and options are controlled by the
 parameters dictonary defined herein. These are intended to provide
@@ -282,7 +282,7 @@ with the underlying task code.</p>
 <dt><strong>nStaircase</strong><span class="classifier">int</span></dt><dd><p>Number of staircase to use per condition (exteroceptive and
 interoceptive).</p>
 </dd>
-<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run.</p>
+<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run (UpDown and psi staircase).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This number indicates the total number of trials that will be presented
@@ -291,39 +291,13 @@ contains 50 interoceptive trials. If <cite>nTrials=50</cite> and <cite>exterocep
 the task contains 25 interoceptive trials and 25 exteroceptive trials.</p>
 </div>
 </dd>
-<dt><strong>onMissedTrial</strong><span class="classifier">str</span></dt><dd><p>What to do when the participant does not respond in time. <cite>“represent”</cite>
-(the default) returns the trial to the end of the queue so the intended
-number of usable trials is collected, at the cost of a session whose
-length varies. <cite>“skip”</cite> moves on, giving a fixed number of presentations
-and a variable number of usable trials.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Under either setting the missed trial is written to the results with
-<cite>DecisionProvided=False</cite> and is <strong>not</strong> used to update the staircase.
-Before this was fixed, a missed trial entered the staircase as a
-fabricated <cite>“Less”</cite> response.</p>
-</div>
-</dd>
-<dt><strong>maxRepresentations</strong><span class="classifier">int</span></dt><dd><p>How many times in total a trial may be presented before it is abandoned,
-when <cite>onMissedTrial=”represent”</cite>. Defaults to <cite>3</cite>. Without a cap, a
-participant who stops responding would never reach the end.</p>
-</dd>
 <dt><strong>participant</strong><span class="classifier">str</span></dt><dd><p>Subject ID. Default is ‘Participant’.</p>
 </dd>
 <dt><strong>catchTrials</strong><span class="classifier">float</span></dt><dd><p>Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with some
 jitter) to control for range of stimuli presented. Default to <cite>0.0</cite> (no catch
 trials). If not <cite>0.0</cite>, recomended value is <cite>0.2</cite>.</p>
 </dd>
-<dt><strong>resultPath</strong><span class="classifier">str | None</span></dt><dd><p>Root directory holding every participant. Results go to
-<cite>&lt;resultPath&gt;/sub-&lt;participant&gt;/ses-&lt;session&gt;/run-&lt;timestamp&gt;/</cite>. Defaults
-to <cite>&lt;cwd&gt;/data</cite>.</p>
-</dd>
-<dt><strong>overwrite</strong><span class="classifier">bool</span></dt><dd><p>Allow writing into a run directory that already holds results. Off by
-default, so a repeated run cannot silently replace an earlier one.</p>
-</dd>
-<dt><strong>confidenceScale</strong><span class="classifier">ConfidenceScale | None</span></dt><dd><p>How confidence is collected and what its numbers mean. Defaults to a
-0-100 visual analogue scale for the mouse and ten discrete steps for the
-keyboard. See <code class="xref py py-mod docutils literal notranslate"><span class="pre">cardioception.scales</span></code>.</p>
+<dt><strong>resultPath</strong><span class="classifier">str | None</span></dt><dd><p>Where to save the results.</p>
 </dd>
 <dt><strong>screenNb</strong><span class="classifier">int</span></dt><dd><p>Screen number. Used to parametrize py:func:<cite>psychopy.visual.Window</cite>. Defaults
 to <cite>0</cite>.</p>
@@ -337,9 +311,7 @@ e.g. <cite>“COM3”</cite> for USB ports on Windows.</p>
 pulse oximeter and <cite>“test”</cite> will use pre-recorded pulse time series (for
 testing only).</p>
 </dd>
-<dt><strong>stairType</strong><span class="classifier">str</span></dt><dd><p>Staircase type. <cite>“psi”</cite> is the only value; <cite>“updown”</cite> was removed in
-0.8.0 and now raises. Kept as an argument so scripts passing it fail
-with an explanation rather than a TypeError.</p>
+<dt><strong>stairType</strong><span class="classifier">str</span></dt><dd><p>Staircase type. Can be “psi” or “updown”. Default set to “psi”.</p>
 </dd>
 <dt><strong>systole_kw</strong><span class="classifier">dict</span></dt><dd><p>Additional keyword arguments for <code class="xref py py-class docutils literal notranslate"><span class="pre">systole.recorder.Oxmeter</span></code>.</p>
 </dd>
@@ -350,23 +322,20 @@ with an explanation rather than a TypeError.</p>
 <p>When using the <cite>behavioral</cite> setup, triggers will be sent to the PPG  recording. The
 trigger channel is coding for different events during the task as follows:</p>
 <ul class="simple">
-<li><p>1: trial start</p></li>
-<li><p>2: listening window opens</p></li>
-<li><p>3: tone starts, decision begins</p></li>
-<li><p>4: confidence rating begins</p></li>
-<li><p>5: trial end</p></li>
+<li><p>Trial start: 1</p></li>
+<li><p>recording trigger: 2</p></li>
+<li><p>sound trigger : 3</p></li>
+<li><p>rating trigger: 4</p></li>
+<li><p>end trigger: 5</p></li>
 </ul>
-<p>See <code class="xref py py-class docutils literal notranslate"><span class="pre">cardioception.HRD._constants.Trigger</span></code>. The Heartbeat Counting
-task writes different meanings to the same channel, so a recording has to be
-read knowing which task produced it.</p>
-<p>Every one of these except the trial start also has a timestamp in the
-behavioural results.</p>
+<p>All these events, except trial start, have also their time stamps encoded in the
+behavioral results data frame.</p>
 <dl class="field-list">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl>
 <dt><strong>allowedKeys</strong><span class="classifier">list of str</span></dt><dd><p>The possible response keys.</p>
 </dd>
-<dt><strong>confidenceScale</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">cardioception.scales.ConfidenceScale</span></code></span></dt><dd><p>The confidence scale in use, and the meaning of its numbers.</p>
+<dt><strong>confScale</strong><span class="classifier">list</span></dt><dd><p>The range of the confidence rating scale.</p>
 </dd>
 <dt><strong>device</strong><span class="classifier">str</span></dt><dd><p>The device used for response and rating scale. Can be <cite>“keyboard”</cite> or
 <cite>“mouse”</cite>.</p>
@@ -382,6 +351,12 @@ fixed at <cite>0.25</cite>.</p>
 </dd>
 <dt><strong>labelsRating</strong><span class="classifier">list</span></dt><dd><p>The labels of the confidence rating scale.</p>
 </dd>
+<dt><strong>lambdaExtero</strong><span class="classifier">np.ndarray</span></dt><dd><p>(3d) Posterior estimate of the psychophysics function parameters (slope and
+threshold) across trials for the exteroceptive condition.</p>
+</dd>
+<dt><strong>lambdaIntero</strong><span class="classifier">np.ndarray</span></dt><dd><p>(3d) Posterior estimate of the psychophysics function parameters (slope and
+threshold) across trials for the interoceptive condition.</p>
+</dd>
 <dt><strong>listenLogo, heartLogo</strong><span class="classifier">Psychopy visual instance</span></dt><dd><p>Image used for the inference and recording phases, respectively.</p>
 </dd>
 <dt><strong>maxRatingTime</strong><span class="classifier">float</span></dt><dd><p>The maximum time for a confidence rating (in seconds).</p>
@@ -393,14 +368,23 @@ rating (in seconds).</p>
 </dd>
 <dt><strong>nBreaking</strong><span class="classifier">int</span></dt><dd><p>Number of trials to run before the break.</p>
 </dd>
-<dt><strong>nConfidence</strong><span class="classifier">int</span></dt><dd><p>Number of tutorial trials that ask for a confidence rating.</p>
+<dt><strong>nConfidence</strong><span class="classifier">int</span></dt><dd><p>The number of trial with feedback during the tutorial phase (no
+feedback).</p>
 </dd>
-<dt><strong>nFeedback</strong><span class="classifier">int</span></dt><dd><p>Number of tutorial trials that show whether the answer was correct.</p>
+<dt><strong>nFeedback</strong><span class="classifier">int</span></dt><dd><p>The number of trial with feedback during the tutorial phase (no
+confidence rating).</p>
 </dd>
 <dt><strong>nFinger</strong><span class="classifier">str or None</span></dt><dd><p>The finger number (“1”, “2”, “3”, “4” or “5”) where the participant
 decided to place the pulse oximeter (if relevant).</p>
 </dd>
-<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run. See the parameter of the same name.</p>
+<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run (UpDown and psi staircase).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This number indicates the total number of trials that will be presented
+during the experiment. If <cite>nTrials=50</cite> and <cite>exteroception=False</cite>, the task
+contains 50 interoceptive trials. If <cite>nTrials=50</cite> and <cite>exteroception=True</cite>,
+the task contains 25 interoceptive trials and 25 exteroceptive trials.</p>
+</div>
 </dd>
 <dt><strong>participant</strong><span class="classifier">str</span></dt><dd><p>Subject ID. Default is ‘Participant’.</p>
 </dd>
@@ -408,21 +392,25 @@ decided to place the pulse oximeter (if relevant).</p>
 </dd>
 <dt><strong>resultPath</strong><span class="classifier">str | None</span></dt><dd><p>Where to save the results.</p>
 </dd>
+<dt><strong>serial</strong><span class="classifier">PySerial instance</span></dt><dd><p>The serial port used to record the PPG activity.</p>
+</dd>
 <dt><strong>screenNb</strong><span class="classifier">int</span></dt><dd><p>The screen number (Psychopy parameter). Default set to 0.</p>
 </dd>
 <dt><strong>signal_df</strong><span class="classifier">pandas.DataFrame instance</span></dt><dd><p>Dataframe where the pulse signal recorded during the interoception
 condition will be stored.</p>
 </dd>
-<dt><strong>stairCase</strong><span class="classifier">dict</span></dt><dd><p>One <cite>psychopy.data.PsiHandler</cite> per modality, keyed <cite>‘Intero’</cite> and,
-when the exteroceptive condition is included, <cite>‘Extero’</cite>.</p>
+<dt><strong>stairCase</strong><span class="classifier">dict</span></dt><dd><p>The staircase instances for ‘psi’ and ‘UpDown’. Each entry contain
+dictionary for ‘Intero’ and ‘Extero conditions’ (if relevant).</p>
 </dd>
-<dt><strong>staircaseType</strong><span class="classifier">1d array-like</span></dt><dd><p>Which staircase drives each trial: <cite>‘psi’</cite> or <cite>‘CatchTrial’</cite>.</p>
+<dt><strong>staircaseType</strong><span class="classifier">1d array-like</span></dt><dd><p>Vector indexing stairce type (<cite>‘UpDown’</cite>, <cite>‘psi’</cite>, <cite>‘psiCatchTrial’</cite>).</p>
 </dd>
 <dt><strong>startKey</strong><span class="classifier">str</span></dt><dd><p>The key to press to start the task and go to next steps.</p>
 </dd>
 <dt><strong>response_keys</strong><span class="classifier">dict</span></dt><dd><p>Mapping from trial conditions to keyboard response keys.</p>
 </dd>
 <dt><strong>respMax</strong><span class="classifier">float</span></dt><dd><p>The maximum time for decision (in seconds).</p>
+</dd>
+<dt><strong>results</strong><span class="classifier">str</span></dt><dd><p>The result directory.</p>
 </dd>
 <dt><strong>session</strong><span class="classifier">int</span></dt><dd><p>Session number. Default to ‘001’.</p>
 </dd>

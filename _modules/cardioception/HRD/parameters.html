@@ -235,11 +235,10 @@
         </div>
         <article role="main">
           <h1>Source code for cardioception.HRD.parameters</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University</span>
+<span></span><span class="c1"># Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk</span>
+<span class="c1"># Maintained by the Embodied Computation Group, Aarhus University</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -248,31 +247,246 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole</span><span class="w"> </span><span class="kn">import</span> <span class="n">serialSim</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole.recording</span><span class="w"> </span><span class="kn">import</span> <span class="n">Oximeter</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD.languages</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_texts</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD.languages</span><span class="w"> </span><span class="kn">import</span> <span class="n">danish</span><span class="p">,</span> <span class="n">danish_children</span><span class="p">,</span> <span class="n">english</span><span class="p">,</span> <span class="n">french</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.._log</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">start_session_log</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.._rng</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_rng</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.._triggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate</span> <span class="k">as</span> <span class="n">validate_triggers</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..output</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionPaths</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..scales</span><span class="w"> </span><span class="kn">import</span> <span class="n">DISCRETE_1_10</span><span class="p">,</span> <span class="n">VAS_0_100</span><span class="p">,</span> <span class="n">ConfidenceScale</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskConfig</span>
-
-<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_build_design</span><span class="p">(</span>
-    <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-    <span class="n">exteroception</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">catchTrials</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-    <span class="n">stairType</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Decide which trial is which, and in what order.</span>
+<div class="viewcode-block" id="getParameters"><a class="viewcode-back" href="../../../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html#cardioception.HRD.parameters.getParameters">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">getParameters</span><span class="p">(</span>
+    <span class="n">participant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"SubjectTest"</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"001"</span><span class="p">,</span>
+    <span class="n">serialPort</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"COM3"</span><span class="p">,</span>
+    <span class="n">setup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"behavioral"</span><span class="p">,</span>
+    <span class="n">stairType</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"psi"</span><span class="p">,</span>
+    <span class="n">exteroception</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">catchTrials</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">nTrials</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">120</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"mouse"</span><span class="p">,</span>
+    <span class="n">screenNb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">fullscr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">nBreaking</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="n">resultPath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"english"</span><span class="p">,</span>
+    <span class="n">systole_kw</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Create Heart Rate Discrimination task parameters.</span>
 
-<span class="sd">    Writes ``Modality``, ``staircaseType`` and the posterior store. Everything</span>
-<span class="sd">    random here comes from ``parameters["rng"]``, so the design is reproducible</span>
-<span class="sd">    from the recorded seed alone.</span>
+<span class="sd">    Many task parameters, aesthetics, and options are controlled by the</span>
+<span class="sd">    parameters dictonary defined herein. These are intended to provide</span>
+<span class="sd">    flexibility and modularity to task. In many cases, unique versions of the</span>
+<span class="sd">    task (e.g., with or without confidence ratings or choice feedback) can be</span>
+<span class="sd">    created simply by changing these parameters, with no further interaction</span>
+<span class="sd">    with the underlying task code.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    device : str</span>
+<span class="sd">        Select how the participant provide responses. Can be `'mouse'` or `'keyboard'`.</span>
+<span class="sd">    exteroception : bool</span>
+<span class="sd">        If `True`, the task will include an exteroceptive (half of the trials).</span>
+<span class="sd">    fullscr : bool</span>
+<span class="sd">        If `True`, activate full screen mode.</span>
+<span class="sd">    language : str</span>
+<span class="sd">        The language used for the instruction. Can be `"english"`, `"danish"` or</span>
+<span class="sd">        `"danish_children"` (a slightly simplified danish version), or `"french"`.</span>
+<span class="sd">    nBreaking : int</span>
+<span class="sd">        Number of trials to run before the break.</span>
+<span class="sd">    nStaircase : int</span>
+<span class="sd">        Number of staircase to use per condition (exteroceptive and</span>
+<span class="sd">        interoceptive).</span>
+<span class="sd">    nTrials : int</span>
+<span class="sd">        The number of trials to run (UpDown and psi staircase).</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">           This number indicates the total number of trials that will be presented</span>
+<span class="sd">           during the experiment. If `nTrials=50` and `exteroception=False`, the task</span>
+<span class="sd">           contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,</span>
+<span class="sd">           the task contains 25 interoceptive trials and 25 exteroceptive trials.</span>
+
+<span class="sd">    participant : str</span>
+<span class="sd">        Subject ID. Default is 'Participant'.</span>
+<span class="sd">    catchTrials : float</span>
+<span class="sd">        Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with some</span>
+<span class="sd">        jitter) to control for range of stimuli presented. Default to `0.0` (no catch</span>
+<span class="sd">        trials). If not `0.0`, recomended value is `0.2`.</span>
+<span class="sd">    resultPath : str | None</span>
+<span class="sd">        Where to save the results.</span>
+<span class="sd">    screenNb : int</span>
+<span class="sd">        Screen number. Used to parametrize py:func:`psychopy.visual.Window`. Defaults</span>
+<span class="sd">        to `0`.</span>
+<span class="sd">    serialPort: str</span>
+<span class="sd">        The USB port where the pulse oximeter is plugged. Should be written as a string</span>
+<span class="sd">        e.g. `"COM3"` for USB ports on Windows.</span>
+<span class="sd">    session : int</span>
+<span class="sd">        Session number. Default to '001'.</span>
+<span class="sd">    setup : str</span>
+<span class="sd">        Context of oximeter recording. `"ehavioral"` will record through a Nonin</span>
+<span class="sd">        pulse oximeter and `"test"` will use pre-recorded pulse time series (for</span>
+<span class="sd">        testing only).</span>
+<span class="sd">    stairType : str</span>
+<span class="sd">        Staircase type. Can be "psi" or "updown". Default set to "psi".</span>
+<span class="sd">    systole_kw : dict</span>
+<span class="sd">        Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    allowedKeys : list of str</span>
+<span class="sd">        The possible response keys.</span>
+<span class="sd">    confScale : list</span>
+<span class="sd">        The range of the confidence rating scale.</span>
+<span class="sd">    device : str</span>
+<span class="sd">        The device used for response and rating scale. Can be `"keyboard"` or</span>
+<span class="sd">        `"mouse"`.</span>
+<span class="sd">    HRcutOff : list</span>
+<span class="sd">        Cut off for extreme heart rate values during recording.</span>
+<span class="sd">    ExteroCondition : bool</span>
+<span class="sd">        If `True`, the task includes an exteroceptive (half of the trials).</span>
+<span class="sd">    isi : tuple</span>
+<span class="sd">        Range of the inter-stimulus interval (seconds). Should be in the form of (low,</span>
+<span class="sd">        high). At each trial the value is generated using a uniform distribution</span>
+<span class="sd">        between these two values. Default is set to `(0.25, 0.25)` so the value is</span>
+<span class="sd">        fixed at `0.25`.</span>
+<span class="sd">    labelsRating : list</span>
+<span class="sd">        The labels of the confidence rating scale.</span>
+<span class="sd">    lambdaExtero : np.ndarray</span>
+<span class="sd">        (3d) Posterior estimate of the psychophysics function parameters (slope and</span>
+<span class="sd">        threshold) across trials for the exteroceptive condition.</span>
+<span class="sd">    lambdaIntero : np.ndarray</span>
+<span class="sd">        (3d) Posterior estimate of the psychophysics function parameters (slope and</span>
+<span class="sd">        threshold) across trials for the interoceptive condition.</span>
+<span class="sd">    listenLogo, heartLogo : Psychopy visual instance</span>
+<span class="sd">        Image used for the inference and recording phases, respectively.</span>
+<span class="sd">    maxRatingTime : float</span>
+<span class="sd">        The maximum time for a confidence rating (in seconds).</span>
+<span class="sd">    minRatingTime : float</span>
+<span class="sd">        The minimum time before a rating can be provided during the confidence</span>
+<span class="sd">        rating (in seconds).</span>
+<span class="sd">    monitor : str</span>
+<span class="sd">        The monitor used to present the task (Psychopy parameter).</span>
+<span class="sd">    nBreaking : int</span>
+<span class="sd">        Number of trials to run before the break.</span>
+<span class="sd">    nConfidence : int</span>
+<span class="sd">        The number of trial with feedback during the tutorial phase (no</span>
+<span class="sd">        feedback).</span>
+<span class="sd">    nFeedback : int</span>
+<span class="sd">        The number of trial with feedback during the tutorial phase (no</span>
+<span class="sd">        confidence rating).</span>
+<span class="sd">    nFinger : str or None</span>
+<span class="sd">        The finger number ("1", "2", "3", "4" or "5") where the participant</span>
+<span class="sd">        decided to place the pulse oximeter (if relevant).</span>
+<span class="sd">    nTrials : int</span>
+<span class="sd">        The number of trials to run (UpDown and psi staircase).</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">           This number indicates the total number of trials that will be presented</span>
+<span class="sd">           during the experiment. If `nTrials=50` and `exteroception=False`, the task</span>
+<span class="sd">           contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,</span>
+<span class="sd">           the task contains 25 interoceptive trials and 25 exteroceptive trials.</span>
+<span class="sd">    participant : str</span>
+<span class="sd">        Subject ID. Default is 'Participant'.</span>
+<span class="sd">    path : str</span>
+<span class="sd">        The task working directory.</span>
+<span class="sd">    resultPath : str | None</span>
+<span class="sd">        Where to save the results.</span>
+<span class="sd">    serial : PySerial instance</span>
+<span class="sd">        The serial port used to record the PPG activity.</span>
+<span class="sd">    screenNb : int</span>
+<span class="sd">        The screen number (Psychopy parameter). Default set to 0.</span>
+<span class="sd">    signal_df : pandas.DataFrame instance</span>
+<span class="sd">        Dataframe where the pulse signal recorded during the interoception</span>
+<span class="sd">        condition will be stored.</span>
+<span class="sd">    stairCase : dict</span>
+<span class="sd">        The staircase instances for 'psi' and 'UpDown'. Each entry contain</span>
+<span class="sd">        dictionary for 'Intero' and 'Extero conditions' (if relevant).</span>
+<span class="sd">    staircaseType : 1d array-like</span>
+<span class="sd">        Vector indexing stairce type (`'UpDown'`, `'psi'`, `'psiCatchTrial'`).</span>
+<span class="sd">    startKey : str</span>
+<span class="sd">        The key to press to start the task and go to next steps.</span>
+<span class="sd">    response_keys : dict</span>
+<span class="sd">        Mapping from trial conditions to keyboard response keys.</span>
+<span class="sd">    respMax : float</span>
+<span class="sd">        The maximum time for decision (in seconds).</span>
+<span class="sd">    results : str</span>
+<span class="sd">        The result directory.</span>
+<span class="sd">    session : int</span>
+<span class="sd">        Session number. Default to '001'.</span>
+<span class="sd">    setup : str</span>
+<span class="sd">        The context of recording. Can be `'behavioral'` or `'test'`.</span>
+<span class="sd">    texts : dict</span>
+<span class="sd">        Long text elements.</span>
+<span class="sd">    textSize : float</span>
+<span class="sd">        Scalling parameter for text size.</span>
+<span class="sd">    triggers : dict</span>
+<span class="sd">        Dictionary {str, callable or None}. The function will be executed</span>
+<span class="sd">        before the corresponding trial sequence. The default values are</span>
+<span class="sd">        `None` (no trigger sent).</span>
+
+<span class="sd">        * `"trialStart"`</span>
+<span class="sd">        * `"trialStop"`</span>
+<span class="sd">        * `"listeningStart"`</span>
+<span class="sd">        * `"listeningStop"`</span>
+<span class="sd">        * `"decisionStart"`</span>
+<span class="sd">        * `"decisionStop"`</span>
+<span class="sd">        * `"confidenceStart"`</span>
+<span class="sd">        * `"confidenceStop"`</span>
+
+<span class="sd">    win : `psychopy.visual.window`</span>
+<span class="sd">        The window in which to draw objects.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When using the `behavioral` setup, triggers will be sent to the PPG  recording. The</span>
+<span class="sd">    trigger channel is coding for different events during the task as follows:</span>
+
+<span class="sd">    - Trial start: 1</span>
+<span class="sd">    - recording trigger: 2</span>
+<span class="sd">    - sound trigger : 3</span>
+<span class="sd">    - rating trigger: 4</span>
+<span class="sd">    - end trigger: 5</span>
+
+<span class="sd">    All these events, except trial start, have also their time stamps encoded in the</span>
+<span class="sd">    behavioral results data frame.</span>
+
 <span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">visual</span>
+
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"ExteroCondition"</span><span class="p">]</span> <span class="o">=</span> <span class="n">exteroception</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"keyboard"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Guess"</span><span class="p">,</span> <span class="s2">"Certain"</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"screenNb"</span><span class="p">]</span> <span class="o">=</span> <span class="n">screenNb</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"monitor"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"testMonitor"</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nFeedback"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nConfidence"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"respMax"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"minRatingTime"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRatingTime"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"isi"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"space"</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"response_keys"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"More"</span><span class="p">:</span> <span class="s2">"up"</span><span class="p">,</span> <span class="s2">"Less"</span><span class="p">:</span> <span class="s2">"down"</span><span class="p">}</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"allowedKeys"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"response_keys"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nTrials</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nBreaking"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nBreaking</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"lambdaIntero"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Save the history of lambda values</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"lambdaExtero"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Save the history of lambda values</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nFinger"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"signal_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>  <span class="c1"># Physiological recording</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>  <span class="c1"># Behavioral results</span>
+
+    <span class="c1"># Set default path /Results/ 'Subject ID' /</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"participant"</span><span class="p">]</span> <span class="o">=</span> <span class="n">participant</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"session"</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">resultPath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"/data/"</span> <span class="o">+</span> <span class="n">participant</span> <span class="o">+</span> <span class="n">session</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resultPath</span>
+    <span class="c1"># Create Results directory if not already exists</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">])</span>
+
     <span class="c1"># Store posterior in a dictionary</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"staircaisePosteriors"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"staircaisePosteriors"</span><span class="p">][</span><span class="s2">"Intero"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -282,14 +496,13 @@
     <span class="n">nCatch</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">*</span> <span class="n">catchTrials</span><span class="p">)</span>
     <span class="n">nStaircase</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">-</span> <span class="n">nCatch</span>
 
-    <span class="k">if</span> <span class="n">stairType</span> <span class="o">!=</span> <span class="s2">"psi"</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"stairType=</span><span class="si">{</span><span class="n">stairType</span><span class="si">!r}</span><span class="s2">. The nUp/nDown staircase was removed in "</span>
-            <span class="s2">"0.8.0: it was a 1-up/1-down rule, which converges on 50</span><span class="si">% c</span><span class="s2">orrect, "</span>
-            <span class="s2">"not the 71% the documentation claimed, and it was never used for "</span>
-            <span class="s2">"published data. 'psi' is the only staircase."</span>
-        <span class="p">)</span>
-    <span class="n">sc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"psi"</span><span class="p">]</span> <span class="o">*</span> <span class="n">nStaircase</span><span class="p">)</span>
+    <span class="c1"># Vector encoding the staircase type</span>
+    <span class="k">if</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"psi"</span><span class="p">:</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"psi"</span><span class="p">]</span> <span class="o">*</span> <span class="n">nStaircase</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"updown"</span><span class="p">:</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"updown"</span><span class="p">]</span> <span class="o">*</span> <span class="n">nStaircase</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"stairType should be 'psi' or 'updown'"</span><span class="p">)</span>
 
     <span class="c1"># Create and randomize condition vectors separately for each staircase</span>
     <span class="k">if</span> <span class="n">exteroception</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
@@ -305,7 +518,7 @@
             <span class="p">:</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span>
         <span class="p">]</span>
         <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="nb">print</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"... nTrials=</span><span class="si">{</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'nTrials'</span><span class="p">]</span><span class="si">}</span><span class="s2"> is odd, so the two modalities"</span>
                 <span class="s2">" cannot be balanced: there will be one more Extero trial than"</span>
                 <span class="s2">" Intero. Use an even number if you want them balanced."</span>
@@ -325,16 +538,9 @@
     <span class="p">)</span>
 
     <span class="c1"># Shuffle all trials</span>
-    <span class="n">shuffler</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">]</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">])</span>
+    <span class="n">shuffler</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">])</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"Modality"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"Modality"</span><span class="p">][</span><span class="n">shuffler</span><span class="p">]</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"staircaseType"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"staircaseType"</span><span class="p">][</span><span class="n">shuffler</span><span class="p">]</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_build_staircases</span><span class="p">(</span>
-    <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">exteroception</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">nTrials</span><span class="p">:</span> <span class="nb">int</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""One psi staircase per modality."""</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span>
 
     <span class="c1"># Default parameters for the basic staircase are set here. Please see</span>
     <span class="c1"># PsychoPy Staircase Handler Documentation for full options. By default,</span>
@@ -342,62 +548,105 @@
     <span class="c1"># If UpDown is selected, 1 or 2 interleaved staircases are used (see</span>
     <span class="c1"># options in parameters dictionary), one is initalized 'high' and the other</span>
     <span class="c1"># 'low'.</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">psiHandler</span><span class="p">():</span>
-<span class="w">        </span><span class="sd">"""One psi staircase over the full stimulus range."""</span>
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">PsiHandler</span><span class="p">(</span>
-            <span class="c1"># Every next() appends to the handler's `intensities`, and it</span>
-            <span class="c1"># raises StopIteration once that reaches nTrials. A re-presented</span>
-            <span class="c1"># trial calls next() again, so sizing this to the design's trial</span>
-            <span class="c1"># count means one missed trial ends the session with a traceback</span>
-            <span class="c1"># in front of the participant -- reachable on defaults, since</span>
-            <span class="c1"># onMissedTrial is "represent". A trial can be presented at most</span>
-            <span class="c1"># maxRepresentations times, so this is the true upper bound.</span>
-            <span class="n">nTrials</span><span class="o">=</span><span class="n">nTrials</span> <span class="o">*</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRepresentations"</span><span class="p">],</span>
-            <span class="n">intensRange</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"intensRange"</span><span class="p">]),</span>
-            <span class="n">alphaRange</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"alphaRange"</span><span class="p">]),</span>
-            <span class="n">betaRange</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"betaRange"</span><span class="p">]),</span>
-            <span class="c1"># Grid resolution of the psi posterior. Not configurable: this is</span>
-            <span class="c1"># a memory/resolution tradeoff, and the array it sizes is the one</span>
-            <span class="c1"># that used to leak 2.6 GB over a session.</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"updown"</span><span class="p">:</span>
+
+        <span class="n">conditions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"low"</span><span class="p">,</span>
+                <span class="s2">"startVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                <span class="s2">"nUp"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"nDown"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"stepSizes"</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="s2">"stepType"</span><span class="p">:</span> <span class="s2">"lin"</span><span class="p">,</span>
+                <span class="s2">"minVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                <span class="s2">"maxVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"high"</span><span class="p">,</span>
+                <span class="s2">"startVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+                <span class="s2">"nUp"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"nDown"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"stepSizes"</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="s2">"stepType"</span><span class="p">:</span> <span class="s2">"lin"</span><span class="p">,</span>
+                <span class="s2">"minVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                <span class="s2">"maxVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">]</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">][</span><span class="s2">"Intero"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">MultiStairHandler</span><span class="p">(</span>
+            <span class="n">conditions</span><span class="o">=</span><span class="n">conditions</span><span class="p">,</span> <span class="n">nTrials</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"psi"</span><span class="p">:</span>
+
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">][</span><span class="s2">"Intero"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">PsiHandler</span><span class="p">(</span>
+            <span class="n">nTrials</span><span class="o">=</span><span class="n">nTrials</span><span class="p">,</span>
+            <span class="n">intensRange</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">50.5</span><span class="p">,</span> <span class="mf">50.5</span><span class="p">],</span>
+            <span class="n">alphaRange</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">50.5</span><span class="p">,</span> <span class="mf">50.5</span><span class="p">],</span>
+            <span class="n">betaRange</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">25</span><span class="p">],</span>
             <span class="n">intensPrecision</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">alphaPrecision</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">betaPrecision</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-            <span class="n">delta</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"delta"</span><span class="p">],</span>
+            <span class="n">delta</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
             <span class="n">stepType</span><span class="o">=</span><span class="s2">"lin"</span><span class="p">,</span>
             <span class="n">expectedMin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Intero"</span><span class="p">:</span> <span class="n">psiHandler</span><span class="p">()}</span>
     <span class="k">if</span> <span class="n">exteroception</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">][</span><span class="s2">"Extero"</span><span class="p">]</span> <span class="o">=</span> <span class="n">psiHandler</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"updown"</span><span class="p">:</span>
 
+            <span class="n">conditions</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"low"</span><span class="p">,</span>
+                    <span class="s2">"startVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                    <span class="s2">"nUp"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s2">"nDown"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s2">"stepSizes"</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                    <span class="s2">"stepType"</span><span class="p">:</span> <span class="s2">"lin"</span><span class="p">,</span>
+                    <span class="s2">"minVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                    <span class="s2">"maxVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"high"</span><span class="p">,</span>
+                    <span class="s2">"startVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+                    <span class="s2">"nUp"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s2">"nDown"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s2">"stepSizes"</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                    <span class="s2">"stepType"</span><span class="p">:</span> <span class="s2">"lin"</span><span class="p">,</span>
+                    <span class="s2">"minVal"</span><span class="p">:</span> <span class="o">-</span><span class="mf">40.5</span><span class="p">,</span>
+                    <span class="s2">"maxVal"</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">]</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">][</span><span class="s2">"Extero"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">MultiStairHandler</span><span class="p">(</span>
+                <span class="n">conditions</span><span class="o">=</span><span class="n">conditions</span><span class="p">,</span> <span class="n">nTrials</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span>
+            <span class="p">)</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_open_recording</span><span class="p">(</span>
-    <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-    <span class="n">setup</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">serialPort</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">systole_kw</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-    <span class="n">recorder</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Attach the device the pulse will be read from.</span>
+        <span class="k">elif</span> <span class="n">stairType</span> <span class="o">==</span> <span class="s2">"psi"</span><span class="p">:</span>
 
-<span class="sd">    An explicit ``recorder`` wins over ``setup`` and touches no serial port,</span>
-<span class="sd">    which is what lets a session run with no hardware attached.</span>
-<span class="sd">    """</span>
-    <span class="k">if</span> <span class="n">recorder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># Wins over `setup`, and touches no serial port.</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">recorder</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">"behavioral"</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"stairCase"</span><span class="p">][</span><span class="s2">"Extero"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">PsiHandler</span><span class="p">(</span>
+                <span class="n">nTrials</span><span class="o">=</span><span class="n">nTrials</span><span class="p">,</span>
+                <span class="n">intensRange</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">50.5</span><span class="p">,</span> <span class="mf">50.5</span><span class="p">],</span>
+                <span class="n">alphaRange</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">50.5</span><span class="p">,</span> <span class="mf">50.5</span><span class="p">],</span>
+                <span class="n">betaRange</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">25</span><span class="p">],</span>
+                <span class="n">intensPrecision</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">alphaPrecision</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">betaPrecision</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                <span class="n">delta</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+                <span class="n">stepType</span><span class="o">=</span><span class="s2">"lin"</span><span class="p">,</span>
+                <span class="n">expectedMin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"setup"</span><span class="p">]</span> <span class="o">=</span> <span class="n">setup</span>
+    <span class="k">if</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">"behavioral"</span><span class="p">:</span>
         <span class="c1"># PPG recording</span>
-        <span class="c1"># A read that finds no data returns after a second rather than blocking</span>
-        <span class="c1"># forever, so an unplugged or stalled oximeter fails visibly.</span>
-        <span class="n">port</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">serialPort</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">serialPort</span><span class="p">)</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span>
             <span class="n">serial</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">add_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">systole_kw</span>
         <span class="p">)</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
+        <span class="c1"># # for Nonin 3231 USB</span>
         <span class="c1"># parameters['oxiTask'] = Nonin3231USB(serial=port, add_channels=1).setup().read(1)</span>
 
     <span class="k">elif</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">"test"</span><span class="p">:</span>
@@ -408,18 +657,25 @@
         <span class="p">)</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Unguarded before, so an unknown value returned a dict with no</span>
-        <span class="c1"># "oxiTask" and died inside run() after the window had opened.</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"setup should be 'behavioral' or 'test', got </span><span class="si">{</span><span class="n">setup</span><span class="si">!r}</span><span class="s2">. "</span>
-            <span class="s2">"Pass recorder= to use a device other than the Nonin oximeter."</span>
+    <span class="c1">##############</span>
+    <span class="c1"># Load texts #</span>
+    <span class="c1">##############</span>
+    <span class="k">if</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"english"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">english</span><span class="p">(</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span>
         <span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_build_stimuli</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">fullscr</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Open the window and load every image the task will draw."""</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">event</span><span class="p">,</span> <span class="n">visual</span>
+    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"danish"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">danish</span><span class="p">(</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"danish_children"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">danish_children</span><span class="p">(</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"french"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">french</span><span class="p">(</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span>
+        <span class="p">)</span>
 
     <span class="c1"># Open window</span>
     <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"setup"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"test"</span><span class="p">:</span>
@@ -431,9 +687,6 @@
         <span class="n">units</span><span class="o">=</span><span class="s2">"height"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">mouseVisible</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="c1"># Needed for nDroppedFrames to count anything, which is what the per-trial</span>
-    <span class="c1"># DroppedFrames column reports.</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">recordFrameIntervals</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1">###############</span>
     <span class="c1"># Image loading</span>
@@ -469,335 +722,12 @@
         <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"heartLogo"</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.04</span>
-    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"mouse"</span><span class="p">:</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.04</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"HRcutOff"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">120</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"keyboard"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"mouse"</span><span class="p">:</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">Mouse</span><span class="p">()</span>
-
-
-<div class="viewcode-block" id="getParameters"><a class="viewcode-back" href="../../../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html#cardioception.HRD.parameters.getParameters">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">getParameters</span><span class="p">(</span>
-    <span class="n">participant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"SubjectTest"</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"001"</span><span class="p">,</span>
-    <span class="n">serialPort</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"COM3"</span><span class="p">,</span>
-    <span class="n">setup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"behavioral"</span><span class="p">,</span>
-    <span class="n">stairType</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"psi"</span><span class="p">,</span>
-    <span class="n">exteroception</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">catchTrials</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="n">nTrials</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">120</span><span class="p">,</span>
-    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"mouse"</span><span class="p">,</span>
-    <span class="n">screenNb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">fullscr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">nBreaking</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
-    <span class="n">resultPath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">confidenceScale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ConfidenceScale</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"english"</span><span class="p">,</span>
-    <span class="n">systole_kw</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
-    <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">autopilot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">recorder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">onMissedTrial</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"represent"</span><span class="p">,</span>
-    <span class="n">maxRepresentations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-    <span class="n">maxHeartRateAttempts</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">triggers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TaskConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Create Heart Rate Discrimination task parameters.</span>
-
-<span class="sd">    Many task parameters, aesthetics, and options are controlled by the</span>
-<span class="sd">    parameters dictonary defined herein. These are intended to provide</span>
-<span class="sd">    flexibility and modularity to task. In many cases, unique versions of the</span>
-<span class="sd">    task (e.g., with or without confidence ratings or choice feedback) can be</span>
-<span class="sd">    created simply by changing these parameters, with no further interaction</span>
-<span class="sd">    with the underlying task code.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    device : str</span>
-<span class="sd">        Select how the participant provide responses. Can be `'mouse'` or `'keyboard'`.</span>
-<span class="sd">    exteroception : bool</span>
-<span class="sd">        If `True`, the task will include an exteroceptive (half of the trials).</span>
-<span class="sd">    fullscr : bool</span>
-<span class="sd">        If `True`, activate full screen mode.</span>
-<span class="sd">    language : str</span>
-<span class="sd">        The language used for the instruction. Can be `"english"`, `"danish"` or</span>
-<span class="sd">        `"danish_children"` (a slightly simplified danish version), or `"french"`.</span>
-<span class="sd">    nBreaking : int</span>
-<span class="sd">        Number of trials to run before the break.</span>
-<span class="sd">    nStaircase : int</span>
-<span class="sd">        Number of staircase to use per condition (exteroceptive and</span>
-<span class="sd">        interoceptive).</span>
-<span class="sd">    nTrials : int</span>
-<span class="sd">        The number of trials to run.</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">           This number indicates the total number of trials that will be presented</span>
-<span class="sd">           during the experiment. If `nTrials=50` and `exteroception=False`, the task</span>
-<span class="sd">           contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,</span>
-<span class="sd">           the task contains 25 interoceptive trials and 25 exteroceptive trials.</span>
-
-<span class="sd">    onMissedTrial : str</span>
-<span class="sd">        What to do when the participant does not respond in time. `"represent"`</span>
-<span class="sd">        (the default) returns the trial to the end of the queue so the intended</span>
-<span class="sd">        number of usable trials is collected, at the cost of a session whose</span>
-<span class="sd">        length varies. `"skip"` moves on, giving a fixed number of presentations</span>
-<span class="sd">        and a variable number of usable trials.</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">           Under either setting the missed trial is written to the results with</span>
-<span class="sd">           `DecisionProvided=False` and is **not** used to update the staircase.</span>
-<span class="sd">           Before this was fixed, a missed trial entered the staircase as a</span>
-<span class="sd">           fabricated `"Less"` response.</span>
-
-<span class="sd">    maxRepresentations : int</span>
-<span class="sd">        How many times in total a trial may be presented before it is abandoned,</span>
-<span class="sd">        when `onMissedTrial="represent"`. Defaults to `3`. Without a cap, a</span>
-<span class="sd">        participant who stops responding would never reach the end.</span>
-<span class="sd">    participant : str</span>
-<span class="sd">        Subject ID. Default is 'Participant'.</span>
-<span class="sd">    catchTrials : float</span>
-<span class="sd">        Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with some</span>
-<span class="sd">        jitter) to control for range of stimuli presented. Default to `0.0` (no catch</span>
-<span class="sd">        trials). If not `0.0`, recomended value is `0.2`.</span>
-<span class="sd">    resultPath : str | None</span>
-<span class="sd">        Root directory holding every participant. Results go to</span>
-<span class="sd">        `&lt;resultPath&gt;/sub-&lt;participant&gt;/ses-&lt;session&gt;/run-&lt;timestamp&gt;/`. Defaults</span>
-<span class="sd">        to `&lt;cwd&gt;/data`.</span>
-<span class="sd">    overwrite : bool</span>
-<span class="sd">        Allow writing into a run directory that already holds results. Off by</span>
-<span class="sd">        default, so a repeated run cannot silently replace an earlier one.</span>
-<span class="sd">    confidenceScale : ConfidenceScale | None</span>
-<span class="sd">        How confidence is collected and what its numbers mean. Defaults to a</span>
-<span class="sd">        0-100 visual analogue scale for the mouse and ten discrete steps for the</span>
-<span class="sd">        keyboard. See :mod:`cardioception.scales`.</span>
-<span class="sd">    screenNb : int</span>
-<span class="sd">        Screen number. Used to parametrize py:func:`psychopy.visual.Window`. Defaults</span>
-<span class="sd">        to `0`.</span>
-<span class="sd">    serialPort: str</span>
-<span class="sd">        The USB port where the pulse oximeter is plugged. Should be written as a string</span>
-<span class="sd">        e.g. `"COM3"` for USB ports on Windows.</span>
-<span class="sd">    session : int</span>
-<span class="sd">        Session number. Default to '001'.</span>
-<span class="sd">    setup : str</span>
-<span class="sd">        Context of oximeter recording. `"ehavioral"` will record through a Nonin</span>
-<span class="sd">        pulse oximeter and `"test"` will use pre-recorded pulse time series (for</span>
-<span class="sd">        testing only).</span>
-<span class="sd">    stairType : str</span>
-<span class="sd">        Staircase type. `"psi"` is the only value; `"updown"` was removed in</span>
-<span class="sd">        0.8.0 and now raises. Kept as an argument so scripts passing it fail</span>
-<span class="sd">        with an explanation rather than a TypeError.</span>
-<span class="sd">    systole_kw : dict</span>
-<span class="sd">        Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    allowedKeys : list of str</span>
-<span class="sd">        The possible response keys.</span>
-<span class="sd">    confidenceScale : :py:class:`cardioception.scales.ConfidenceScale`</span>
-<span class="sd">        The confidence scale in use, and the meaning of its numbers.</span>
-<span class="sd">    device : str</span>
-<span class="sd">        The device used for response and rating scale. Can be `"keyboard"` or</span>
-<span class="sd">        `"mouse"`.</span>
-<span class="sd">    HRcutOff : list</span>
-<span class="sd">        Cut off for extreme heart rate values during recording.</span>
-<span class="sd">    ExteroCondition : bool</span>
-<span class="sd">        If `True`, the task includes an exteroceptive (half of the trials).</span>
-<span class="sd">    isi : tuple</span>
-<span class="sd">        Range of the inter-stimulus interval (seconds). Should be in the form of (low,</span>
-<span class="sd">        high). At each trial the value is generated using a uniform distribution</span>
-<span class="sd">        between these two values. Default is set to `(0.25, 0.25)` so the value is</span>
-<span class="sd">        fixed at `0.25`.</span>
-<span class="sd">    labelsRating : list</span>
-<span class="sd">        The labels of the confidence rating scale.</span>
-<span class="sd">    listenLogo, heartLogo : Psychopy visual instance</span>
-<span class="sd">        Image used for the inference and recording phases, respectively.</span>
-<span class="sd">    maxRatingTime : float</span>
-<span class="sd">        The maximum time for a confidence rating (in seconds).</span>
-<span class="sd">    minRatingTime : float</span>
-<span class="sd">        The minimum time before a rating can be provided during the confidence</span>
-<span class="sd">        rating (in seconds).</span>
-<span class="sd">    monitor : str</span>
-<span class="sd">        The monitor used to present the task (Psychopy parameter).</span>
-<span class="sd">    nBreaking : int</span>
-<span class="sd">        Number of trials to run before the break.</span>
-<span class="sd">    nConfidence : int</span>
-<span class="sd">        Number of tutorial trials that ask for a confidence rating.</span>
-<span class="sd">    nFeedback : int</span>
-<span class="sd">        Number of tutorial trials that show whether the answer was correct.</span>
-<span class="sd">    nFinger : str or None</span>
-<span class="sd">        The finger number ("1", "2", "3", "4" or "5") where the participant</span>
-<span class="sd">        decided to place the pulse oximeter (if relevant).</span>
-<span class="sd">    nTrials : int</span>
-<span class="sd">        The number of trials to run. See the parameter of the same name.</span>
-<span class="sd">    participant : str</span>
-<span class="sd">        Subject ID. Default is 'Participant'.</span>
-<span class="sd">    path : str</span>
-<span class="sd">        The task working directory.</span>
-<span class="sd">    resultPath : str | None</span>
-<span class="sd">        Where to save the results.</span>
-<span class="sd">    screenNb : int</span>
-<span class="sd">        The screen number (Psychopy parameter). Default set to 0.</span>
-<span class="sd">    signal_df : pandas.DataFrame instance</span>
-<span class="sd">        Dataframe where the pulse signal recorded during the interoception</span>
-<span class="sd">        condition will be stored.</span>
-<span class="sd">    stairCase : dict</span>
-<span class="sd">        One `psychopy.data.PsiHandler` per modality, keyed `'Intero'` and,</span>
-<span class="sd">        when the exteroceptive condition is included, `'Extero'`.</span>
-<span class="sd">    staircaseType : 1d array-like</span>
-<span class="sd">        Which staircase drives each trial: `'psi'` or `'CatchTrial'`.</span>
-<span class="sd">    startKey : str</span>
-<span class="sd">        The key to press to start the task and go to next steps.</span>
-<span class="sd">    response_keys : dict</span>
-<span class="sd">        Mapping from trial conditions to keyboard response keys.</span>
-<span class="sd">    respMax : float</span>
-<span class="sd">        The maximum time for decision (in seconds).</span>
-<span class="sd">    session : int</span>
-<span class="sd">        Session number. Default to '001'.</span>
-<span class="sd">    setup : str</span>
-<span class="sd">        The context of recording. Can be `'behavioral'` or `'test'`.</span>
-<span class="sd">    texts : dict</span>
-<span class="sd">        Long text elements.</span>
-<span class="sd">    textSize : float</span>
-<span class="sd">        Scalling parameter for text size.</span>
-<span class="sd">    triggers : dict</span>
-<span class="sd">        Dictionary {str, callable or None}. The function will be executed</span>
-<span class="sd">        before the corresponding trial sequence. The default values are</span>
-<span class="sd">        `None` (no trigger sent).</span>
-
-<span class="sd">        * `"trialStart"`</span>
-<span class="sd">        * `"trialStop"`</span>
-<span class="sd">        * `"listeningStart"`</span>
-<span class="sd">        * `"listeningStop"`</span>
-<span class="sd">        * `"decisionStart"`</span>
-<span class="sd">        * `"decisionStop"`</span>
-<span class="sd">        * `"confidenceStart"`</span>
-<span class="sd">        * `"confidenceStop"`</span>
-
-<span class="sd">    win : `psychopy.visual.window`</span>
-<span class="sd">        The window in which to draw objects.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    When using the `behavioral` setup, triggers will be sent to the PPG  recording. The</span>
-<span class="sd">    trigger channel is coding for different events during the task as follows:</span>
-
-<span class="sd">    - 1: trial start</span>
-<span class="sd">    - 2: listening window opens</span>
-<span class="sd">    - 3: tone starts, decision begins</span>
-<span class="sd">    - 4: confidence rating begins</span>
-<span class="sd">    - 5: trial end</span>
-
-<span class="sd">    See :class:`cardioception.HRD._constants.Trigger`. The Heartbeat Counting</span>
-<span class="sd">    task writes different meanings to the same channel, so a recording has to be</span>
-<span class="sd">    read knowing which task produced it.</span>
-
-<span class="sd">    Every one of these except the trial start also has a timestamp in the</span>
-<span class="sd">    behavioural results.</span>
-
-<span class="sd">    """</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
-
-    <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="c1"># One generator for the whole session. The seed is always recorded, so a</span>
-    <span class="c1"># session can be replayed even when the caller did not choose one.</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"seed"</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-    <span class="c1"># A synthetic participant, for headless runs and tests. None means a human.</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"autopilot"</span><span class="p">]</span> <span class="o">=</span> <span class="n">autopilot</span>
-
-    <span class="k">if</span> <span class="n">onMissedTrial</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"represent"</span><span class="p">,</span> <span class="s2">"skip"</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"onMissedTrial should be 'represent' or 'skip', got </span><span class="si">{</span><span class="n">onMissedTrial</span><span class="si">!r}</span><span class="s2">"</span>
-        <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"onMissedTrial"</span><span class="p">]</span> <span class="o">=</span> <span class="n">onMissedTrial</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRepresentations"</span><span class="p">]</span> <span class="o">=</span> <span class="n">maxRepresentations</span>
-
-    <span class="c1"># Callables run at each trial event. Documented for years but never</span>
-    <span class="c1"># created here, so following the docs raised KeyError.</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">]</span> <span class="o">=</span> <span class="n">validate_triggers</span><span class="p">(</span><span class="n">triggers</span><span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"ExteroCondition"</span><span class="p">]</span> <span class="o">=</span> <span class="n">exteroception</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"screenNb"</span><span class="p">]</span> <span class="o">=</span> <span class="n">screenNb</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"monitor"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"testMonitor"</span>
-
-    <span class="c1"># The design values that used to be literals in this function, in one</span>
-    <span class="c1"># object, recorded in the manifest below.</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">TaskConfig</span><span class="p">()</span> <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">config</span>
-    <span class="n">config</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">maxHeartRateAttempts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># Kept working, though config is where it belongs now.</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">"maxHeartRateAttempts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">maxHeartRateAttempts</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nTrials</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nBreaking"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nBreaking</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nFinger"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"signal_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>  <span class="c1"># Physiological recording</span>
-    <span class="c1"># Rows accumulate in a list and the frame is rebuilt from it. Repeated</span>
-    <span class="c1"># pd.concat warned on the all-NA row a missed trial produces, and was</span>
-    <span class="c1"># quadratic in the number of trials.</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_rows"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>  <span class="c1"># Behavioral results</span>
-
-    <span class="c1"># Set default path /Results/ 'Subject ID' /</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"participant"</span><span class="p">]</span> <span class="o">=</span> <span class="n">participant</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"session"</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span> <span class="o">=</span> <span class="n">SessionPaths</span><span class="p">(</span>
-        <span class="n">root</span><span class="o">=</span><span class="p">(</span>
-            <span class="n">resultPath</span>
-            <span class="k">if</span> <span class="n">resultPath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">],</span> <span class="s2">"data"</span><span class="p">)</span>
-        <span class="p">),</span>
-        <span class="n">participant</span><span class="o">=</span><span class="n">participant</span><span class="p">,</span>
-        <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
-        <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="c1"># Kept for scripts that read it. It is now the run directory, not</span>
-    <span class="c1"># data/&lt;participant&gt;&lt;session&gt;, which two different sessions could share.</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">directory</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"logFile"</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_session_log</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
-
-    <span class="n">_build_design</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">exteroception</span><span class="p">,</span> <span class="n">catchTrials</span><span class="p">,</span> <span class="n">stairType</span><span class="p">)</span>
-
-    <span class="n">_build_staircases</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">exteroception</span><span class="p">,</span> <span class="n">nTrials</span><span class="p">)</span>
-
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"setup"</span><span class="p">]</span> <span class="o">=</span> <span class="n">setup</span>
-    <span class="n">_open_recording</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">setup</span><span class="p">,</span> <span class="n">serialPort</span><span class="p">,</span> <span class="n">systole_kw</span><span class="p">,</span> <span class="n">recorder</span><span class="p">)</span>
-
-    <span class="c1">##############</span>
-    <span class="c1"># Load texts #</span>
-    <span class="c1">##############</span>
-    <span class="c1"># An unknown language used to leave parameters["texts"] unset, which</span>
-    <span class="c1"># surfaced as a KeyError at whatever screen first needed a string.</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_texts</span><span class="p">(</span><span class="n">language</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">exteroception</span><span class="p">)</span>
-
-    <span class="n">_build_stimuli</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">fullscr</span><span class="p">)</span>
-
-    <span class="c1"># Resolved here rather than above because the default takes its end labels</span>
-    <span class="c1"># from the chosen language.</span>
-    <span class="k">if</span> <span class="n">confidenceScale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">confidenceScale</span> <span class="o">=</span> <span class="n">DISCRETE_1_10</span> <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">"keyboard"</span> <span class="k">else</span> <span class="n">VAS_0_100</span>
-        <span class="n">confidenceScale</span> <span class="o">=</span> <span class="n">confidenceScale</span><span class="o">.</span><span class="n">with_labels</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"VASlabels"</span><span class="p">])</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"confidenceScale"</span><span class="p">]</span> <span class="o">=</span> <span class="n">confidenceScale</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">confidenceScale</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
-
-    <span class="c1"># Written now, not at the end: an aborted session used to leave no record of</span>
-    <span class="c1"># what it had been asked to do.</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"startTime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">write_manifest</span><span class="p">(</span>
-        <span class="n">task</span><span class="o">=</span><span class="s2">"HRD"</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">,</span>
-        <span class="n">start_epoch</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startTime"</span><span class="p">],</span>
-        <span class="n">start_local</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="n">timespec</span><span class="o">=</span><span class="s2">"seconds"</span><span class="p">),</span>
-        <span class="n">seed</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"seed"</span><span class="p">],</span>
-        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-        <span class="n">language</span><span class="o">=</span><span class="n">language</span><span class="p">,</span>
-        <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span>
-        <span class="n">stairType</span><span class="o">=</span><span class="n">stairType</span><span class="p">,</span>
-        <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span><span class="p">,</span>
-        <span class="n">nTrials</span><span class="o">=</span><span class="n">nTrials</span><span class="p">,</span>
-        <span class="n">catchTrials</span><span class="o">=</span><span class="n">catchTrials</span><span class="p">,</span>
-        <span class="n">onMissedTrial</span><span class="o">=</span><span class="n">onMissedTrial</span><span class="p">,</span>
-        <span class="n">maxRepresentations</span><span class="o">=</span><span class="n">maxRepresentations</span><span class="p">,</span>
-        <span class="n">confidence</span><span class="o">=</span><span class="n">confidenceScale</span><span class="o">.</span><span class="n">describe</span><span class="p">(),</span>
-        <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">describe</span><span class="p">(),</span>
-    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parameters</span></div>
 </pre></div>

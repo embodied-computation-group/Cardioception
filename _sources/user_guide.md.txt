@@ -82,15 +82,10 @@ Cardioception copies the images and sound files the tasks need (~ 160 Mo). Unins
 
 Both the Heartbeat Counting task (HBC) and the Heart Rate Discrimination task (HRD) need a physiological recording device during the task, either to estimate the heart rate or to count the number of heartbeats in a given time window. Cardioception natively supports:
 
-* The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/)
+* The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/) 
+* Remote Data Access (RDA) via BrainVision Recorder together with [Brain product ExG amplifier](https://www.brainproducts.com/).
 
-Other devices can be added by writing a recorder and passing it in:
-
-```python
-parameters = getParameters(..., recorder=MyRecorder())
-```
-
-This bypasses `setup` entirely, so nothing touches a serial port. The recorder has to provide a real-time estimate of cardiac frequency during the trial, because that is what sets the tone frequency: a device that only records for later analysis cannot drive the HRD on its own. See `cardioception.devices.ReplayRecorder` for a worked example, which is also what the test suite runs against.
+You can add other devices by writing a recording class that interfaces with your own hardware (ECG, pulse oximeters, or any kind of recording that gives a precise estimate of the cardiac frequency).
 
 ## Running the tasks
 
@@ -133,25 +128,21 @@ By default cardioception implements a 20-second training trial followed by 6 exp
 
 ### Staircase procedures
 
-If you run the task in behavioural mode, the Nonin pulse oximeter is read from the port provided.
+If you run the task in behavioural mode, the Nonin pulse oximeter is read from the port provided. Two staircase procedures are implemented, controlled through the `stairType` parameter.
 
 #### Psi
 
-The only staircase. This uses Kontsevich and Tyler's {cite:p}`1999:kontsevich` psi-method to estimate the point of subjective equality for faster versus slower cardiac feedback, based on a cumulative Gaussian psychometric function. Tones are presented at the relative $\Delta$-BPM and this stimulus intensity is adjusted between $\Delta$-BPM = [-40 40]. The staircase is response-coded, so the function converges on the point of subjective equality between faster and slower stimuli. The threshold is then an estimate of subjective cardiac bias, and the slope an estimate of interoceptive precision. Nuisance parameters (guess and lapse rate) are fixed at values corresponding to a standard 1-alternative forced choice paradigm.
+The default. This uses Kontsevich and Tyler's {cite:p}`1999:kontsevich` psi-method to estimate the point of subjective equality for faster versus slower cardiac feedback, based on a cumulative Gaussian psychometric function. Tones are presented at the relative $\Delta$-BPM and this stimulus intensity is adjusted between $\Delta$-BPM = [-40 40]. The staircase is response-coded, so the function converges on the point of subjective equality between faster and slower stimuli. The threshold is then an estimate of subjective cardiac bias, and the slope an estimate of interoceptive precision. Nuisance parameters (guess and lapse rate) are fixed at values corresponding to a standard 1-alternative forced choice paradigm.
 
 ```{important}
 Psi converges on the participant's point of subjective equality — their bias — not on a target level of accuracy. That is what the task is designed to measure, but it has consequences for any measure scored against the true heart rate. See the [metacognition tutorial](tutorials/metacognition.md).
 ```
 
-```{admonition} The nUp/nDown staircase was removed in 0.8.0
-:class: warning
+#### nUp/nDown
 
-`stairType="updown"` now raises. It described itself as a 1-down 2-up
-procedure converging at ~71% accuracy, but the conditions it built used
-`nUp=1, nDown=1`, which converges at 50% — chance on a two-alternative task.
-The two never matched, no published Cardioception data used it, and it could
-not estimate the slope. Use Psi.
-```
+A classical adaptive thresholding procedure {cite:p}`1962:cornsweet`. The staircase adjusts the absolute difference between the frequency of the auditory feedback stimulus and the estimated heart rate during the listening interval (absolute $\Delta$-BPM), and responses are coded by accuracy relative to the ground truth heart rate. It converges on the smallest difference a participant can reliably discriminate, according to the stepping rule; a 1-down 2-up procedure converges at ~71% accuracy at the limit. Two or more randomly interleaved staircases can start at low versus high values.
+
+This is a simple and reasonably robust way to estimate the accuracy of interoceptive belief, but it should **not** be used to estimate precision (slope). Use Psi for that.
 
 ### Creating a shortcut (Windows)
 
