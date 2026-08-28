@@ -103,3 +103,29 @@ class TrialOutcome:
     def __iter__(self):
         """Unpack like the tuple this replaced, for the tutorial call sites."""
         return iter(getattr(self, f.name) for f in fields(self))
+
+
+@dataclass
+class HeartRateReading:
+    """What one listening window produced.
+
+    The interoceptive modality records a pulse; the exteroceptive one plays a
+    tone at a rate drawn at random and records nothing. Both produce a rate for
+    the trial's tone to be built from, so both return one of these — the
+    exteroceptive one simply leaves the recording fields empty.
+    """
+
+    #: The rate the tone is matched against: 60000 / mean(IBI).
+    bpm: float
+    #: mean(60000 / IBI), the pre-0.8.0 definition. Always the larger of the two.
+    bpm_arithmetic: float
+    #: When the listening window opened, seconds since the epoch.
+    started: Optional[float] = None
+    #: The resampled PPG, or None on a trial that recorded nothing.
+    signal: Any = None
+    #: When the accepted recording was read, used to time each of its samples.
+    recorded_at: Optional[float] = None
+    #: Attempts spent finding a usable rate, and whether one was found. A
+    #: rejected reading still yields a bpm, taken from the last window.
+    attempts: Optional[int] = None
+    accepted: Optional[bool] = None
