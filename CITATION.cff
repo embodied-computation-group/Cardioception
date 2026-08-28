@@ -40,7 +40,7 @@ keywords:
   - metacognition
   - cardiac
   - psychopy
-license: MIT
+license: Apache-2.0
 version: 0.7.0
 date-released: '2026-08-26'
 preferred-citation:

@@ -53,7 +53,7 @@ if __name__ == "__main__":
         description=DESCRIPTION,
         long_description=LONG_DESCRIPTION,
         long_description_content_type="text/markdown",
-        license="MIT",
+        license="Apache-2.0",
         keywords=[
             "interoception",
             "cardiac interoception",
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         classifiers=[
             "Development Status :: 4 - Beta",
             "Intended Audience :: Science/Research",
-            "License :: OSI Approved :: MIT License",
+            "License :: OSI Approved :: Apache Software License",
             "Operating System :: OS Independent",
             "Programming Language :: Python :: 3",
             "Programming Language :: Python :: 3.10",
