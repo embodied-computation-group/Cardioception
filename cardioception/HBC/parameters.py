@@ -129,9 +129,7 @@ def getParameters(
     parameters["results_df"] = pd.DataFrame({})
     parameters["setup"] = setup
 
-    # Callables run at each trial event, for a parallel port, an LSL marker
-    # stream or an amplifier. Validated here so a typo or a non-callable fails
-    # at launch rather than at trial eighty.
+    # Callables run at each trial event. Validated so a typo fails at launch.
     parameters["triggers"] = validate_triggers(triggers)
 
     # Experimental design - can choose between a version based on recent

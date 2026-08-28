@@ -1,17 +1,9 @@
 # Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
 """Check that a finished session's output is internally consistent.
 
-The same checks serve two purposes. In the test suite they run against a
-replayed session on every push. After a real session they can be run from the
-command line, which is how the audit of 2026-08-28 confirmed on live hardware
-that the behavioural bookkeeping is sound and that two specific defects were
-present.
-
-They are invariants rather than expected values: nothing here asserts a
-particular threshold or a particular trial order, only that the recorded numbers
-agree with each other. That is what makes them usable as a regression gate
-across a refactor, where the values legitimately change but the relationships
-must not.
+Invariants, not expected values: only that the recorded numbers agree with each
+other, so they survive a refactor that changes the values. Run from the suite,
+or against a real session with::
 
     python -m cardioception.validate <run_dir>
 """

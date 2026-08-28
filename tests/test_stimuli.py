@@ -1,13 +1,8 @@
 # Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
 """Every tone the task can ask for must exist on disk.
 
-The task picks its stimulus by building a filename from a float:
-
-    resource_filename("cardioception.HRD", f"Sounds/{responseBPM}.wav")
-
-so a rate the wav inventory does not cover, or a float that formats to an
-unexpected string, is a crash mid-session in front of a participant. This walks
-the reachable space rather than sampling it.
+The filename is built from a float, so an uncovered rate or an unexpected repr
+is a crash mid-session. Walks the reachable space rather than sampling it.
 """
 
 import os

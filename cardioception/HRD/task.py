@@ -14,13 +14,31 @@ from .._resources import resource_filename
 from .._triggers import fire
 
 
+def hold(parameters: dict, duration: float, *stims) -> float:
+    """Keep ``stims`` on screen for ``duration`` seconds, flipping every frame.
+
+    Replaces ``core.wait``, which blocks without flipping, so the window stops
+    redrawing and no frame intervals are recorded. Durations are unchanged.
+
+    Stimuli must be passed in and are redrawn every frame: PsychoPy clears the
+    back buffer on flip, so flipping without drawing blanks the screen.
+
+    Returns the time held, quantised up to the next frame boundary.
+    """
+    from psychopy import core
+
+    clock = core.Clock()
+    while clock.getTime() < duration:
+        for stim in stims:
+            stim.draw()
+        parameters["win"].flip()
+    return clock.getTime()
+
+
 def _save_session(parameters: dict, nTrial: int) -> None:
     """Write everything the session produced.
 
-    Called from a finally clause, so an abort or a crash saves as much as a
-    normal ending does. Before this, core.quit() raised SystemExit straight past
-    the saving code and Escape threw away the PPG signal file, the posteriors
-    and the parameters, keeping only the rolling per-trial results.
+    Called from a finally clause so an abort or a crash still saves.
     """
     print("Saving final results in .txt file...")
     parameters["results_df"].to_csv(
@@ -55,7 +73,7 @@ def _save_session(parameters: dict, nTrial: int) -> None:
 
     print("Saving Parameters in pickle...")
     save_parameter = parameters.copy()
-    # The unpicklable keys.
+    # Unpicklable.
     for k in [
         "win",
         "heartLogo",
@@ -70,11 +88,8 @@ def _save_session(parameters: dict, nTrial: int) -> None:
         "triggers",
     ]:
         save_parameter.pop(k, None)
-    # The large ones. Each of these was already written to its own file a few
-    # lines above, so keeping them here wrote every artefact twice: the pickle
-    # measured 30.3 MB, of which 80.9% was a duplicate posterior stack and 19.0%
-    # a duplicate signal frame, leaving the settings the file is named for at
-    # 7 KB, 0.02% of it.
+    # Already written to their own files above; keeping them here made the
+    # pickle 30 MB of duplicates.
     for k in ["staircaisePosteriors", "signal_df", "results_df"]:
         save_parameter.pop(k, None)
     with open(
@@ -113,17 +128,15 @@ def run(
     if runTutorial is True:
         tutorial(parameters)
 
-    # A work queue rather than a zip, so a trial the participant missed can be
-    # returned to the end of the queue instead of being lost. Re-presentation is
-    # capped, or a participant who stops responding would never finish.
+    # A queue rather than a zip, so a missed trial can be re-presented.
     queue = deque(
         {"modality": m, "trialType": s, "attempt": 0, "alpha": None}
         for m, s in zip(parameters["Modality"], parameters["staircaseType"])
     )
     maxRepresentations = parameters.get("maxRepresentations", 3)
     onMissedTrial = parameters.get("onMissedTrial", "represent")
-    # Counted as we go rather than re-derived by slicing the design arrays,
-    # which stops working once a trial can be presented more than once.
+    # Counted as we go: slicing the design arrays breaks once a trial can
+    # appear twice.
     catchSeen = {"Intero": 0, "Extero": 0}
     nTrial = 0
     nPlanned = parameters["nTrials"]
@@ -169,9 +182,7 @@ def run(
                 stairCond = "psi"
             elif trialType == "CatchTrial":
                 print("... load catch trial.")
-                # Pseudo-random extreme value, by position in the catch sequence.
-                # A re-presented catch trial keeps the intensity it was first given,
-                # so requeueing cannot shift the sequence for later trials.
+                # A re-presented catch trial keeps its first intensity.
                 if thisItem["alpha"] is None:
                     catchIdx = catchSeen[modality]
                     catchSeen[modality] += 1
@@ -213,12 +224,9 @@ def run(
                 nTrial=nTrial,
             )
 
-            # A trial with no decision must not reach the staircase. It used to:
-            # `decision` is None on a timeout, so `isMore` collapsed to 0 and a
-            # response the participant never made entered the posterior as "Less",
-            # moving the threshold estimate and the placement of every later
-            # stimulus. Simulated at the task's own parameters, a 10% miss rate
-            # shifted a true -8 BPM threshold to -4.9.
+            # A missed trial must not reach the staircase: decision is None,
+            # which used to collapse to isMore = 0 and enter the posterior as
+            # a "Less" the participant never gave.
             if not respProvided:
                 canRepresent = (
                     onMissedTrial == "represent"
@@ -257,15 +265,9 @@ def run(
                     else:
                         parameters["stairCase"][modality].addResponse(isMore)
 
-                    # Store posteriors in list for each trials.
-                    #
-                    # .copy() is load bearing. Indexing with [0, :, :, 0] is basic
-                    # indexing, so it returns a *view*, and the view keeps its base
-                    # alive: the 40 MB likelihood array PsychoPy builds for that
-                    # trial and then rebinds. Without the copy every psi trial pins
-                    # another 40 MB, measured at 201 MB to 1,496 MB across a 20
-                    # trial session and 479 MB to 5,432 MB across 120. The saved
-                    # .npy is identical either way.
+                    # copy() matters: [0, :, :, 0] is a view onto the 40 MB
+                    # likelihood array for this trial, which would otherwise
+                    # stay alive for the whole session.
                     parameters["staircaisePosteriors"][modality].append(
                         parameters["stairCase"][modality]
                         ._psi._probLambda[0, :, :, 0]
@@ -475,9 +477,11 @@ def trial(
     fixation = visual.GratingStim(
         win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
     )
-    fixation.draw()
-    parameters["win"].flip()
-    core.wait(parameters["rng"].uniform(parameters["isi"][0], parameters["isi"][1]))
+    hold(
+        parameters,
+        parameters["rng"].uniform(parameters["isi"][0], parameters["isi"][1]),
+        fixation,
+    )
 
     keys = event.getKeys()
     if "escape" in keys:
@@ -540,9 +544,7 @@ def trial(
                     text=parameters["texts"]["checkOximeter"],
                     color="red",
                 )
-                message.draw()
-                parameters["win"].flip()
-                core.wait(2)
+                hold(parameters, 2, message)
 
             else:
                 # Check for extreme heart rate values, if crosses theshold,
@@ -561,9 +563,7 @@ def trial(
                         text=parameters["texts"]["stayStill"],
                         color="red",
                     )
-                    message.draw()
-                    parameters["win"].flip()
-                    core.wait(2)
+                    hold(parameters, 2, message)
 
     elif modality == "Extero":
 
@@ -595,20 +595,17 @@ def trial(
         listenFile = resource_filename("cardioception.HRD", f"Sounds/{listenBPM}.wav")
         print(f"...loading file (Listen): {listenFile}")
 
-        # Play selected BPM frequency.
-        #
-        # The duration is a parameter rather than a literal 5. It was the only
-        # thing setting how long an exteroceptive stimulus lasts, it was buried
-        # inside the trial function where no caller could reach it, and it is
-        # not actually matched to the stimulus: each wav holds five beats, so at
-        # 40 BPM five beats run 7.5 s and this truncates them, while at 100 BPM
-        # they run 3 s and this waits out 2 s of silence. Stimulus duration is
-        # therefore confounded with the rate being judged. Changing the default
-        # would change the stimulus, so it stays at 5.0 until that is decided
-        # deliberately; exposing it lets a test run in a sensible time.
+        # 5 s matches the interoceptive recording window, so both
+        # modalities give the same listening time. Do not derive it from
+        # the rate. Parameterised only so tests can shorten it.
         listenSound = sound.Sound(listenFile)
         listenSound.play()
-        core.wait(parameters.get("listeningDuration", 5.0))
+        hold(
+            parameters,
+            parameters.get("listeningDuration", 5.0),
+            messageRecord,
+            parameters["listenLogo"],
+        )
         listenSound.stop()
 
     else:
@@ -618,9 +615,7 @@ def trial(
     fixation = visual.GratingStim(
         win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
     )
-    fixation.draw()
-    parameters["win"].flip()
-    core.wait(0.5)
+    hold(parameters, 0.5, fixation)
 
     #######
     # Sound

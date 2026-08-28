@@ -1,23 +1,11 @@
 # Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
-"""A recorder that replays a pulse signal instead of reading one from hardware.
+"""A recorder that synthesises a pulse signal instead of reading hardware.
 
-``systole.serialSim`` already substitutes for the serial *port*, but that is one
-layer too low to be useful as a test fixture: the task still runs systole's
-frame parser in real time, so a five second listening window really does take
-five seconds, and the trace it replays is a single fixed recording that cannot
-be steered. A session therefore cannot be run quickly, cannot be given a known
-heart rate, and cannot be made to produce the awkward signals that the task's
-own error handling exists for.
-
-``ReplayRecorder`` replaces the recorder instead. It presents the same surface
-the tasks already use, so it can be dropped into ``parameters["oxiTask"]``
-unchanged, and in ``realtime=False`` mode it returns immediately, which turns a
-five minute test session into a few seconds.
-
-The signal is synthesised rather than loaded, so a test can ask for an exact
-heart rate and assert on what the task computed from it. ``bpm`` may be a single
-value or a sequence, and ``artefact_trials`` injects the kind of signal that
-should trip the task's ``HRcutOff`` rejection, which no test has ever exercised.
+Presents the surface the tasks already use, so it drops into
+``parameters["oxiTask"]``. ``systole.serialSim`` substitutes for the serial port
+instead, one layer lower, which still runs in real time and replays a fixed
+trace. Here the rate is chosen, ``realtime=False`` returns immediately, and
+``artefact_every`` injects windows with no detectable beats.
 """
 
 from typing import Dict, List, Optional, Sequence, Union

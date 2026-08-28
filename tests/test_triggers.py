@@ -1,13 +1,5 @@
 # Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
-"""The trigger callbacks, which used to be documented but never called.
-
-Every reference in the Heartbeat Counting task was a bare expression statement,
-``parameters["triggers"]["trialStart"]``, which looks the callable up and throws
-it away. Anyone following the documentation to drive a parallel port or an LSL
-marker stream got no triggers and no error. The Heart Rate Discrimination task
-documented the same dictionary and never created it, so following its
-documentation raised ``KeyError``.
-"""
+"""Trigger callbacks, which were documented but never called."""
 
 import unittest
 

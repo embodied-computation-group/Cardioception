@@ -257,15 +257,9 @@ def trial(
                 ]
             )
 
-            # Escape aborts here, and used to raise IndexError instead.
-            #
-            # event.waitKeys above has already consumed the keypress and, by
-            # default, cleared the buffer, so the `event.getKeys()` this replaces
-            # always came back empty and the abort never fired. Worse, the test
-            # for it was a separate `if` rather than part of the chain below, so
-            # "escape" fell through to the digit parser and evaluated
-            # `[s for s in "escape" if s.isdigit()][0]` on an empty list. The one
-            # way out of the Heartbeat Counting task crashed, from Feb 2021.
+            # waitKeys has already consumed the key, so the old
+            # event.getKeys() guard never fired and "escape" fell through
+            # to the digit parser below and raised IndexError.
             if key[0] == "escape":
                 print("User abort")
                 parameters["win"].close()
