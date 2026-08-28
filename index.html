@@ -1,13 +1,25 @@
+
 <!doctype html>
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta content="Official documentation for Cardioception, the Aarhus University toolbox that measures cardiac interoception in PsychoPy with the Heart Rate Discrimination task." name="description" />
+<meta content="cardioception, interoception, cardiac interoception, heart rate discrimination, HRD, heartbeat counting, psychophysics, metacognition, PsychoPy" name="keywords" />
+<meta property="og:title" content="Cardioception Toolbox - Cardiac Interoception in PsychoPy" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://www.the-ecg.org/Cardioception/index.html" />
+<meta property="og:site_name" content="Cardioception Toolbox" />
+<meta property="og:description" content="Official documentation for Cardioception, the Aarhus University toolbox that measures cardiac interoception in PsychoPy with the Heart Rate Discrimination task." />
+<meta property="og:image:width" content="1146" />
+<meta property="og:image:height" content="600" />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/_images/social_previews/summary_index_452beeda.png" />
+<meta property="og:image:alt" content="Cardioception measures cardiac interoception in Psychopy. The package is built around the Heart Rate Discrimination task (HRD), a psychophysical method that..." />
+<meta name="twitter:card" content="summary_large_image" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="installation.html" />
+        <link rel="canonical" href="https://www.the-ecg.org/Cardioception/index.html" />
 
-    <link rel="shortcut icon" href="_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Cardioception Toolbox</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 --><title>Official Cardioception Toolbox 0.7.0 - Cardiac Interoception</title><link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -44,7 +56,59 @@
       }
     }
   }
-</style></head>
+</style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "Cardioception Toolbox",
+    "alternateName": "cardioception-toolbox",
+    "description": "Cardioception measures cardiac interoception in PsychoPy. It implements the Heart Rate Discrimination task, a psychophysical method that separates the bias in what people believe their heart rate to be from the precision with which they can discriminate it, together with the Heartbeat Counting task.",
+    "url": "https://www.the-ecg.org/Cardioception/",
+    "codeRepository": "https://github.com/embodied-computation-group/Cardioception",
+    "downloadUrl": "https://pypi.org/project/cardioception-toolbox/",
+    "programmingLanguage": "Python",
+    "runtimePlatform": "Python 3.10",
+    "applicationCategory": "Science",
+    "license": "https://spdx.org/licenses/MIT.html",
+    "version": "0.7.0",
+    "author": [
+      {
+        "@type": "Person",
+        "name": "Micah Allen",
+        "identifier": "https://orcid.org/0000-0001-9399-4179",
+        "affiliation": {
+          "@type": "Organization",
+          "name": "Center of Functionally Integrative Neuroscience, Aarhus University"
+        }
+      }
+    ],
+    "publisher": {
+      "@type": "Organization",
+      "name": "Embodied Computation Group, Aarhus University",
+      "url": "https://www.the-ecg.org/"
+    },
+    "sameAs": [
+      "https://github.com/embodied-computation-group/Cardioception",
+      "https://pypi.org/project/cardioception-toolbox/"
+    ],
+    "keywords": [
+      "interoception",
+      "cardiac interoception",
+      "heart rate discrimination",
+      "heartbeat counting",
+      "psychophysics",
+      "metacognition",
+      "PsychoPy"
+    ],
+    "citation": {
+      "@type": "ScholarlyArticle",
+      "name": "The heart rate discrimination task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs",
+      "identifier": "https://doi.org/10.1016/j.biopsycho.2021.108239",
+      "sameAs": "https://doi.org/10.1016/j.biopsycho.2021.108239"
+    }
+  }
+  </script></head>
   <body>
     
     <script>
@@ -236,8 +300,8 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="cardioception-toolbox">
 <h1>Cardioception Toolbox<a class="headerlink" href="#cardioception-toolbox" title="Permalink to this heading">#</a></h1>
-<p><a class="reference external" href="https://GitHub.com/embodied-computation-group/Cardioception/releases/"><img alt="GitHub release" src="https://img.shields.io/github/release/embodied-computation-group/Cardioception" /></a> <a class="reference external" href="https://pypi.org/project/cardioception-toolbox/"><img alt="pip" src="https://badge.fury.io/py/cardioception-toolbox.svg" /></a> <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/embodied-computation-group/Cardioception" /></a></p>
 <p>Cardioception measures cardiac interoception in <a class="reference external" href="https://www.psychopy.org/">Psychopy</a>. The package is built around the Heart Rate Discrimination task (HRD), a psychophysical method that estimates how accurately and how precisely people judge their own heart rate. It also ships the classic Heartbeat Counting task.</p>
+<p><a class="reference external" href="https://GitHub.com/embodied-computation-group/Cardioception/releases/"><img alt="GitHub release" src="https://img.shields.io/github/release/embodied-computation-group/Cardioception" /></a> <a class="reference external" href="https://pypi.org/project/cardioception-toolbox/"><img alt="pip" src="https://badge.fury.io/py/cardioception-toolbox.svg" /></a> <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/embodied-computation-group/Cardioception" /></a></p>
 <p>The tasks run with minimal equipment: a computer and a device that reads the participant’s pulse. They also work with richer setups (ECG, M/EEG, fMRI) when you have them.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>

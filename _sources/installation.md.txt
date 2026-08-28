@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    description: "Install cardioception-toolbox with pip or conda, from a machine with nothing installed to a Heart Rate Discrimination task you can run."
+    keywords: "install cardioception, cardioception-toolbox, pip, conda, PsychoPy, heart rate discrimination"
+---
+
 # Installation
 
 From a machine with nothing installed to a task you can run, in five steps.

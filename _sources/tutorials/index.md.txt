@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    description: "Tutorials for analysing Heart Rate Discrimination data: inspecting trial data, fitting psychophysical models and hierarchical Bayesian metacognition models."
+    keywords: "heart rate discrimination analysis, psychophysics tutorial, hierarchical Bayesian model, meta-d', metacognition, interoception"
+---
+
 # Tutorials
 
 Author: Micah G. Allen
