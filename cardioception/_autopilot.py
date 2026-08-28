@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """A synthetic participant, so a session can run without a human at the keyboard.
 
 Supplies the input only: the same stimuli, staircase updates, triggers and files

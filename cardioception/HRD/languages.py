@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Participant-facing text, loaded from ``texts/*.yaml``.
 
 This was 484 lines of Python holding the same 31 strings four times over. To

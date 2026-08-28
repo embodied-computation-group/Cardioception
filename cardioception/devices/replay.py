@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """A recorder that synthesises a pulse signal instead of reading hardware.
 
 Presents the surface the tasks already use, so it drops into

@@ -1,3 +1,4 @@
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 from typing import TYPE_CHECKING
 
 from .reports import preprocessing, report

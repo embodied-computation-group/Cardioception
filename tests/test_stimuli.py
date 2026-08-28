@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Every tone the task can ask for must exist on disk.
 
 The filename is built from a float, so an uncovered rate or an unexpected repr
