@@ -31,6 +31,7 @@ def keyboard_rating(
     max_time: Optional[float] = None,
     accept_keys: Sequence[str] = ("down",),
     label_height: float = 0.06,
+    rng: Optional[np.random.Generator] = None,
 ) -> Tuple[Optional[float], Optional[float], bool]:
     """Collect a confidence rating using the arrow keys.
 
@@ -58,6 +59,9 @@ def keyboard_rating(
         Keys that confirm the current value.
     label_height :
         Text height for the end labels.
+    rng :
+        The session generator, so the randomised starting position is
+        reproducible. Falls back to a fresh generator when omitted.
 
     Returns
     -------
@@ -72,7 +76,10 @@ def keyboard_rating(
     from psychopy import core, event, visual
 
     if marker_start is None:
-        marker_start = int(np.random.choice(np.arange(low, high)))
+        # The starting position biases the rating, so the draw has to come from
+        # the seeded session generator to be reproducible and recoverable.
+        draw = rng if rng is not None else np.random.default_rng()
+        marker_start = int(draw.choice(np.arange(low, high)))
 
     slider = visual.Slider(
         win=win,

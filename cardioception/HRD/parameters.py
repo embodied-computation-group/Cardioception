@@ -13,6 +13,7 @@ from systole.recording import Oximeter
 from cardioception.HRD.languages import danish, danish_children, english, french
 
 from .._resources import resource_filename
+from .._rng import make_rng
 
 
 def getParameters(
@@ -31,6 +32,7 @@ def getParameters(
     resultPath: Optional[str] = None,
     language: str = "english",
     systole_kw: dict = {},
+    seed: Optional[int] = None,
 ):
     """Create Heart Rate Discrimination task parameters.
 
@@ -214,6 +216,9 @@ def getParameters(
     from psychopy import data, event, visual
 
     parameters: Dict[str, Any] = {}
+    # One generator for the whole session. The seed is always recorded, so a
+    # session can be replayed even when the caller did not choose one.
+    parameters["rng"], parameters["seed"] = make_rng(seed)
     parameters["ExteroCondition"] = exteroception
     parameters["device"] = device
     if parameters["device"] == "keyboard":
@@ -301,7 +306,7 @@ def getParameters(
     )
 
     # Shuffle all trials
-    shuffler = np.random.permutation(parameters["nTrials"])
+    shuffler = parameters["rng"].permutation(parameters["nTrials"])
     parameters["Modality"] = parameters["Modality"][shuffler]
     parameters["staircaseType"] = parameters["staircaseType"][shuffler]
 

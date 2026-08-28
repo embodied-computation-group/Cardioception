@@ -400,7 +400,7 @@ def trial(
     )
     fixation.draw()
     parameters["win"].flip()
-    core.wait(np.random.uniform(parameters["isi"][0], parameters["isi"][1]))
+    core.wait(parameters["rng"].uniform(parameters["isi"][0], parameters["isi"][1]))
 
     keys = event.getKeys()
     if "escape" in keys:
@@ -510,7 +510,7 @@ def trial(
         startTrigger = time.time()
 
         # Random selection of HR frequency
-        listenBPM = np.random.choice(np.arange(40, 100, 0.5))
+        listenBPM = parameters["rng"].choice(np.arange(40, 100, 0.5))
 
         # Play the corresponding beat file
         listenFile = resource_filename("cardioception.HRD", f"Sounds/{listenBPM}.wav")
@@ -853,7 +853,7 @@ def tutorial(parameters: dict):
     for i in range(parameters["nFeedback"]):
 
         # Ramdom selection of condition
-        condition = np.random.choice(["More", "Less"])
+        condition = parameters["rng"].choice(["More", "Less"])
         alpha = -20.0 if condition == "Less" else 20.0
 
         _ = trial(
@@ -898,7 +898,7 @@ def tutorial(parameters: dict):
         for i in range(parameters["nFeedback"]):
 
             # Ramdom selection of condition
-            condition = np.random.choice(["More", "Less"])
+            condition = parameters["rng"].choice(["More", "Less"])
             alpha = -20.0 if condition == "Less" else 20.0
 
             _ = trial(
@@ -929,8 +929,8 @@ def tutorial(parameters: dict):
     # Run n training trials with confidence rating
     for i in range(parameters["nConfidence"]):
         modality = "Intero"
-        condition = np.random.choice(["More", "Less"])
-        stim_intense = np.random.choice(np.array([1, 10, 30]))
+        condition = parameters["rng"].choice(["More", "Less"])
+        stim_intense = parameters["rng"].choice(np.array([1, 10, 30]))
         alpha = -stim_intense if condition == "Less" else stim_intense
         _ = trial(parameters, alpha, modality, confidenceRating=True)
 
@@ -939,8 +939,8 @@ def tutorial(parameters: dict):
         # Run n training trials with confidence rating
         for i in range(parameters["nConfidence"]):
             modality = "Extero"
-            condition = np.random.choice(["More", "Less"])
-            stim_intense = np.random.choice(np.array([1, 10, 30]))
+            condition = parameters["rng"].choice(["More", "Less"])
+            stim_intense = parameters["rng"].choice(np.array([1, 10, 30]))
             alpha = -stim_intense if condition == "Less" else stim_intense
             _ = trial(
                 parameters,
@@ -1242,6 +1242,7 @@ def confidenceRatingTask(
             min_time=parameters["minRatingTime"],
             max_time=parameters["maxRatingTime"],
             label_height=parameters["textSize"] * 0.6,
+            rng=parameters["rng"],
         )
         if ratingProvided and confidenceRT is not None:
             print(
@@ -1256,7 +1257,7 @@ def confidenceRatingTask(
         # To avoid being dragged out of the screen (in case of multi screens)
         # and to avoid interferences with the Slider when clicking.
         parameters["win"].mouseVisible = False
-        parameters["myMouse"].setPos((np.random.uniform(-0.25, 0.25), 0.2))
+        parameters["myMouse"].setPos((parameters["rng"].uniform(-0.25, 0.25), 0.2))
         parameters["myMouse"].clickReset()
         message = visual.TextStim(
             parameters["win"],
