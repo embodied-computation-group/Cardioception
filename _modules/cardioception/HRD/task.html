@@ -254,10 +254,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._screens</span><span class="w"> </span><span class="kn">import</span> <span class="n">text</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._triggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">fire</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ANALYSIS_WINDOW</span><span class="p">,</span>
-    <span class="n">LISTENING_DURATION</span><span class="p">,</span>
+    <span class="n">ANALYSIS_MARGIN</span><span class="p">,</span>
     <span class="n">OXIMETER_SFREQ</span><span class="p">,</span>
-    <span class="n">PEAK_WINDOW_SAMPLES</span><span class="p">,</span>
     <span class="n">PPG_SFREQ</span><span class="p">,</span>
     <span class="n">TONE_BPM_MAX</span><span class="p">,</span>
     <span class="n">TONE_BPM_MIN</span><span class="p">,</span>
@@ -663,6 +661,7 @@
         <span class="n">decisionRT</span><span class="p">,</span>
         <span class="n">isCorrect</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">=</span> <span class="n">responseDecision</span><span class="p">(</span><span class="n">responseSound</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">feedback</span><span class="p">,</span> <span class="n">condition</span><span class="p">)</span>
+    <span class="n">fire</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">"decisionStop"</span><span class="p">)</span>
     <span class="n">press</span><span class="o">.</span><span class="n">autoDraw</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">message</span><span class="o">.</span><span class="n">autoDraw</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">modality</span> <span class="o">==</span> <span class="s2">"Intero"</span><span class="p">:</span>
@@ -690,6 +689,7 @@
             <span class="n">ratingProvided</span><span class="p">,</span>
             <span class="n">ratingEndTrigger</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">=</span> <span class="n">confidenceRatingTask</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="n">fire</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">"confidenceStop"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ratingStartTrigger</span><span class="p">,</span> <span class="n">ratingEndTrigger</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
@@ -795,19 +795,23 @@
             <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="n">core</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
 
+        <span class="c1"># The window is `listeningDuration`, not a constant: it is documented</span>
+        <span class="c1"># as matching the exteroceptive tone so both modalities give the same</span>
+        <span class="c1"># listening time, and it did not. Shortening it moved the tone only,</span>
+        <span class="c1"># leaving the control condition quietly unmatched to the recording.</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"listeningDuration"</span><span class="p">]</span>
+        <span class="n">kept</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">OXIMETER_SFREQ</span> <span class="o">*</span> <span class="p">(</span><span class="n">duration</span> <span class="o">+</span> <span class="n">ANALYSIS_MARGIN</span><span class="p">))</span>
+        <span class="n">peak_window</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">PPG_SFREQ</span><span class="p">)</span>
+
         <span class="c1"># Adapt these lines for a different setup, provided it can produce</span>
         <span class="c1"># `bpm`, the per-beat rates over the listening window.</span>
-        <span class="n">signal</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span>
-            <span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">LISTENING_DURATION</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">recording</span><span class="p">[</span><span class="o">-</span><span class="n">OXIMETER_SFREQ</span> <span class="o">*</span> <span class="n">ANALYSIS_WINDOW</span> <span class="p">:]</span>  <span class="c1"># noqa</span>
-        <span class="p">)</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span><span class="o">.</span><span class="n">recording</span><span class="p">[</span><span class="o">-</span><span class="n">kept</span><span class="p">:]</span>  <span class="c1"># noqa</span>
         <span class="n">signal</span><span class="p">,</span> <span class="n">peaks</span> <span class="o">=</span> <span class="n">ppg_peaks</span><span class="p">(</span>
             <span class="n">signal</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">OXIMETER_SFREQ</span><span class="p">,</span> <span class="n">new_sfreq</span><span class="o">=</span><span class="n">PPG_SFREQ</span><span class="p">,</span> <span class="n">clipping</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
         <span class="n">recordedAt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-        <span class="n">ibi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">peaks</span><span class="p">[</span><span class="o">-</span><span class="n">PEAK_WINDOW_SAMPLES</span><span class="p">:])[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ibi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">peaks</span><span class="p">[</span><span class="o">-</span><span class="n">peak_window</span><span class="p">:])[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">bpm</span> <span class="o">=</span> <span class="mi">60000</span> <span class="o">/</span> <span class="n">ibi</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"... bpm: </span><span class="si">{</span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">bpm</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
@@ -845,6 +849,7 @@
             <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">bpm</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">usable</span> <span class="k">else</span> <span class="n">fallback</span>
         <span class="p">)</span>
 
+    <span class="n">fire</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">"listeningStop"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">HeartRateReading</span><span class="p">(</span>
         <span class="n">bpm</span><span class="o">=</span><span class="n">listenBPM</span><span class="p">,</span>
         <span class="n">bpm_arithmetic</span><span class="o">=</span><span class="n">listenBPM_arithmetic</span><span class="p">,</span>
@@ -895,6 +900,7 @@
     <span class="p">)</span>
     <span class="n">listenSound</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
+    <span class="n">fire</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">"listeningStop"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">HeartRateReading</span><span class="p">(</span><span class="n">bpm</span><span class="o">=</span><span class="n">listenBPM</span><span class="p">,</span> <span class="n">bpm_arithmetic</span><span class="o">=</span><span class="n">listenBPM</span><span class="p">,</span> <span class="n">started</span><span class="o">=</span><span class="n">started</span><span class="p">)</span>
 
 
@@ -1381,7 +1387,7 @@
             <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
             <span class="n">labels</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confidenceScale"</span><span class="p">]</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
             <span class="n">granularity</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confidenceScale"</span><span class="p">]</span><span class="o">.</span><span class="n">granularity</span><span class="p">,</span>
-            <span class="n">ticks</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confidenceScale"</span><span class="p">]</span><span class="o">.</span><span class="n">bounds</span><span class="p">,</span>
+            <span class="n">ticks</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confidenceScale"</span><span class="p">]</span><span class="o">.</span><span class="n">ticks</span><span class="p">,</span>
             <span class="n">style</span><span class="o">=</span><span class="p">(</span><span class="s2">"rating"</span><span class="p">),</span>
             <span class="n">color</span><span class="o">=</span><span class="s2">"LightGray"</span><span class="p">,</span>
             <span class="n">flip</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>

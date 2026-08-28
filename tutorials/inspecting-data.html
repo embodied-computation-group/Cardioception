@@ -272,22 +272,30 @@ current Psi-only design. You can <a class="reference download internal" download
 and run the code against it.</p>
 <section id="files-in-a-participant-folder">
 <h2>Files in a participant folder<a class="headerlink" href="#files-in-a-participant-folder" title="Permalink to this heading">#</a></h2>
-<p>For a participant named <code class="docutils literal notranslate"><span class="pre">0341</span></code> in a session named <code class="docutils literal notranslate"><span class="pre">HRD</span></code>, a completed folder may
-contain files like these:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>0341HRD/
-├── 0341HRD.txt
-├── 0341HRD_final.txt
-├── 0341Intero_posterior.npy
-├── 0341Extero_posterior.npy
-├── 0341_signal.txt
-├── 0341_ppg_20.txt
-└── 0341_parameters.pickle
+<p>Since 0.8.0 each run has a directory of its own, named for the participant,
+the session and the moment the run started, and every file inside repeats all
+three. A repeated session can no longer overwrite an earlier one.</p>
+<p>For a participant named <code class="docutils literal notranslate"><span class="pre">0341</span></code> in session <code class="docutils literal notranslate"><span class="pre">001</span></code>, a completed run looks like
+this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>data/sub-0341/ses-001/run-20260828-142530/
+├── manifest.json
+├── session.log
+├── sub-0341_ses-001_run-20260828-142530_behaviour.txt
+├── sub-0341_ses-001_run-20260828-142530_final.txt
+├── sub-0341_ses-001_run-20260828-142530_signal.txt
+├── sub-0341_ses-001_run-20260828-142530_posterior-Intero.npy
+├── sub-0341_ses-001_run-20260828-142530_posterior-Extero.npy
+├── sub-0341_ses-001_run-20260828-142530_ppg-20.txt
+└── sub-0341_ses-001_run-20260828-142530_parameters.pickle
 </pre></div>
 </div>
-<p>The raw trial log is <code class="docutils literal notranslate"><span class="pre">0341HRD.txt</span></code>. It has no <code class="docutils literal notranslate"><span class="pre">_raw</span></code> suffix. Cardioception
-rewrites this file after every trial, which makes it the recovery copy if a
-session is interrupted. On normal completion, the same trial table is written
-as <code class="docutils literal notranslate"><span class="pre">0341HRD_final.txt</span></code>. Prefer the <code class="docutils literal notranslate"><span class="pre">_final.txt</span></code> file when it exists.</p>
+<p>The rolling trial log is the <code class="docutils literal notranslate"><span class="pre">_behaviour.txt</span></code> file. Cardioception rewrites it
+after every trial, which makes it the recovery copy if a session is
+interrupted. On normal completion the same table is written as <code class="docutils literal notranslate"><span class="pre">_final.txt</span></code>.
+Prefer <code class="docutils literal notranslate"><span class="pre">_final.txt</span></code> when it exists.</p>
+<p><code class="docutils literal notranslate"><span class="pre">manifest.json</span></code> is written at the <em>start</em> of the session and records the
+configuration the run was launched with, so an aborted run still says what it
+was going to be.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -297,35 +305,43 @@ as <code class="docutils literal notranslate"><span class="pre">0341HRD_final.tx
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;participant&gt;&lt;session&gt;.txt</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">manifest.json</span></code></p></td>
+<td><p>The configuration, written before the first trial</p></td>
+<td><p>Confirm what an aborted run was set up to do</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*_behaviour.txt</span></code></p></td>
 <td><p>Rolling trial-level log</p></td>
 <td><p>Recover an interrupted session</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*_final.txt</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">*_final.txt</span></code></p></td>
 <td><p>Completed trial-level log</p></td>
 <td><p>Main file for the checks on this page</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">*Intero_posterior.npy</span></code>, <code class="docutils literal notranslate"><span class="pre">*Extero_posterior.npy</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*_posterior-Intero.npy</span></code>, <code class="docutils literal notranslate"><span class="pre">*_posterior-Extero.npy</span></code></p></td>
 <td><p>Joint Psi posterior after each adaptive trial</p></td>
 <td><p>Check uncertainty and parameter-grid boundaries</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*_signal.txt</span></code></p></td>
-<td><p>PPG samples collected during cardiac listening intervals, with trial numbers</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">*_signal.txt</span></code></p></td>
+<td><p>PPG samples collected during cardiac listening intervals, with trial numbers and sample times</p></td>
 <td><p>Investigate suspicious trial-level heart rates</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">*_ppg_*.txt</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*_ppg-*.txt</span></code></p></td>
 <td><p>Pulse-oximeter segments saved at breaks and at the end</p></td>
 <td><p>Inspect the physiological recording in detail</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*_parameters.pickle</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">*_parameters.pickle</span></code></p></td>
 <td><p>Parameters used for that session</p></td>
 <td><p>Confirm the intended task settings</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">session.log</span></code></p></td>
+<td><p>Everything the run logged, including rejected heart rates</p></td>
+<td><p>Work out why a trial behaved oddly</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>File names depend on the participant and session labels passed to
-<code class="docutils literal notranslate"><span class="pre">getParameters()</span></code>. Match them by suffix rather than assuming a fixed prefix.</p>
+<p>Match files by suffix rather than assuming a fixed prefix: the prefix carries
+the participant, session and run identifiers passed to <code class="docutils literal notranslate"><span class="pre">getParameters()</span></code>.</p>
 </section>
 <section id="the-trial-table">
 <h2>The trial table<a class="headerlink" href="#the-trial-table" title="Permalink to this heading">#</a></h2>
@@ -392,7 +408,9 @@ Python</label><div class="sd-tab-content docutils">
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="n">session_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"data/0341HRD/0341HRD_final.txt"</span><span class="p">)</span>
+<span class="n">session_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"data/sub-0341/ses-001/run-20260828-142530"</span><span class="p">)</span>
+<span class="c1"># Match by suffix: the run identifier is a timestamp.</span>
+<span class="n">session_file</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">session_file</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">"*_final.txt"</span><span class="p">))</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">session_file</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"nTrials"</span><span class="p">)</span>
 <span class="n">data</span><span class="p">[</span><span class="s2">"Trial"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
 
@@ -415,7 +433,8 @@ Python</label><div class="sd-tab-content docutils">
 R</label><div class="sd-tab-content docutils">
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>
 
-<span class="n">session_file</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">"data/0341HRD/0341HRD_final.txt"</span>
+<span class="n">run_dir</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">"data/sub-0341/ses-001/run-20260828-142530"</span>
+<span class="n">session_file</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list.files</span><span class="p">(</span><span class="n">run_dir</span><span class="p">,</span><span class="w"> </span><span class="n">pattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"_final\.txt$"</span><span class="p">,</span><span class="w"> </span><span class="n">full.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span>
 <span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span><span class="n">session_file</span><span class="p">,</span><span class="w"> </span><span class="n">show_col_types</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
 <span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="n">nTrials</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
 <span class="w">  </span><span class="nf">mutate</span><span class="p">(</span><span class="n">Trial</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nTrials</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
