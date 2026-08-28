@@ -235,10 +235,11 @@
         </div>
         <article role="main">
           <h1>Source code for cardioception.HBC.parameters</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk</span>
-<span class="c1"># Maintained by the Embodied Computation Group, Aarhus University</span>
+<span></span><span class="c1"># Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -247,7 +248,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole</span><span class="w"> </span><span class="kn">import</span> <span class="n">serialSim</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole.recording</span><span class="w"> </span><span class="kn">import</span> <span class="n">Oximeter</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._log</span><span class="w"> </span><span class="kn">import</span> <span class="n">start_session_log</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._rng</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_rng</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._triggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate</span> <span class="k">as</span> <span class="n">validate_triggers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..output</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionPaths</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..scales</span><span class="w"> </span><span class="kn">import</span> <span class="n">DISCRETE_1_7</span><span class="p">,</span> <span class="n">ConfidenceScale</span>
 
 
 <div class="viewcode-block" id="getParameters"><a class="viewcode-back" href="../../../generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html#cardioception.HBC.parameters.getParameters">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">getParameters</span><span class="p">(</span>
@@ -259,7 +265,11 @@
     <span class="n">screenNb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">fullscr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">resultPath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">confidenceScale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ConfidenceScale</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">systole_kw</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">triggers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Create Heartbeat Counting task parameters.</span>
 
@@ -268,7 +278,15 @@
 <span class="sd">    participant : str</span>
 <span class="sd">        Subject ID. Default is 'exteroStairCase'.</span>
 <span class="sd">    resultPath : str or None</span>
-<span class="sd">        Where to save the results.</span>
+<span class="sd">        Root directory holding every participant. Results go to</span>
+<span class="sd">        `&lt;resultPath&gt;/sub-&lt;participant&gt;/ses-&lt;session&gt;/run-&lt;timestamp&gt;/`. Defaults</span>
+<span class="sd">        to `&lt;cwd&gt;/data`.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Allow writing into a run directory that already holds results. Off by</span>
+<span class="sd">        default, so a repeated run cannot silently replace an earlier one.</span>
+<span class="sd">    confidenceScale : ConfidenceScale | None</span>
+<span class="sd">        How confidence is collected and what its numbers mean. Defaults to seven</span>
+<span class="sd">        discrete steps. See :mod:`cardioception.scales`.</span>
 <span class="sd">    screenNb : int</span>
 <span class="sd">        Screen number. Used to parametrize py:func:`psychopy.visual.Window`.</span>
 <span class="sd">        Default is set to 0.</span>
@@ -290,8 +308,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    conditions : 1d array-like of str</span>
 <span class="sd">        The conditions. Can be 'Rest', 'Training' or 'Count'.</span>
-<span class="sd">    confScale : list</span>
-<span class="sd">        The range of the confidence rating scale.</span>
+<span class="sd">    confidenceScale : :py:class:`cardioception.scales.ConfidenceScale`</span>
+<span class="sd">        The confidence scale in use, and the meaning of its numbers.</span>
 <span class="sd">    heartLogo : `psychopy.visual.ImageStim`</span>
 <span class="sd">        Image presented during resting conditions.</span>
 <span class="sd">    labelsRating : list</span>
@@ -347,31 +365,27 @@
 <span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">sound</span><span class="p">,</span> <span class="n">visual</span>
 
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># One generator for the whole session. The seed is always recorded, so a</span>
+    <span class="c1"># session can be replayed even when the caller did not choose one.</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"seed"</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"restPeriod"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"restLength"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">30</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"randomize"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"space"</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"rating"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Guess"</span><span class="p">,</span> <span class="s2">"Certain"</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"confidenceScale"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">DISCRETE_1_7</span> <span class="k">if</span> <span class="n">confidenceScale</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">confidenceScale</span>
+    <span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confidenceScale"</span><span class="p">]</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"taskVersion"</span><span class="p">]</span> <span class="o">=</span> <span class="n">taskVersion</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({})</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"setup"</span><span class="p">]</span> <span class="o">=</span> <span class="n">setup</span>
 
-    <span class="c1"># Initialize triggers dictionary with None</span>
-    <span class="c1"># Some or all can later be overwrited with callable</span>
-    <span class="c1"># sending the information needed.</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">"trialStart"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">"trialStop"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">"listeningStart"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">"listeningStop"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">"decisionStart"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">"decisionStop"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">"confidenceStart"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">"confidenceStop"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">}</span>
+    <span class="c1"># Callables run at each trial event. Validated so a typo fails at launch.</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">]</span> <span class="o">=</span> <span class="n">validate_triggers</span><span class="p">(</span><span class="n">triggers</span><span class="p">)</span>
 
     <span class="c1"># Experimental design - can choose between a version based on recent</span>
     <span class="c1"># papers from Sarah Garfinkel's group, or the classic Schandry approach.</span>
@@ -379,7 +393,7 @@
     <span class="c1"># use of resting periods between trials.</span>
     <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"taskVersion"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"Garfinkel"</span><span class="p">:</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"times"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"times"</span><span class="p">])</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">]</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"times"</span><span class="p">])</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"conditions"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">"Count"</span><span class="p">,</span>
             <span class="s2">"Count"</span><span class="p">,</span>
@@ -403,13 +417,34 @@
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"participant"</span><span class="p">]</span> <span class="o">=</span> <span class="n">participant</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"session"</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">resultPath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"/data/"</span> <span class="o">+</span> <span class="n">participant</span> <span class="o">+</span> <span class="n">session</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resultPath</span>
-    <span class="c1"># Create Results directory of not already exists</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span> <span class="o">=</span> <span class="n">SessionPaths</span><span class="p">(</span>
+        <span class="n">root</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">resultPath</span>
+            <span class="k">if</span> <span class="n">resultPath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">],</span> <span class="s2">"data"</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">participant</span><span class="o">=</span><span class="n">participant</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Kept for scripts that read it. It is now the run directory, not</span>
+    <span class="c1"># data/&lt;participant&gt;&lt;session&gt;, which two different sessions could share.</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">directory</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"logFile"</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_session_log</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
+
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"startTime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">write_manifest</span><span class="p">(</span>
+        <span class="n">task</span><span class="o">=</span><span class="s2">"HBC"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">,</span>
+        <span class="n">start_epoch</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startTime"</span><span class="p">],</span>
+        <span class="n">start_local</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="n">timespec</span><span class="o">=</span><span class="s2">"seconds"</span><span class="p">),</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"seed"</span><span class="p">],</span>
+        <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span>
+        <span class="n">taskVersion</span><span class="o">=</span><span class="n">taskVersion</span><span class="p">,</span>
+        <span class="n">conditions</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"conditions"</span><span class="p">],</span>
+        <span class="n">times</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"times"</span><span class="p">]],</span>
+        <span class="n">confidence</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"confidenceScale"</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">(),</span>
+    <span class="p">)</span>
 
     <span class="c1"># Set note played at trial start</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"noteStart"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sound</span><span class="o">.</span><span class="n">Sound</span><span class="p">(</span>
@@ -443,7 +478,9 @@
 
     <span class="k">if</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">"behavioral"</span><span class="p">:</span>
         <span class="c1"># PPG recording</span>
-        <span class="n">port</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">serialPort</span><span class="p">)</span>
+        <span class="c1"># A read that finds no data returns after a second rather than blocking</span>
+        <span class="c1"># forever, so an unplugged or stalled oximeter fails visibly.</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">serialPort</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span>
             <span class="n">serial</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">add_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">systole_kw</span>
         <span class="p">)</span>
