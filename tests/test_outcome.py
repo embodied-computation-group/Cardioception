@@ -34,10 +34,13 @@ CONTEXT = dict(
 
 
 class TestTrialOutcome(unittest.TestCase):
-    def test_the_row_is_one_value_per_column(self):
+    def test_the_row_is_one_scalar_per_column(self):
+        """Scalars, so rows can be collected in a list and framed at the end."""
         row = TrialOutcome(**MEASUREMENTS).row(**CONTEXT)
         for column, value in row.items():
-            self.assertEqual(len(value), 1, column)
+            self.assertNotIsInstance(value, list, column)
+        self.assertEqual(row["Decision"], "More")
+        self.assertEqual(row["listenBPM"], 60.0)
 
     def test_column_order_is_fixed_here_not_by_call_order(self):
         """Reordering the keyword arguments must not reorder the file."""

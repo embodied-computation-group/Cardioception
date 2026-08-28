@@ -91,7 +91,9 @@ def check_trials(df: pd.DataFrame, resp_max: Optional[float] = None) -> List[Che
         viol += int((pair[a] > pair[b]).sum())
     add("trial timestamps run forwards", viol == 0, f"{viol} violations")
 
-    psi = df[df.TrialType == "psi"]
+    # Only answered trials update the staircase, so only those carry an
+    # estimate. An unanswered trial having none is correct.
+    psi = df[(df.TrialType == "psi") & df.DecisionProvided.astype(bool)]
     if len(psi):
         add(
             "psi trials carry a threshold estimate",

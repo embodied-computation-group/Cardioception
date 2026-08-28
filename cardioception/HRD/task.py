@@ -231,30 +231,23 @@ def run(
             scale = parameters["confidenceScale"]
             confidence = outcome.confidence
 
-            parameters["results_df"] = pd.concat(
-                [
-                    parameters["results_df"],
-                    pd.DataFrame(
-                        outcome.row(
-                            TrialType=trialType,
-                            Modality=modality,
-                            StairCond=stairCond,
-                            Device=parameters["device"],
-                            ConfidenceUnit=(
-                                None
-                                if confidence is None
-                                else scale.to_unit(confidence)
-                            ),
-                            scale=scale.describe(),
-                            nRepresentations=thisItem["attempt"],
-                            nTrials=nTrial,
-                            EstimatedThreshold=estimatedThreshold,
-                            EstimatedSlope=estimatedSlope,
-                        )
+            parameters["results_rows"].append(
+                outcome.row(
+                    TrialType=trialType,
+                    Modality=modality,
+                    StairCond=stairCond,
+                    Device=parameters["device"],
+                    ConfidenceUnit=(
+                        None if confidence is None else scale.to_unit(confidence)
                     ),
-                ],
-                ignore_index=True,
+                    scale=scale.describe(),
+                    nRepresentations=thisItem["attempt"],
+                    nTrials=nTrial,
+                    EstimatedThreshold=estimatedThreshold,
+                    EstimatedSlope=estimatedSlope,
+                )
             )
+            parameters["results_df"] = pd.DataFrame(parameters["results_rows"])
 
             # Save the results at each iteration
             parameters["results_df"].to_csv(

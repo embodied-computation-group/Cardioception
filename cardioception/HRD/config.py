@@ -98,6 +98,10 @@ class TaskConfig:
     # --- presentation --------------------------------------------------------
     #: Text height, in height units.
     textSize: float = 0.04
+    #: Fixation cross, in height units. Was 0.1 — a tenth of the screen height,
+    #: around 144 px on a 1440-pixel display, which is several times the usual
+    #: half to one degree.
+    fixationSize: float = 0.04
 
     @property
     def allowedKeys(self):

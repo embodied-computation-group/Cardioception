@@ -46,9 +46,19 @@ class TestText(unittest.TestCase):
     def test_the_fixation_cross(self):
         _, kwargs = captured(fixation, PARAMETERS)
         self.assertEqual(kwargs["mask"], "cross")
-        self.assertEqual(kwargs["size"], 0.1)
         self.assertEqual(kwargs["sf"], 0)
         self.assertEqual(kwargs["win"], "WINDOW")
+
+    def test_the_fixation_cross_takes_its_size_from_the_session(self):
+        """It was fixed at 0.1 — a tenth of the screen height."""
+        _, default = captured(fixation, PARAMETERS)
+        self.assertEqual(default["size"], 0.04)
+
+        _, configured = captured(fixation, {**PARAMETERS, "fixationSize": 0.02})
+        self.assertEqual(configured["size"], 0.02)
+
+        _, explicit = captured(fixation, PARAMETERS, size=0.5)
+        self.assertEqual(explicit["size"], 0.5)
 
 
 if __name__ == "__main__":

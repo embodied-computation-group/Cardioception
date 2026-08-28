@@ -483,6 +483,10 @@ def getParameters(
     parameters["nBreaking"] = nBreaking
     parameters["nFinger"] = None
     parameters["signal_df"] = pd.DataFrame([])  # Physiological recording
+    # Rows accumulate in a list and the frame is rebuilt from it. Repeated
+    # pd.concat warned on the all-NA row a missed trial produces, and was
+    # quadratic in the number of trials.
+    parameters["results_rows"] = []
     parameters["results_df"] = pd.DataFrame([])  # Behavioral results
 
     # Set default path /Results/ 'Subject ID' /
