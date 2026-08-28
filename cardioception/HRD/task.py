@@ -14,6 +14,21 @@ from .._resources import resource_filename
 from .._triggers import fire
 
 
+def accept_press(buttons, armed: bool):
+    """Filter a level-triggered mouse state down to a press edge.
+
+    ``Mouse.getPressed`` reports the button's current level and
+    ``clickReset`` resets click times, not state, so a button still held from
+    an earlier screen reads as a fresh press. Returns ``(buttons, armed)``,
+    where a button that has not been released since arming reports nothing.
+    """
+    if not any(buttons):
+        return [0, 0, 0], True
+    if not armed:
+        return [0, 0, 0], False
+    return list(buttons), True
+
+
 def hold(parameters: dict, duration: float, *stims) -> float:
     """Keep ``stims`` on screen for ``duration`` seconds, flipping every frame.
 
@@ -512,8 +527,21 @@ def trial(
 
         startTrigger = time.time()
 
-        # Recording
-        while True:
+        # Recording.
+        #
+        # Bounded and escapable. Unbounded before, with no escape poll inside
+        # it, so one artefactual interval could hold a participant on this
+        # screen indefinitely: np.any rejects the whole window on a single bad
+        # value. On giving up it takes the window anyway and flags the trial,
+        # which is recoverable, unlike a session that never advances.
+        maxAttempts = parameters.get("maxHeartRateAttempts", 10)
+        listenBPM = None
+        for attempt in range(maxAttempts):
+
+            if "escape" in event.getKeys(keyList=["escape"]):
+                print("User abort")
+                parameters["win"].close()
+                core.quit()
 
             # Read the raw PPG signal from the pulse oximeter
             # You can adapt these line to work with a different setup provided that
@@ -564,6 +592,16 @@ def trial(
                         color="red",
                     )
                     hold(parameters, 2, message)
+
+        if listenBPM is None:
+            # Out of attempts. Use the last window regardless and mark the
+            # trial, rather than holding the session on this screen.
+            print(f"... no acceptable heart rate after {maxAttempts} attempts.")
+            listenBPM = (
+                round(float(np.nanmean(bpm)) * 2) / 2
+                if bpm.size and not np.isnan(bpm).all()
+                else float(np.mean(parameters["HRcutOff"]))
+            )
 
     elif modality == "Extero":
 
@@ -764,6 +802,9 @@ def waitInput(parameters: dict):
         return
 
     if parameters["device"] == "keyboard":
+        # Without this, a key pressed earlier is still buffered and dismisses
+        # this screen before it is read.
+        event.clearEvents(eventType="keyboard")
         while True:
             keys = event.getKeys()
             if "escape" in keys:
@@ -773,10 +814,15 @@ def waitInput(parameters: dict):
             elif parameters["startKey"] in keys:
                 break
     elif parameters["device"] == "mouse":
-        parameters["myMouse"].clickReset()
+        mouse = parameters["myMouse"]
+        mouse.clickReset()
+        # clickReset resets click times, not button state, so a button still
+        # held from the previous screen reads as a fresh press. Wait for a
+        # release, then for a press.
+        armed = not any(mouse.getPressed())
         while True:
-            buttons = parameters["myMouse"].getPressed()
-            if buttons != [0, 0, 0]:
+            buttons, armed = accept_press(mouse.getPressed(), armed)
+            if any(buttons):
                 break
             keys = event.getKeys()
             if "escape" in keys:
@@ -1218,6 +1264,9 @@ def responseDecision(
         parameters["myMouse"].clickReset()
         buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
         pilot = parameters.get("autopilot")
+        # A button still held from the previous trial must not count as an
+        # answer here. Only a release-then-press is accepted.
+        armed = not any(parameters["myMouse"].getPressed())
         while True:
             if pilot is not None:
                 answer = pilot.decide(
@@ -1234,6 +1283,7 @@ def responseDecision(
             else:
                 buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
                 trialdur = clock.getTime()
+                buttons, armed = accept_press(buttons, armed)
             parameters["oxiTask"].readInWaiting()
             if buttons == [1, 0, 0]:
                 decisionRT = decisionRT[0]
@@ -1417,11 +1467,16 @@ def confidenceRatingTask(
         clock = core.Clock()
         parameters["myMouse"].clickReset()
         buttons, confidenceRT = parameters["myMouse"].getPressed(getTime=True)
+        # The button used to answer the decision is often still down here, and
+        # would submit the rating on the first frame past minRatingTime with
+        # whatever value the marker happened to hold.
+        armed = not any(buttons)
 
         while True:
             parameters["win"].mouseVisible = False
             trialdur = clock.getTime()
             buttons, confidenceRT = parameters["myMouse"].getPressed(getTime=True)
+            buttons, armed = accept_press(buttons, armed)
 
             # Mouse position (keep in in the rectangle)
             newPos = parameters["myMouse"].getPos()
