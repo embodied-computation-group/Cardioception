@@ -675,7 +675,7 @@ def listen_to_tone(parameters: dict) -> HeartRateReading:
     parameters["win"].flip()
 
     started = time.time()
-    listenBPM = parameters["rng"].choice(np.arange(40, 100, 0.5))
+    listenBPM = parameters["rng"].choice(np.arange(*parameters["exteroBPMRange"]))
 
     listenFile = resource_filename("cardioception.HRD", f"Sounds/{listenBPM}.wav")
     logger.info(f"...loading file (Listen): {listenFile}")
@@ -687,7 +687,7 @@ def listen_to_tone(parameters: dict) -> HeartRateReading:
     listenSound.play()
     hold(
         parameters["win"],
-        parameters.get("listeningDuration", 5.0),
+        parameters["listeningDuration"],
         messageRecord,
         parameters["listenLogo"],
     )
