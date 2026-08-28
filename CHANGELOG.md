@@ -121,6 +121,20 @@ code it replaced rather than read over.
   tasks write different meanings to the same marker channel.** In HRD, 1 is the
   trial starting and 2 the listening window opening; in HBC, 1 is the listening
   window opening and 2 its closing.
+- `trial()` returns a `TrialOutcome` rather than an 18-element tuple, and that
+  object owns the results row, so column order is decided in one place.
+- The two listening phases become `listen_to_heart()` and `listen_to_tone()`.
+  The first is now the only place the task touches physiology.
+- The Heart Rate Discrimination tutorial is a table of phases — instruction
+  screens interleaved with practice blocks — rather than a sequential script.
+  What participants are shown, how many practice trials each block runs and at
+  what difficulty are all set in one place. Verified by tracing all 440
+  presentation steps across every language, device and condition before and
+  after; they are identical.
+- `TaskConfig` gathers the design values that were literals inside
+  `getParameters` — response window, tutorial lengths, ISI, listening duration,
+  heart-rate cutoffs, staircase bounds, text size. Pass one to `getParameters`,
+  and it is written to `manifest.json` with the data it produced.
 
 **`responseDecision` returns five values, not six.** The second, a
 `responseTrigger` timestamp, was unpacked by its only caller and never read.
