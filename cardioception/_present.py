@@ -17,7 +17,7 @@ def accept_press(buttons, armed: bool):
     return list(buttons), True
 
 
-def hold(parameters: dict, duration: float, *stims) -> float:
+def hold(win, duration: float, *stims) -> float:
     """Keep ``stims`` on screen for ``duration`` seconds, flipping every frame.
 
     Replaces ``core.wait``, which blocks without flipping, so the window stops
@@ -34,5 +34,5 @@ def hold(parameters: dict, duration: float, *stims) -> float:
     while clock.getTime() < duration:
         for stim in stims:
             stim.draw()
-        parameters["win"].flip()
+        win.flip()
     return clock.getTime()

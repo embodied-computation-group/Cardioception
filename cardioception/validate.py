@@ -101,13 +101,29 @@ def check_trials(df: pd.DataFrame, resp_max: Optional[float] = None) -> List[Che
     return out
 
 
+def _harmonic_not_above_arithmetic(df: pd.DataFrame) -> Check:
+    """60000/mean(IBI) can never exceed mean(60000/IBI)."""
+    if "listenBPM_arithmetic" not in df.columns:
+        return Check("listenBPM is the rate over the window", True, "column absent")
+    bad = int((df.listenBPM > df.listenBPM_arithmetic).sum())
+    return Check(
+        "listenBPM is the rate over the window",
+        bad == 0,
+        f"{bad} trials above the arithmetic mean",
+    )
+
+
 def check_run(run_dir: str) -> List[Check]:
     """Run the trial-table checks against the finished session in ``run_dir``."""
     finals = [f for f in os.listdir(run_dir) if f.endswith("_final.txt")]
     if not finals:
         return [Check("a final results file exists", False, f"none in {run_dir}")]
     df = pd.read_csv(os.path.join(run_dir, finals[0]))
-    return [Check("a final results file exists", True, finals[0])] + check_trials(df)
+    return (
+        [Check("a final results file exists", True, finals[0])]
+        + check_trials(df)
+        + [_harmonic_not_above_arithmetic(df)]
+    )
 
 
 def main(argv=None) -> int:

@@ -40,7 +40,6 @@ def run(
         parameters["times"],
         range(0, len(parameters["conditions"])),
     ):
-
         fire(parameters, "trialStart")
 
         nCount, confidence, confidenceRT = trial(
@@ -61,6 +60,17 @@ def run(
                         "Duration": [duration],
                         "Confidence": [confidence],
                         "ConfidenceRT": [confidenceRT],
+                        "ConfidenceUnit": [
+                            (
+                                None
+                                if confidence is None
+                                else parameters["confidenceScale"].to_unit(confidence)
+                            )
+                        ],
+                        **{
+                            k: [v]
+                            for k, v in parameters["confidenceScale"].describe().items()
+                        },
                     }
                 ),
             ],
@@ -69,23 +79,11 @@ def run(
 
         # Save the results at each iteration
         parameters["results_df"].to_csv(
-            parameters["resultPath"]
-            + "/"
-            + parameters["participant"]
-            + parameters["session"]
-            + ".txt",
-            index=False,
+            parameters["paths"].path("behaviour"), index=False
         )
 
     # Save results
-    parameters["results_df"].to_csv(
-        parameters["resultPath"]
-        + "/"
-        + parameters["participant"]
-        + parameters["session"]
-        + "_final.txt",
-        index=False,
-    )
+    parameters["results_df"].to_csv(parameters["paths"].path("final"), index=False)
 
     # End of the task
     end = visual.TextStim(
@@ -94,7 +92,7 @@ def run(
         pos=(0.0, 0.0),
         text="You have completed the task. Thank you for your participation.",
     )
-    hold(parameters, 3, end)
+    hold(parameters["win"], 3, end)
 
 
 def trial(
@@ -174,7 +172,7 @@ def trial(
 
     # Wait for a beat to start the task
     parameters["oxiTask"].waitBeat()
-    hold(parameters, 3, *shown)
+    hold(parameters["win"], 3, *shown)
 
     # Sound signaling trial start
     if (condition == "Count") | (condition == "Training"):
@@ -183,7 +181,7 @@ def trial(
         parameters["oxiTask"].channels["Channel_0"][-1] = 1
         parameters["noteStart"].play()
         fire(parameters, "listeningStart")
-        hold(parameters, 1, *shown)
+        hold(parameters["win"], 1, *shown)
 
     # Record for a desired time length
     parameters["oxiTask"].read(duration=duration - 1)
@@ -195,21 +193,14 @@ def trial(
         parameters["oxiTask"].channels["Channel_0"][-1] = 2
         parameters["noteStop"].play()
         fire(parameters, "listeningStop")
-        hold(parameters, 3, *shown)
+        hold(parameters["win"], 3, *shown)
         parameters["oxiTask"].readInWaiting()
 
     # Hide instructions
     parameters["win"].flip()
 
     # Save recording
-    parameters["oxiTask"].save(
-        parameters["resultPath"]
-        + "/"
-        + parameters["participant"]
-        + str(nTrial)
-        + "_"
-        + str(nTrial)
-    )
+    parameters["oxiTask"].save(parameters["paths"].path(f"ppg-{nTrial}"))
 
     ###############################
     # Record participant estimation
@@ -229,7 +220,6 @@ def trial(
 
         nCounts = ""
         while True:
-
             # Record new key
             key = event.waitKeys(
                 keyList=[
@@ -277,7 +267,7 @@ def trial(
                         pos=(0, 0.2),
                         text="You should only provide numbers",
                     )
-                    hold(parameters, 2, messageError)
+                    hold(parameters["win"], 2, messageError)
                 elif nCounts == "":
                     messageError = visual.TextStim(
                         parameters["win"],
@@ -285,7 +275,7 @@ def trial(
                         pos=(0, 0.2),
                         text="You should provide numbers",
                     )
-                    hold(parameters, 2, messageError)
+                    hold(parameters["win"], 2, messageError)
                 else:
                     break
 
@@ -320,12 +310,14 @@ def trial(
             # psychopy-legacy plugin, where constructing one raises
             # PluginRequiredError. No max_time, because this scale waits for the
             # participant rather than timing out, which is what it did before.
+            scale = parameters["confidenceScale"]
             confidence, confidenceRT, _ = keyboard_rating(
                 win=parameters["win"],
                 message=message,
-                low=parameters["confScale"][0],
-                high=parameters["confScale"][1],
-                labels=parameters["labelsRating"],
+                low=scale.low,
+                high=scale.high,
+                labels=scale.labels,
+                granularity=scale.granularity,
                 label_height=parameters["textSize"] * 0.6,
                 rng=parameters["rng"],
             )
@@ -387,7 +379,6 @@ def tutorial(parameters: dict):
 
     # Tutorial 3
     if parameters["taskVersion"] == "Shandry":
-
         messageStart = visual.TextStim(
             parameters["win"],
             height=parameters["textSize"],
@@ -544,6 +535,4 @@ def rest(parameters: dict, duration: float = 300.0):
     parameters["oxiTask"].read(duration=duration)
 
     # Save recording
-    parameters["oxiTask"].save(
-        parameters["resultPath"] + "/" + parameters["participant"] + "_Rest"
-    )
+    parameters["oxiTask"].save(parameters["paths"].path("ppg-rest"))
