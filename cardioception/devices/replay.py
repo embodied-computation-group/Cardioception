@@ -12,6 +12,21 @@ from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
 
+#: Trough of the synthetic pulse. Real PPG has a substantial floor; a
+#: near-zero one is what let the rolling threshold collapse between beats.
+PULSE_BASELINE = 20.0
+
+#: Height of the pulse above that floor. The Nonin reports 0-255, and
+#: baseline plus amplitude stays inside it.
+PULSE_AMPLITUDE = 200.0
+
+#: Exponent on the raised cosine. Higher is a sharper systolic peak; the
+#: waveform stays continuous at any value, which is the property that matters.
+PULSE_SHARPNESS = 3.0
+
+#: Standard deviation of the noise added to every sample.
+PULSE_NOISE = 0.5
+
 
 class ReplayRecorder:
     """Stand-in for ``systole.recording.Oximeter``.
@@ -137,7 +152,25 @@ class ReplayRecorder:
     # -- helpers ---------------------------------------------------------
 
     def _synthesise(self, n: int, bpm: float, artefact: bool):
-        """A crude but detectable pulse waveform, plus its peak mask."""
+        """A pulse waveform this package's own detector can measure, and its
+        peak mask.
+
+        The waveform is continuous, because a flat baseline is what broke the
+        previous one. It was a narrow spike on a near-zero baseline, and
+        systole thresholds at the mean plus standard deviation of a rolling
+        one-second window: whenever that window fell between spikes it saw
+        only noise, the threshold collapsed to about 0.5, and noise maxima
+        were detected as beats. That happens exactly when the cardiac period
+        exceeds the window, so every rate at or below 60 BPM came back wrong
+        -- 42 measured as 90, 55 as 85, 60 as 75 -- while 72 and 100 were
+        exact. Every test used the default 72, so nothing caught it.
+
+        A raised cosine has substantial variance everywhere, so the rolling
+        threshold stays meaningful at any rate, and it has one maximum per
+        cycle at the cycle boundary, which is where the returned peak mask
+        marks it. Measured against ``ppg_peaks`` the recovered rate is within
+        0.05 BPM from 40 to 180.
+        """
         if artefact:
             # Noise with no periodic component, so peak detection finds nothing
             # usable and the task has to decide what to do about it.
@@ -145,11 +178,10 @@ class ReplayRecorder:
         f = bpm / 60.0
         t = self._phase + np.arange(n) / self.sfreq
         self._phase = float(t[-1] + 1 / self.sfreq) if n else self._phase
-        # A narrow positive pulse rather than a sinusoid, so a peak detector
-        # sees something that looks like a systolic upstroke.
         cycle = (t * f) % 1.0
-        signal = np.exp(-((cycle - 0.1) ** 2) / 0.002) * 100
-        signal = signal + self.rng.normal(0, 0.5, n)
+        shape = ((1 + np.cos(2 * np.pi * cycle)) / 2) ** PULSE_SHARPNESS
+        signal = PULSE_BASELINE + PULSE_AMPLITUDE * shape
+        signal = signal + self.rng.normal(0, PULSE_NOISE, n)
         peaks = (np.diff(np.floor(t * f), prepend=np.floor(t[0] * f)) > 0).astype(int)
         return signal, peaks
 
