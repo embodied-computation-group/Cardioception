@@ -75,12 +75,16 @@ jobs:
       # and straight into `IndexError: list index out of range`. Naming the
       # device takes the other branch, which resolves against PortAudio's own
       # list. The name has to be `pulse`: `default` is also a real ALSA
+      # device here, but it collides with the sentinel. It is a list-valued
+      # preference: assigning a bare string is silently rejected on save.
       # device here, but it collides with the sentinel.
       - name: A sound device for the tones to open
         run: |
           pulseaudio --start --exit-idle-time=-1
           pactl load-module module-null-sink sink_name=dummy
-          python -c "from psychopy import prefs; prefs.hardware['audioDevice'] = 'pulse'; prefs.saveUserPrefs(); print('audioDevice ->', prefs.hardware['audioDevice'])"
+          python -c "from psychopy import prefs; prefs.hardware['audioDevice'] = ['pulse']; prefs.saveUserPrefs()"
+          # Read it back in a fresh process: that is what pytest will see.
+          python -c "from psychopy import prefs; print('audioDevice ->', prefs.hardware['audioDevice'])"
       # A whole HRD session, both input devices, against the replay recorder.
       # This is the first time any CI job has run the task itself.
       - name: Run
