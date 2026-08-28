@@ -670,6 +670,12 @@ def waitInput(parameters: dict):
 
     from psychopy import core, event
 
+    # A synthetic participant advances at once. Whatever was drawn before this
+    # call has already been drawn and flipped, so the screen is still exercised.
+    if parameters.get("autopilot") is not None:
+        parameters["autopilot"].advance()
+        return
+
     if parameters["device"] == "keyboard":
         while True:
             keys = event.getKeys()
@@ -1025,11 +1031,21 @@ def responseDecision(
     if parameters["device"] == "keyboard":
         this_hr.play()
         clock = core.Clock()
-        responseKey = event.waitKeys(
-            keyList=parameters["allowedKeys"],
-            maxWait=parameters["respMax"],
-            timeStamped=clock,
-        )
+        pilot = parameters.get("autopilot")
+        if pilot is not None:
+            # Same shape event.waitKeys returns: [[key, rt]] or None.
+            answer = pilot.decide(
+                condition,
+                parameters["allowedKeys"],
+                max_wait=parameters["respMax"],
+            )
+            responseKey = [list(answer)] if answer is not None else None
+        else:
+            responseKey = event.waitKeys(
+                keyList=parameters["allowedKeys"],
+                maxWait=parameters["respMax"],
+                timeStamped=clock,
+            )
         this_hr.stop()
 
         responseMadeTrigger = time.time()
@@ -1114,9 +1130,23 @@ def responseDecision(
         clock.reset()
         parameters["myMouse"].clickReset()
         buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
+        pilot = parameters.get("autopilot")
         while True:
-            buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
-            trialdur = clock.getTime()
+            if pilot is not None:
+                answer = pilot.decide(
+                    condition, ["Less", "More"], max_wait=parameters["respMax"]
+                )
+                if answer is None:
+                    # Drive the existing timeout branch rather than duplicating it.
+                    buttons, decisionRT = [0, 0, 0], [0.0, 0.0, 0.0]
+                    trialdur = parameters["respMax"] + 1.0
+                else:
+                    _decision, _rt = answer
+                    buttons = [1, 0, 0] if _decision == "Less" else [0, 0, 1]
+                    decisionRT, trialdur = [_rt, 0.0, _rt], _rt
+            else:
+                buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
+                trialdur = clock.getTime()
             parameters["oxiTask"].readInWaiting()
             if buttons == [1, 0, 0]:
                 decisionRT = decisionRT[0]
@@ -1217,6 +1247,24 @@ def confidenceRatingTask(
 
     # Initialise default values
     confidence, confidenceRT = None, None
+
+    pilot = parameters.get("autopilot")
+    if pilot is not None:
+        # The rating widget itself is covered by its own tests; here we only
+        # need a value of the right shape so the session can run unattended.
+        low, high = (
+            parameters["confScale"] if parameters["device"] == "keyboard" else (0, 100)
+        )
+        answer = pilot.rate(
+            low,
+            high,
+            min_time=parameters["minRatingTime"],
+            max_wait=parameters["maxRatingTime"],
+        )
+        if answer is None:
+            return None, None, False, time.time()
+        confidence, confidenceRT = answer
+        return confidence, confidenceRT, True, time.time()
 
     if parameters["device"] == "keyboard":
 
