@@ -909,11 +909,18 @@ def responseDecision(
                 [[response_keys[answer[0]], answer[1]]] if answer is not None else None
             )
         else:
+            # `escape` has to be in keyList or waitKeys discards it, and the
+            # abort is then lost rather than merely deferred.
             responseKey = event.waitKeys(
-                keyList=parameters["allowedKeys"],
+                keyList=list(parameters["allowedKeys"]) + ["escape"],
                 maxWait=parameters["respMax"],
                 timeStamped=clock,
             )
+            if responseKey and responseKey[0][0] == "escape":
+                this_hr.stop()
+                logger.warning("User abort")
+                parameters["win"].close()
+                core.quit()
         this_hr.stop()
 
         responseMadeTrigger = time.time()
@@ -987,6 +994,11 @@ def responseDecision(
                     buttons = [1, 0, 0] if _decision == "Less" else [0, 0, 1]
                     decisionRT, trialdur = [_rt, 0.0, _rt], _rt
             else:
+                if "escape" in event.getKeys(keyList=["escape"]):
+                    this_hr.stop()
+                    logger.warning("User abort")
+                    parameters["win"].close()
+                    core.quit()
                 buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
                 trialdur = clock.getTime()
                 buttons, armed = accept_press(buttons, armed)
