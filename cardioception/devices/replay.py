@@ -53,7 +53,7 @@ class ReplayRecorder:
         self.artefact_every = artefact_every
 
         self._bpm_sequence = (
-            [float(bpm)] if np.isscalar(bpm) else [float(b) for b in bpm]  # type: ignore[arg-type]
+            [float(bpm)] if np.isscalar(bpm) else [float(b) for b in bpm]  # type: ignore[arg-type, union-attr]
         )
         self._read_count = 0
         self._phase = 0.0
