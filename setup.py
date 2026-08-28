@@ -1,4 +1,4 @@
-# Copyright (C) 2020–2025 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 import os
 import codecs
 from setuptools import find_packages, setup
@@ -6,11 +6,13 @@ from setuptools import find_packages, setup
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 REQUIREMENTS_FILE = os.path.join(PROJECT_ROOT, "requirements.txt")
 
+
 def read(fname):
     with codecs.open(
         os.path.join(os.path.dirname(__file__), fname), encoding="utf-8"
     ) as buff:
         return buff.read()
+
 
 def get_requirements():
     """Requirement specifiers from requirements.txt, ignoring comments.
@@ -23,6 +25,7 @@ def get_requirements():
         lines = (line.strip() for line in buff.read().splitlines())
         return [line for line in lines if line and not line.startswith("#")]
 
+
 DESCRIPTION = (
     "Measuring interoceptive performance with Psychopy - the official "
     "Cardioception toolbox from the Embodied Computation Group."
@@ -32,7 +35,7 @@ LONG_DESCRIPTION = read("README.md")
 DISTNAME = "cardioception-toolbox"
 MAINTAINER = "Micah Allen"
 MAINTAINER_EMAIL = "micah.allen@clin.au.dk"
-VERSION = "0.7.1"
+VERSION = "0.8.0"
 URL = "https://github.com/embodied-computation-group/Cardioception"
 
 if __name__ == "__main__":
@@ -85,9 +88,17 @@ if __name__ == "__main__":
         install_requires=get_requirements(),
         include_package_data=True,
         packages=find_packages(),
+        # The stimuli live in Images/ and Sounds/, so bare "*.wav" and "*.png"
+        # matched nothing. A wheel built from this shipped no sounds at all;
+        # only MANIFEST.in was keeping the sdist usable.
         package_data={
-            "cardioception.HBC": ["*.wav", "*.png"],
-            "cardioception.HRD": ["*.wav", "*.png"],
+            "cardioception.HBC": ["Images/*.png", "Sounds/*.wav"],
+            "cardioception.HRD": [
+                "Images/*.png",
+                "Images/*.svg",
+                "Sounds/*.wav",
+                "texts/*.yaml",
+            ],
             "cardioception.notebooks": ["*.ipynb"],
         },
     )

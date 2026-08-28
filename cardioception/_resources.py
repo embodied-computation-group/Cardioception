@@ -1,4 +1,4 @@
-# Copyright (C) 2020–2025 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 import importlib
 import os
 

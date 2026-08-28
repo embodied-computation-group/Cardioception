@@ -1,15 +1,81 @@
-# Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk
-# Maintained by the Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 
 import pickle
 import time
-from typing import Optional, Tuple
+from collections import deque
+from typing import Optional, Tuple, cast
 
 import numpy as np
 import pandas as pd
 from systole.detection import ppg_peaks
 
+from .._log import get_logger
+from .._present import accept_press, hold  # noqa: F401
 from .._resources import resource_filename
+from .._screens import AskFingerNumber, Practice, Screen
+from .._screens import fixation as fixation_cross
+from .._screens import text
+from .._triggers import fire
+from ._constants import (
+    ANALYSIS_WINDOW,
+    LISTENING_DURATION,
+    OXIMETER_SFREQ,
+    PEAK_WINDOW_SAMPLES,
+    PPG_SFREQ,
+    TONE_BPM_MAX,
+    TONE_BPM_MIN,
+    Trigger,
+)
+from ._outcome import HeartRateReading, TrialOutcome
+
+logger = get_logger()
+
+
+def _save_session(parameters: dict, nTrial: int) -> None:
+    """Write everything the session produced.
+
+    Called from a finally clause so an abort or a crash still saves.
+    """
+    paths = parameters["paths"]
+
+    logger.info("Saving final results in .txt file...")
+    parameters["results_df"].to_csv(paths.path("final"), index=False)
+
+    logger.info("Saving PPG signal data frame...")
+    parameters["signal_df"].to_csv(paths.path("signal"), index=False)
+
+    parameters["oxiTask"].save(paths.path(f"ppg-{nTrial}-end"))
+
+    logger.info("Saving posterior distributions...")
+    for k in set(parameters["Modality"]):
+        np.save(
+            paths.path(f"posterior-{k}", ext="npy"),
+            np.array(parameters["staircaisePosteriors"][k]),
+        )
+
+    logger.info("Saving Parameters in pickle...")
+    save_parameter = parameters.copy()
+    # Unpicklable.
+    for k in [
+        "win",
+        "heartLogo",
+        "listenLogo",
+        "stairCase",
+        "oxiTask",
+        "myMouse",
+        "handSchema",
+        "pulseSchema",
+        "autopilot",
+        "recorder",
+        "triggers",
+    ]:
+        save_parameter.pop(k, None)
+    # Already written to their own files above; keeping them here made the
+    # pickle 30 MB of duplicates.
+    for k in ["staircaisePosteriors", "signal_df", "results_df"]:
+        save_parameter.pop(k, None)
+    with open(paths.path("parameters", ext="pickle"), "wb") as handle:
+        pickle.dump(save_parameter, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 def run(
@@ -29,8 +95,6 @@ def run(
         If `True`, will present a tutorial with 10 training trial with feedback
         and 5 trials with confidence rating.
     """
-    from psychopy import core, visual
-
     # Initialization of the Pulse Oximeter
     parameters["oxiTask"].setup().read(duration=1)
 
@@ -38,267 +102,198 @@ def run(
     if runTutorial is True:
         tutorial(parameters)
 
-    for nTrial, modality, trialType in zip(
-        range(parameters["nTrials"]),
-        parameters["Modality"],
-        parameters["staircaseType"],
-    ):
-
-        # Initialize variable
-        estimatedThreshold, estimatedSlope = None, None
-
-        # Wait for key press if this is the first trial
-        if nTrial == 0:
-
-            # Ask the participant to press default button to start
-            messageStart = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                text=parameters["texts"]["textTaskStart"],
-            )
-            press = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                pos=(0.0, -0.4),
-                text=parameters["texts"]["textNext"],
-            )
-            press.draw()
-            messageStart.draw()  # Show instructions
-            parameters["win"].flip()
-
-            waitInput(parameters)
-
-        # Next intensity value
-        if trialType == "updown":
-            print("... load UpDown staircase.")
-            thisTrial = parameters["stairCase"][modality].next()
-            stairCond = thisTrial[1]["label"]
-            alpha = thisTrial[0]
-        elif trialType == "psi":
-            print("... load psi staircase.")
-            alpha = parameters["stairCase"][modality].next()
-            stairCond = "psi"
-        elif trialType == "CatchTrial":
-            print("... load catch trial.")
-            # Select pseudo-random extrem value based on number
-            # of previous catch trial.
-            catchIdx = sum(
-                parameters["staircaseType"][:nTrial][
-                    parameters["Modality"][:nTrial] == modality
-                ]
-                == "CatchTrial"
-            )
-            alpha = np.array([-30, 10, -20, 20, -10, 30])[catchIdx % 6]
-            stairCond = "CatchTrial"
-
-        # Before trial triggers
-        parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 1  # Trigger
-
-        # Start trial
-        (
-            condition,
-            listenBPM,
-            responseBPM,
-            decision,
-            decisionRT,
-            confidence,
-            confidenceRT,
-            alpha,
-            isCorrect,
-            respProvided,
-            ratingProvided,
-            startTrigger,
-            soundTrigger,
-            responseMadeTrigger,
-            ratingStartTrigger,
-            ratingEndTrigger,
-            endTrigger,
-        ) = trial(
-            parameters,
-            alpha,
-            modality,
-            confidenceRating=confidenceRating,
-            nTrial=nTrial,
-        )
-
-        # Check if response is 'More' or 'Less'
-        isMore = 1 if decision == "More" else 0
-        # Update the UpDown staircase if initialization trial
-        if trialType == "updown":
-            print("... update UpDown staircase.")
-            # Update the UpDown staircase
-            parameters["stairCase"][modality].addResponse(isMore)
-        elif trialType == "psi":
-            print("... update psi staircase.")
-
-            # Update the Psi staircase with forced intensity value
-            # if impossible BPM was generated
-            if listenBPM + alpha < 15:
-                parameters["stairCase"][modality].addResponse(isMore, intensity=15)
-            elif listenBPM + alpha > 199:
-                parameters["stairCase"][modality].addResponse(isMore, intensity=199)
-            else:
-                parameters["stairCase"][modality].addResponse(isMore)
-
-            # Store posteriors in list for each trials
-            parameters["staircaisePosteriors"][modality].append(
-                parameters["stairCase"][modality]._psi._probLambda[0, :, :, 0]
-            )
-
-            # Save estimated threshold and slope for each trials
-            estimatedThreshold, estimatedSlope = parameters["stairCase"][
-                modality
-            ].estimateLambda()
-
-        print(
-            f"... Initial BPM: {listenBPM} - Staircase value: {alpha} "
-            f"- Response: {decision} ({isCorrect})"
-        )
-
-        # Store results
-        parameters["results_df"] = pd.concat(
-            [
-                parameters["results_df"],
-                pd.DataFrame(
-                    {
-                        "TrialType": [trialType],
-                        "Condition": [condition],
-                        "Modality": [modality],
-                        "StairCond": [stairCond],
-                        "Decision": [decision],
-                        "DecisionRT": [decisionRT],
-                        "Confidence": [confidence],
-                        "ConfidenceRT": [confidenceRT],
-                        "Alpha": [alpha],
-                        "listenBPM": [listenBPM],
-                        "responseBPM": [responseBPM],
-                        "ResponseCorrect": [isCorrect],
-                        "DecisionProvided": [respProvided],
-                        "RatingProvided": [ratingProvided],
-                        "nTrials": [nTrial],
-                        "EstimatedThreshold": [estimatedThreshold],
-                        "EstimatedSlope": [estimatedSlope],
-                        "StartListening": [startTrigger],
-                        "StartDecision": [soundTrigger],
-                        "ResponseMade": [responseMadeTrigger],
-                        "RatingStart": [ratingStartTrigger],
-                        "RatingEnds": [ratingEndTrigger],
-                        "endTrigger": [endTrigger],
-                    }
-                ),
-            ],
-            ignore_index=True,
-        )
-
-        # Save the results at each iteration
-        parameters["results_df"].to_csv(
-            parameters["resultPath"]
-            + "/"
-            + parameters["participant"]
-            + parameters["session"]
-            + ".txt",
-            index=False,
-        )
-
-        # Breaks
-        if (nTrial % parameters["nBreaking"] == 0) & (nTrial != 0):
-            message = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                text=parameters["texts"]["textBreaks"],
-            )
-            percRemain = round((nTrial / parameters["nTrials"]) * 100, 2)
-            remain = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                pos=(0.0, 0.2),
-                text=f" ---- {percRemain} % ---- ",
-            )
-            remain.draw()
-            message.draw()
-            parameters["win"].flip()
-            parameters["oxiTask"].save(
-                f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}.txt"
-            )
-
-            # Wait for participant input before continue
-            waitInput(parameters)
-
-            # Fixation cross
-            fixation = visual.GratingStim(
-                win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
-            )
-            fixation.draw()
-            parameters["win"].flip()
-
-            # Reset recording when ready
-            parameters["oxiTask"].setup()
-            parameters["oxiTask"].read(duration=1)
-
-    # Save the final results
-    print("Saving final results in .txt file...")
-    parameters["results_df"].to_csv(
-        parameters["resultPath"]
-        + "/"
-        + parameters["participant"]
-        + parameters["session"]
-        + "_final.txt",
-        index=False,
+    # A queue rather than a zip, so a missed trial can be re-presented.
+    queue = deque(
+        {"modality": m, "trialType": s, "attempt": 0, "alpha": None}
+        for m, s in zip(parameters["Modality"], parameters["staircaseType"])
     )
+    maxRepresentations = parameters.get("maxRepresentations", 3)
+    onMissedTrial = parameters.get("onMissedTrial", "represent")
+    # Counted as we go: slicing the design arrays breaks once a trial can
+    # appear twice.
+    catchSeen = {"Intero": 0, "Extero": 0}
+    nTrial = 0
+    nPlanned = parameters["nTrials"]
 
-    # Save the final signals file
-    print("Saving PPG signal data frame...")
-    parameters["signal_df"].to_csv(
-        parameters["resultPath"] + "/" + parameters["participant"] + "_signal.txt",
-        index=False,
-    )
+    try:
+        while queue:
+            thisItem = queue.popleft()
+            modality, trialType = thisItem["modality"], thisItem["trialType"]
 
-    # Save last pulse oximeter recording, if relevant
-    parameters["oxiTask"].save(
-        f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}_end.txt"
-    )
+            # Initialize variable
+            estimatedThreshold, estimatedSlope = None, None
 
-    # Save posterios (if relevant)
-    print("Saving posterior distributions...")
-    for k in set(parameters["Modality"]):
-        np.save(
-            parameters["resultPath"]
-            + "/"
-            + parameters["participant"]
-            + k
-            + "_posterior.npy",
-            np.array(parameters["staircaisePosteriors"][k]),
-        )
+            # Wait for key press if this is the first trial
+            if nTrial == 0:
+                # Ask the participant to press default button to start
+                messageStart = text(parameters, parameters["texts"]["textTaskStart"])
+                press = text(
+                    parameters, parameters["texts"]["textNext"], pos=(0.0, -0.4)
+                )
+                press.draw()
+                messageStart.draw()  # Show instructions
+                parameters["win"].flip()
 
-    # Save parameters
-    print("Saving Parameters in pickle...")
-    save_parameter = parameters.copy()
-    for k in ["win", "heartLogo", "listenLogo", "stairCase", "oxiTask"]:
-        del save_parameter[k]
-    if parameters["device"] == "mouse":
-        del save_parameter["myMouse"]
-    del save_parameter["handSchema"]
-    del save_parameter["pulseSchema"]
-    with open(
-        save_parameter["resultPath"]
-        + "/"
-        + save_parameter["participant"]
-        + "_parameters.pickle",
-        "wb",
-    ) as handle:
-        pickle.dump(save_parameter, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                waitInput(parameters)
+
+            # Next intensity value
+            if trialType == "psi":
+                logger.info("... load psi staircase.")
+                alpha = parameters["stairCase"][modality].next()
+                stairCond = "psi"
+            elif trialType == "CatchTrial":
+                logger.info("... load catch trial.")
+                # A re-presented catch trial keeps its first intensity.
+                if thisItem["alpha"] is None:
+                    catchIdx = catchSeen[modality]
+                    catchSeen[modality] += 1
+                    thisItem["alpha"] = float(
+                        np.array([-30, 10, -20, 20, -10, 30])[catchIdx % 6]
+                    )
+                alpha = thisItem["alpha"]
+                stairCond = "CatchTrial"
+
+            # Before trial triggers
+            parameters["oxiTask"].readInWaiting()
+            parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.TRIAL_START
+            fire(parameters, "trialStart")
+
+            # Start trial
+            outcome = trial(
+                parameters,
+                alpha,
+                modality,
+                confidenceRating=confidenceRating,
+                nTrial=nTrial,
+            )
+
+            # A missed trial must not reach the staircase: decision is None,
+            # which used to collapse to isMore = 0 and enter the posterior as
+            # a "Less" the participant never gave.
+            if not outcome.respProvided:
+                canRepresent = (
+                    onMissedTrial == "represent"
+                    and thisItem["attempt"] + 1 < maxRepresentations
+                )
+                if canRepresent:
+                    queue.append({**thisItem, "attempt": thisItem["attempt"] + 1})
+                    logger.info(
+                        f"... no response, re-queued "
+                        f"(attempt {thisItem['attempt'] + 2} of {maxRepresentations})."
+                    )
+                else:
+                    logger.warning("... no response, trial not repeated.")
+
+            if outcome.respProvided:
+                # Check if response is 'More' or 'Less'
+                isMore = 1 if outcome.decision == "More" else 0
+
+                if trialType == "psi":
+                    logger.info("... update psi staircase.")
+
+                    # A tone outside TONE_BPM_MIN..MAX is clamped, so the
+                    # delta actually heard is not the one psi asked for. The
+                    # handler's `intensities` are deltas over intensRange, so
+                    # the correction has to be a delta too: passing the
+                    # clamped *absolute* BPM wrote 15.0 or 199.0 into a list
+                    # scaled (-50.5, 50.5).
+                    delivered = outcome.responseBPM - outcome.listenBPM
+                    if delivered != outcome.alpha:
+                        parameters["stairCase"][modality].addResponse(
+                            isMore, intensity=delivered
+                        )
+                        # The posterior itself cannot be corrected here:
+                        # PsiObject.update indexes the likelihood by
+                        # nextIntensityIndex, the intensity psi chose, and
+                        # ignores what addResponse was given. So this trial
+                        # updates the posterior as though the requested delta
+                        # had been delivered. Logged rather than hidden.
+                        logger.warning(
+                            f"... tone clamped: asked {outcome.alpha:+.1f} BPM, "
+                            f"delivered {delivered:+.1f}. The recorded intensity "
+                            f"is corrected; the psi posterior is not."
+                        )
+                    else:
+                        parameters["stairCase"][modality].addResponse(isMore)
+
+                    # copy() matters: [0, :, :, 0] is a view onto the 40 MB
+                    # likelihood array for this trial, which would otherwise
+                    # stay alive for the whole session.
+                    parameters["staircaisePosteriors"][modality].append(
+                        parameters["stairCase"][modality]
+                        ._psi._probLambda[0, :, :, 0]
+                        .copy()
+                    )
+
+                    # Save estimated threshold and slope for each trials
+                    estimatedThreshold, estimatedSlope = parameters["stairCase"][
+                        modality
+                    ].estimateLambda()
+
+            logger.info(
+                f"... Initial BPM: {outcome.listenBPM} - Staircase value: "
+                f"{outcome.alpha} - Response: {outcome.decision} "
+                f"({outcome.isCorrect})"
+            )
+
+            # Confidence on 0-1 so sessions run on different scales stay
+            # comparable, and the scale definition on every row so the file can
+            # be read without the parameters pickle.
+            scale = parameters["confidenceScale"]
+            confidence = outcome.confidence
+
+            parameters["results_rows"].append(
+                outcome.row(
+                    TrialType=trialType,
+                    Modality=modality,
+                    StairCond=stairCond,
+                    Device=parameters["device"],
+                    ConfidenceUnit=(
+                        None if confidence is None else scale.to_unit(confidence)
+                    ),
+                    scale=scale.describe(),
+                    nRepresentations=thisItem["attempt"],
+                    nTrials=nTrial,
+                    EstimatedThreshold=estimatedThreshold,
+                    EstimatedSlope=estimatedSlope,
+                )
+            )
+            parameters["results_df"] = pd.DataFrame(parameters["results_rows"])
+
+            # Save the results at each iteration
+            parameters["results_df"].to_csv(
+                parameters["paths"].path("behaviour"), index=False
+            )
+
+            nTrial += 1
+
+            # Breaks
+            if parameters["nBreaking"] and nTrial % parameters["nBreaking"] == 0:
+                message = text(parameters, parameters["texts"]["textBreaks"])
+                percRemain = round(min(nTrial / nPlanned, 1.0) * 100, 2)
+                remain = text(parameters, f" ---- {percRemain} % ---- ", pos=(0.0, 0.2))
+                remain.draw()
+                message.draw()
+                parameters["win"].flip()
+                parameters["oxiTask"].save(parameters["paths"].path(f"ppg-{nTrial}"))
+
+                # Wait for participant input before continue
+                waitInput(parameters)
+
+                # Fixation cross
+                fixation = fixation_cross(parameters)
+                fixation.draw()
+                parameters["win"].flip()
+
+                # Reset recording when ready
+                parameters["oxiTask"].setup()
+                parameters["oxiTask"].read(duration=1)
+    finally:
+        _save_session(parameters, nTrial)
 
     # End of the task
-    end = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.0),
-        text=parameters["texts"]["done"],
-    )
-    end.draw()
-    parameters["win"].flip()
-    core.wait(3)
+    end = text(parameters, parameters["texts"]["done"])
+    hold(parameters["win"], 3, end)
 
 
 def trial(
@@ -308,25 +303,7 @@ def trial(
     confidenceRating: bool = True,
     feedback: bool = False,
     nTrial: Optional[int] = None,
-) -> Tuple[
-    str,
-    float,
-    float,
-    Optional[str],
-    Optional[float],
-    Optional[float],
-    Optional[float],
-    float,
-    Optional[bool],
-    bool,
-    bool,
-    float,
-    float,
-    float,
-    Optional[float],
-    Optional[float],
-    float,
-]:
+) -> TrialOutcome:
     """Run one trial of the Heart Rate Discrimination task.
 
     Parameters
@@ -347,47 +324,19 @@ def trial(
 
     Returns
     -------
-    condition : str
-        The trial condition, can be `'Higher'` or `'Lower'` depending on the
-        alpha value.
-    listenBPM : float
-        The frequency of the tones (exteroceptive condition) or of the heart
-        rate (interoceptive condition), expressed in BPM.
-    responseBPM : float
-        The frequency of thefeebdack tones, expressed in BPM.
-    decision : str
-        The participant decision. Can be `'up'` (the participant indicates
-        the beats are faster than the recorded heart rate) or `'down'` (the
-        participant indicates the beats are slower than recorded heart rate).
-    decisionRT : float
-        The response time from sound start to choice (seconds).
-    confidence : int
-        If confidenceRating is *True*, the confidence of the participant. The
-        range of the scale is defined in `parameters['confScale']`. Default is
-        `[1, 7]`.
-    confidenceRT : float
-        The response time (RT) for the confidence rating scale.
-    alpha : int
-        The difference between the true heart rate and the delivered tone BPM.
-        Alpha is defined by the stairCase.intensities values and is updated
-        on each trial.
-    isCorrect : int
-        `0` for incorrect response, `1` for correct responses. Note that this
-        value is not feeded to the staircase when using the (Yes/No) version
-        of the task, but instead will check if the response is `'More'` or not.
-    respProvided : bool
-        Was the decision provided (`True`) or not (`False`).
-    ratingProvided : bool
-        Was the rating provided (`True`) or not (`False`). If no decision was
-        provided, the ratig scale is not proposed and no ratings can be provided.
-    startTrigger, soundTrigger, responseMadeTrigger, ratingStartTrigger,\
-        ratingEndTrigger, endTrigger : float
-        Time stamp of key timepoints inside the trial.
+    outcome : TrialOutcome
+        Everything the trial measured: the condition, the heard and delivered
+        rates, the decision and whether it was correct, the confidence rating,
+        and the six timestamps. The field names are the results file's column
+        names -- see :class:`cardioception.HRD._outcome.TrialOutcome`, whose
+        :meth:`~cardioception.HRD._outcome.TrialOutcome.row` is the only place
+        that decides what a row contains.
+
     """
-    from psychopy import core, event, sound, visual
+    from psychopy import core, event, sound
 
     # Print infos at each trial start
-    print(f"Starting trial - Intensity: {alpha} - Modality: {modality}")
+    logger.info(f"Starting trial - Intensity: {alpha} - Modality: {modality}")
 
     parameters["win"].mouseVisible = False
 
@@ -395,143 +344,37 @@ def trial(
     confidence, confidenceRT, isCorrect, ratingProvided = None, None, None, False
 
     # Fixation cross
-    fixation = visual.GratingStim(
-        win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
+    fixation = fixation_cross(parameters)
+    hold(
+        parameters["win"],
+        parameters["rng"].uniform(parameters["isi"][0], parameters["isi"][1]),
+        fixation,
     )
-    fixation.draw()
-    parameters["win"].flip()
-    core.wait(np.random.uniform(parameters["isi"][0], parameters["isi"][1]))
 
     keys = event.getKeys()
     if "escape" in keys:
-        print("User abort")
+        logger.warning("User abort")
         parameters["win"].close()
         core.quit()
 
+    droppedAtStart = parameters["win"].nDroppedFrames
+    heartRateAttempts, heartRateAccepted = None, None
+
     if modality == "Intero":
-
-        ###########
-        # Recording
-        ###########
-        messageRecord = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, 0.2),
-            text=parameters["texts"]["textHeartListening"],
-        )
-        messageRecord.draw()
-
-        # Start recording trigger
-        parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
-
-        parameters["heartLogo"].draw()
-        parameters["win"].flip()
-
-        startTrigger = time.time()
-
-        # Recording
-        while True:
-
-            # Read the raw PPG signal from the pulse oximeter
-            # You can adapt these line to work with a different setup provided that
-            # it can measure and create the new variable `bpm` (the average beats per
-            # minute over the 5 seconds of recording).
-            signal = (
-                parameters["oxiTask"].read(duration=5.0).recording[-75 * 6 :]  # noqa
-            )
-            signal, peaks = ppg_peaks(signal, sfreq=75, new_sfreq=1000, clipping=True)
-
-            # Get actual heart Rate
-            # Only use the last 5 seconds of the recording
-            bpm = 60000 / np.diff(np.where(peaks[-5000:])[0])
-
-            # # for Nonin3231USB
-            # # Only use the last 5 seconds of the recording
-            # bpm =  pd.Series(parameters["oxiTask"].read(duration=5.0).bpm)[-5:]
-            # # use bpm as signal, Nonin3231USB gives no raw signal
-            # signal = bpm
-
-            print(f"... bpm: {[round(i) for i in bpm]}")
-
-            # Prevent crash if NaN value
-            if np.isnan(bpm).any() or (bpm is None) or (bpm.size == 0):
-                message = visual.TextStim(
-                    parameters["win"],
-                    height=parameters["textSize"],
-                    text=parameters["texts"]["checkOximeter"],
-                    color="red",
-                )
-                message.draw()
-                parameters["win"].flip()
-                core.wait(2)
-
-            else:
-                # Check for extreme heart rate values, if crosses theshold,
-                # hold the task until resolved. Cutoff values determined in
-                # parameters to correspond to biologically unlikely values.
-                if not (
-                    (np.any(bpm < parameters["HRcutOff"][0]))
-                    or (np.any(bpm > parameters["HRcutOff"][1]))
-                ):
-                    listenBPM = round(bpm.mean() * 2) / 2  # Round nearest .5
-                    break
-                else:
-                    message = visual.TextStim(
-                        parameters["win"],
-                        height=parameters["textSize"],
-                        text=parameters["texts"]["stayStill"],
-                        color="red",
-                    )
-                    message.draw()
-                    parameters["win"].flip()
-                    core.wait(2)
-
+        reading = listen_to_heart(parameters)
     elif modality == "Extero":
-
-        ###########
-        # Recording
-        ###########
-        messageRecord = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, 0.2),
-            text=parameters["texts"]["textToneListening"],
-        )
-        messageRecord.draw()
-
-        # Start recording trigger
-        parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
-
-        parameters["listenLogo"].draw()
-        parameters["win"].flip()
-
-        startTrigger = time.time()
-
-        # Random selection of HR frequency
-        listenBPM = np.random.choice(np.arange(40, 100, 0.5))
-
-        # Play the corresponding beat file
-        listenFile = resource_filename("cardioception.HRD", f"Sounds/{listenBPM}.wav")
-        print(f"...loading file (Listen): {listenFile}")
-
-        # Play selected BPM frequency
-        listenSound = sound.Sound(listenFile)
-        listenSound.play()
-        core.wait(5)
-        listenSound.stop()
-
+        reading = listen_to_tone(parameters)
     else:
-        raise ValueError("Invalid modality")
+        raise ValueError(f"modality should be 'Intero' or 'Extero', got {modality!r}")
 
+    listenBPM = reading.bpm
+    listenBPM_arithmetic = reading.bpm_arithmetic
+    startTrigger = reading.started
+    signal, recordedAt = reading.signal, reading.recorded_at
+    heartRateAttempts, heartRateAccepted = reading.attempts, reading.accepted
     # Fixation cross
-    fixation = visual.GratingStim(
-        win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
-    )
-    fixation.draw()
-    parameters["win"].flip()
-    core.wait(0.5)
+    fixation = fixation_cross(parameters)
+    hold(parameters["win"], 0.5, fixation)
 
     #######
     # Sound
@@ -542,14 +385,14 @@ def trial(
 
     # Check for extreme alpha values, e.g. if alpha changes massively from
     # trial to trial.
-    if (listenBPM + alpha) < 15:
-        responseBPM = 15.0
-    elif (listenBPM + alpha) > 199:
-        responseBPM = 199.0
+    if (listenBPM + alpha) < TONE_BPM_MIN:
+        responseBPM = TONE_BPM_MIN
+    elif (listenBPM + alpha) > TONE_BPM_MAX:
+        responseBPM = TONE_BPM_MAX
     else:
         responseBPM = listenBPM + alpha
     responseFile = resource_filename("cardioception.HRD", f"Sounds/{responseBPM}.wav")
-    print(f"...loading file (Response): {responseFile}")
+    logger.info(f"...loading file (Response): {responseFile}")
 
     # Play selected BPM frequency
     responseSound = sound.Sound(responseFile)
@@ -560,25 +403,16 @@ def trial(
     else:
         raise ValueError("Invalid modality provided")
     # Record participant response (+/-)
-    message = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0, 0.4),
-        text=parameters["texts"]["Decision"][modality],
-    )
+    message = text(parameters, parameters["texts"]["Decision"][modality], pos=(0, 0.4))
     message.autoDraw = True
 
-    press = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        text=parameters["texts"]["responseText"],
-        pos=(0.0, -0.4),
-    )
+    press = text(parameters, parameters["texts"]["responseText"], pos=(0.0, -0.4))
     press.autoDraw = True
 
     # Sound trigger
     parameters["oxiTask"].readInWaiting()
-    parameters["oxiTask"].channels["Channel_0"][-1] = 3
+    parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.DECISION_START
+    fire(parameters, "decisionStart")
     soundTrigger = time.time()
     parameters["win"].flip()
 
@@ -587,7 +421,6 @@ def trial(
     #####################
     (
         responseMadeTrigger,
-        responseTrigger,
         respProvided,
         decision,
         decisionRT,
@@ -607,10 +440,10 @@ def trial(
 
     # Record participant confidence
     if (confidenceRating is True) & (respProvided is True):
-
         # Confidence rating start trigger
         parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 4  # Trigger
+        parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.CONFIDENCE_START
+        fire(parameters, "confidenceStart")
 
         # Confidence rating scale
         ratingStartTrigger: Optional[float] = time.time()
@@ -625,7 +458,8 @@ def trial(
 
     # Confidence rating end trigger
     parameters["oxiTask"].readInWaiting()
-    parameters["oxiTask"].channels["Channel_0"][-1] = 5
+    parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.TRIAL_STOP
+    fire(parameters, "trialStop")
     endTrigger = time.time()
 
     # Save PPG signal
@@ -633,10 +467,21 @@ def trial(
         if modality == "Intero":
             this_df = None
             # Save physio signal
+            # Absolute time per sample, so the signal can be aligned
+            # with the trial triggers and with anything recorded alongside
+            # it. Counted back from the moment the accepted window was
+            # read, at the rate ppg_peaks resampled to.
+            nSamples = len(signal)
+            # Only the interoceptive path records, so `recorded_at` is set
+            # here by construction; it is None only for Extero, which cannot
+            # reach this branch.
+            recordedAt = cast(float, recordedAt)
             this_df = pd.DataFrame(
                 {
                     "signal": signal,
-                    "nTrial": pd.Series([nTrial] * len(signal), dtype="category"),
+                    "time": recordedAt
+                    - (nSamples - 1 - np.arange(nSamples)) / PPG_SFREQ,
+                    "nTrial": pd.Series([nTrial] * nSamples, dtype="category"),
                 }
             )
 
@@ -644,25 +489,176 @@ def trial(
                 [parameters["signal_df"], this_df], ignore_index=True
             )
 
-    return (
-        condition,
-        listenBPM,
-        responseBPM,
-        decision,
-        decisionRT,
-        confidence,
-        confidenceRT,
-        alpha,
-        isCorrect,
-        respProvided,
-        ratingProvided,
-        startTrigger,
-        soundTrigger,
-        responseMadeTrigger,
-        ratingStartTrigger,
-        ratingEndTrigger,
-        endTrigger,
+    quality = {
+        "listenBPM_arithmetic": listenBPM_arithmetic,
+        "HeartRateAttempts": heartRateAttempts,
+        "HeartRateAccepted": heartRateAccepted,
+        "DroppedFrames": parameters["win"].nDroppedFrames - droppedAtStart,
+    }
+
+    return TrialOutcome(
+        condition=condition,
+        listenBPM=listenBPM,
+        responseBPM=responseBPM,
+        decision=decision,
+        decisionRT=decisionRT,
+        confidence=confidence,
+        confidenceRT=confidenceRT,
+        alpha=alpha,
+        isCorrect=isCorrect,
+        respProvided=respProvided,
+        ratingProvided=ratingProvided,
+        startTrigger=startTrigger,
+        soundTrigger=soundTrigger,
+        responseMadeTrigger=responseMadeTrigger,
+        ratingStartTrigger=ratingStartTrigger,
+        ratingEndTrigger=ratingEndTrigger,
+        endTrigger=endTrigger,
+        quality=quality,
     )
+
+
+def listen_to_heart(parameters: dict) -> HeartRateReading:
+    """Record the participant's pulse and derive the rate the tone will match.
+
+    Bounded and escapable. This loop was unbounded and polled no keys, so a
+    single artefactual interval could hold a participant on the listening
+    screen indefinitely: np.any rejects the whole window on one bad value. On
+    running out of attempts it takes the last window anyway and flags the
+    trial, which is recoverable; a session that never advances is not.
+
+    This is the only place the task touches physiology, which is what makes it
+    the seam a different recording device would be fitted at.
+    """
+    from psychopy import core, event
+
+    messageRecord = text(
+        parameters, parameters["texts"]["textHeartListening"], pos=(0.0, 0.2)
+    )
+    messageRecord.draw()
+
+    parameters["oxiTask"].readInWaiting()
+    parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.LISTENING_START
+    fire(parameters, "listeningStart")
+
+    parameters["heartLogo"].draw()
+    parameters["win"].flip()
+
+    started = time.time()
+    maxAttempts = parameters.get("maxHeartRateAttempts", 10)
+    listenBPM = None
+    listenBPM_arithmetic = None
+    attempt = 0
+    signal = None
+    recordedAt = None
+
+    for attempt in range(maxAttempts):
+        if "escape" in event.getKeys(keyList=["escape"]):
+            logger.warning("User abort")
+            parameters["win"].close()
+            core.quit()
+
+        # Adapt these lines for a different setup, provided it can produce
+        # `bpm`, the per-beat rates over the listening window.
+        signal = (
+            parameters["oxiTask"]
+            .read(duration=LISTENING_DURATION)
+            .recording[-OXIMETER_SFREQ * ANALYSIS_WINDOW :]  # noqa
+        )
+        signal, peaks = ppg_peaks(
+            signal, sfreq=OXIMETER_SFREQ, new_sfreq=PPG_SFREQ, clipping=True
+        )
+        recordedAt = time.time()
+
+        ibi = np.diff(np.where(peaks[-PEAK_WINDOW_SAMPLES:])[0])
+        bpm = 60000 / ibi
+        logger.info(f"... bpm: {[round(i) for i in bpm]}")
+
+        if np.isnan(bpm).any() or (bpm is None) or (bpm.size == 0):
+            message = text(
+                parameters, parameters["texts"]["checkOximeter"], color="red"
+            )
+            hold(parameters["win"], 2, message)
+            continue
+
+        # Cutoffs correspond to biologically unlikely values.
+        outside = (np.any(bpm < parameters["HRcutOff"][0])) or (
+            np.any(bpm > parameters["HRcutOff"][1])
+        )
+        if outside:
+            message = text(parameters, parameters["texts"]["stayStill"], color="red")
+            hold(parameters["win"], 2, message)
+            continue
+
+        # Rate over the window, not the average of the per-beat rates.
+        # Averaging 60000/IBI overestimates by Jensen's inequality, measured at
+        # +0.33 BPM on real PPG, so the tone was reliably faster than the heart
+        # it was meant to match. Rounded to the nearest .5 for the sound files.
+        listenBPM = round((60000 / ibi.mean()) * 2) / 2
+        listenBPM_arithmetic = round(bpm.mean() * 2) / 2
+        break
+
+    accepted = listenBPM is not None
+    if listenBPM is None or listenBPM_arithmetic is None:
+        logger.warning(f"... no acceptable heart rate after {maxAttempts} attempts.")
+        usable = bpm.size and not np.isnan(bpm).all()
+        fallback = float(np.mean(parameters["HRcutOff"]))
+        listenBPM = round((60000 / np.nanmean(ibi)) * 2) / 2 if usable else fallback
+        listenBPM_arithmetic = (
+            round(float(np.nanmean(bpm)) * 2) / 2 if usable else fallback
+        )
+
+    return HeartRateReading(
+        bpm=listenBPM,
+        bpm_arithmetic=listenBPM_arithmetic,
+        signal=signal,
+        recorded_at=recordedAt,
+        attempts=attempt + 1,
+        accepted=accepted,
+        started=started,
+    )
+
+
+def listen_to_tone(parameters: dict) -> HeartRateReading:
+    """Play a reference tone at a random rate: the exteroceptive control.
+
+    Nothing is recorded, so the two averages coincide and there is no heart
+    rate to accept or reject.
+    """
+    from psychopy import sound
+
+    messageRecord = text(
+        parameters, parameters["texts"]["textToneListening"], pos=(0.0, 0.2)
+    )
+    messageRecord.draw()
+
+    parameters["oxiTask"].readInWaiting()
+    parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.LISTENING_START
+    fire(parameters, "listeningStart")
+
+    parameters["listenLogo"].draw()
+    parameters["win"].flip()
+
+    started = time.time()
+    listenBPM = parameters["rng"].choice(np.arange(*parameters["exteroBPMRange"]))
+
+    listenFile = resource_filename("cardioception.HRD", f"Sounds/{listenBPM}.wav")
+    logger.info(f"...loading file (Listen): {listenFile}")
+
+    # 5 s matches the interoceptive recording window, so both modalities give
+    # the same listening time. Do not derive it from the rate. Parameterised
+    # only so tests can shorten it.
+    listenSound = sound.Sound(listenFile)
+    listenSound.play()
+    hold(
+        parameters["win"],
+        parameters["listeningDuration"],
+        messageRecord,
+        parameters["listenLogo"],
+    )
+    listenSound.stop()
+
+    return HeartRateReading(bpm=listenBPM, bpm_arithmetic=listenBPM, started=started)
 
 
 def waitInput(parameters: dict):
@@ -670,117 +666,131 @@ def waitInput(parameters: dict):
 
     from psychopy import core, event
 
+    # A synthetic participant advances at once. Whatever was drawn before this
+    # call has already been drawn and flipped, so the screen is still exercised.
+    if parameters.get("autopilot") is not None:
+        parameters["autopilot"].advance()
+        return
+
     if parameters["device"] == "keyboard":
+        # Without this, a key pressed earlier is still buffered and dismisses
+        # this screen before it is read.
+        event.clearEvents(eventType="keyboard")
         while True:
             keys = event.getKeys()
             if "escape" in keys:
-                print("User abort")
+                logger.warning("User abort")
                 parameters["win"].close()
                 core.quit()
             elif parameters["startKey"] in keys:
                 break
     elif parameters["device"] == "mouse":
-        parameters["myMouse"].clickReset()
+        mouse = parameters["myMouse"]
+        mouse.clickReset()
+        # clickReset resets click times, not button state, so a button still
+        # held from the previous screen reads as a fresh press. Wait for a
+        # release, then for a press.
+        armed = not any(mouse.getPressed())
         while True:
-            buttons = parameters["myMouse"].getPressed()
-            if buttons != [0, 0, 0]:
+            buttons, armed = accept_press(mouse.getPressed(), armed)
+            if any(buttons):
                 break
             keys = event.getKeys()
             if "escape" in keys:
-                print("User abort")
+                logger.warning("User abort")
                 parameters["win"].close()
                 core.quit()
 
 
-def tutorial(parameters: dict):
-    """Run tutorial before task run.
+#: The tutorial, phase by phase, in the order participants meet them.
+#:
+#: A tutorial is the experiment in miniature: instruction screens interleaved
+#: with short practice blocks that differ in what the participant is asked to
+#: do. Written out this way the sequence is visible and editable — which
+#: screens, in what order, how long each practice block runs and at what
+#: difficulty — without touching the code that presents it.
+TUTORIAL = (
+    Screen([("Tutorial1", (0.0, 0.0))]),
+    Screen([("pulseTutorial1", (0.0, 0.3))], image="pulseSchema"),
+    # The Danish children's version leaves pulseTutorial2 empty to skip this.
+    Screen(
+        [("pulseTutorial2", (0.0, 0.2)), ("pulseTutorial3", (0.0, -0.2))],
+        requires="pulseTutorial2",
+    ),
+    AskFingerNumber(
+        screen=Screen(
+            [("pulseTutorial4", (0.0, 0.3))],
+            image="handSchema",
+            prompt=False,
+            wait=False,
+        ),
+    ),
+    Screen([("Tutorial2", (0.0, 0.3))], image="heartLogo"),
+    # The icon is drawn before the text here. Preserved from the original.
+    Screen([("Tutorial3_icon", (0.0, 0.3))], image="heartLogo", image_first=True),
+    Screen([("Tutorial3_responses", (0.0, 0.0))]),
+    # First practice: judge, with feedback, at an easy fixed difference.
+    Practice("Intero", count="nFeedback", feedback=True, intensities=(20.0,)),
+    Screen([("Tutorial3bis", (0.0, -0.2))], image="listenLogo", extero_only=True),
+    Screen([("Tutorial3ter", (0.0, 0.0))], extero_only=True),
+    Practice(
+        "Extero",
+        count="nFeedback",
+        feedback=True,
+        intensities=(20.0,),
+        extero_only=True,
+    ),
+    Screen([("Tutorial4", (0.0, 0.0))]),
+    # Second practice: judge and rate confidence, no feedback, mixed difficulty.
+    Practice("Intero", count="nConfidence", rating=True, intensities=(1, 10, 30)),
+    Practice(
+        "Extero",
+        count="nConfidence",
+        rating=True,
+        intensities=(1, 10, 30),
+        # The original does not reset the recording before this block. Extero
+        # records nothing, so it makes no difference, but it is preserved
+        # rather than quietly regularised.
+        setup_recording=False,
+        extero_only=True,
+    ),
+    Screen([("Tutorial5", (0.0, 0.0))]),
+    Screen([("Tutorial6", (0.0, 0.0))]),
+)
 
-    Parameters
-    ----------
-    parameters : dict
-        Task parameters.
 
+def show_screen(parameters: dict, screen, prompt=None) -> list:
+    """Draw one instruction screen and, unless told otherwise, wait.
+
+    Returns the stimuli it built, so a caller that keeps the screen up can
+    redraw the same objects rather than constructing them again.
     """
+    stims = [
+        text(parameters, parameters["texts"][key], pos=pos) for key, pos in screen.texts
+    ]
+    if screen.image:
+        image = parameters[screen.image]
+        stims = [image] + stims if screen.image_first else stims + [image]
+    if screen.prompt and prompt is not None:
+        stims.append(prompt)
 
-    from psychopy import core, event, visual
-
-    # Introduction
-    intro = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        text=parameters["texts"]["Tutorial1"],
-    )
-    press = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, -0.4),
-        text=parameters["texts"]["textNext"],
-    )
-    intro.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
-
-    waitInput(parameters)
-
-    # Pusle oximeter tutorial
-    pulse1 = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.3),
-        text=parameters["texts"]["pulseTutorial1"],
-    )
-    press = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, -0.4),
-        text=parameters["texts"]["textNext"],
-    )
-    pulse1.draw()
-    parameters["pulseSchema"].draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
-
-    waitInput(parameters)
-
-    # Get finger number - Skip this part for the danish_children version (empty string)
-    if parameters["texts"]["pulseTutorial2"]:
-        pulse2 = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, 0.2),
-            text=parameters["texts"]["pulseTutorial2"],
-        )
-        pulse3 = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, -0.2),
-            text=parameters["texts"]["pulseTutorial3"],
-        )
-        pulse2.draw()
-        pulse3.draw()
-        press.draw()
-        parameters["win"].flip()
-        core.wait(1)
-
+    hold(parameters["win"], screen.seconds, *stims)
+    if screen.wait:
         waitInput(parameters)
+    return stims
 
-    pulse4 = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.3),
-        text=parameters["texts"]["pulseTutorial4"],
-    )
-    pulse4.draw()
-    parameters["handSchema"].draw()
-    parameters["win"].flip()
-    core.wait(1)
 
-    # Record number
-    nFinger = ""
+def ask_finger_number(parameters: dict, step) -> None:
+    """Record which finger the oximeter is on.
+
+    Kept apart from the screen table because it is the one place the tutorial
+    reads something other than "continue" from the participant.
+    """
+    from psychopy import event
+
+    stims = show_screen(parameters, step.screen)
+
     while True:
-        # Record new key
         key = event.waitKeys(
             keyList=[
                 "1",
@@ -796,184 +806,45 @@ def tutorial(parameters: dict):
             ]
         )
         if key:
-            nFinger += [s for s in key[0] if s.isdigit()][0]
-
-            # Save the finger number in the task parameters dictionary
-            parameters["nFinger"] = nFinger
-
-            core.wait(0.5)
+            parameters["nFinger"] = [s for s in key[0] if s.isdigit()][0]
+            hold(parameters["win"], 0.5, *stims)
             break
 
-    # Heartrate recording
-    recording = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.3),
-        text=parameters["texts"]["Tutorial2"],
-    )
-    recording.draw()
-    parameters["heartLogo"].draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
 
-    waitInput(parameters)
+def run_practice(parameters: dict, block) -> None:
+    """A short run of the real task, at fixed difficulty."""
+    if block.setup_recording:
+        parameters["oxiTask"].setup().read(duration=2)
 
-    # Show reponse icon
-    listenIcon = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.3),
-        text=parameters["texts"]["Tutorial3_icon"],
-    )
-    parameters["heartLogo"].draw()
-    listenIcon.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
-
-    waitInput(parameters)
-
-    # Response instructions
-    listenResponse = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.0),
-        text=parameters["texts"]["Tutorial3_responses"],
-    )
-    listenResponse.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
-
-    waitInput(parameters)
-
-    # Run training trials with feedback
-    parameters["oxiTask"].setup().read(duration=2)
-    for i in range(parameters["nFeedback"]):
-
-        # Ramdom selection of condition
-        condition = np.random.choice(["More", "Less"])
-        alpha = -20.0 if condition == "Less" else 20.0
-
+    for _ in range(parameters[block.count]):
+        condition = parameters["rng"].choice(["More", "Less"])
+        magnitude = parameters["rng"].choice(np.array(block.intensities))
+        alpha = -magnitude if condition == "Less" else magnitude
         _ = trial(
             parameters,
             alpha,
-            "Intero",
-            feedback=True,
-            confidenceRating=False,
+            block.modality,
+            feedback=block.feedback,
+            confidenceRating=block.rating,
         )
 
-    # If extero conditions required, show tutorial.
-    if parameters["ExteroCondition"] is True:
-        exteroText = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, -0.2),
-            text=parameters["texts"]["Tutorial3bis"],
-        )
-        exteroText.draw()
-        parameters["listenLogo"].draw()
-        press.draw()
-        parameters["win"].flip()
-        core.wait(1)
 
-        waitInput(parameters)
+def tutorial(parameters: dict):
+    """Walk the participant through the task before it starts.
 
-        exteroResponse = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, 0.0),
-            text=parameters["texts"]["Tutorial3ter"],
-        )
-        exteroResponse.draw()
-        press.draw()
-        parameters["win"].flip()
-        core.wait(1)
+    The sequence lives in :data:`TUTORIAL`; this only presents it.
+    """
+    prompt = text(parameters, parameters["texts"]["textNext"], pos=(0.0, -0.4))
 
-        waitInput(parameters)
-
-        # Run 10 training trials with feedback
-        parameters["oxiTask"].setup().read(duration=2)
-        for i in range(parameters["nFeedback"]):
-
-            # Ramdom selection of condition
-            condition = np.random.choice(["More", "Less"])
-            alpha = -20.0 if condition == "Less" else 20.0
-
-            _ = trial(
-                parameters,
-                alpha,
-                "Extero",
-                feedback=True,
-                confidenceRating=False,
-            )
-
-    ###################
-    # Confidence rating
-    ###################
-    confidenceText = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        text=parameters["texts"]["Tutorial4"],
-    )
-    confidenceText.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
-
-    waitInput(parameters)
-
-    parameters["oxiTask"].setup().read(duration=2)
-
-    # Run n training trials with confidence rating
-    for i in range(parameters["nConfidence"]):
-        modality = "Intero"
-        condition = np.random.choice(["More", "Less"])
-        stim_intense = np.random.choice(np.array([1, 10, 30]))
-        alpha = -stim_intense if condition == "Less" else stim_intense
-        _ = trial(parameters, alpha, modality, confidenceRating=True)
-
-    # If extero conditions required, show tutorial.
-    if parameters["ExteroCondition"] is True:
-        # Run n training trials with confidence rating
-        for i in range(parameters["nConfidence"]):
-            modality = "Extero"
-            condition = np.random.choice(["More", "Less"])
-            stim_intense = np.random.choice(np.array([1, 10, 30]))
-            alpha = -stim_intense if condition == "Less" else stim_intense
-            _ = trial(
-                parameters,
-                alpha,
-                modality,
-                confidenceRating=True,
-            )
-
-    #################
-    # End of tutorial
-    #################
-    taskPresentation = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        text=parameters["texts"]["Tutorial5"],
-    )
-    taskPresentation.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
-    waitInput(parameters)
-
-    # Task
-    taskPresentation = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        text=parameters["texts"]["Tutorial6"],
-    )
-    taskPresentation.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
-    waitInput(parameters)
+    for step in TUTORIAL:
+        if step.skipped(parameters):
+            continue
+        if isinstance(step, Practice):
+            run_practice(parameters, step)
+        elif isinstance(step, AskFingerNumber):
+            ask_finger_number(parameters, step)
+        else:
+            show_screen(parameters, step, prompt)
 
 
 def responseDecision(
@@ -981,9 +852,7 @@ def responseDecision(
     parameters: dict,
     feedback: bool,
     condition: str,
-) -> Tuple[
-    float, Optional[float], bool, Optional[str], Optional[float], Optional[bool]
-]:
+) -> Tuple[float, bool, Optional[str], Optional[float], Optional[bool]]:
     """Recording response during the decision phase.
 
     Parameters
@@ -1002,12 +871,10 @@ def responseDecision(
     -------
     responseMadeTrigger : float
         Time stamp of response provided.
-    responseTrigger : float
-        Time stamp of response start.
     respProvided : bool
         `True` if the response was provided, `False` otherwise.
     decision : str or None
-        The decision made ('Higher', 'Lower' or None)
+        `'More'`, `'Less'`, or `None` if no response was given in time.
     decisionRT : float
         Decision response time (seconds).
     isCorrect : bool or None
@@ -1015,21 +882,45 @@ def responseDecision(
 
     """
 
-    from psychopy import core, event, visual
+    from psychopy import core, event
 
-    print("...starting decision phase.")
+    logger.info("...starting decision phase.")
 
     decision, decisionRT, isCorrect = None, None, None
-    responseTrigger = time.time()
 
     if parameters["device"] == "keyboard":
         this_hr.play()
         clock = core.Clock()
-        responseKey = event.waitKeys(
-            keyList=parameters["allowedKeys"],
-            maxWait=parameters["respMax"],
-            timeStamped=clock,
-        )
+        pilot = parameters.get("autopilot")
+        if pilot is not None:
+            # Answer in the condition's own terms, then map back to the key.
+            # Passing allowedKeys ("up"/"down") meant `condition in options`
+            # was never true, so the autopilot fell through to a uniform draw
+            # and every keyboard session ran at chance whatever `accuracy`
+            # said. The mouse branch passes ["Less", "More"] and was correct.
+            response_keys = parameters["response_keys"]
+            answer = pilot.decide(
+                condition,
+                list(response_keys),
+                max_wait=parameters["respMax"],
+            )
+            # Same shape event.waitKeys returns: [[key, rt]] or None.
+            responseKey = (
+                [[response_keys[answer[0]], answer[1]]] if answer is not None else None
+            )
+        else:
+            # `escape` has to be in keyList or waitKeys discards it, and the
+            # abort is then lost rather than merely deferred.
+            responseKey = event.waitKeys(
+                keyList=list(parameters["allowedKeys"]) + ["escape"],
+                maxWait=parameters["respMax"],
+                timeStamped=clock,
+            )
+            if responseKey and responseKey[0][0] == "escape":
+                this_hr.stop()
+                logger.warning("User abort")
+                parameters["win"].close()
+                core.quit()
         this_hr.stop()
 
         responseMadeTrigger = time.time()
@@ -1039,14 +930,8 @@ def responseDecision(
             respProvided = False
             decision, decisionRT = None, None
             # Record participant response (+/-)
-            message = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                text=parameters["texts"]["tooLate"],
-            )
-            message.draw()
-            parameters["win"].flip()
-            core.wait(1)
+            message = text(parameters, parameters["texts"]["tooLate"])
+            hold(parameters["win"], 1, message)
         else:
             respProvided = True
             decision = responseKey[0][0]
@@ -1068,42 +953,19 @@ def responseDecision(
             # Feedback
             if feedback is True:
                 if isCorrect is False:
-                    acc = visual.TextStim(
-                        parameters["win"],
-                        height=parameters["textSize"],
-                        color="red",
-                        text="False",
-                    )
-                    acc.draw()
-                    parameters["win"].flip()
-                    core.wait(2)
+                    acc = text(parameters, "False", color="red")
+                    hold(parameters["win"], 2, acc)
                 elif isCorrect is True:
-                    acc = visual.TextStim(
-                        parameters["win"],
-                        height=parameters["textSize"],
-                        color="green",
-                        text="Correct",
-                    )
-                    acc.draw()
-                    parameters["win"].flip()
-                    core.wait(2)
+                    acc = text(parameters, "Correct", color="green")
+                    hold(parameters["win"], 2, acc)
 
     if parameters["device"] == "mouse":
-
         # Initialise response feedback
-        slower = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            color="white",
-            text=parameters["texts"]["slower"],
-            pos=(-0.2, 0.2),
+        slower = text(
+            parameters, parameters["texts"]["slower"], pos=(-0.2, 0.2), color="white"
         )
-        faster = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            color="white",
-            text=parameters["texts"]["faster"],
-            pos=(0.2, 0.2),
+        faster = text(
+            parameters, parameters["texts"]["faster"], pos=(0.2, 0.2), color="white"
         )
         slower.draw()
         faster.draw()
@@ -1114,33 +976,52 @@ def responseDecision(
         clock.reset()
         parameters["myMouse"].clickReset()
         buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
+        pilot = parameters.get("autopilot")
+        # A button still held from the previous trial must not count as an
+        # answer here. Only a release-then-press is accepted.
+        armed = not any(parameters["myMouse"].getPressed())
         while True:
-            buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
-            trialdur = clock.getTime()
+            if pilot is not None:
+                answer = pilot.decide(
+                    condition, ["Less", "More"], max_wait=parameters["respMax"]
+                )
+                if answer is None:
+                    # Drive the existing timeout branch rather than duplicating it.
+                    buttons, decisionRT = [0, 0, 0], [0.0, 0.0, 0.0]
+                    trialdur = parameters["respMax"] + 1.0
+                else:
+                    _decision, _rt = answer
+                    buttons = [1, 0, 0] if _decision == "Less" else [0, 0, 1]
+                    decisionRT, trialdur = [_rt, 0.0, _rt], _rt
+            else:
+                if "escape" in event.getKeys(keyList=["escape"]):
+                    this_hr.stop()
+                    logger.warning("User abort")
+                    parameters["win"].close()
+                    core.quit()
+                buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
+                trialdur = clock.getTime()
+                buttons, armed = accept_press(buttons, armed)
             parameters["oxiTask"].readInWaiting()
             if buttons == [1, 0, 0]:
                 decisionRT = decisionRT[0]
                 decision, respProvided = "Less", True
                 slower.color = "blue"
-                slower.draw()
-                parameters["win"].flip()
 
                 # Show feedback for .5 seconds if enough time
                 remain = parameters["respMax"] - trialdur
                 pauseFeedback = 0.5 if (remain > 0.5) else remain
-                core.wait(pauseFeedback)
+                hold(parameters["win"], pauseFeedback, slower, faster)
                 break
             elif buttons == [0, 0, 1]:
                 decisionRT = decisionRT[-1]
                 decision, respProvided = "More", True
                 faster.color = "blue"
-                faster.draw()
-                parameters["win"].flip()
 
                 # Show feedback for .5 seconds if enough time
                 remain = parameters["respMax"] - trialdur
                 pauseFeedback = 0.5 if (remain > 0.5) else remain
-                core.wait(pauseFeedback)
+                hold(parameters["win"], pauseFeedback, slower, faster)
                 break
             elif trialdur > parameters["respMax"]:  # if too long
                 respProvided = False
@@ -1156,16 +1037,10 @@ def responseDecision(
         # Check for response provided by the participant
         if respProvided is False:
             # Record participant response (+/-)
-            message = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                text=parameters["texts"]["tooLate"],
-                color="red",
-                pos=(0.0, -0.2),
+            message = text(
+                parameters, parameters["texts"]["tooLate"], pos=(0.0, -0.2), color="red"
             )
-            message.draw()
-            parameters["win"].flip()
-            core.wait(0.5)
+            hold(parameters["win"], 0.5, message)
         else:
             # Is the answer Correct?
             isCorrect = True if (decision == condition) else False
@@ -1176,20 +1051,13 @@ def responseDecision(
                 else:
                     textFeedback = parameters["texts"]["correctResponse"]
                 colorFeedback = "red" if isCorrect == 0 else "green"
-                acc = visual.TextStim(
-                    parameters["win"],
-                    height=parameters["textSize"],
-                    pos=(0.0, -0.2),
-                    color=colorFeedback,
-                    text=textFeedback,
+                acc = text(
+                    parameters, textFeedback, pos=(0.0, -0.2), color=colorFeedback
                 )
-                acc.draw()
-                parameters["win"].flip()
-                core.wait(1)
+                hold(parameters["win"], 1, acc)
 
     return (
         responseMadeTrigger,
-        responseTrigger,
         respProvided,
         decision,
         decisionRT,
@@ -1213,19 +1081,27 @@ def confidenceRatingTask(
 
     from .._rating import keyboard_rating
 
-    print("...starting confidence rating.")
+    logger.info("...starting confidence rating.")
 
     # Initialise default values
     confidence, confidenceRT = None, None
 
-    if parameters["device"] == "keyboard":
-
-        message = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0, 0.2),
-            text=parameters["texts"]["Confidence"],
+    pilot = parameters.get("autopilot")
+    if pilot is not None:
+        # The rating widget itself is covered by its own tests; here we only
+        # need a value of the right shape so the session can run unattended.
+        answer = pilot.rate(
+            *parameters["confidenceScale"].bounds,
+            min_time=parameters["minRatingTime"],
+            max_wait=parameters["maxRatingTime"],
         )
+        if answer is None:
+            return None, None, False, time.time()
+        confidence, confidenceRT = answer
+        return confidence, confidenceRT, True, time.time()
+
+    if parameters["device"] == "keyboard":
+        message = text(parameters, parameters["texts"]["Confidence"], pos=(0, 0.2))
 
         # Arrow keys move the marker, the down key confirms. This was a
         # visual.RatingScale until PsychoPy 2026 moved that class into the
@@ -1233,45 +1109,42 @@ def confidenceRatingTask(
         # PluginRequiredError. Slider is the supported replacement and is what
         # the mouse branch below already used, so both devices now show the
         # same widget.
+        scale = parameters["confidenceScale"]
         confidence, confidenceRT, ratingProvided = keyboard_rating(
             win=parameters["win"],
             message=message,
-            low=parameters["confScale"][0],
-            high=parameters["confScale"][1],
-            labels=parameters["labelsRating"],
+            low=scale.low,
+            high=scale.high,
+            labels=scale.labels,
+            granularity=scale.granularity,
             min_time=parameters["minRatingTime"],
             max_time=parameters["maxRatingTime"],
             label_height=parameters["textSize"] * 0.6,
+            rng=parameters["rng"],
         )
         if ratingProvided and confidenceRT is not None:
-            print(
+            logger.info(
                 f"... Confidence level: {confidence}"
                 + f" with response time {round(confidenceRT, 2)} seconds"
             )
 
     elif parameters["device"] == "mouse":
-
         # Use the mouse position to update the slider position
         # The mouse movement is limited to a rectangle above the Slider
         # To avoid being dragged out of the screen (in case of multi screens)
         # and to avoid interferences with the Slider when clicking.
         parameters["win"].mouseVisible = False
-        parameters["myMouse"].setPos((np.random.uniform(-0.25, 0.25), 0.2))
+        parameters["myMouse"].setPos((parameters["rng"].uniform(-0.25, 0.25), 0.2))
         parameters["myMouse"].clickReset()
-        message = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0, 0.2),
-            text=parameters["texts"]["Confidence"],
-        )
+        message = text(parameters, parameters["texts"]["Confidence"], pos=(0, 0.2))
         slider = visual.Slider(
             win=parameters["win"],
             name="slider",
             pos=(0, -0.2),
             size=(0.7, 0.1),
-            labels=parameters["texts"]["VASlabels"],
-            granularity=1,
-            ticks=(0, 100),
+            labels=parameters["confidenceScale"].labels,
+            granularity=parameters["confidenceScale"].granularity,
+            ticks=parameters["confidenceScale"].bounds,
             style=("rating"),
             color="LightGray",
             flip=False,
@@ -1281,11 +1154,16 @@ def confidenceRatingTask(
         clock = core.Clock()
         parameters["myMouse"].clickReset()
         buttons, confidenceRT = parameters["myMouse"].getPressed(getTime=True)
+        # The button used to answer the decision is often still down here, and
+        # would submit the rating on the first frame past minRatingTime with
+        # whatever value the marker happened to hold.
+        armed = not any(buttons)
 
         while True:
             parameters["win"].mouseVisible = False
             trialdur = clock.getTime()
             buttons, confidenceRT = parameters["myMouse"].getPressed(getTime=True)
+            buttons, armed = accept_press(buttons, armed)
 
             # Mouse position (keep in in the rectangle)
             newPos = parameters["myMouse"].getPos()
@@ -1303,9 +1181,10 @@ def confidenceRatingTask(
                 newY = newPos[1]
             parameters["myMouse"].setPos((newX, newY))
 
-            # Update marker position in Slider
+            # Marker position from the mouse, expressed on whichever scale
+            # the session is using rather than assuming 0-100.
             p = newX / 0.5
-            slider.markerPos = 50 + (p * 50)
+            slider.markerPos = parameters["confidenceScale"].from_unit((p + 1) / 2)
 
             # Check if response provided
             if (buttons == [1, 0, 0]) & (trialdur > parameters["minRatingTime"]):
@@ -1315,32 +1194,26 @@ def confidenceRatingTask(
                     True,
                 )
                 if confidenceRT is not None:
-                    print(
+                    logger.info(
                         f"... Confidence level: {confidence}"
                         + f" with response time {round(confidenceRT, 2)} seconds"
                     )
                 # Change marker color after response provided
                 slider.marker.color = "green"
-                slider.draw()
-                message.draw()
-                parameters["win"].flip()
-                core.wait(0.2)
+                hold(parameters["win"], 0.2, slider, message)
                 break
             elif trialdur > parameters["maxRatingTime"]:  # if too long
                 ratingProvided = False
                 confidenceRT = parameters["myMouse"].clickReset()
 
                 # Text feedback if no rating provided
-                message = visual.TextStim(
-                    parameters["win"],
-                    height=parameters["textSize"],
-                    text=parameters["texts"]["tooLate"],
-                    color="red",
+                message = text(
+                    parameters,
+                    parameters["texts"]["tooLate"],
                     pos=(0.0, -0.2),
+                    color="red",
                 )
-                message.draw()
-                parameters["win"].flip()
-                core.wait(0.5)
+                hold(parameters["win"], 0.5, message)
                 break
             slider.draw()
             message.draw()

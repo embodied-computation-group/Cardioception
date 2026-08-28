@@ -1,0 +1,78 @@
+language: danish_children
+texts:
+  Confidence: Hvor sikker er du på dit svar?
+  Decision:
+    Intero: Er disse bib-lyde hurtigere eller langsommere end dit hjerte?
+    Extero: 'Er disse bib-lyde hurtigere eller langsommere end den de forrige? '
+  Tutorial1: "Instruktion 1\n        "
+  Tutorial2: Når du ser dette ikon, forsøg da at fokusere på din indre puls i 5 sekunder.
+    Prøv ikke at bevæge dig, da vi måler din puls i dette tidsrum
+  Tutorial3_icon: Efter du har forsøgt at mærke din indre puls, vil du se det samme ikon og
+    høre en række bib-lyde.
+  Tutorial3_responses: Instruktion 2
+  Tutorial4: Instruktion 3
+  Tutorial5: Instruktion 4
+  Tutorial6: |-
+    Dette er slutningen på øve-runden. Hvis du har nogen spørgsmål, så spørg en forsker nu.
+    Ellers kan du fortsætte til opgaven.
+  VASlabels:
+  - Slet ikke sikker
+  - Helt sikker
+  checkOximeter: Spørg forskningsassistensen om, hvordan du skal placere fingerklemmen.
+  correctResponse: Rigtigt
+  done: Du har gennemført opgaven. Tak for din deltagelse.
+  faster: Hurtigere
+  incorrectResponse: Forkert
+  pulseTutorial1: Udstyr.
+  pulseTutorial2: ''
+  pulseTutorial3: ''
+  pulseTutorial4: Indtast venligt nummeret på den finger som du besluttede at placere fingerklemmen
+    på.
+  slower: Langsommere
+  stayStill: Sid venligst roligt under målingen
+  textHeartListening: Mærk din indre puls
+  textTaskStart: Opgaven begynder nu, gør dig klar.
+  textToneListening: Lyt til tonerne
+  textWaitTrigger: Venter på fMRI-udløseren...
+  tooLate: For langsomt
+variants:
+  Tutorial3bis:
+    axis: exteroception
+    values:
+      'true': I nogle runder vil du se et lytteikon i stedet for et hjerteikon. Her vil du
+        skulle lytte til et sæt af bib-lyde i stedet for dit hjerte.
+      'false': null
+  Tutorial3ter:
+    axis: device+exteroception
+    values:
+      keyboard/true: |-
+        Efter dette sæt af bib-lyde vil du se, at svarikonet dukker op, og et andet sæt af bib-lyde vil blive afspillet.
+
+        Det følgende skal du gøre så hurtigt og præcist som muligt: Du vil lytte til det sidste sæt af bib-lyde og beslutte om de er hurtigere (OP tasten) eller langsommere (NED tasten) end det første sæt af bib-lyde.
+
+        Det andet sæt af bib-lyde vil ALTID være langsommere eller hurtigere end det første sæt. Gæt venligst selvom du er usikker.
+      keyboard/false: null
+      mouse/true: |-
+        Efter dette sæt af bib-lyde vil du se, at svarikonet dukker op, og et andet sæt af bib-lyde vil blive afspillet.
+
+        Det følgende skal du gøre så hurtigt og præcist som muligt: Du vil lytte til det sidste sæt af bib-lyde og beslutte om de er hurtigere (HØJRE mussetast) eller langsommere (VENSTRE mussetast) end det første sæt af bib-lyde.
+
+        Det andet sæt af bib-lyde vil ALTID være langsommere eller hurtigere end det første sæt. Gæt venligst selvom du er usikker.
+      mouse/false: null
+  responseText:
+    axis: device
+    values:
+      keyboard: Brug NED tasten for langsommere - OP tasten for hurtigere.
+      mouse: Brug VENSTRE museknap for langsommere - HØJRE museknap for hurtigere.
+  textBreaks:
+    axis: device
+    values:
+      keyboard: Pause. Du kan tage så lang en pause, som du har brug for. Bare tryk på mellemrumstasten
+        når du vil fortsætte opgaven.
+      mouse: Pause. Du kan tage så lang en pause, som du har brug for. Bare klik på musen
+        når du vil fortsætte opgaven.
+  textNext:
+    axis: device
+    values:
+      keyboard: Venligst, tryk på mellemrumstasten for at fortsætte
+      mouse: Venligst, klik på musen for at fortsætte

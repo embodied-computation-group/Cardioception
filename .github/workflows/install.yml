@@ -15,7 +15,7 @@ name: Install
 
 on:
   push:
-    branches: [master, "dev/**"]
+    branches: [master, "dev/**", "phase*/**"]
   pull_request:
   # Dependencies drift without anyone touching the repository, so also run on a
   # schedule. A resolver failure is worth hearing about before a student does.

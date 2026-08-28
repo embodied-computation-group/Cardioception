@@ -1,3 +1,4 @@
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 from typing import TYPE_CHECKING
 
 from .reports import preprocessing, report
@@ -11,4 +12,4 @@ __all__ = [
     "report",
 ]
 
-__version__ = "0.7.1"
+__version__ = "0.8.0"

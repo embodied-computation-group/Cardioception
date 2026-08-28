@@ -1,5 +1,4 @@
-# Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk
-# Maintained by the Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 
 import os
 import subprocess
@@ -85,11 +84,9 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
     summary_df = pd.DataFrame([])
 
     for modality in ["Intero", "Extero"]:
-
         this_modality = results[results.Modality == modality].copy()
 
         if len(this_modality) > 10:
-
             # response time
             # -------------
             decision_mean_rt = this_modality.DecisionRT.mean()
@@ -109,7 +106,6 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
             if (this_modality["Stimuli"].sum() > 5) & (
                 (~this_modality["Stimuli"]).sum() > 5
             ):
-
                 hit, miss, fa, cr = this_modality.scores()
                 hr, far = sdt.rates(hits=hit, misses=miss, fas=fa, crs=cr)
                 d, c = sdt.dprime(hit_rate=hr, fa_rate=far), sdt.criterion(
@@ -145,7 +141,6 @@ def preprocessing(results: Union[PathLike, pd.DataFrame]) -> pd.DataFrame:
             if (this_modality["Stimuli"].sum() > 5) & (
                 (~this_modality["Stimuli"]).sum() > 5
             ):
-
                 try:
                     new_ratings, _ = discreteRatings(
                         this_modality.Confidence.to_numpy(), verbose=False
