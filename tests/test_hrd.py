@@ -44,7 +44,6 @@ class TestHRD(TestCase):
             setup="test",
             nTrials=4,
             exteroception=True,
-            stairType="updown",
             catchTrials=0.2,
             resultPath=self.tmp,
         )
@@ -53,7 +52,12 @@ class TestHRD(TestCase):
         assert sum(parameters["Modality"] == "Intero") == 2
         assert len(parameters["Modality"]) == 4
         assert len(parameters["staircaseType"]) == 4
-        assert sum(parameters["staircaseType"] == "updown") == 4
+        assert sum(parameters["staircaseType"] == "psi") == 4
+
+    def test_the_updown_staircase_is_gone(self):
+        """Removed in 0.8.0. The error has to say so, not just reject."""
+        with pytest.raises(ValueError, match="removed in 0.8.0"):
+            getParameters(setup="test", nTrials=4, stairType="updown")
 
     @pytest.mark.blocking
     def test_run(self):
@@ -83,7 +87,6 @@ class TestHRD(TestCase):
             setup="test",
             nTrials=4,
             exteroception=False,
-            stairType="updown",
             device="keyboard",
             catchTrials=0.0,
             resultPath=self.tmp,
