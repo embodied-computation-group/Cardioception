@@ -3,7 +3,7 @@
 import pickle
 import time
 from collections import deque
-from typing import Optional, Tuple
+from typing import Optional, Tuple, cast
 
 import numpy as np
 import pandas as pd
@@ -291,25 +291,7 @@ def trial(
     confidenceRating: bool = True,
     feedback: bool = False,
     nTrial: Optional[int] = None,
-) -> Tuple[
-    str,
-    float,
-    float,
-    Optional[str],
-    Optional[float],
-    Optional[float],
-    Optional[float],
-    float,
-    Optional[bool],
-    bool,
-    bool,
-    float,
-    float,
-    float,
-    Optional[float],
-    Optional[float],
-    float,
-]:
+) -> TrialOutcome:
     """Run one trial of the Heart Rate Discrimination task.
 
     Parameters
@@ -330,40 +312,14 @@ def trial(
 
     Returns
     -------
-    condition : str
-        The trial condition, can be `'Higher'` or `'Lower'` depending on the
-        alpha value.
-    listenBPM : float
-        The frequency of the tones (exteroceptive condition) or of the heart
-        rate (interoceptive condition), expressed in BPM.
-    responseBPM : float
-        The frequency of thefeebdack tones, expressed in BPM.
-    decision : str or None
-        `'More'` if the participant judged the beeps faster than their heart,
-        `'Less'` if slower, `None` if they did not answer in time. These are
-        the strings compared against `condition`, not the key names.
-    decisionRT : float
-        The response time from sound start to choice (seconds).
-    confidence : int
-        If confidenceRating is *True*, the confidence of the participant, on
-        the scale given by `parameters['confidenceScale']`.
-    confidenceRT : float
-        The response time (RT) for the confidence rating scale.
-    alpha : int
-        The difference between the true heart rate and the delivered tone BPM.
-        Alpha is defined by the stairCase.intensities values and is updated
-        on each trial.
-    isCorrect : bool or None
-        Whether `decision` matched `condition`. `None` on a trial with no
-        response, which is excluded from the staircase rather than scored.
-    respProvided : bool
-        Was the decision provided (`True`) or not (`False`).
-    ratingProvided : bool
-        Was the rating provided (`True`) or not (`False`). If no decision was
-        provided, the ratig scale is not proposed and no ratings can be provided.
-    startTrigger, soundTrigger, responseMadeTrigger, ratingStartTrigger,\
-        ratingEndTrigger, endTrigger : float
-        Time stamp of key timepoints inside the trial.
+    outcome : TrialOutcome
+        Everything the trial measured: the condition, the heard and delivered
+        rates, the decision and whether it was correct, the confidence rating,
+        and the six timestamps. The field names are the results file's column
+        names -- see :class:`cardioception.HRD._outcome.TrialOutcome`, whose
+        :meth:`~cardioception.HRD._outcome.TrialOutcome.row` is the only place
+        that decides what a row contains.
+
     """
     from psychopy import core, event, sound
 
@@ -504,6 +460,10 @@ def trial(
             # it. Counted back from the moment the accepted window was
             # read, at the rate ppg_peaks resampled to.
             nSamples = len(signal)
+            # Only the interoceptive path records, so `recorded_at` is set
+            # here by construction; it is None only for Extero, which cannot
+            # reach this branch.
+            recordedAt = cast(float, recordedAt)
             this_df = pd.DataFrame(
                 {
                     "signal": signal,
@@ -627,7 +587,7 @@ def listen_to_heart(parameters: dict) -> HeartRateReading:
         break
 
     accepted = listenBPM is not None
-    if not accepted:
+    if listenBPM is None or listenBPM_arithmetic is None:
         logger.warning(f"... no acceptable heart rate after {maxAttempts} attempts.")
         usable = bpm.size and not np.isnan(bpm).all()
         fallback = float(np.mean(parameters["HRcutOff"]))
@@ -880,9 +840,7 @@ def responseDecision(
     parameters: dict,
     feedback: bool,
     condition: str,
-) -> Tuple[
-    float, Optional[float], bool, Optional[str], Optional[float], Optional[bool]
-]:
+) -> Tuple[float, bool, Optional[str], Optional[float], Optional[bool]]:
     """Recording response during the decision phase.
 
     Parameters

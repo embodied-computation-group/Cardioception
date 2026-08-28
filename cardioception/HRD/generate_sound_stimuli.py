@@ -10,15 +10,17 @@ import wave
 import numpy as np
 
 
-def append_silence(audio: list, duration_milliseconds: int = 500):
+def append_silence(audio: list, duration_milliseconds: float = 500):
     """Add silence to the signal.
 
     Parameters
     ----------
     audio : list
         The signal where the sine should be added.
-    duration_milliseconds : int
-        The sine length.
+    duration_milliseconds : float
+        The silence length. Fractional milliseconds are kept: the inter-beat
+        interval is rarely a whole number, and rounding it here would change
+        every file this script generates.
 
     Returns
     -------
@@ -95,7 +97,9 @@ def save_wav(audio: list, file_name: str):
 
 
 # Generate wav files for frequencies between 15 and 200 beats per minutes
-for bpm in np.arange(15, 200, 0.5):
+# .tolist() yields Python floats. The values are exact and str(bpm) produces the
+# same filenames, so the generated set is unchanged.
+for bpm in np.arange(15, 200, 0.5).tolist():
     rr = (60000 / bpm) - 200
     audio: list = []
     sample_rate = 44100.0

@@ -26,7 +26,7 @@ def keyboard_rating(
     low: int,
     high: int,
     labels: Sequence[str],
-    marker_start: Optional[int] = None,
+    marker_start: Optional[float] = None,
     min_time: float = 0.0,
     max_time: Optional[float] = None,
     accept_keys: Sequence[str] = ("down",),
