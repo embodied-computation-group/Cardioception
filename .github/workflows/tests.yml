@@ -82,8 +82,16 @@ jobs:
         run: |
           pulseaudio --start --exit-idle-time=-1
           pactl load-module module-null-sink sink_name=dummy
-          python -c "from psychopy import prefs; prefs.hardware['audioDevice'] = ['pulse']; prefs.saveUserPrefs()"
+          # PsychoPy opens the stream with the device's *maximum* channel
+          # count (`channels=self.profile['NrOutputChannels']`, no override),
+          # and the ALSA pulse device advertises 32. The tones are mono, so
+          # PsychPortAudio rejects the buffer: "Number of columns of audio
+          # data matrix doesn't match number of output channels". A plug
+          # wrapper pins it to a plain stereo device.
+          printf 'pcm.dummy {\n  type plug\n  slave { pcm "pulse" channels 2 rate 44100 format S16_LE }\n}\n' | sudo tee /etc/asound.conf > /dev/null
+          python -c "from psychopy import prefs; prefs.hardware['audioDevice'] = ['dummy']; prefs.saveUserPrefs()"
           # Read it back in a fresh process: that is what pytest will see.
+          python -c "from psychtoolbox import audio; [print('PTB:', d['DeviceName'], d['NrOutputChannels']) for d in audio.get_devices()]" || true
           python -c "from psychopy import prefs; print('audioDevice ->', prefs.hardware['audioDevice'])"
       # A whole HRD session, both input devices, against the replay recorder.
       # This is the first time any CI job has run the task itself.
