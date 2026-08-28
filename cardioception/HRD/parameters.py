@@ -20,6 +20,7 @@ from .._rng import make_rng
 from .._triggers import validate as validate_triggers
 from ..output import SessionPaths
 from ..scales import DISCRETE_1_10, VAS_0_100, ConfidenceScale
+from .config import TaskConfig
 
 logger = get_logger()
 
@@ -109,13 +110,16 @@ def _build_staircases(
         """One psi staircase over the full stimulus range."""
         return data.PsiHandler(
             nTrials=nTrials,
-            intensRange=[-50.5, 50.5],
-            alphaRange=[-50.5, 50.5],
-            betaRange=[0.1, 25],
+            intensRange=list(parameters["intensRange"]),
+            alphaRange=list(parameters["alphaRange"]),
+            betaRange=list(parameters["betaRange"]),
+            # Grid resolution of the psi posterior. Not configurable: this is
+            # a memory/resolution tradeoff, and the array it sizes is the one
+            # that used to leak 2.6 GB over a session.
             intensPrecision=1,
             alphaPrecision=1,
             betaPrecision=0.1,
-            delta=0.02,
+            delta=parameters["delta"],
             stepType="lin",
             expectedMin=0,
         )
@@ -220,8 +224,6 @@ def _build_stimuli(parameters: Dict[str, Any], fullscr: bool) -> None:
         pos=(0.0, 0.0),
     )
     parameters["heartLogo"].size *= 0.04
-    parameters["textSize"] = 0.04
-    parameters["HRcutOff"] = [40, 120]
     if parameters["device"] == "mouse":
         parameters["myMouse"] = event.Mouse()
 
@@ -249,8 +251,9 @@ def getParameters(
     recorder=None,
     onMissedTrial: str = "represent",
     maxRepresentations: int = 3,
-    maxHeartRateAttempts: int = 10,
+    maxHeartRateAttempts: Optional[int] = None,
     triggers: Optional[Dict[str, Any]] = None,
+    config: Optional[TaskConfig] = None,
 ):
     """Create Heart Rate Discrimination task parameters.
 
@@ -460,7 +463,6 @@ def getParameters(
         )
     parameters["onMissedTrial"] = onMissedTrial
     parameters["maxRepresentations"] = maxRepresentations
-    parameters["maxHeartRateAttempts"] = maxHeartRateAttempts
 
     # Callables run at each trial event. Documented for years but never
     # created here, so following the docs raised KeyError.
@@ -469,15 +471,14 @@ def getParameters(
     parameters["device"] = device
     parameters["screenNb"] = screenNb
     parameters["monitor"] = "testMonitor"
-    parameters["nFeedback"] = 5
-    parameters["nConfidence"] = 8
-    parameters["respMax"] = 5
-    parameters["minRatingTime"] = 0.5
-    parameters["maxRatingTime"] = 5
-    parameters["isi"] = (0.25, 0.25)
-    parameters["startKey"] = "space"
-    parameters["response_keys"] = {"More": "up", "Less": "down"}
-    parameters["allowedKeys"] = list(parameters["response_keys"].values())
+
+    # The design values that used to be literals in this function, in one
+    # object, recorded in the manifest below.
+    config = TaskConfig() if config is None else config
+    config.apply(parameters)
+    if maxHeartRateAttempts is not None:
+        # Kept working, though config is where it belongs now.
+        parameters["maxHeartRateAttempts"] = maxHeartRateAttempts
     parameters["nTrials"] = nTrials
     parameters["nBreaking"] = nBreaking
     parameters["nFinger"] = None
@@ -546,6 +547,7 @@ def getParameters(
         onMissedTrial=onMissedTrial,
         maxRepresentations=maxRepresentations,
         confidence=confidenceScale.describe(),
+        config=config.describe(),
     )
 
     return parameters
