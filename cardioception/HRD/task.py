@@ -13,6 +13,8 @@ from systole.detection import ppg_peaks
 from .._log import get_logger
 from .._present import accept_press, hold  # noqa: F401
 from .._resources import resource_filename
+from .._screens import fixation as fixation_cross
+from .._screens import text
 from .._triggers import fire
 
 logger = get_logger()
@@ -86,8 +88,6 @@ def run(
         If `True`, will present a tutorial with 10 training trial with feedback
         and 5 trials with confidence rating.
     """
-    from psychopy import visual
-
     # Initialization of the Pulse Oximeter
     parameters["oxiTask"].setup().read(duration=1)
 
@@ -119,16 +119,9 @@ def run(
             # Wait for key press if this is the first trial
             if nTrial == 0:
                 # Ask the participant to press default button to start
-                messageStart = visual.TextStim(
-                    parameters["win"],
-                    height=parameters["textSize"],
-                    text=parameters["texts"]["textTaskStart"],
-                )
-                press = visual.TextStim(
-                    parameters["win"],
-                    height=parameters["textSize"],
-                    pos=(0.0, -0.4),
-                    text=parameters["texts"]["textNext"],
+                messageStart = text(parameters, parameters["texts"]["textTaskStart"])
+                press = text(
+                    parameters, parameters["texts"]["textNext"], pos=(0.0, -0.4)
                 )
                 press.draw()
                 messageStart.draw()  # Show instructions
@@ -298,18 +291,9 @@ def run(
 
             # Breaks
             if parameters["nBreaking"] and nTrial % parameters["nBreaking"] == 0:
-                message = visual.TextStim(
-                    parameters["win"],
-                    height=parameters["textSize"],
-                    text=parameters["texts"]["textBreaks"],
-                )
+                message = text(parameters, parameters["texts"]["textBreaks"])
                 percRemain = round(min(nTrial / nPlanned, 1.0) * 100, 2)
-                remain = visual.TextStim(
-                    parameters["win"],
-                    height=parameters["textSize"],
-                    pos=(0.0, 0.2),
-                    text=f" ---- {percRemain} % ---- ",
-                )
+                remain = text(parameters, f" ---- {percRemain} % ---- ", pos=(0.0, 0.2))
                 remain.draw()
                 message.draw()
                 parameters["win"].flip()
@@ -319,9 +303,7 @@ def run(
                 waitInput(parameters)
 
                 # Fixation cross
-                fixation = visual.GratingStim(
-                    win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
-                )
+                fixation = fixation_cross(parameters)
                 fixation.draw()
                 parameters["win"].flip()
 
@@ -332,12 +314,7 @@ def run(
         _save_session(parameters, nTrial)
 
     # End of the task
-    end = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.0),
-        text=parameters["texts"]["done"],
-    )
+    end = text(parameters, parameters["texts"]["done"])
     hold(parameters["win"], 3, end)
 
 
@@ -423,7 +400,7 @@ def trial(
         ratingEndTrigger, endTrigger : float
         Time stamp of key timepoints inside the trial.
     """
-    from psychopy import core, event, sound, visual
+    from psychopy import core, event, sound
 
     # Print infos at each trial start
     logger.info(f"Starting trial - Intensity: {alpha} - Modality: {modality}")
@@ -434,9 +411,7 @@ def trial(
     confidence, confidenceRT, isCorrect, ratingProvided = None, None, None, False
 
     # Fixation cross
-    fixation = visual.GratingStim(
-        win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
-    )
+    fixation = fixation_cross(parameters)
     hold(
         parameters["win"],
         parameters["rng"].uniform(parameters["isi"][0], parameters["isi"][1]),
@@ -456,11 +431,8 @@ def trial(
         ###########
         # Recording
         ###########
-        messageRecord = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, 0.2),
-            text=parameters["texts"]["textHeartListening"],
+        messageRecord = text(
+            parameters, parameters["texts"]["textHeartListening"], pos=(0.0, 0.2)
         )
         messageRecord.draw()
 
@@ -518,11 +490,8 @@ def trial(
 
             # Prevent crash if NaN value
             if np.isnan(bpm).any() or (bpm is None) or (bpm.size == 0):
-                message = visual.TextStim(
-                    parameters["win"],
-                    height=parameters["textSize"],
-                    text=parameters["texts"]["checkOximeter"],
-                    color="red",
+                message = text(
+                    parameters, parameters["texts"]["checkOximeter"], color="red"
                 )
                 hold(parameters["win"], 2, message)
 
@@ -544,11 +513,8 @@ def trial(
                     listenBPM_arithmetic = round(bpm.mean() * 2) / 2
                     break
                 else:
-                    message = visual.TextStim(
-                        parameters["win"],
-                        height=parameters["textSize"],
-                        text=parameters["texts"]["stayStill"],
-                        color="red",
+                    message = text(
+                        parameters, parameters["texts"]["stayStill"], color="red"
                     )
                     hold(parameters["win"], 2, message)
 
@@ -577,11 +543,8 @@ def trial(
         ###########
         # Recording
         ###########
-        messageRecord = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, 0.2),
-            text=parameters["texts"]["textToneListening"],
+        messageRecord = text(
+            parameters, parameters["texts"]["textToneListening"], pos=(0.0, 0.2)
         )
         messageRecord.draw()
 
@@ -621,9 +584,7 @@ def trial(
         raise ValueError("Invalid modality")
 
     # Fixation cross
-    fixation = visual.GratingStim(
-        win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
-    )
+    fixation = fixation_cross(parameters)
     hold(parameters["win"], 0.5, fixation)
 
     #######
@@ -653,20 +614,10 @@ def trial(
     else:
         raise ValueError("Invalid modality provided")
     # Record participant response (+/-)
-    message = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0, 0.4),
-        text=parameters["texts"]["Decision"][modality],
-    )
+    message = text(parameters, parameters["texts"]["Decision"][modality], pos=(0, 0.4))
     message.autoDraw = True
 
-    press = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        text=parameters["texts"]["responseText"],
-        pos=(0.0, -0.4),
-    )
+    press = text(parameters, parameters["texts"]["responseText"], pos=(0.0, -0.4))
     press.autoDraw = True
 
     # Sound trigger
@@ -826,65 +777,33 @@ def tutorial(parameters: dict):
 
     """
 
-    from psychopy import event, visual
+    from psychopy import event
 
     # Introduction
-    intro = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        text=parameters["texts"]["Tutorial1"],
-    )
-    press = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, -0.4),
-        text=parameters["texts"]["textNext"],
-    )
+    intro = text(parameters, parameters["texts"]["Tutorial1"])
+    press = text(parameters, parameters["texts"]["textNext"], pos=(0.0, -0.4))
     hold(parameters["win"], 1, intro, press)
 
     waitInput(parameters)
 
     # Pusle oximeter tutorial
-    pulse1 = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.3),
-        text=parameters["texts"]["pulseTutorial1"],
-    )
-    press = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, -0.4),
-        text=parameters["texts"]["textNext"],
-    )
+    pulse1 = text(parameters, parameters["texts"]["pulseTutorial1"], pos=(0.0, 0.3))
+    press = text(parameters, parameters["texts"]["textNext"], pos=(0.0, -0.4))
     hold(parameters["win"], 1, pulse1, parameters["pulseSchema"], press)
 
     waitInput(parameters)
 
     # Get finger number - Skip this part for the danish_children version (empty string)
     if parameters["texts"]["pulseTutorial2"]:
-        pulse2 = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, 0.2),
-            text=parameters["texts"]["pulseTutorial2"],
-        )
-        pulse3 = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, -0.2),
-            text=parameters["texts"]["pulseTutorial3"],
+        pulse2 = text(parameters, parameters["texts"]["pulseTutorial2"], pos=(0.0, 0.2))
+        pulse3 = text(
+            parameters, parameters["texts"]["pulseTutorial3"], pos=(0.0, -0.2)
         )
         hold(parameters["win"], 1, pulse2, pulse3, press)
 
         waitInput(parameters)
 
-    pulse4 = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.3),
-        text=parameters["texts"]["pulseTutorial4"],
-    )
+    pulse4 = text(parameters, parameters["texts"]["pulseTutorial4"], pos=(0.0, 0.3))
     hold(parameters["win"], 1, pulse4, parameters["handSchema"])
 
     # Record number
@@ -915,34 +834,19 @@ def tutorial(parameters: dict):
             break
 
     # Heartrate recording
-    recording = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.3),
-        text=parameters["texts"]["Tutorial2"],
-    )
+    recording = text(parameters, parameters["texts"]["Tutorial2"], pos=(0.0, 0.3))
     hold(parameters["win"], 1, recording, parameters["heartLogo"], press)
 
     waitInput(parameters)
 
     # Show reponse icon
-    listenIcon = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.3),
-        text=parameters["texts"]["Tutorial3_icon"],
-    )
+    listenIcon = text(parameters, parameters["texts"]["Tutorial3_icon"], pos=(0.0, 0.3))
     hold(parameters["win"], 1, parameters["heartLogo"], listenIcon, press)
 
     waitInput(parameters)
 
     # Response instructions
-    listenResponse = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.0),
-        text=parameters["texts"]["Tutorial3_responses"],
-    )
+    listenResponse = text(parameters, parameters["texts"]["Tutorial3_responses"])
     hold(parameters["win"], 1, listenResponse, press)
 
     waitInput(parameters)
@@ -964,22 +868,14 @@ def tutorial(parameters: dict):
 
     # If extero conditions required, show tutorial.
     if parameters["ExteroCondition"] is True:
-        exteroText = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, -0.2),
-            text=parameters["texts"]["Tutorial3bis"],
+        exteroText = text(
+            parameters, parameters["texts"]["Tutorial3bis"], pos=(0.0, -0.2)
         )
         hold(parameters["win"], 1, exteroText, parameters["listenLogo"], press)
 
         waitInput(parameters)
 
-        exteroResponse = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0.0, 0.0),
-            text=parameters["texts"]["Tutorial3ter"],
-        )
+        exteroResponse = text(parameters, parameters["texts"]["Tutorial3ter"])
         hold(parameters["win"], 1, exteroResponse, press)
 
         waitInput(parameters)
@@ -1002,11 +898,7 @@ def tutorial(parameters: dict):
     ###################
     # Confidence rating
     ###################
-    confidenceText = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        text=parameters["texts"]["Tutorial4"],
-    )
+    confidenceText = text(parameters, parameters["texts"]["Tutorial4"])
     hold(parameters["win"], 1, confidenceText, press)
 
     waitInput(parameters)
@@ -1039,20 +931,12 @@ def tutorial(parameters: dict):
     #################
     # End of tutorial
     #################
-    taskPresentation = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        text=parameters["texts"]["Tutorial5"],
-    )
+    taskPresentation = text(parameters, parameters["texts"]["Tutorial5"])
     hold(parameters["win"], 1, taskPresentation, press)
     waitInput(parameters)
 
     # Task
-    taskPresentation = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        text=parameters["texts"]["Tutorial6"],
-    )
+    taskPresentation = text(parameters, parameters["texts"]["Tutorial6"])
     hold(parameters["win"], 1, taskPresentation, press)
     waitInput(parameters)
 
@@ -1096,7 +980,7 @@ def responseDecision(
 
     """
 
-    from psychopy import core, event, visual
+    from psychopy import core, event
 
     logger.info("...starting decision phase.")
 
@@ -1130,11 +1014,7 @@ def responseDecision(
             respProvided = False
             decision, decisionRT = None, None
             # Record participant response (+/-)
-            message = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                text=parameters["texts"]["tooLate"],
-            )
+            message = text(parameters, parameters["texts"]["tooLate"])
             hold(parameters["win"], 1, message)
         else:
             respProvided = True
@@ -1157,37 +1037,19 @@ def responseDecision(
             # Feedback
             if feedback is True:
                 if isCorrect is False:
-                    acc = visual.TextStim(
-                        parameters["win"],
-                        height=parameters["textSize"],
-                        color="red",
-                        text="False",
-                    )
+                    acc = text(parameters, "False", color="red")
                     hold(parameters["win"], 2, acc)
                 elif isCorrect is True:
-                    acc = visual.TextStim(
-                        parameters["win"],
-                        height=parameters["textSize"],
-                        color="green",
-                        text="Correct",
-                    )
+                    acc = text(parameters, "Correct", color="green")
                     hold(parameters["win"], 2, acc)
 
     if parameters["device"] == "mouse":
         # Initialise response feedback
-        slower = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            color="white",
-            text=parameters["texts"]["slower"],
-            pos=(-0.2, 0.2),
+        slower = text(
+            parameters, parameters["texts"]["slower"], pos=(-0.2, 0.2), color="white"
         )
-        faster = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            color="white",
-            text=parameters["texts"]["faster"],
-            pos=(0.2, 0.2),
+        faster = text(
+            parameters, parameters["texts"]["faster"], pos=(0.2, 0.2), color="white"
         )
         slower.draw()
         faster.draw()
@@ -1254,12 +1116,8 @@ def responseDecision(
         # Check for response provided by the participant
         if respProvided is False:
             # Record participant response (+/-)
-            message = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                text=parameters["texts"]["tooLate"],
-                color="red",
-                pos=(0.0, -0.2),
+            message = text(
+                parameters, parameters["texts"]["tooLate"], pos=(0.0, -0.2), color="red"
             )
             hold(parameters["win"], 0.5, message)
         else:
@@ -1272,12 +1130,8 @@ def responseDecision(
                 else:
                     textFeedback = parameters["texts"]["correctResponse"]
                 colorFeedback = "red" if isCorrect == 0 else "green"
-                acc = visual.TextStim(
-                    parameters["win"],
-                    height=parameters["textSize"],
-                    pos=(0.0, -0.2),
-                    color=colorFeedback,
-                    text=textFeedback,
+                acc = text(
+                    parameters, textFeedback, pos=(0.0, -0.2), color=colorFeedback
                 )
                 hold(parameters["win"], 1, acc)
 
@@ -1327,12 +1181,7 @@ def confidenceRatingTask(
         return confidence, confidenceRT, True, time.time()
 
     if parameters["device"] == "keyboard":
-        message = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0, 0.2),
-            text=parameters["texts"]["Confidence"],
-        )
+        message = text(parameters, parameters["texts"]["Confidence"], pos=(0, 0.2))
 
         # Arrow keys move the marker, the down key confirms. This was a
         # visual.RatingScale until PsychoPy 2026 moved that class into the
@@ -1367,12 +1216,7 @@ def confidenceRatingTask(
         parameters["win"].mouseVisible = False
         parameters["myMouse"].setPos((parameters["rng"].uniform(-0.25, 0.25), 0.2))
         parameters["myMouse"].clickReset()
-        message = visual.TextStim(
-            parameters["win"],
-            height=parameters["textSize"],
-            pos=(0, 0.2),
-            text=parameters["texts"]["Confidence"],
-        )
+        message = text(parameters, parameters["texts"]["Confidence"], pos=(0, 0.2))
         slider = visual.Slider(
             win=parameters["win"],
             name="slider",
@@ -1443,12 +1287,11 @@ def confidenceRatingTask(
                 confidenceRT = parameters["myMouse"].clickReset()
 
                 # Text feedback if no rating provided
-                message = visual.TextStim(
-                    parameters["win"],
-                    height=parameters["textSize"],
-                    text=parameters["texts"]["tooLate"],
-                    color="red",
+                message = text(
+                    parameters,
+                    parameters["texts"]["tooLate"],
                     pos=(0.0, -0.2),
+                    color="red",
                 )
                 hold(parameters["win"], 0.5, message)
                 break
