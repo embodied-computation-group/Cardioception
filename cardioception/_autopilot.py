@@ -1,23 +1,9 @@
 # Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
 """A synthetic participant, so a session can run without a human at the keyboard.
 
-Both tasks block waiting for real input: ``waitInput`` polls forever, and the
-decision and rating phases wait on the keyboard or the mouse. That is why the
-existing ``test_run`` tests cannot complete unattended, why no continuous
-integration job runs them, and why there is no way to produce a before/after
-comparison of a refactor against a real session.
-
-An ``AutoResponder`` supplies the input instead. Everything else in the task
-runs unchanged: the same stimuli are built and drawn, the same staircase is
-updated, the same triggers are written and the same files are saved. Only the
-source of the keypress or the click is replaced.
-
-It is deliberately able to misbehave. ``p_miss`` produces trials with no
-response, which is the path that used to feed a fabricated "Less" into the
-staircase, and ``p_hold`` reproduces a participant leaning on the mouse button
-across a trial boundary. Both are defects the audit found in the real task, and
-a harness that can only simulate a cooperative participant would not catch
-either of them coming back.
+Supplies the input only: the same stimuli, staircase updates, triggers and files
+as a real session. ``p_miss`` and ``p_hold`` reproduce missed trials and a held
+mouse button, so tests can assert on those paths.
 """
 
 from typing import List, Optional, Sequence, Tuple

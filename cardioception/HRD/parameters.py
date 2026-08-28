@@ -252,10 +252,8 @@ def getParameters(
     parameters["onMissedTrial"] = onMissedTrial
     parameters["maxRepresentations"] = maxRepresentations
 
-    # Callables run at each trial event, for a parallel port, an LSL marker
-    # stream or an amplifier. This docstring documented the key for years while
-    # the function never created it, so anyone following the documentation got a
-    # KeyError. Validated here so a typo fails at launch, not at trial eighty.
+    # Callables run at each trial event. Documented for years but never
+    # created here, so following the docs raised KeyError.
     parameters["triggers"] = validate_triggers(triggers)
     parameters["ExteroCondition"] = exteroception
     parameters["device"] = device
@@ -445,9 +443,7 @@ def getParameters(
 
     parameters["setup"] = setup
     if recorder is not None:
-        # An explicitly supplied backend wins over `setup`, which conflates
-        # "which device" with "is this a test". Nothing here touches a serial
-        # port, so this is also the only path that works without hardware.
+        # Wins over `setup`, and touches no serial port.
         parameters["oxiTask"] = recorder
         parameters["oxiTask"].setup().read(duration=1)
     elif setup == "behavioral":
@@ -470,13 +466,8 @@ def getParameters(
         parameters["oxiTask"].setup().read(duration=1)
 
     else:
-        # setup decides whether a recorder exists at all, and was the only
-        # string parameter with no guard. An unrecognised value returned a
-        # parameters dict with no "oxiTask" key, and the task then died on the
-        # first line of run() with KeyError, after the window had opened in
-        # front of a participant. wrappers/hrd.py offered "fMRI" in its dropdown
-        # for years after that mode was removed, so this was reachable by
-        # clicking a menu entry the project shipped.
+        # Unguarded before, so an unknown value returned a dict with no
+        # "oxiTask" and died inside run() after the window had opened.
         raise ValueError(
             f"setup should be 'behavioral' or 'test', got {setup!r}. "
             "Pass recorder= to use a device other than the Nonin oximeter."

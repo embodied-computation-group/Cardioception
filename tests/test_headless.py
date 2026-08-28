@@ -1,15 +1,9 @@
 # Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
-"""A whole session, start to finish, with no human at the keyboard.
+"""Whole sessions run headlessly against the replay recorder.
 
-Before the autopilot existed there was no way to run either task unattended:
-``run()`` blocks in ``waitInput`` and the decision phase waits on real hardware.
-That is why no continuous integration job has ever run the task, and why the
-response paths in ``responseDecision`` had no test coverage at all.
-
-Sessions are expensive, so most assertions share one. Only the tests that need a
-different configuration, a different device or a different miss rate, pay for
-their own. Four trials is enough for two of each modality and one break, and
-``listeningDuration`` is shortened because none of this is testing tone timing.
+Sessions are slow, so most assertions share one. Four trials gives two of each
+modality and one break; listeningDuration is shortened because none of this
+tests tone timing.
 """
 
 import shutil

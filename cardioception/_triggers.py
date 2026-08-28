@@ -1,23 +1,8 @@
 # Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
-"""Fire the task's event callbacks.
+"""Event callbacks fired at trial boundaries, for parallel port or LSL markers.
 
-Both ``getParameters`` docstrings promise a ``triggers`` dictionary of callables
-run at the trial events, which is the documented way to drive a parallel port,
-an LSL marker stream or an amplifier. It never worked. The Heartbeat Counting
-task referenced the dictionary at eight points and every one was a bare
-expression statement:
-
-    parameters["triggers"]["trialStart"]  # Send trigger or None
-
-which looks up the callable and discards it. The missing ``()`` meant a user who
-followed the documentation got no triggers and no error, and an EEG or fMRI
-dataset with no event markers, discovered at analysis. flake8 does not report
-pointless statements, so continuous integration stayed green. The Heart Rate
-Discrimination task documented the same dictionary but never created it, so
-following its documentation raised ``KeyError``.
-
-``fire`` calls the callback, and ``validate`` fails at launch rather than at
-trial eighty if a caller installs something that is not callable.
+Registered as {event: callable} in ``parameters["triggers"]``. ``validate``
+rejects unknown events and non-callables at setup rather than mid-session.
 """
 
 from typing import Any, Dict, Optional
