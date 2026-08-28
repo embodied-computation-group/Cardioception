@@ -65,7 +65,7 @@ def getParameters(
     systole_kw : dict
         Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.
     taskVersion : str or None
-        Task version to run. Can be 'Garfinkel', 'Shandry', 'test' or None.
+        Task version to run. Can be 'Garfinkel', 'Schandry', 'test' or None.
 
     Attributes
     ----------
@@ -103,7 +103,7 @@ def getParameters(
     startKey : str
         The key to press to start the task and go to next steps.
     taskVersion : str or None
-        Task version to run. Can be 'Garfinkel', 'Shandry', 'test' or None.
+        Task version to run. Can be 'Garfinkel', 'Schandry', 'test' or None.
     texts : dict
         Dictionary containing the texts to be presented.
     textSize : float

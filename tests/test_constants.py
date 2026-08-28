@@ -30,11 +30,26 @@ class TestHRDConstants(unittest.TestCase):
         self.assertEqual(hrd.OXIMETER_SFREQ, 75)
         self.assertEqual(hrd.PPG_SFREQ, 1000)
         self.assertEqual(hrd.LISTENING_DURATION, 5.0)
-        self.assertEqual(hrd.ANALYSIS_WINDOW, 6)
-        self.assertEqual(hrd.PEAK_WINDOW_SAMPLES, 5000)
+        self.assertEqual(hrd.ANALYSIS_MARGIN, 1.0)
 
-    def test_the_analysis_window_is_the_slice_it_replaced(self):
-        self.assertEqual(hrd.OXIMETER_SFREQ * hrd.ANALYSIS_WINDOW, 75 * 6)
+    def test_the_default_window_is_the_slice_it_replaced(self):
+        """The window is now derived from `listeningDuration` rather than fixed.
+
+        At the default the arithmetic has to come out where the hardcoded
+        constants were: 6 s kept at 75 Hz, and 5 s of resampled signal
+        searched for peaks.
+        """
+        duration = hrd.LISTENING_DURATION
+        kept = int(hrd.OXIMETER_SFREQ * (duration + hrd.ANALYSIS_MARGIN))
+        peak_window = int(duration * hrd.PPG_SFREQ)
+        self.assertEqual(kept, 75 * 6)
+        self.assertEqual(peak_window, 5000)
+
+    def test_the_default_matches_the_configuration_default(self):
+        """One source: the constant is only TaskConfig's default."""
+        from cardioception.HRD.config import TaskConfig
+
+        self.assertEqual(TaskConfig().listeningDuration, hrd.LISTENING_DURATION)
 
     def test_tone_range(self):
         self.assertEqual(hrd.TONE_BPM_MIN, 15.0)
