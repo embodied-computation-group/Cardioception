@@ -17,6 +17,14 @@ sphinx-design==0.5.0
 # Theme. Pinned because furo 2023.5+ requires Sphinx 6, and Sphinx is held at 5.3.
 furo==2023.3.27
 
+# Canonical URLs, sitemap and per-page metadata. Both are pinned to the last
+# release that still supports Sphinx 5: sphinxext-opengraph 0.10 requires
+# Sphinx 6, and sphinx-sitemap 2.7 adds a sphinx-last-updated-by-git dependency
+# this build does not need. opengraph draws its preview cards with Matplotlib,
+# which is already installed above.
+sphinx-sitemap==2.6.0
+sphinxext-opengraph==0.9.1
+
 # Visualization (compatible versions)
 graphviz
 

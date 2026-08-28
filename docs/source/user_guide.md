@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    description: "How to install Cardioception, set up a recording device and run the Heart Rate Discrimination and Heartbeat Counting tasks in PsychoPy."
+    keywords: "cardioception user guide, heart rate discrimination, heartbeat counting, PsychoPy, pulse oximeter, interoception task"
+---
+
 # User guide
 
 ## Installation

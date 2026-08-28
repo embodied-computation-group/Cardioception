@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    description: "What the Heart Rate Discrimination and Heartbeat Counting tasks measure, and why the HRD separates interoceptive bias from interoceptive precision."
+    keywords: "cardiac interoception, heart rate discrimination, heartbeat counting, interoceptive accuracy, interoceptive precision, psychophysics"
+---
+
 # Theory
 
 Author: Micah G. Allen

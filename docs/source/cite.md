@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    description: "How to cite Cardioception and the Heart Rate Discrimination task, with the references for the toolbox, the HRD paper and the Systole dependency."
+    keywords: "cite cardioception, heart rate discrimination citation, Legrand 2022, Systole, interoception"
+---
+
 # How to cite?
 
 If you use [Cardioception](https://github.com/embodied-computation-group/Cardioception) in your research, please cite this paper in your publication:

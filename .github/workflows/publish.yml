@@ -34,19 +34,23 @@ jobs:
           python -m pip install --upgrade pip build twine
           python -m build
 
-      # The version lives in two files, cardioception/__init__.py and setup.py,
-      # and a release is tagged separately again. Three places is two too many,
-      # and a mismatch is silent: pip would happily publish a wheel whose version
-      # disagrees with the tag people were told to expect.
+      # The version lives in three files, cardioception/__init__.py, setup.py and
+      # CITATION.cff, and a release is tagged separately again. Four places is
+      # three too many, and a mismatch is silent: pip would happily publish a
+      # wheel whose version disagrees with the tag people were told to expect,
+      # and CITATION.cff is what the GitHub citation widget and Zenodo read, so
+      # a stale number there is what anyone citing the toolbox writes down.
       - name: Check the version agrees with the tag
         if: github.event_name == 'release'
         run: |
           TAG="${GITHUB_REF_NAME#v}"
           PKG=$(python -c "import re;print(re.search(r'__version__ = \"(.+)\"', open('cardioception/__init__.py').read()).group(1))")
           SETUP=$(python -c "import re;print(re.search(r'VERSION = \"(.+)\"', open('setup.py').read()).group(1))")
-          echo "tag=$TAG  __init__=$PKG  setup.py=$SETUP"
+          CFF=$(sed -n 's/^version: *//p' CITATION.cff | head -1 | tr -d "'\" ")
+          echo "tag=$TAG  __init__=$PKG  setup.py=$SETUP  CITATION.cff=$CFF"
           test "$TAG" = "$PKG" || { echo "::error::tag $TAG does not match __init__.py $PKG"; exit 1; }
           test "$TAG" = "$SETUP" || { echo "::error::tag $TAG does not match setup.py $SETUP"; exit 1; }
+          test "$TAG" = "$CFF" || { echo "::error::tag $TAG does not match CITATION.cff $CFF"; exit 1; }
 
       # Catches a malformed long_description before PyPI rejects the upload,
       # which it does after the version number is already burned.
