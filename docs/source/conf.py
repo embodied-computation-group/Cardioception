@@ -62,6 +62,8 @@ extensions = [
     "myst_nb",
     "sphinxcontrib.bibtex",
     "sphinx_design",
+    "sphinx_sitemap",
+    "sphinxext.opengraph",
 ]
 
 bibtex_bibfiles = ['refs.bib']
@@ -156,6 +158,45 @@ html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_logo = "images/cardioception_icon.png"
 html_favicon = "images/favicon.png"
+
+
+# -- Canonical URLs, sitemap and page metadata -------------------------------
+
+# The documentation is published under the group domain, and the
+# embodied-computation-group.github.io address is a permanent redirect to it.
+# Naming the canonical base here makes Sphinx write a <link rel="canonical">
+# into every page, so the two hostnames are read as one site rather than as two
+# copies competing with each other.
+html_baseurl = "https://www.the-ecg.org/Cardioception/"
+
+# sphinx-sitemap defaults to a "{lang}{version}{link}" layout, which suits a
+# Read the Docs project publishing several versions side by side. This build
+# publishes a single version at the root of the path above, so those two extra
+# segments would fill the sitemap with URLs that do not exist.
+sitemap_url_scheme = "{link}"
+
+# The search page is an empty shell filled in by JavaScript and the index is a
+# list of links, so neither is worth pointing a crawler at.
+sitemap_excludes = ["search.html", "genindex.html"]
+
+ogp_site_url = html_baseurl
+ogp_site_name = "Cardioception Toolbox"
+ogp_type = "website"
+
+# Pages that do not set their own description in `html_meta` front matter fall
+# back to their opening prose, cut to this length. sphinxext-opengraph leaves a
+# page alone when it already carries a description of its own, so the hand
+# written ones on the main pages win.
+ogp_description_length = 200
+
+# `ogp_image` is deliberately unset: with no fixed image, sphinxext-opengraph
+# draws a preview card per page with Matplotlib, which the documentation build
+# already installs, using html_logo and the page title.
+ogp_social_cards = {
+    "enable": True,
+    "site_url": "the-ecg.org/Cardioception",
+    "line_color": "#1f3352",
+}
 
 
 # -- Intersphinx ------------------------------------------------
