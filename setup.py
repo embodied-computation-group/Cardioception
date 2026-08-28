@@ -90,7 +90,12 @@ if __name__ == "__main__":
         # only MANIFEST.in was keeping the sdist usable.
         package_data={
             "cardioception.HBC": ["Images/*.png", "Sounds/*.wav"],
-            "cardioception.HRD": ["Images/*.png", "Images/*.svg", "Sounds/*.wav"],
+            "cardioception.HRD": [
+                "Images/*.png",
+                "Images/*.svg",
+                "Sounds/*.wav",
+                "texts/*.yaml",
+            ],
             "cardioception.notebooks": ["*.ipynb"],
         },
     )

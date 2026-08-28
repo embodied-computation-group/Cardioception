@@ -79,6 +79,24 @@ try:
 except Exception as exc:
     check("resource_filename", False, f"{type(exc).__name__}: {exc}")
 
+# --- every language shipped, and loads --------------------------------------
+# A packaging miss here works from a source checkout and fails from a wheel, at
+# the first instruction screen rather than at import.
+print("\nparticipant-facing text")
+try:
+    from cardioception.HRD.languages import available, get_texts
+
+    found = available()
+    check("languages found", bool(found), ", ".join(found) or "none")
+    for language in ("english", "danish", "danish_children", "french"):
+        try:
+            texts = get_texts(language, "mouse", True)
+            check(f"texts/{language}.yaml", len(texts) == 31, f"{len(texts)} keys")
+        except Exception as exc:
+            check(f"texts/{language}.yaml", False, f"{type(exc).__name__}: {exc}")
+except Exception as exc:
+    check("language loader", False, f"{type(exc).__name__}: {exc}")
+
 # --- the interpreter really is one the metadata allows ---------------------
 print("\npython_requires")
 setup_src = read("setup.py")

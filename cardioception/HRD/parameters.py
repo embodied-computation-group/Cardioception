@@ -12,7 +12,7 @@ import serial
 from systole import serialSim
 from systole.recording import Oximeter
 
-from cardioception.HRD.languages import danish, danish_children, english, french
+from cardioception.HRD.languages import get_texts
 
 from .._log import get_logger, start_session_log
 from .._resources import resource_filename
@@ -435,22 +435,9 @@ def getParameters(
     ##############
     # Load texts #
     ##############
-    if language == "english":
-        parameters["texts"] = english(
-            device=device, setup=setup, exteroception=exteroception
-        )
-    elif language == "danish":
-        parameters["texts"] = danish(
-            device=device, setup=setup, exteroception=exteroception
-        )
-    elif language == "danish_children":
-        parameters["texts"] = danish_children(
-            device=device, setup=setup, exteroception=exteroception
-        )
-    elif language == "french":
-        parameters["texts"] = french(
-            device=device, setup=setup, exteroception=exteroception
-        )
+    # An unknown language used to leave parameters["texts"] unset, which
+    # surfaced as a KeyError at whatever screen first needed a string.
+    parameters["texts"] = get_texts(language, device, exteroception)
 
     # Open window
     if parameters["setup"] == "test":

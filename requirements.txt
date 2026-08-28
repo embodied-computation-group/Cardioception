@@ -8,6 +8,8 @@ pandas>=1.0.3
 # workflow catches drift inside the range before a student does.
 psychopy>=2026.2,<2027
 pyserial>=3.4
+# Reads cardioception/HRD/texts/*.yaml, the participant-facing instructions.
+PyYAML>=5.4
 matplotlib>=3.3.3
 seaborn>=0.11.1
 pingouin>=0.3.10
