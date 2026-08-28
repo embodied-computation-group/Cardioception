@@ -16,7 +16,6 @@ import pandas as pd
 
 from cardioception._autopilot import AutoResponder
 from cardioception._triggers import EVENTS
-from cardioception.devices import ReplayRecorder
 from cardioception.devices import ContinuousOximeter, ReplayRecorder
 from cardioception.HRD.config import TaskConfig
 from cardioception.HRD.parameters import getParameters
@@ -411,6 +410,8 @@ class TestEveryTriggerFires(unittest.TestCase):
         run_session(self.tmp, triggers={name: counter(name) for name in EVENTS})
         never = sorted(name for name, count in seen.items() if count == 0)
         self.assertEqual(never, [], f"declared but never fired: {never}")
+
+
 class TestContinuousRecording(unittest.TestCase):
     """The whole-session recording of issue #95, behind its opt-in flag."""
 

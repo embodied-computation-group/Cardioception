@@ -7,10 +7,12 @@ first test compares every derived list sample by sample against
 `systole.recording.Oximeter` on the same input.
 """
 
+import tempfile
 import time
 import unittest
 
 import numpy as np
+import pandas as pd
 from systole.recording import Oximeter
 
 from cardioception.devices import ContinuousOximeter
@@ -132,3 +134,111 @@ class TestCostDoesNotGrow(unittest.TestCase):
             f"stock {stock_s:.2f}s vs continuous {fast_s:.2f}s: the O(N) scan "
             f"looks like it is back",
         )
+
+
+class FlakySerial(DummySerial):
+    """A port that returns one corrupt packet part way through.
+
+    `Oximeter.check` validates a five-byte Nonin packet; a packet whose bytes
+    do not sum correctly fails it. This delivers good packets, then one bad
+    one, then good packets again, which is what a noisy USB line does.
+    """
+
+    def __init__(self, good_before=200, good_after=200):
+        self.queue = []
+        for _ in range(good_before):
+            self.queue.extend(self._packet(100))
+        self.queue.extend([1, 2, 3, 4, 5])  # checksum will not match
+        for _ in range(good_after):
+            self.queue.extend(self._packet(100))
+
+    @staticmethod
+    def _packet(value):
+        # Nonin format "2": header, status, value, and a checksum byte over
+        # the preceding bytes.
+        body = [1, 128, value, 0]
+        return body + [sum(body) % 256]
+
+    def inWaiting(self):
+        return len(self.queue)
+
+    def read(self, n):
+        taken, self.queue = self.queue[:n], self.queue[n:]
+        return bytes(taken)
+
+
+class TestOneBadPacketDoesNotEraseTheSession(unittest.TestCase):
+    """`Oximeter.read` calls `setup()` on a checksum failure, which resets.
+
+    One corrupt packet, on the line whose corruption is the reason a checksum
+    exists, discarded everything recorded so far. `readInWaiting` resyncs and
+    keeps the recording, so the asymmetry was never a decision.
+    """
+
+    def test_the_recording_survives_a_corrupt_packet(self):
+        recorder = ContinuousOximeter(serial=FlakySerial(), sfreq=SFREQ, add_channels=1)
+        recorder.read(duration=0.5)
+        self.assertGreater(
+            len(recorder.recording),
+            200,
+            "the recording was reset by the bad packet rather than resynced",
+        )
+
+    def test_stock_systole_loses_it(self):
+        """The behaviour being overridden, pinned so the reason stays visible."""
+        recorder = Oximeter(serial=FlakySerial(), sfreq=SFREQ, add_channels=1)
+        recorder.read(duration=0.5)
+        self.assertLess(
+            len(recorder.recording),
+            200,
+            "stock systole no longer wipes on a bad packet; drop the override",
+        )
+
+
+class TestSaveDoesNotCorruptWhatItRepairs(unittest.TestCase):
+    """`Oximeter.save`'s length guards are `[0 * len(x)]`, which is `[0]`.
+
+    `[0] * len(x)` was meant. One of the three also assigns `self.peak`, a
+    typo, so the list it claims to fix is untouched. They fire only once the
+    lists have drifted, which needs a long recording -- the case continuous
+    recording creates.
+    """
+
+    def _drifted(self):
+        recorder = ContinuousOximeter(serial=DummySerial(), sfreq=SFREQ, add_channels=1)
+        feed(recorder, pulse(300))
+        # Drift, as a dropped or duplicated packet would.
+        recorder.peaks = recorder.peaks[:-7]
+        recorder.instant_rr = recorder.instant_rr[:-3]
+        return recorder
+
+    def test_every_column_comes_out_the_length_of_the_recording(self):
+        recorder = self._drifted()
+        with tempfile.TemporaryDirectory() as tmp:
+            target = f"{tmp}/signal.txt"
+            recorder.save(target)
+            written = pd.read_csv(target)
+        self.assertEqual(len(written), len(recorder.recording))
+        for column in ("signal", "peaks", "instant_rr", "time", "wall_time"):
+            with self.subTest(column=column):
+                self.assertIn(column, written.columns)
+
+    def test_the_padding_keeps_the_samples_it_had(self):
+        """Padding, not replacement: the guard threw the data away."""
+        recorder = self._drifted()
+        before = list(recorder.peaks)
+        with tempfile.TemporaryDirectory() as tmp:
+            recorder.save(f"{tmp}/signal.txt")
+        self.assertEqual(recorder.peaks[: len(before)], before)
+        self.assertEqual(len(recorder.peaks), len(recorder.recording))
+
+    def test_stock_systole_replaces_the_list_with_one_element(self):
+        """The behaviour being overridden."""
+        recorder = Oximeter(serial=DummySerial(), sfreq=SFREQ, add_channels=1)
+        feed(recorder, pulse(300))
+        recorder.instant_rr = recorder.instant_rr[:-3]
+        self.assertNotEqual(len(recorder.instant_rr), len(recorder.recording))
+        # This is what the guard does, lifted out of save() so the assertion
+        # does not depend on writing a file.
+        repaired = [0 * len(recorder.recording)]
+        self.assertEqual(repaired, [0], "the guard is no longer [0 * len(x)]")

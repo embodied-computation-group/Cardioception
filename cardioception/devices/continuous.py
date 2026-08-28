@@ -26,6 +26,7 @@ import time
 from typing import List, Optional
 
 import numpy as np
+import pandas as pd
 from systole.recording import Oximeter
 
 
@@ -46,6 +47,9 @@ class ContinuousOximeter(Oximeter):
     #: leaves the runtime untouched; the element types are systole's to say.
     times: list
     diff: list
+    peaks: list
+    instant_rr: list
+    recording: list
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -117,3 +121,85 @@ class ContinuousOximeter(Oximeter):
             self.instant_rr.append(float("nan"))
 
         return self
+
+    def read(self, duration: float = 1.0):
+        """Record for ``duration`` seconds, keeping what came before.
+
+        `Oximeter.read` calls `self.setup()` when a packet fails its checksum,
+        and `setup()` resets: one corrupt packet, on a line where corrupt
+        packets are the reason a checksum exists, discards the entire
+        recording so far. `readInWaiting` handles the same failure by
+        resyncing and keeps the recording, so the asymmetry is not a
+        considered decision, and it is unsurvivable once a session's worth of
+        signal is at stake.
+
+        This resyncs the way `readInWaiting` does. It reads whole packets and
+        drops a byte on a bad one, so the stream realigns within five bytes
+        instead of losing everything.
+        """
+        start = time.time()
+        while time.time() - start < duration:
+            if self.serial.inWaiting() >= 5:
+                paquet = list(self.serial.read(5))
+                if self.check(paquet):
+                    self.add_paquet(value=self.get_value(paquet))
+                else:
+                    # One byte, not one packet: the stream is misaligned, and
+                    # discarding five would step over the next valid header.
+                    self.serial.read(1)
+        return self
+
+    def save(self, fname: str):
+        """Write the recording out, without the repairs that corrupt it.
+
+        `Oximeter.save` guards against its channel lists having drifted out of
+        length with each other::
+
+            if len(self.peaks) != len(self.recording):
+                self.peak = [0 * len(self.recording)]
+
+        Three things are wrong in two lines. `self.peak` is a typo for
+        `self.peaks`, so the assignment creates a new attribute and the real
+        list is untouched. `[0 * len(x)]` is the one-element list `[0]`, not a
+        zero-filled list of that length -- `[0] * len(x)` was meant. The same
+        `[0 * len(x)]` appears for `instant_rr` and `times`, where there is no
+        typo and the result is still `[0]`. So every guard replaces a
+        wrong-length list with a length-one list, and `np.array(saveList).T`
+        two dozen lines later is handed ragged input.
+
+        These fire only when the lists have drifted, which needs a long
+        recording -- exactly the case continuous recording creates. Padding to
+        the recording's length is what was intended, and the wall clock goes
+        out alongside, since `times` counts samples and cannot show a gap.
+        """
+        n = len(self.recording)
+        if len(self.peaks) != n:
+            self.peaks = self._padded(self.peaks, n, 0)
+        if len(self.instant_rr) != n:
+            self.instant_rr = self._padded(self.instant_rr, n, float("nan"))
+        if len(self.times) != n:
+            self.times = [i / self.sfreq for i in range(n)]
+        if len(self.wall_times) != n:
+            self.wall_times = self._padded(self.wall_times, n, float("nan"))
+        if self.channels is not None:
+            for name, channel in self.channels.items():
+                if len(channel) != n:
+                    self.channels[name] = self._padded(channel, n, 0)
+
+        columns = {
+            "signal": self.recording,
+            "peaks": self.peaks,
+            "instant_rr": self.instant_rr,
+            "time": self.times,
+            "wall_time": self.wall_times,
+        }
+        if self.channels is not None:
+            columns.update(self.channels)
+        pd.DataFrame(columns).to_csv(fname, index=False)
+
+    @staticmethod
+    def _padded(values: list, n: int, fill) -> list:
+        """``values`` at exactly length ``n``: truncated, or padded with fill."""
+        if len(values) > n:
+            return list(values[:n])
+        return list(values) + [fill] * (n - len(values))
