@@ -19,6 +19,7 @@ jobs:
   fast:
     name: unit and property tests on ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -45,6 +46,7 @@ jobs:
   session:
     name: full sessions under a virtual display
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -60,7 +62,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install -e . pytest pytest-cov
+          pip install -e . pytest pytest-cov pytest-timeout
       # xvfb gives the runner a screen but not a sound card, and the PTB
       # backend asks PortAudio for a speaker the moment the first tone is
       # constructed. This kernel ships no snd-dummy to load -- its
@@ -89,12 +91,18 @@ jobs:
           # data matrix doesn't match number of output channels". A plug
           # wrapper pins it to a plain stereo device.
           printf 'pcm.dummy {\n  type plug\n  slave { pcm "pulse" channels 2 rate 44100 format S16_LE }\n}\n' | sudo tee /etc/asound.conf > /dev/null
-          python -c "from psychopy import prefs; prefs.hardware['audioDevice'] = ['dummy']; prefs.saveUserPrefs()"
+          # Latency mode 0: nothing here measures audio latency, and the
+          # aggressive modes ask a null sink for guarantees it cannot give.
+          python -c "from psychopy import prefs; prefs.hardware['audioDevice'] = ['dummy']; prefs.hardware['audioLatencyMode'] = 0; prefs.saveUserPrefs()"
           # Read it back in a fresh process: that is what pytest will see.
           python -c "from psychtoolbox import audio; [print('PTB:', d['DeviceName'], d['NrOutputChannels']) for d in audio.get_devices()]" || true
-          python -c "from psychopy import prefs; print('audioDevice ->', prefs.hardware['audioDevice'])"
+          python -c "from psychopy import prefs; print('audioDevice ->', prefs.hardware['audioDevice'], 'latencyMode ->', prefs.hardware['audioLatencyMode'])"
       # A whole HRD session, both input devices, against the replay recorder.
       # This is the first time any CI job has run the task itself.
       - name: Run
         run: |
-          xvfb-run -a pytest tests/test_headless.py -v --cov=cardioception --cov-report=term-missing
+          # The first round that got this far ran for 16 minutes without
+          # finishing, where a failing round took 30 s. A per-test timeout
+          # dumps the stack of whatever is stuck; thread method, because the
+          # signal method cannot interrupt a blocking call inside PortAudio.
+          xvfb-run -a pytest tests/test_headless.py -v --timeout=180 --timeout-method=thread --cov=cardioception --cov-report=term-missing
