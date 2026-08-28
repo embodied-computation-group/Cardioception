@@ -9,6 +9,7 @@ from .._log import get_logger
 from .._present import hold
 from .._screens import text
 from .._triggers import fire
+from ._constants import Trigger
 
 logger = get_logger()
 
@@ -165,7 +166,7 @@ def trial(
     if (condition == "Count") | (condition == "Training"):
         parameters["oxiTask"].readInWaiting()
         # Add event marker
-        parameters["oxiTask"].channels["Channel_0"][-1] = 1
+        parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.LISTENING_START
         parameters["noteStart"].play()
         fire(parameters, "listeningStart")
         hold(parameters["win"], 1, *shown)
@@ -177,7 +178,7 @@ def trial(
     if (condition == "Count") | (condition == "Training"):
         # Add event marker
         parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 2
+        parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.LISTENING_STOP
         parameters["noteStop"].play()
         fire(parameters, "listeningStop")
         hold(parameters["win"], 3, *shown)

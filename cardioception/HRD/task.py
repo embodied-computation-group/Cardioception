@@ -16,12 +16,18 @@ from .._resources import resource_filename
 from .._screens import fixation as fixation_cross
 from .._screens import text
 from .._triggers import fire
+from ._constants import (
+    ANALYSIS_WINDOW,
+    LISTENING_DURATION,
+    OXIMETER_SFREQ,
+    PEAK_WINDOW_SAMPLES,
+    PPG_SFREQ,
+    TONE_BPM_MAX,
+    TONE_BPM_MIN,
+    Trigger,
+)
 
 logger = get_logger()
-
-#: Rate ppg_peaks resamples the raw oximeter signal to, used to time the
-#: samples written to the signal file.
-PPG_SFREQ = 1000
 
 
 def _save_session(parameters: dict, nTrial: int) -> None:
@@ -148,7 +154,7 @@ def run(
 
             # Before trial triggers
             parameters["oxiTask"].readInWaiting()
-            parameters["oxiTask"].channels["Channel_0"][-1] = 1  # Trigger
+            parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.TRIAL_START
             fire(parameters, "trialStart")
 
             # Start trial
@@ -205,13 +211,13 @@ def run(
 
                     # Update the Psi staircase with forced intensity value
                     # if impossible BPM was generated
-                    if listenBPM + alpha < 15:
+                    if listenBPM + alpha < TONE_BPM_MIN:
                         parameters["stairCase"][modality].addResponse(
-                            isMore, intensity=15
+                            isMore, intensity=TONE_BPM_MIN
                         )
-                    elif listenBPM + alpha > 199:
+                    elif listenBPM + alpha > TONE_BPM_MAX:
                         parameters["stairCase"][modality].addResponse(
-                            isMore, intensity=199
+                            isMore, intensity=TONE_BPM_MAX
                         )
                     else:
                         parameters["stairCase"][modality].addResponse(isMore)
@@ -438,7 +444,7 @@ def trial(
 
         # Start recording trigger
         parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
+        parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.LISTENING_START
         fire(parameters, "listeningStart")
 
         parameters["heartLogo"].draw()
@@ -467,17 +473,19 @@ def trial(
             # it can measure and create the new variable `bpm` (the average beats per
             # minute over the 5 seconds of recording).
             signal = (
-                parameters["oxiTask"].read(duration=5.0).recording[-75 * 6 :]  # noqa
+                parameters["oxiTask"]
+                .read(duration=LISTENING_DURATION)
+                .recording[-OXIMETER_SFREQ * ANALYSIS_WINDOW :]  # noqa
             )
             signal, peaks = ppg_peaks(
-                signal, sfreq=75, new_sfreq=PPG_SFREQ, clipping=True
+                signal, sfreq=OXIMETER_SFREQ, new_sfreq=PPG_SFREQ, clipping=True
             )
 
             recordedAt = time.time()
 
             # Get actual heart Rate
             # Only use the last 5 seconds of the recording
-            ibi = np.diff(np.where(peaks[-5000:])[0])
+            ibi = np.diff(np.where(peaks[-PEAK_WINDOW_SAMPLES:])[0])
             bpm = 60000 / ibi
 
             # # for Nonin3231USB
@@ -550,7 +558,7 @@ def trial(
 
         # Start recording trigger
         parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
+        parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.LISTENING_START
         fire(parameters, "listeningStart")
 
         parameters["listenLogo"].draw()
@@ -596,10 +604,10 @@ def trial(
 
     # Check for extreme alpha values, e.g. if alpha changes massively from
     # trial to trial.
-    if (listenBPM + alpha) < 15:
-        responseBPM = 15.0
-    elif (listenBPM + alpha) > 199:
-        responseBPM = 199.0
+    if (listenBPM + alpha) < TONE_BPM_MIN:
+        responseBPM = TONE_BPM_MIN
+    elif (listenBPM + alpha) > TONE_BPM_MAX:
+        responseBPM = TONE_BPM_MAX
     else:
         responseBPM = listenBPM + alpha
     responseFile = resource_filename("cardioception.HRD", f"Sounds/{responseBPM}.wav")
@@ -622,7 +630,7 @@ def trial(
 
     # Sound trigger
     parameters["oxiTask"].readInWaiting()
-    parameters["oxiTask"].channels["Channel_0"][-1] = 3
+    parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.DECISION_START
     fire(parameters, "decisionStart")
     soundTrigger = time.time()
     parameters["win"].flip()
@@ -654,7 +662,7 @@ def trial(
     if (confidenceRating is True) & (respProvided is True):
         # Confidence rating start trigger
         parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 4  # Trigger
+        parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.CONFIDENCE_START
         fire(parameters, "confidenceStart")
 
         # Confidence rating scale
@@ -670,7 +678,7 @@ def trial(
 
     # Confidence rating end trigger
     parameters["oxiTask"].readInWaiting()
-    parameters["oxiTask"].channels["Channel_0"][-1] = 5
+    parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.TRIAL_STOP
     fire(parameters, "trialStop")
     endTrigger = time.time()
 
