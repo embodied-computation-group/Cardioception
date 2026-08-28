@@ -46,7 +46,7 @@ if __name__ == "__main__":
         url=URL,
         project_urls={
             "Homepage": URL,
-            "Documentation": "https://embodied-computation-group.github.io/Cardioception/",
+            "Documentation": "https://www.the-ecg.org/Cardioception/",
             "Source": URL,
             "Bug Tracker": URL + "/issues",
         },
@@ -54,11 +54,28 @@ if __name__ == "__main__":
         long_description=LONG_DESCRIPTION,
         long_description_content_type="text/markdown",
         license="MIT",
+        keywords=[
+            "interoception",
+            "cardiac interoception",
+            "heart rate discrimination",
+            "heartbeat counting",
+            "psychophysics",
+            "metacognition",
+            "psychopy",
+            "cardiology",
+            "psychology",
+        ],
         classifiers=[
             "Development Status :: 4 - Beta",
             "Intended Audience :: Science/Research",
+            "License :: OSI Approved :: MIT License",
+            "Operating System :: OS Independent",
             "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.10",
+            "Programming Language :: Python :: 3.11",
             "Topic :: Scientific/Engineering",
+            "Topic :: Scientific/Engineering :: Medical Science Apps.",
+            "Topic :: Scientific/Engineering :: Human Machine Interfaces",
         ],
         # Upper bound is pywinhook, not PsychoPy: pywinhook 1.6.2 publishes wheels only
         # up to cp311, and without one it needs SWIG to build on Windows. psychopy

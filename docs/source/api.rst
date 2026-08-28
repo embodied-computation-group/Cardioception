@@ -1,5 +1,11 @@
 .. _api_ref:
 
+.. meta::
+   :description: The Cardioception API: parameters and task functions for the
+      Heart Rate Discrimination and Heartbeat Counting tasks in PsychoPy.
+   :keywords: cardioception API, heart rate discrimination, heartbeat counting,
+      PsychoPy, python interoception
+
 .. currentmodule:: cardioception
 
 
