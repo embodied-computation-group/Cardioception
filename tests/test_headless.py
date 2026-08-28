@@ -36,9 +36,22 @@ EXPECTED_COLUMNS = [
     "DecisionRT",
     "Confidence",
     "ConfidenceRT",
+    "ConfidenceUnit",
+    "Device",
+    "ConfidenceScale",
+    "ConfidenceLow",
+    "ConfidenceHigh",
+    "ConfidenceGranularity",
+    "ConfidenceLevels",
+    "ConfidenceSigned",
     "Alpha",
     "listenBPM",
     "responseBPM",
+    "nRepresentations",
+    "listenBPM_arithmetic",
+    "HeartRateAttempts",
+    "HeartRateAccepted",
+    "DroppedFrames",
     "ResponseCorrect",
     "DecisionProvided",
     "RatingProvided",
@@ -87,7 +100,7 @@ def run_session(
         run(params, confidenceRating=True, runTutorial=False)
     finally:
         params["win"].close()
-    return params, pd.read_csv(Path(tmp, "HEADLESS1_final.txt"))
+    return params, pd.read_csv(params["paths"].path("final"))
 
 
 class TestReferenceSession(unittest.TestCase):
@@ -139,6 +152,44 @@ class TestReferenceSession(unittest.TestCase):
         observed = self.df[self.df.Modality == "Intero"].listenBPM.unique()
         self.assertEqual(list(observed), [BPM])
 
+    def test_the_stimulus_rate_is_never_the_arithmetic_mean_of_the_rates(self):
+        """60000/mean(IBI) <= mean(60000/IBI), by Jensen's inequality.
+
+        The old listenBPM took the second, which made the tone systematically
+        faster than the heart it was matching.
+        """
+        intero = self.df[self.df.Modality == "Intero"]
+        self.assertTrue((intero.listenBPM <= intero.listenBPM_arithmetic).all())
+
+    def test_each_sample_of_the_signal_carries_a_time(self):
+        """Without this the PPG recording cannot be aligned with anything."""
+        signal = pd.read_csv(self.params["paths"].path("signal"))
+        self.assertIn("time", signal.columns)
+        # Per trial, not across the file: the replay recorder returns without
+        # spending the five seconds a real oximeter would, so its windows
+        # overlap in wall time.
+        for _, window in signal.groupby("nTrial"):
+            self.assertTrue(window.time.is_monotonic_increasing)
+        # Every window is closed before the tone it precedes is played.
+        decision = self.df.set_index("nTrials").StartDecision
+        for nTrial, window in signal.groupby("nTrial"):
+            self.assertLessEqual(window.time.max(), decision.loc[nTrial])
+
+    def test_the_manifest_records_the_session_before_it_runs(self):
+        import json
+
+        manifest = json.loads(
+            (Path(self.params["paths"].directory) / "manifest.json").read_text()
+        )
+        self.assertEqual(manifest["task"], "HRD")
+        self.assertEqual(manifest["seed"], SEED)
+        self.assertEqual(manifest["confidence"]["ConfidenceLevels"], 10)
+
+    def test_the_heart_rate_search_is_reported_per_trial(self):
+        intero = self.df[self.df.Modality == "Intero"]
+        self.assertTrue((intero.HeartRateAttempts >= 1).all())
+        self.assertTrue(intero.HeartRateAccepted.astype(bool).all())
+
     def test_all_five_trigger_codes_reach_the_recorder(self):
         self.assertEqual(set(self.params["recorder"].trigger_codes), {1, 2, 3, 4, 5})
 
@@ -157,7 +208,7 @@ class TestReferenceSession(unittest.TestCase):
         """Each of these is already written to its own file."""
         import pickle
 
-        with open(Path(self.tmp, "HEADLESS_parameters.pickle"), "rb") as fh:
+        with open(self.params["paths"].path("parameters", ext="pickle"), "rb") as fh:
             saved = pickle.load(fh)
         for key in ("staircaisePosteriors", "signal_df", "results_df"):
             self.assertNotIn(key, saved)

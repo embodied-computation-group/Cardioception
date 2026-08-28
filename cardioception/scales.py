@@ -10,7 +10,7 @@ A scale is now one object, used by both input devices and recorded on every
 row, so a results file is interpretable without the parameters pickle.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Sequence, Tuple
 
 
@@ -87,6 +87,10 @@ class ConfidenceScale:
         if not self.signed or float(value) == self.midpoint:
             return None
         return float(value) > self.midpoint
+
+    def with_labels(self, labels: Sequence[str]) -> "ConfidenceScale":
+        """The same scale with translated end labels."""
+        return replace(self, labels=tuple(labels))
 
     @property
     def bounds(self) -> Tuple[float, float]:

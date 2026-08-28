@@ -1,7 +1,9 @@
 # Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk
 # Maintained by the Embodied Computation Group, Aarhus University
 
+import datetime
 import os
+import time
 from typing import Any, Dict, Optional
 
 import numpy as np
@@ -15,6 +17,8 @@ from cardioception.HRD.languages import danish, danish_children, english, french
 from .._resources import resource_filename
 from .._rng import make_rng
 from .._triggers import validate as validate_triggers
+from ..output import SessionPaths
+from ..scales import DISCRETE_1_10, VAS_0_100, ConfidenceScale
 
 
 def getParameters(
@@ -31,6 +35,8 @@ def getParameters(
     fullscr: bool = True,
     nBreaking: int = 20,
     resultPath: Optional[str] = None,
+    overwrite: bool = False,
+    confidenceScale: Optional[ConfidenceScale] = None,
     language: str = "english",
     systole_kw: dict = {},
     seed: Optional[int] = None,
@@ -99,7 +105,16 @@ def getParameters(
         jitter) to control for range of stimuli presented. Default to `0.0` (no catch
         trials). If not `0.0`, recomended value is `0.2`.
     resultPath : str | None
-        Where to save the results.
+        Root directory holding every participant. Results go to
+        `<resultPath>/sub-<participant>/ses-<session>/run-<timestamp>/`. Defaults
+        to `<cwd>/data`.
+    overwrite : bool
+        Allow writing into a run directory that already holds results. Off by
+        default, so a repeated run cannot silently replace an earlier one.
+    confidenceScale : ConfidenceScale | None
+        How confidence is collected and what its numbers mean. Defaults to a
+        0-100 visual analogue scale for the mouse and ten discrete steps for the
+        keyboard. See :mod:`cardioception.scales`.
     screenNb : int
         Screen number. Used to parametrize py:func:`psychopy.visual.Window`. Defaults
         to `0`.
@@ -121,8 +136,8 @@ def getParameters(
     ----------
     allowedKeys : list of str
         The possible response keys.
-    confScale : list
-        The range of the confidence rating scale.
+    confidenceScale : :py:class:`cardioception.scales.ConfidenceScale`
+        The confidence scale in use, and the meaning of its numbers.
     device : str
         The device used for response and rating scale. Can be `"keyboard"` or
         `"mouse"`.
@@ -239,6 +254,8 @@ def getParameters(
     """
     from psychopy import data, event, visual
 
+    from .. import __version__
+
     parameters: Dict[str, Any] = {}
     # One generator for the whole session. The seed is always recorded, so a
     # session can be replayed even when the caller did not choose one.
@@ -259,9 +276,6 @@ def getParameters(
     parameters["triggers"] = validate_triggers(triggers)
     parameters["ExteroCondition"] = exteroception
     parameters["device"] = device
-    if parameters["device"] == "keyboard":
-        parameters["confScale"] = [1, 7]
-    parameters["labelsRating"] = ["Guess", "Certain"]
     parameters["screenNb"] = screenNb
     parameters["monitor"] = "testMonitor"
     parameters["nFeedback"] = 5
@@ -285,13 +299,19 @@ def getParameters(
     parameters["participant"] = participant
     parameters["session"] = session
     parameters["path"] = os.getcwd()
-    if resultPath is None:
-        parameters["resultPath"] = parameters["path"] + "/data/" + participant + session
-    else:
-        parameters["resultPath"] = resultPath
-    # Create Results directory if not already exists
-    if not os.path.exists(parameters["resultPath"]):
-        os.makedirs(parameters["resultPath"])
+    parameters["paths"] = SessionPaths(
+        root=(
+            resultPath
+            if resultPath is not None
+            else os.path.join(parameters["path"], "data")
+        ),
+        participant=participant,
+        session=session,
+        overwrite=overwrite,
+    )
+    # Kept for scripts that read it. It is now the run directory, not
+    # data/<participant><session>, which two different sessions could share.
+    parameters["resultPath"] = parameters["paths"].directory
 
     # Store posterior in a dictionary
     parameters["staircaisePosteriors"] = {}
@@ -357,7 +377,6 @@ def getParameters(
     parameters["stairCase"] = {}
 
     if stairType == "updown":
-
         conditions = [
             {
                 "label": "low",
@@ -385,7 +404,6 @@ def getParameters(
         )
 
     elif stairType == "psi":
-
         parameters["stairCase"]["Intero"] = data.PsiHandler(
             nTrials=nTrials,
             intensRange=[-50.5, 50.5],
@@ -401,7 +419,6 @@ def getParameters(
 
     if exteroception is True:
         if stairType == "updown":
-
             conditions = [
                 {
                     "label": "low",
@@ -429,7 +446,6 @@ def getParameters(
             )
 
         elif stairType == "psi":
-
             parameters["stairCase"]["Extero"] = data.PsiHandler(
                 nTrials=nTrials,
                 intensRange=[-50.5, 50.5],
@@ -505,6 +521,9 @@ def getParameters(
         units="height",
     )
     parameters["win"].mouseVisible = False
+    # Needed for nDroppedFrames to count anything, which is what the per-trial
+    # DroppedFrames column reports.
+    parameters["win"].recordFrameIntervals = True
 
     ###############
     # Image loading
@@ -542,9 +561,36 @@ def getParameters(
     parameters["heartLogo"].size *= 0.04
     parameters["textSize"] = 0.04
     parameters["HRcutOff"] = [40, 120]
-    if parameters["device"] == "keyboard":
-        parameters["confScale"] = [1, 10]
-    elif parameters["device"] == "mouse":
+    if parameters["device"] == "mouse":
         parameters["myMouse"] = event.Mouse()
+
+    # Resolved here rather than above because the default takes its end labels
+    # from the chosen language.
+    if confidenceScale is None:
+        confidenceScale = DISCRETE_1_10 if device == "keyboard" else VAS_0_100
+        confidenceScale = confidenceScale.with_labels(parameters["texts"]["VASlabels"])
+    parameters["confidenceScale"] = confidenceScale
+    parameters["labelsRating"] = list(confidenceScale.labels)
+
+    # Written now, not at the end: an aborted session used to leave no record of
+    # what it had been asked to do.
+    parameters["startTime"] = time.time()
+    parameters["paths"].write_manifest(
+        task="HRD",
+        version=__version__,
+        start_epoch=parameters["startTime"],
+        start_local=datetime.datetime.now().isoformat(timespec="seconds"),
+        seed=parameters["seed"],
+        device=device,
+        language=language,
+        setup=setup,
+        stairType=stairType,
+        exteroception=exteroception,
+        nTrials=nTrials,
+        catchTrials=catchTrials,
+        onMissedTrial=onMissedTrial,
+        maxRepresentations=maxRepresentations,
+        confidence=confidenceScale.describe(),
+    )
 
     return parameters

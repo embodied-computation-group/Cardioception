@@ -30,6 +30,7 @@ def keyboard_rating(
     min_time: float = 0.0,
     max_time: Optional[float] = None,
     accept_keys: Sequence[str] = ("down",),
+    granularity: float = 1,
     label_height: float = 0.06,
     rng: Optional[np.random.Generator] = None,
 ) -> Tuple[Optional[float], Optional[float], bool]:
@@ -57,6 +58,8 @@ def keyboard_rating(
         indefinitely, which is what the Heartbeat Counting task does.
     accept_keys :
         Keys that confirm the current value.
+    granularity :
+        Step size, and how far one arrow keypress moves the marker.
     label_height :
         Text height for the end labels.
     rng :
@@ -75,11 +78,13 @@ def keyboard_rating(
     """
     from psychopy import core, event, visual
 
+    from ._present import hold
+
     if marker_start is None:
         # The starting position biases the rating, so the draw has to come from
         # the seeded session generator to be reproducible and recoverable.
         draw = rng if rng is not None else np.random.default_rng()
-        marker_start = int(draw.choice(np.arange(low, high)))
+        marker_start = float(draw.choice(np.arange(low, high, granularity)))
 
     slider = visual.Slider(
         win=win,
@@ -87,7 +92,7 @@ def keyboard_rating(
         pos=(0, -0.2),
         size=(0.7, 0.1),
         labels=list(labels),
-        granularity=1,
+        granularity=granularity,
         ticks=(low, high),
         style="rating",
         color="LightGray",
@@ -113,9 +118,9 @@ def keyboard_rating(
 
         for key in event.getKeys(keyList=watched):
             if key == "left":
-                slider.markerPos = max(low, slider.markerPos - 1)
+                slider.markerPos = max(low, slider.markerPos - granularity)
             elif key == "right":
-                slider.markerPos = min(high, slider.markerPos + 1)
+                slider.markerPos = min(high, slider.markerPos + granularity)
             elif key in accept_keys and elapsed > min_time:
                 confidence, confidenceRT, ratingProvided = (
                     slider.markerPos,
@@ -126,10 +131,7 @@ def keyboard_rating(
         if ratingProvided:
             # Confirm visibly before moving on, as the mouse branch does.
             slider.marker.color = "green"
-            slider.draw()
-            message.draw()
-            win.flip()
-            core.wait(0.2)
+            hold(win, 0.2, slider, message)
             break
 
         if max_time is not None and elapsed > max_time:

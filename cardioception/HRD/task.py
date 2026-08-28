@@ -14,40 +14,30 @@ from .._present import accept_press, hold  # noqa: F401
 from .._resources import resource_filename
 from .._triggers import fire
 
+#: Rate ppg_peaks resamples the raw oximeter signal to, used to time the
+#: samples written to the signal file.
+PPG_SFREQ = 1000
+
 
 def _save_session(parameters: dict, nTrial: int) -> None:
     """Write everything the session produced.
 
     Called from a finally clause so an abort or a crash still saves.
     """
+    paths = parameters["paths"]
+
     print("Saving final results in .txt file...")
-    parameters["results_df"].to_csv(
-        parameters["resultPath"]
-        + "/"
-        + parameters["participant"]
-        + parameters["session"]
-        + "_final.txt",
-        index=False,
-    )
+    parameters["results_df"].to_csv(paths.path("final"), index=False)
 
     print("Saving PPG signal data frame...")
-    parameters["signal_df"].to_csv(
-        parameters["resultPath"] + "/" + parameters["participant"] + "_signal.txt",
-        index=False,
-    )
+    parameters["signal_df"].to_csv(paths.path("signal"), index=False)
 
-    parameters["oxiTask"].save(
-        f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}_end.txt"
-    )
+    parameters["oxiTask"].save(paths.path(f"ppg-{nTrial}-end"))
 
     print("Saving posterior distributions...")
     for k in set(parameters["Modality"]):
         np.save(
-            parameters["resultPath"]
-            + "/"
-            + parameters["participant"]
-            + k
-            + "_posterior.npy",
+            paths.path(f"posterior-{k}", ext="npy"),
             np.array(parameters["staircaisePosteriors"][k]),
         )
 
@@ -72,13 +62,7 @@ def _save_session(parameters: dict, nTrial: int) -> None:
     # pickle 30 MB of duplicates.
     for k in ["staircaisePosteriors", "signal_df", "results_df"]:
         save_parameter.pop(k, None)
-    with open(
-        save_parameter["resultPath"]
-        + "/"
-        + save_parameter["participant"]
-        + "_parameters.pickle",
-        "wb",
-    ) as handle:
+    with open(paths.path("parameters", ext="pickle"), "wb") as handle:
         pickle.dump(save_parameter, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
@@ -131,7 +115,6 @@ def run(
 
             # Wait for key press if this is the first trial
             if nTrial == 0:
-
                 # Ask the participant to press default button to start
                 messageStart = visual.TextStim(
                     parameters["win"],
@@ -182,6 +165,7 @@ def run(
                 condition,
                 listenBPM,
                 responseBPM,
+                quality,
                 decision,
                 decisionRT,
                 confidence,
@@ -264,6 +248,13 @@ def run(
                 f"- Response: {decision} ({isCorrect})"
             )
 
+            # Confidence on 0-1 so sessions run on different scales stay
+            # comparable, and the scale definition on every row so the file can
+            # be read without the parameters pickle.
+            scale = parameters["confidenceScale"]
+            scaleColumns = scale.describe()
+            confidenceUnit = None if confidence is None else scale.to_unit(confidence)
+
             # Store results
             parameters["results_df"] = pd.concat(
                 [
@@ -278,9 +269,14 @@ def run(
                             "DecisionRT": [decisionRT],
                             "Confidence": [confidence],
                             "ConfidenceRT": [confidenceRT],
+                            "ConfidenceUnit": [confidenceUnit],
+                            "Device": [parameters["device"]],
+                            **{k: [v] for k, v in scaleColumns.items()},
                             "Alpha": [alpha],
                             "listenBPM": [listenBPM],
                             "responseBPM": [responseBPM],
+                            "nRepresentations": [thisItem["attempt"]],
+                            **{k: [v] for k, v in quality.items()},
                             "ResponseCorrect": [isCorrect],
                             "DecisionProvided": [respProvided],
                             "RatingProvided": [ratingProvided],
@@ -301,12 +297,7 @@ def run(
 
             # Save the results at each iteration
             parameters["results_df"].to_csv(
-                parameters["resultPath"]
-                + "/"
-                + parameters["participant"]
-                + parameters["session"]
-                + ".txt",
-                index=False,
+                parameters["paths"].path("behaviour"), index=False
             )
 
             nTrial += 1
@@ -328,9 +319,7 @@ def run(
                 remain.draw()
                 message.draw()
                 parameters["win"].flip()
-                parameters["oxiTask"].save(
-                    f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}.txt"
-                )
+                parameters["oxiTask"].save(parameters["paths"].path(f"ppg-{nTrial}"))
 
                 # Wait for participant input before continue
                 waitInput(parameters)
@@ -355,7 +344,7 @@ def run(
         pos=(0.0, 0.0),
         text=parameters["texts"]["done"],
     )
-    hold(parameters, 3, end)
+    hold(parameters["win"], 3, end)
 
 
 def trial(
@@ -419,9 +408,8 @@ def trial(
     decisionRT : float
         The response time from sound start to choice (seconds).
     confidence : int
-        If confidenceRating is *True*, the confidence of the participant. The
-        range of the scale is defined in `parameters['confScale']`. Default is
-        `[1, 7]`.
+        If confidenceRating is *True*, the confidence of the participant, on
+        the scale given by `parameters['confidenceScale']`.
     confidenceRT : float
         The response time (RT) for the confidence rating scale.
     alpha : int
@@ -456,7 +444,7 @@ def trial(
         win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
     )
     hold(
-        parameters,
+        parameters["win"],
         parameters["rng"].uniform(parameters["isi"][0], parameters["isi"][1]),
         fixation,
     )
@@ -467,8 +455,10 @@ def trial(
         parameters["win"].close()
         core.quit()
 
-    if modality == "Intero":
+    droppedAtStart = parameters["win"].nDroppedFrames
+    heartRateAttempts, heartRateAccepted = None, None
 
+    if modality == "Intero":
         ###########
         # Recording
         ###########
@@ -499,8 +489,8 @@ def trial(
         # which is recoverable, unlike a session that never advances.
         maxAttempts = parameters.get("maxHeartRateAttempts", 10)
         listenBPM = None
+        attempt = 0
         for attempt in range(maxAttempts):
-
             if "escape" in event.getKeys(keyList=["escape"]):
                 print("User abort")
                 parameters["win"].close()
@@ -513,11 +503,16 @@ def trial(
             signal = (
                 parameters["oxiTask"].read(duration=5.0).recording[-75 * 6 :]  # noqa
             )
-            signal, peaks = ppg_peaks(signal, sfreq=75, new_sfreq=1000, clipping=True)
+            signal, peaks = ppg_peaks(
+                signal, sfreq=75, new_sfreq=PPG_SFREQ, clipping=True
+            )
+
+            recordedAt = time.time()
 
             # Get actual heart Rate
             # Only use the last 5 seconds of the recording
-            bpm = 60000 / np.diff(np.where(peaks[-5000:])[0])
+            ibi = np.diff(np.where(peaks[-5000:])[0])
+            bpm = 60000 / ibi
 
             # # for Nonin3231USB
             # # Only use the last 5 seconds of the recording
@@ -535,7 +530,7 @@ def trial(
                     text=parameters["texts"]["checkOximeter"],
                     color="red",
                 )
-                hold(parameters, 2, message)
+                hold(parameters["win"], 2, message)
 
             else:
                 # Check for extreme heart rate values, if crosses theshold,
@@ -545,7 +540,14 @@ def trial(
                     (np.any(bpm < parameters["HRcutOff"][0]))
                     or (np.any(bpm > parameters["HRcutOff"][1]))
                 ):
-                    listenBPM = round(bpm.mean() * 2) / 2  # Round nearest .5
+                    # Rate over the window, not the average of the
+                    # per-beat rates. Averaging 60000/IBI overestimates by
+                    # Jensen's inequality, measured at +0.33 BPM on real PPG,
+                    # so the tone was reliably faster than the heart it was
+                    # meant to match. Round to the nearest .5 for the sound
+                    # files.
+                    listenBPM = round((60000 / ibi.mean()) * 2) / 2
+                    listenBPM_arithmetic = round(bpm.mean() * 2) / 2
                     break
                 else:
                     message = visual.TextStim(
@@ -554,20 +556,28 @@ def trial(
                         text=parameters["texts"]["stayStill"],
                         color="red",
                     )
-                    hold(parameters, 2, message)
+                    hold(parameters["win"], 2, message)
+
+        heartRateAttempts = attempt + 1
+        heartRateAccepted = listenBPM is not None
 
         if listenBPM is None:
             # Out of attempts. Use the last window regardless and mark the
             # trial, rather than holding the session on this screen.
             print(f"... no acceptable heart rate after {maxAttempts} attempts.")
+            usable = bpm.size and not np.isnan(bpm).all()
             listenBPM = (
+                round((60000 / np.nanmean(ibi)) * 2) / 2
+                if usable
+                else float(np.mean(parameters["HRcutOff"]))
+            )
+            listenBPM_arithmetic = (
                 round(float(np.nanmean(bpm)) * 2) / 2
-                if bpm.size and not np.isnan(bpm).all()
+                if usable
                 else float(np.mean(parameters["HRcutOff"]))
             )
 
     elif modality == "Extero":
-
         ###########
         # Recording
         ###########
@@ -591,6 +601,8 @@ def trial(
 
         # Random selection of HR frequency
         listenBPM = parameters["rng"].choice(np.arange(40, 100, 0.5))
+        # No recording on this modality, so the two averages coincide.
+        listenBPM_arithmetic = listenBPM
 
         # Play the corresponding beat file
         listenFile = resource_filename("cardioception.HRD", f"Sounds/{listenBPM}.wav")
@@ -602,7 +614,7 @@ def trial(
         listenSound = sound.Sound(listenFile)
         listenSound.play()
         hold(
-            parameters,
+            parameters["win"],
             parameters.get("listeningDuration", 5.0),
             messageRecord,
             parameters["listenLogo"],
@@ -616,7 +628,7 @@ def trial(
     fixation = visual.GratingStim(
         win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
     )
-    hold(parameters, 0.5, fixation)
+    hold(parameters["win"], 0.5, fixation)
 
     #######
     # Sound
@@ -693,7 +705,6 @@ def trial(
 
     # Record participant confidence
     if (confidenceRating is True) & (respProvided is True):
-
         # Confidence rating start trigger
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 4  # Trigger
@@ -721,10 +732,17 @@ def trial(
         if modality == "Intero":
             this_df = None
             # Save physio signal
+            # Absolute time per sample, so the signal can be aligned
+            # with the trial triggers and with anything recorded alongside
+            # it. Counted back from the moment the accepted window was
+            # read, at the rate ppg_peaks resampled to.
+            nSamples = len(signal)
             this_df = pd.DataFrame(
                 {
                     "signal": signal,
-                    "nTrial": pd.Series([nTrial] * len(signal), dtype="category"),
+                    "time": recordedAt
+                    - (nSamples - 1 - np.arange(nSamples)) / PPG_SFREQ,
+                    "nTrial": pd.Series([nTrial] * nSamples, dtype="category"),
                 }
             )
 
@@ -732,10 +750,18 @@ def trial(
                 [parameters["signal_df"], this_df], ignore_index=True
             )
 
+    quality = {
+        "listenBPM_arithmetic": listenBPM_arithmetic,
+        "HeartRateAttempts": heartRateAttempts,
+        "HeartRateAccepted": heartRateAccepted,
+        "DroppedFrames": parameters["win"].nDroppedFrames - droppedAtStart,
+    }
+
     return (
         condition,
         listenBPM,
         responseBPM,
+        quality,
         decision,
         decisionRT,
         confidence,
@@ -818,7 +844,7 @@ def tutorial(parameters: dict):
         pos=(0.0, -0.4),
         text=parameters["texts"]["textNext"],
     )
-    hold(parameters, 1, intro, press)
+    hold(parameters["win"], 1, intro, press)
 
     waitInput(parameters)
 
@@ -835,7 +861,7 @@ def tutorial(parameters: dict):
         pos=(0.0, -0.4),
         text=parameters["texts"]["textNext"],
     )
-    hold(parameters, 1, pulse1, parameters["pulseSchema"], press)
+    hold(parameters["win"], 1, pulse1, parameters["pulseSchema"], press)
 
     waitInput(parameters)
 
@@ -853,7 +879,7 @@ def tutorial(parameters: dict):
             pos=(0.0, -0.2),
             text=parameters["texts"]["pulseTutorial3"],
         )
-        hold(parameters, 1, pulse2, pulse3, press)
+        hold(parameters["win"], 1, pulse2, pulse3, press)
 
         waitInput(parameters)
 
@@ -863,7 +889,7 @@ def tutorial(parameters: dict):
         pos=(0.0, 0.3),
         text=parameters["texts"]["pulseTutorial4"],
     )
-    hold(parameters, 1, pulse4, parameters["handSchema"])
+    hold(parameters["win"], 1, pulse4, parameters["handSchema"])
 
     # Record number
     nFinger = ""
@@ -889,7 +915,7 @@ def tutorial(parameters: dict):
             # Save the finger number in the task parameters dictionary
             parameters["nFinger"] = nFinger
 
-            hold(parameters, 0.5, pulse4, parameters["handSchema"])
+            hold(parameters["win"], 0.5, pulse4, parameters["handSchema"])
             break
 
     # Heartrate recording
@@ -899,7 +925,7 @@ def tutorial(parameters: dict):
         pos=(0.0, 0.3),
         text=parameters["texts"]["Tutorial2"],
     )
-    hold(parameters, 1, recording, parameters["heartLogo"], press)
+    hold(parameters["win"], 1, recording, parameters["heartLogo"], press)
 
     waitInput(parameters)
 
@@ -910,7 +936,7 @@ def tutorial(parameters: dict):
         pos=(0.0, 0.3),
         text=parameters["texts"]["Tutorial3_icon"],
     )
-    hold(parameters, 1, parameters["heartLogo"], listenIcon, press)
+    hold(parameters["win"], 1, parameters["heartLogo"], listenIcon, press)
 
     waitInput(parameters)
 
@@ -921,14 +947,13 @@ def tutorial(parameters: dict):
         pos=(0.0, 0.0),
         text=parameters["texts"]["Tutorial3_responses"],
     )
-    hold(parameters, 1, listenResponse, press)
+    hold(parameters["win"], 1, listenResponse, press)
 
     waitInput(parameters)
 
     # Run training trials with feedback
     parameters["oxiTask"].setup().read(duration=2)
     for i in range(parameters["nFeedback"]):
-
         # Ramdom selection of condition
         condition = parameters["rng"].choice(["More", "Less"])
         alpha = -20.0 if condition == "Less" else 20.0
@@ -949,7 +974,7 @@ def tutorial(parameters: dict):
             pos=(0.0, -0.2),
             text=parameters["texts"]["Tutorial3bis"],
         )
-        hold(parameters, 1, exteroText, parameters["listenLogo"], press)
+        hold(parameters["win"], 1, exteroText, parameters["listenLogo"], press)
 
         waitInput(parameters)
 
@@ -959,14 +984,13 @@ def tutorial(parameters: dict):
             pos=(0.0, 0.0),
             text=parameters["texts"]["Tutorial3ter"],
         )
-        hold(parameters, 1, exteroResponse, press)
+        hold(parameters["win"], 1, exteroResponse, press)
 
         waitInput(parameters)
 
         # Run 10 training trials with feedback
         parameters["oxiTask"].setup().read(duration=2)
         for i in range(parameters["nFeedback"]):
-
             # Ramdom selection of condition
             condition = parameters["rng"].choice(["More", "Less"])
             alpha = -20.0 if condition == "Less" else 20.0
@@ -987,7 +1011,7 @@ def tutorial(parameters: dict):
         height=parameters["textSize"],
         text=parameters["texts"]["Tutorial4"],
     )
-    hold(parameters, 1, confidenceText, press)
+    hold(parameters["win"], 1, confidenceText, press)
 
     waitInput(parameters)
 
@@ -1024,7 +1048,7 @@ def tutorial(parameters: dict):
         height=parameters["textSize"],
         text=parameters["texts"]["Tutorial5"],
     )
-    hold(parameters, 1, taskPresentation, press)
+    hold(parameters["win"], 1, taskPresentation, press)
     waitInput(parameters)
 
     # Task
@@ -1033,7 +1057,7 @@ def tutorial(parameters: dict):
         height=parameters["textSize"],
         text=parameters["texts"]["Tutorial6"],
     )
-    hold(parameters, 1, taskPresentation, press)
+    hold(parameters["win"], 1, taskPresentation, press)
     waitInput(parameters)
 
 
@@ -1115,7 +1139,7 @@ def responseDecision(
                 height=parameters["textSize"],
                 text=parameters["texts"]["tooLate"],
             )
-            hold(parameters, 1, message)
+            hold(parameters["win"], 1, message)
         else:
             respProvided = True
             decision = responseKey[0][0]
@@ -1143,7 +1167,7 @@ def responseDecision(
                         color="red",
                         text="False",
                     )
-                    hold(parameters, 2, acc)
+                    hold(parameters["win"], 2, acc)
                 elif isCorrect is True:
                     acc = visual.TextStim(
                         parameters["win"],
@@ -1151,10 +1175,9 @@ def responseDecision(
                         color="green",
                         text="Correct",
                     )
-                    hold(parameters, 2, acc)
+                    hold(parameters["win"], 2, acc)
 
     if parameters["device"] == "mouse":
-
         # Initialise response feedback
         slower = visual.TextStim(
             parameters["win"],
@@ -1209,7 +1232,7 @@ def responseDecision(
                 # Show feedback for .5 seconds if enough time
                 remain = parameters["respMax"] - trialdur
                 pauseFeedback = 0.5 if (remain > 0.5) else remain
-                hold(parameters, pauseFeedback, slower, faster)
+                hold(parameters["win"], pauseFeedback, slower, faster)
                 break
             elif buttons == [0, 0, 1]:
                 decisionRT = decisionRT[-1]
@@ -1219,7 +1242,7 @@ def responseDecision(
                 # Show feedback for .5 seconds if enough time
                 remain = parameters["respMax"] - trialdur
                 pauseFeedback = 0.5 if (remain > 0.5) else remain
-                hold(parameters, pauseFeedback, slower, faster)
+                hold(parameters["win"], pauseFeedback, slower, faster)
                 break
             elif trialdur > parameters["respMax"]:  # if too long
                 respProvided = False
@@ -1242,7 +1265,7 @@ def responseDecision(
                 color="red",
                 pos=(0.0, -0.2),
             )
-            hold(parameters, 0.5, message)
+            hold(parameters["win"], 0.5, message)
         else:
             # Is the answer Correct?
             isCorrect = True if (decision == condition) else False
@@ -1260,7 +1283,7 @@ def responseDecision(
                     color=colorFeedback,
                     text=textFeedback,
                 )
-                hold(parameters, 1, acc)
+                hold(parameters["win"], 1, acc)
 
     return (
         responseMadeTrigger,
@@ -1297,12 +1320,8 @@ def confidenceRatingTask(
     if pilot is not None:
         # The rating widget itself is covered by its own tests; here we only
         # need a value of the right shape so the session can run unattended.
-        low, high = (
-            parameters["confScale"] if parameters["device"] == "keyboard" else (0, 100)
-        )
         answer = pilot.rate(
-            low,
-            high,
+            *parameters["confidenceScale"].bounds,
             min_time=parameters["minRatingTime"],
             max_wait=parameters["maxRatingTime"],
         )
@@ -1312,7 +1331,6 @@ def confidenceRatingTask(
         return confidence, confidenceRT, True, time.time()
 
     if parameters["device"] == "keyboard":
-
         message = visual.TextStim(
             parameters["win"],
             height=parameters["textSize"],
@@ -1326,12 +1344,14 @@ def confidenceRatingTask(
         # PluginRequiredError. Slider is the supported replacement and is what
         # the mouse branch below already used, so both devices now show the
         # same widget.
+        scale = parameters["confidenceScale"]
         confidence, confidenceRT, ratingProvided = keyboard_rating(
             win=parameters["win"],
             message=message,
-            low=parameters["confScale"][0],
-            high=parameters["confScale"][1],
-            labels=parameters["labelsRating"],
+            low=scale.low,
+            high=scale.high,
+            labels=scale.labels,
+            granularity=scale.granularity,
             min_time=parameters["minRatingTime"],
             max_time=parameters["maxRatingTime"],
             label_height=parameters["textSize"] * 0.6,
@@ -1344,7 +1364,6 @@ def confidenceRatingTask(
             )
 
     elif parameters["device"] == "mouse":
-
         # Use the mouse position to update the slider position
         # The mouse movement is limited to a rectangle above the Slider
         # To avoid being dragged out of the screen (in case of multi screens)
@@ -1363,9 +1382,9 @@ def confidenceRatingTask(
             name="slider",
             pos=(0, -0.2),
             size=(0.7, 0.1),
-            labels=parameters["texts"]["VASlabels"],
-            granularity=1,
-            ticks=(0, 100),
+            labels=parameters["confidenceScale"].labels,
+            granularity=parameters["confidenceScale"].granularity,
+            ticks=parameters["confidenceScale"].bounds,
             style=("rating"),
             color="LightGray",
             flip=False,
@@ -1402,9 +1421,10 @@ def confidenceRatingTask(
                 newY = newPos[1]
             parameters["myMouse"].setPos((newX, newY))
 
-            # Update marker position in Slider
+            # Marker position from the mouse, expressed on whichever scale
+            # the session is using rather than assuming 0-100.
             p = newX / 0.5
-            slider.markerPos = 50 + (p * 50)
+            slider.markerPos = parameters["confidenceScale"].from_unit((p + 1) / 2)
 
             # Check if response provided
             if (buttons == [1, 0, 0]) & (trialdur > parameters["minRatingTime"]):
@@ -1420,7 +1440,7 @@ def confidenceRatingTask(
                     )
                 # Change marker color after response provided
                 slider.marker.color = "green"
-                hold(parameters, 0.2, slider, message)
+                hold(parameters["win"], 0.2, slider, message)
                 break
             elif trialdur > parameters["maxRatingTime"]:  # if too long
                 ratingProvided = False
@@ -1434,7 +1454,7 @@ def confidenceRatingTask(
                     color="red",
                     pos=(0.0, -0.2),
                 )
-                hold(parameters, 0.5, message)
+                hold(parameters["win"], 0.5, message)
                 break
             slider.draw()
             message.draw()

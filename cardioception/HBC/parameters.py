@@ -1,7 +1,9 @@
 # Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk
 # Maintained by the Embodied Computation Group, Aarhus University
 
+import datetime
 import os
+import time
 from typing import Any, Dict, Optional
 
 import numpy as np
@@ -13,6 +15,8 @@ from systole.recording import Oximeter
 from .._resources import resource_filename
 from .._rng import make_rng
 from .._triggers import validate as validate_triggers
+from ..output import SessionPaths
+from ..scales import DISCRETE_1_7, ConfidenceScale
 
 
 def getParameters(
@@ -24,6 +28,8 @@ def getParameters(
     screenNb: int = 0,
     fullscr: bool = True,
     resultPath: Optional[str] = None,
+    overwrite: bool = False,
+    confidenceScale: Optional[ConfidenceScale] = None,
     systole_kw: dict = {},
     seed: Optional[int] = None,
     triggers: Optional[Dict[str, Any]] = None,
@@ -35,7 +41,15 @@ def getParameters(
     participant : str
         Subject ID. Default is 'exteroStairCase'.
     resultPath : str or None
-        Where to save the results.
+        Root directory holding every participant. Results go to
+        `<resultPath>/sub-<participant>/ses-<session>/run-<timestamp>/`. Defaults
+        to `<cwd>/data`.
+    overwrite : bool
+        Allow writing into a run directory that already holds results. Off by
+        default, so a repeated run cannot silently replace an earlier one.
+    confidenceScale : ConfidenceScale | None
+        How confidence is collected and what its numbers mean. Defaults to seven
+        discrete steps. See :mod:`cardioception.scales`.
     screenNb : int
         Screen number. Used to parametrize py:func:`psychopy.visual.Window`.
         Default is set to 0.
@@ -57,8 +71,8 @@ def getParameters(
     ----------
     conditions : 1d array-like of str
         The conditions. Can be 'Rest', 'Training' or 'Count'.
-    confScale : list
-        The range of the confidence rating scale.
+    confidenceScale : :py:class:`cardioception.scales.ConfidenceScale`
+        The confidence scale in use, and the meaning of its numbers.
     heartLogo : `psychopy.visual.ImageStim`
         Image presented during resting conditions.
     labelsRating : list
@@ -114,6 +128,8 @@ def getParameters(
     """
     from psychopy import sound, visual
 
+    from .. import __version__
+
     parameters: Dict[str, Any] = {}
     # One generator for the whole session. The seed is always recorded, so a
     # session can be replayed even when the caller did not choose one.
@@ -123,8 +139,10 @@ def getParameters(
     parameters["randomize"] = True
     parameters["startKey"] = "space"
     parameters["rating"] = True
-    parameters["confScale"] = [1, 7]
-    parameters["labelsRating"] = ["Guess", "Certain"]
+    parameters["confidenceScale"] = (
+        DISCRETE_1_7 if confidenceScale is None else confidenceScale
+    )
+    parameters["labelsRating"] = list(parameters["confidenceScale"].labels)
     parameters["taskVersion"] = taskVersion
     parameters["results_df"] = pd.DataFrame({})
     parameters["setup"] = setup
@@ -162,13 +180,33 @@ def getParameters(
     parameters["participant"] = participant
     parameters["session"] = session
     parameters["path"] = os.getcwd()
-    if resultPath is None:
-        parameters["resultPath"] = parameters["path"] + "/data/" + participant + session
-    else:
-        parameters["resultPath"] = resultPath
-    # Create Results directory of not already exists
-    if not os.path.exists(parameters["resultPath"]):
-        os.makedirs(parameters["resultPath"])
+    parameters["paths"] = SessionPaths(
+        root=(
+            resultPath
+            if resultPath is not None
+            else os.path.join(parameters["path"], "data")
+        ),
+        participant=participant,
+        session=session,
+        overwrite=overwrite,
+    )
+    # Kept for scripts that read it. It is now the run directory, not
+    # data/<participant><session>, which two different sessions could share.
+    parameters["resultPath"] = parameters["paths"].directory
+
+    parameters["startTime"] = time.time()
+    parameters["paths"].write_manifest(
+        task="HBC",
+        version=__version__,
+        start_epoch=parameters["startTime"],
+        start_local=datetime.datetime.now().isoformat(timespec="seconds"),
+        seed=parameters["seed"],
+        setup=setup,
+        taskVersion=taskVersion,
+        conditions=parameters["conditions"],
+        times=[int(t) for t in parameters["times"]],
+        confidence=parameters["confidenceScale"].describe(),
+    )
 
     # Set note played at trial start
     parameters["noteStart"] = sound.Sound(
