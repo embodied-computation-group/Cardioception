@@ -326,6 +326,7 @@ def trial(
                 high=parameters["confScale"][1],
                 labels=parameters["labelsRating"],
                 label_height=parameters["textSize"] * 0.6,
+                rng=parameters["rng"],
             )
             parameters["triggers"]["confidenceStop"]
 

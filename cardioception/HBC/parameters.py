@@ -11,6 +11,7 @@ from systole import serialSim
 from systole.recording import Oximeter
 
 from .._resources import resource_filename
+from .._rng import make_rng
 
 
 def getParameters(
@@ -23,6 +24,7 @@ def getParameters(
     fullscr: bool = True,
     resultPath: Optional[str] = None,
     systole_kw: dict = {},
+    seed: Optional[int] = None,
 ) -> Dict:
     """Create Heartbeat Counting task parameters.
 
@@ -111,6 +113,9 @@ def getParameters(
     from psychopy import sound, visual
 
     parameters: Dict[str, Any] = {}
+    # One generator for the whole session. The seed is always recorded, so a
+    # session can be replayed even when the caller did not choose one.
+    parameters["rng"], parameters["seed"] = make_rng(seed)
     parameters["restPeriod"] = True
     parameters["restLength"] = 30
     parameters["randomize"] = True
@@ -142,7 +147,7 @@ def getParameters(
     # use of resting periods between trials.
     if parameters["taskVersion"] == "Garfinkel":
         parameters["times"] = np.array([25, 30, 35, 40, 45, 50])
-        np.random.shuffle(parameters["times"])
+        parameters["rng"].shuffle(parameters["times"])
         parameters["conditions"] = [
             "Count",
             "Count",
