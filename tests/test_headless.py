@@ -205,6 +205,21 @@ class TestSessionVariants(unittest.TestCase):
         self.assertEqual(len(df), 4)
         self.assertEqual(int(df.DecisionProvided.astype(bool).sum()), 0)
 
+    def test_an_undetectable_signal_does_not_hang_the_session(self):
+        """The HRcutOff retry path, which no test had ever executed.
+
+        Every read gives noise with no detectable beats, so the loop can never
+        accept a rate. It has to give up rather than hold the participant on
+        the listening screen.
+        """
+        _, df = run_session(
+            self.tmp,
+            n_trials=2,
+            recorder_kw={"artefact_every": 1},
+            maxHeartRateAttempts=2,
+        )
+        self.assertEqual(len(df), 2)
+
     def test_an_unknown_setup_fails_before_the_window_opens(self):
         """It used to return a dict with no oxiTask and die inside run()."""
         with self.assertRaises(ValueError):

@@ -38,6 +38,7 @@ def getParameters(
     recorder=None,
     onMissedTrial: str = "represent",
     maxRepresentations: int = 3,
+    maxHeartRateAttempts: int = 10,
     triggers: Optional[Dict[str, Any]] = None,
 ):
     """Create Heart Rate Discrimination task parameters.
@@ -251,6 +252,7 @@ def getParameters(
         )
     parameters["onMissedTrial"] = onMissedTrial
     parameters["maxRepresentations"] = maxRepresentations
+    parameters["maxHeartRateAttempts"] = maxHeartRateAttempts
 
     # Callables run at each trial event. Documented for years but never
     # created here, so following the docs raised KeyError.

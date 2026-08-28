@@ -143,7 +143,7 @@ def trial(
     )
     messageStart.draw()
     parameters["win"].flip()
-    event.waitKeys(keyList=parameters["startKey"])
+    event.waitKeys(keyList=[parameters["startKey"]])
     parameters["win"].flip()
 
     parameters["oxiTask"].setup()
@@ -366,7 +366,7 @@ def tutorial(parameters: dict):
     )
     press.draw()
     parameters["win"].flip()
-    event.waitKeys(keyList=parameters["startKey"])
+    event.waitKeys(keyList=[parameters["startKey"]])
 
     # Tutorial 2
     messageStart = visual.TextStim(
@@ -385,7 +385,7 @@ def tutorial(parameters: dict):
     )
     press.draw()
     parameters["win"].flip()
-    event.waitKeys(keyList=parameters["startKey"])
+    event.waitKeys(keyList=[parameters["startKey"]])
 
     # Tutorial 3
     if parameters["taskVersion"] == "Shandry":
@@ -406,7 +406,7 @@ def tutorial(parameters: dict):
         )
         press.draw()
         parameters["win"].flip()
-        event.waitKeys(keyList=parameters["startKey"])
+        event.waitKeys(keyList=[parameters["startKey"]])
 
     # Tutorial 4
     messageStart = visual.TextStim(
@@ -424,7 +424,7 @@ def tutorial(parameters: dict):
     press.draw()
     parameters["win"].flip()
 
-    event.waitKeys(keyList=parameters["startKey"])
+    event.waitKeys(keyList=[parameters["startKey"]])
 
     # Tutorial 5
     messageStart = visual.TextStim(
@@ -441,7 +441,7 @@ def tutorial(parameters: dict):
     )
     press.draw()
     parameters["win"].flip()
-    event.waitKeys(keyList=parameters["startKey"])
+    event.waitKeys(keyList=[parameters["startKey"]])
 
     # Tutorial 6
     messageStart = visual.TextStim(
@@ -458,7 +458,7 @@ def tutorial(parameters: dict):
     )
     press.draw()
     parameters["win"].flip()
-    event.waitKeys(keyList=parameters["startKey"])
+    event.waitKeys(keyList=[parameters["startKey"]])
 
     # Tutorial 7
     messageStart = visual.TextStim(
@@ -475,7 +475,7 @@ def tutorial(parameters: dict):
     )
     press.draw()
     parameters["win"].flip()
-    event.waitKeys(keyList=parameters["startKey"])
+    event.waitKeys(keyList=[parameters["startKey"]])
 
     # Tutorial 8
     messageStart = visual.TextStim(
@@ -492,7 +492,7 @@ def tutorial(parameters: dict):
     )
     press.draw()
     parameters["win"].flip()
-    event.waitKeys(keyList=parameters["startKey"])
+    event.waitKeys(keyList=[parameters["startKey"]])
 
     # Practice trial
     _ = trial("Count", 15, 0, parameters)
@@ -512,7 +512,7 @@ def tutorial(parameters: dict):
     )
     press.draw()
     parameters["win"].flip()
-    event.waitKeys(keyList=parameters["startKey"])
+    event.waitKeys(keyList=[parameters["startKey"]])
 
 
 def rest(parameters: dict, duration: float = 300.0):
