@@ -11,7 +11,10 @@ name: Tests
 
 on:
   push:
-    branches: [master, "dev/**", "phase*/**"]
+    # `dev` matches none of "dev/**" -- that pattern wants a slash -- so when
+    # dev became the working branch the suite silently stopped running on the
+    # only branch doing any work. Named explicitly.
+    branches: [master, dev, "dev/**", "phase*/**"]
   pull_request:
   workflow_dispatch:
 
