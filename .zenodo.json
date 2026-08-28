@@ -1,0 +1,40 @@
+{
+  "upload_type": "software",
+  "title": "Cardioception Toolbox: measuring cardiac interoception in PsychoPy",
+  "description": "<p>Cardioception measures cardiac interoception in PsychoPy. It implements the Heart Rate Discrimination task, a psychophysical method that separates the bias in what people believe their heart rate to be from the precision with which they can discriminate it, together with the older Heartbeat Counting task.</p><p>The tasks run with minimal equipment, a computer and a device that reads the participant's pulse, and slot into richer setups (ECG, M/EEG, fMRI). This is the official release from the Embodied Computation Group at Aarhus University.</p>",
+  "license": "mit",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Allen, Micah",
+      "orcid": "0000-0001-9399-4179",
+      "affiliation": "Center of Functionally Integrative Neuroscience, Aarhus University, Denmark"
+    },
+    {
+      "name": "Legrand, Nicolas",
+      "orcid": "0000-0002-2651-4929",
+      "affiliation": "Center of Functionally Integrative Neuroscience, Aarhus University, Denmark"
+    }
+  ],
+  "keywords": [
+    "interoception",
+    "cardiac interoception",
+    "heart rate discrimination",
+    "heartbeat counting",
+    "psychophysics",
+    "metacognition",
+    "psychopy"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.1016/j.biopsycho.2021.108239",
+      "relation": "isSupplementTo",
+      "resource_type": "publication-article"
+    },
+    {
+      "identifier": "https://www.the-ecg.org/Cardioception/",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-softwaredocumentation"
+    }
+  ]
+}
