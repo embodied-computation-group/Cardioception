@@ -1,0 +1,85 @@
+{#
+  Furo builds every document from page.html and refuses to be extended through
+  layout.html, so the two head blocks below are overridden from here. Both
+  blocks are declared in Furo's base.html, which page.html inherits from.
+#}
+{% extends "!page.html" %}
+
+{#
+  Furo titles the root document with the bare site name. The landing page is
+  the one a search engine has to rank from its title alone, so it carries the
+  released version and what the toolbox measures. `release` comes from
+  cardioception/__init__.py, so a version bump reaches the title on its own.
+  Every other page keeps Furo's "<page> - <site>".
+#}
+{%- block htmltitle -%}
+  {%- if pagename == master_doc -%}
+    <title>Official Cardioception Toolbox {{ release }} - Cardiac Interoception</title>
+  {%- else -%}
+    {{ super() }}
+  {%- endif -%}
+{%- endblock -%}
+
+{#
+  A machine-readable description of the software on the landing page. The
+  `sameAs` links are the useful part: they tie this site, the repository and
+  the PyPI distribution together as one thing, and `citation` connects it to
+  the paper the task is described in.
+#}
+{%- block extrahead -%}
+  {{ super() }}
+  {%- if pagename == master_doc %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "Cardioception Toolbox",
+    "alternateName": "cardioception-toolbox",
+    "description": "Cardioception measures cardiac interoception in PsychoPy. It implements the Heart Rate Discrimination task, a psychophysical method that separates the bias in what people believe their heart rate to be from the precision with which they can discriminate it, together with the Heartbeat Counting task.",
+    "url": "https://www.the-ecg.org/Cardioception/",
+    "codeRepository": "https://github.com/embodied-computation-group/Cardioception",
+    "downloadUrl": "https://pypi.org/project/cardioception-toolbox/",
+    "programmingLanguage": "Python",
+    "runtimePlatform": "Python 3.10",
+    "applicationCategory": "Science",
+    "license": "https://spdx.org/licenses/MIT.html",
+    "version": "{{ release }}",
+    "author": [
+      {
+        "@type": "Person",
+        "name": "Micah Allen",
+        "identifier": "https://orcid.org/0000-0001-9399-4179",
+        "affiliation": {
+          "@type": "Organization",
+          "name": "Center of Functionally Integrative Neuroscience, Aarhus University"
+        }
+      }
+    ],
+    "publisher": {
+      "@type": "Organization",
+      "name": "Embodied Computation Group, Aarhus University",
+      "url": "https://www.the-ecg.org/"
+    },
+    "sameAs": [
+      "https://github.com/embodied-computation-group/Cardioception",
+      "https://pypi.org/project/cardioception-toolbox/"
+    ],
+    "keywords": [
+      "interoception",
+      "cardiac interoception",
+      "heart rate discrimination",
+      "heartbeat counting",
+      "psychophysics",
+      "metacognition",
+      "PsychoPy"
+    ],
+    "citation": {
+      "@type": "ScholarlyArticle",
+      "name": "The heart rate discrimination task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs",
+      "identifier": "https://doi.org/10.1016/j.biopsycho.2021.108239",
+      "sameAs": "https://doi.org/10.1016/j.biopsycho.2021.108239"
+    }
+  }
+  </script>
+  {%- endif -%}
+{%- endblock -%}
