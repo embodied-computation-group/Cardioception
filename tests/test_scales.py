@@ -3,7 +3,13 @@
 
 import unittest
 
-from cardioception.scales import DISCRETE_1_7, DISCRETE_1_10, VAS_0_100, ConfidenceScale
+from cardioception.scales import (
+    DISCRETE_1_7,
+    DISCRETE_1_10,
+    VAS_0_100,
+    VAS_SIGNED_100,
+    ConfidenceScale,
+)
 
 
 class TestConfidenceScale(unittest.TestCase):
@@ -40,6 +46,43 @@ class TestConfidenceScale(unittest.TestCase):
         self.assertEqual(described["ConfidenceLow"], 1)
         self.assertEqual(described["ConfidenceHigh"], 10)
         self.assertEqual(described["ConfidenceLevels"], 10)
+
+    def test_a_signed_scale_is_recognised_as_signed(self):
+        self.assertTrue(VAS_SIGNED_100.signed)
+        self.assertEqual(VAS_SIGNED_100.midpoint, 0)
+        for scale in (VAS_0_100, DISCRETE_1_7, DISCRETE_1_10):
+            self.assertFalse(scale.signed)
+
+    def test_a_signed_rating_separates_into_confidence_and_belief(self):
+        """The sign is the believed outcome; the magnitude is the confidence."""
+        s = VAS_SIGNED_100
+        self.assertEqual(s.magnitude(100), 1.0)
+        self.assertEqual(s.magnitude(-100), 1.0)
+        self.assertEqual(s.magnitude(0), 0.0)
+        self.assertEqual(s.magnitude(-50), 0.5)
+
+        self.assertIs(s.believes_correct(80), True)
+        self.assertIs(s.believes_correct(-80), False)
+        self.assertIsNone(s.believes_correct(0), "the midpoint asserts nothing")
+
+    def test_an_unsigned_scale_carries_no_belief(self):
+        self.assertIsNone(VAS_0_100.believes_correct(90))
+        self.assertEqual(VAS_0_100.magnitude(50), 0.5)
+
+    def test_signed_scales_still_round_trip_through_unit(self):
+        for value in (-100, -37, 0, 51, 100):
+            self.assertEqual(
+                VAS_SIGNED_100.from_unit(VAS_SIGNED_100.to_unit(value)), value
+            )
+
+    def test_the_scale_records_that_it_is_signed(self):
+        self.assertTrue(VAS_SIGNED_100.describe()["ConfidenceSigned"])
+        self.assertFalse(VAS_0_100.describe()["ConfidenceSigned"])
+
+    def test_a_midpoint_label_is_allowed(self):
+        self.assertEqual(len(VAS_SIGNED_100.labels), 3)
+        with self.assertRaises(ValueError):
+            ConfidenceScale(labels=("a", "b", "c", "d"))
 
     def test_invalid_definitions_are_rejected(self):
         with self.assertRaises(ValueError):
