@@ -469,3 +469,57 @@ class TestContinuousRecording(unittest.TestCase):
             self.assertIsInstance(params["oxiTask"], ContinuousOximeter)
         finally:
             params["win"].close()
+
+    def test_the_recording_survives_the_breaks(self):
+        """The point of the phase.
+
+        `setup()` ran at every break and resets, so no saved file has ever
+        spanned a session: each `ppg-N` covers one block and the breaks
+        between them are gone. With continuous recording the recorder is
+        drained through the break instead of reset, so the sample count only
+        grows.
+        """
+        params, _ = run_session(
+            self.tmp,
+            n_trials=4,
+            config=TaskConfig(continuousRecording=True, listeningDuration=LISTENING),
+        )
+        recorder = params["oxiTask"]
+        # nBreaking is n_trials // 2, so a break happened.
+        self.assertGreater(recorder.n_saves, 1, "no break occurred in this session")
+        # Reset archives the trigger codes; nothing should have been archived,
+        # because nothing was reset.
+        self.assertEqual(
+            recorder._archived_codes,
+            [],
+            "the recorder was reset during the session, so the recording has a hole",
+        )
+
+    def test_it_writes_one_file_for_the_whole_session(self):
+        """A file alongside the per-block ones, not a replacement.
+
+        `ReplayRecorder.save` records the path rather than writing megabytes,
+        so this asserts what the task asked for. What those bytes contain is
+        `test_continuous.py`'s job, against the recorder that really writes.
+        """
+        params, _ = run_session(
+            self.tmp,
+            n_trials=4,
+            config=TaskConfig(continuousRecording=True, listeningDuration=LISTENING),
+        )
+        saved = params["oxiTask"].saved_paths
+        target = params["paths"].path("recording")
+        self.assertIn(target, saved, "no whole-session recording was written")
+        # Rewritten at each break and again at the end, so a crash late in a
+        # long session does not take the whole recording with it.
+        self.assertGreater(saved.count(target), 1)
+        # The per-block files keep being written; this is additive.
+        self.assertTrue(
+            [s for s in saved if "_ppg-" in s],
+            "the per-block ppg files stopped being written",
+        )
+
+    def test_no_whole_session_file_when_the_mode_is_off(self):
+        params, _ = run_session(self.tmp, n_trials=4)
+        target = params["paths"].path("recording")
+        self.assertNotIn(target, params["oxiTask"].saved_paths)

@@ -29,6 +29,26 @@ from ._outcome import HeartRateReading, TrialOutcome
 logger = get_logger()
 
 
+def _save_recording(parameters: dict) -> None:
+    """Write the whole-session recording, if there is one.
+
+    Rewritten at every break and again at the end, rather than once when the
+    session finishes: the recording this feature exists to collect is an
+    hour long, and a crash or an abort at minute fifty-nine would otherwise
+    take all of it. Rewriting costs a few seconds a handful of times, which
+    happens while the participant is resting.
+
+    The per-block ``ppg-N`` files stay exactly as they were. This is a file
+    alongside them, not a replacement, so nothing reading the old outputs
+    changes.
+    """
+    if not parameters.get("continuousRecording"):
+        return
+    target = parameters["paths"].path("recording")
+    logger.info(f"Saving the continuous recording ({target})...")
+    parameters["oxiTask"].save(target)
+
+
 def _save_session(parameters: dict, nTrial: int) -> None:
     """Write everything the session produced.
 
@@ -43,6 +63,7 @@ def _save_session(parameters: dict, nTrial: int) -> None:
     parameters["signal_df"].to_csv(paths.path("signal"), index=False)
 
     parameters["oxiTask"].save(paths.path(f"ppg-{nTrial}-end"))
+    _save_recording(parameters)
 
     logger.info("Saving posterior distributions...")
     for k in set(parameters["Modality"]):
@@ -283,6 +304,7 @@ def run(
                 message.draw()
                 parameters["win"].flip()
                 parameters["oxiTask"].save(parameters["paths"].path(f"ppg-{nTrial}"))
+                _save_recording(parameters)
 
                 # Wait for participant input before continue
                 waitInput(parameters)
@@ -292,9 +314,19 @@ def run(
                 fixation.draw()
                 parameters["win"].flip()
 
-                # Reset recording when ready
-                parameters["oxiTask"].setup()
-                parameters["oxiTask"].read(duration=1)
+                if parameters.get("continuousRecording"):
+                    # Do not reset. `setup()` clears the recording and the
+                    # serial input buffer, and it runs at every break, so no
+                    # saved file has ever spanned a whole session -- this is
+                    # the hole continuous recording exists to close. Draining
+                    # through the break, in `waitInput`, is what makes the
+                    # reset unnecessary: there is no backlog to discard
+                    # because nothing was left to accumulate.
+                    parameters["oxiTask"].readInWaiting()
+                else:
+                    # Reset recording when ready
+                    parameters["oxiTask"].setup()
+                    parameters["oxiTask"].read(duration=1)
     finally:
         _save_session(parameters, nTrial)
 
@@ -728,11 +760,23 @@ def waitInput(parameters: dict):
         parameters["autopilot"].advance()
         return
 
+    # A break is the longest the task ever waits, and it does not flip, so the
+    # per-frame hook does not reach here. Undrained, the driver buffer holds
+    # about 10.9 seconds -- 4096 bytes at 5 bytes a packet and 75 Hz -- and a
+    # participant resting for longer loses whatever overflows.
+    drain = (
+        parameters["oxiTask"].readInWaiting
+        if parameters.get("continuousRecording")
+        else None
+    )
+
     if parameters["device"] == "keyboard":
         # Without this, a key pressed earlier is still buffered and dismisses
         # this screen before it is read.
         event.clearEvents(eventType="keyboard")
         while True:
+            if drain is not None:
+                drain()
             keys = event.getKeys()
             if "escape" in keys:
                 logger.warning("User abort")
@@ -748,6 +792,8 @@ def waitInput(parameters: dict):
         # release, then for a press.
         armed = not any(mouse.getPressed())
         while True:
+            if drain is not None:
+                drain()
             buttons, armed = accept_press(mouse.getPressed(), armed)
             if any(buttons):
                 break
