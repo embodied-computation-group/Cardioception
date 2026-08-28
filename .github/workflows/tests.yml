@@ -37,7 +37,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install . pytest pytest-cov
+          pip install -e . pytest pytest-cov
       # These touch no window and no device, so they are the fast feedback loop.
       - name: Run
         run: pytest tests/test_rng.py tests/test_stimuli.py -v
@@ -55,11 +55,27 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             xvfb libgl1 libglu1-mesa libegl1 libglib2.0-0 libsdl2-2.0-0 \
-            portaudio19-dev libasound2-dev libsndfile1
+            portaudio19-dev libasound2-dev libsndfile1 \
+            alsa-utils libasound2-plugins pulseaudio
+      # xvfb gives the runner a screen but not a sound card, and PsychoPy's
+      # PTB backend asks PortAudio for a speaker the moment the first tone is
+      # constructed. With no device the list comes back empty and every session
+      # test dies in SpeakerDevice with `IndexError: list index out of range`.
+      # snd-dummy is a real ALSA card that discards whatever it is given; a null
+      # PulseAudio sink is the fallback where that kernel module is unavailable.
+      # Neither one plays anything, which is all the task needs.
+      - name: A sound device for the tones to open
+        run: |
+          sudo modprobe snd-dummy || true
+          if ! aplay -l 2>/dev/null | grep -q '^card'; then
+            pulseaudio --start --exit-idle-time=-1
+            pactl load-module module-null-sink sink_name=dummy
+          fi
+          aplay -l || true
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install . pytest pytest-cov
+          pip install -e . pytest pytest-cov
       # A whole HRD session, both input devices, against the replay recorder.
       # This is the first time any CI job has run the task itself.
       - name: Run
