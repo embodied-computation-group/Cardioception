@@ -34,6 +34,7 @@ def getParameters(
     systole_kw: dict = {},
     seed: Optional[int] = None,
     autopilot=None,
+    recorder=None,
 ):
     """Create Heart Rate Discrimination task parameters.
 
@@ -409,7 +410,13 @@ def getParameters(
             )
 
     parameters["setup"] = setup
-    if setup == "behavioral":
+    if recorder is not None:
+        # An explicitly supplied backend wins over `setup`, which conflates
+        # "which device" with "is this a test". Nothing here touches a serial
+        # port, so this is also the only path that works without hardware.
+        parameters["oxiTask"] = recorder
+        parameters["oxiTask"].setup().read(duration=1)
+    elif setup == "behavioral":
         # PPG recording
         port = serial.Serial(serialPort)
         parameters["oxiTask"] = Oximeter(

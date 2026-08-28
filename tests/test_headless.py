@@ -19,27 +19,57 @@ from pathlib import Path
 import pandas as pd
 
 from cardioception._autopilot import AutoResponder
+from cardioception.devices import ReplayRecorder
 from cardioception.HRD.parameters import getParameters
 from cardioception.HRD.task import run
 
 N_TRIALS = 8
 SEED = 4242
+BPM = 72.0
 
 EXPECTED_COLUMNS = [
-    "TrialType", "Condition", "Modality", "StairCond", "Decision", "DecisionRT",
-    "Confidence", "ConfidenceRT", "Alpha", "listenBPM", "responseBPM",
-    "ResponseCorrect", "DecisionProvided", "RatingProvided", "nTrials",
-    "EstimatedThreshold", "EstimatedSlope", "StartListening", "StartDecision",
-    "ResponseMade", "RatingStart", "RatingEnds", "endTrigger",
+    "TrialType",
+    "Condition",
+    "Modality",
+    "StairCond",
+    "Decision",
+    "DecisionRT",
+    "Confidence",
+    "ConfidenceRT",
+    "Alpha",
+    "listenBPM",
+    "responseBPM",
+    "ResponseCorrect",
+    "DecisionProvided",
+    "RatingProvided",
+    "nTrials",
+    "EstimatedThreshold",
+    "EstimatedSlope",
+    "StartListening",
+    "StartDecision",
+    "ResponseMade",
+    "RatingStart",
+    "RatingEnds",
+    "endTrigger",
 ]
 
 
-def _session(tmp, device, p_miss=0.0, seed=SEED):
+def _session(tmp, device, p_miss=0.0, seed=SEED, bpm=BPM, **recorder_kw):
+    recorder = ReplayRecorder(bpm=bpm, realtime=False, **recorder_kw)
     params = getParameters(
-        participant="HEADLESS", session="1", setup="test", nTrials=N_TRIALS,
-        exteroception=True, device=device, nBreaking=N_TRIALS // 2,
-        resultPath=str(tmp), language="english", seed=seed,
+        participant="HEADLESS",
+        session="1",
+        setup="test",
+        nTrials=N_TRIALS,
+        exteroception=True,
+        device=device,
+        nBreaking=N_TRIALS // 2,
+        resultPath=str(tmp),
+        language="english",
+        seed=seed,
+        recorder=recorder,
     )
+    params["recorder"] = recorder
     params["autopilot"] = AutoResponder(params["rng"], accuracy=0.8, p_miss=p_miss)
     try:
         run(params, confidenceRating=True, runTutorial=False)
@@ -85,9 +115,31 @@ class TestHeadlessSession(unittest.TestCase):
         )
         answered = df[df.DecisionProvided.astype(bool)]
         self.assertTrue(
-            (answered.ResponseCorrect.astype(bool)
-             == (answered.Decision == answered.Condition)).all()
+            (
+                answered.ResponseCorrect.astype(bool)
+                == (answered.Decision == answered.Condition)
+            ).all()
         )
+
+    def test_the_task_recovers_the_heart_rate_the_recorder_produced(self):
+        """The whole physiology path, end to end, against a known rate.
+
+        The recorder synthesises a pulse at an exact BPM, so this asserts that
+        the raw signal, the peak detection and the task's own averaging agree
+        with the rate that went in. Nothing previously tested this.
+        """
+        _, df = _session(self.tmp, "keyboard", bpm=72.0)
+        observed = df[df.Modality == "Intero"].listenBPM.unique()
+        self.assertEqual(list(observed), [72.0])
+
+    def test_all_five_trigger_codes_reach_the_recorder(self):
+        params, _ = _session(self.tmp, "keyboard")
+        self.assertEqual(set(params["recorder"].trigger_codes), {1, 2, 3, 4, 5})
+
+    def test_the_recording_is_saved_at_breaks_and_at_the_end(self):
+        params, _ = _session(self.tmp, "keyboard")
+        # One save at the single break, one at the end of the session.
+        self.assertEqual(params["recorder"].n_saves, 2)
 
     def test_same_seed_gives_the_same_design(self):
         p1, _ = _session(self.tmp, "keyboard", seed=99)
