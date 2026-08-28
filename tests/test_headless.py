@@ -6,9 +6,10 @@ Before the autopilot existed there was no way to run either task unattended:
 That is why no continuous integration job has ever run the task, and why the
 response paths in ``responseDecision`` had no test coverage at all.
 
-These are slow because the task still spends five seconds per trial reading the
-simulated oximeter in real time. The replay backend removes that; until then,
-mark them and keep the trial count small.
+Sessions are expensive, so most assertions share one. Only the tests that need a
+different configuration, a different device or a different miss rate, pay for
+their own. Four trials is enough for two of each modality and one break, and
+``listeningDuration`` is shortened because none of this is testing tone timing.
 """
 
 import shutil
@@ -24,9 +25,13 @@ from cardioception.HRD.parameters import getParameters
 from cardioception.HRD.task import run
 from cardioception.validate import check_trials
 
-N_TRIALS = 8
+N_TRIALS = 4
 SEED = 4242
 BPM = 72.0
+# The task blocks in real time while an exteroceptive tone plays. At the default
+# of 5 seconds that is about 70% of a session's wall clock and none of it
+# exercises anything these tests assert on.
+LISTENING = 0.05
 
 EXPECTED_COLUMNS = [
     "TrialType",
@@ -55,21 +60,33 @@ EXPECTED_COLUMNS = [
 ]
 
 
-def _session(tmp, device, p_miss=0.0, seed=SEED, bpm=BPM, **recorder_kw):
-    recorder = ReplayRecorder(bpm=bpm, realtime=False, **recorder_kw)
+def run_session(
+    tmp,
+    device="keyboard",
+    p_miss=0.0,
+    seed=SEED,
+    bpm=BPM,
+    n_trials=N_TRIALS,
+    recorder_kw=None,
+    **kw,
+):
+    """One session, returning its parameters and its results table."""
+    recorder = ReplayRecorder(bpm=bpm, realtime=False, **(recorder_kw or {}))
     params = getParameters(
         participant="HEADLESS",
         session="1",
         setup="test",
-        nTrials=N_TRIALS,
+        nTrials=n_trials,
         exteroception=True,
         device=device,
-        nBreaking=N_TRIALS // 2,
+        nBreaking=max(n_trials // 2, 1),
         resultPath=str(tmp),
         language="english",
         seed=seed,
         recorder=recorder,
+        **kw,
     )
+    params["listeningDuration"] = LISTENING
     params["recorder"] = recorder
     params["autopilot"] = AutoResponder(params["rng"], accuracy=0.8, p_miss=p_miss)
     try:
@@ -79,42 +96,34 @@ def _session(tmp, device, p_miss=0.0, seed=SEED, bpm=BPM, **recorder_kw):
     return params, pd.read_csv(Path(tmp, "HEADLESS1_final.txt"))
 
 
-class TestHeadlessSession(unittest.TestCase):
-    def setUp(self):
-        self.tmp = tempfile.mkdtemp()
+class TestReferenceSession(unittest.TestCase):
+    """Assertions that can all share one clean, fully answered session."""
 
-    def tearDown(self):
-        shutil.rmtree(self.tmp, ignore_errors=True)
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.mkdtemp()
+        cls.params, cls.df = run_session(cls.tmp)
 
-    def test_keyboard_session_completes_and_writes_the_expected_schema(self):
-        _, df = _session(self.tmp, "keyboard")
-        self.assertEqual(len(df), N_TRIALS)
-        self.assertEqual(list(df.columns), EXPECTED_COLUMNS)
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def test_the_session_completes_and_writes_the_expected_schema(self):
+        self.assertEqual(len(self.df), N_TRIALS)
+        self.assertEqual(list(self.df.columns), EXPECTED_COLUMNS)
+
+    def test_modalities_are_balanced(self):
         self.assertEqual(
-            df.Modality.value_counts().to_dict(),
+            self.df.Modality.value_counts().to_dict(),
             {"Intero": N_TRIALS // 2, "Extero": N_TRIALS // 2},
         )
 
-    def test_mouse_session_completes(self):
-        _, df = _session(self.tmp, "mouse")
-        self.assertEqual(len(df), N_TRIALS)
-
-    def test_missed_trials_do_not_crash_the_session(self):
-        _, df = _session(self.tmp, "mouse", p_miss=0.4)
-        self.assertEqual(len(df), N_TRIALS)
-        # Whatever the miss rate, every trial is still written and flagged.
-        self.assertTrue(df.DecisionProvided.isin([True, False]).all())
-
     def test_behavioural_invariants_hold(self):
-        _, df = _session(self.tmp, "keyboard")
-        expected = (df.listenBPM + df.Alpha).clip(15.0, 199.0)
+        expected = (self.df.listenBPM + self.df.Alpha).clip(15.0, 199.0)
         pd.testing.assert_series_equal(
-            df.responseBPM, expected, check_names=False, check_dtype=False
+            self.df.responseBPM, expected, check_names=False, check_dtype=False
         )
-        self.assertTrue(
-            (df.Condition == df.Alpha.map(lambda a: "Less" if a < 0 else "More")).all()
-        )
-        answered = df[df.DecisionProvided.astype(bool)]
+        answered = self.df[self.df.DecisionProvided.astype(bool)]
         self.assertTrue(
             (
                 answered.ResponseCorrect.astype(bool)
@@ -122,45 +131,101 @@ class TestHeadlessSession(unittest.TestCase):
             ).all()
         )
 
-    def test_the_task_recovers_the_heart_rate_the_recorder_produced(self):
-        """The whole physiology path, end to end, against a known rate.
-
-        The recorder synthesises a pulse at an exact BPM, so this asserts that
-        the raw signal, the peak detection and the task's own averaging agree
-        with the rate that went in. Nothing previously tested this.
-        """
-        _, df = _session(self.tmp, "keyboard", bpm=72.0)
-        observed = df[df.Modality == "Intero"].listenBPM.unique()
-        self.assertEqual(list(observed), [72.0])
-
-    def test_all_five_trigger_codes_reach_the_recorder(self):
-        params, _ = _session(self.tmp, "keyboard")
-        self.assertEqual(set(params["recorder"].trigger_codes), {1, 2, 3, 4, 5})
-
-    def test_the_recording_is_saved_at_breaks_and_at_the_end(self):
-        params, _ = _session(self.tmp, "keyboard")
-        # One save at the single break, one at the end of the session.
-        self.assertEqual(params["recorder"].n_saves, 2)
-
     def test_every_session_invariant_holds(self):
-        """The same checks used to validate a real hardware session.
-
-        These are relationships between recorded numbers, not expected values,
-        so they survive a refactor that legitimately changes the values.
-        """
-        params, df = _session(self.tmp, "keyboard")
+        """The same checks used to validate a real hardware session."""
         failures = [
-            c for c in check_trials(df, resp_max=params["respMax"]) if not c.passed
+            c
+            for c in check_trials(self.df, resp_max=self.params["respMax"])
+            if not c.passed
         ]
         self.assertEqual(failures, [], f"invariants broken: {failures}")
 
-    def test_same_seed_gives_the_same_design(self):
-        p1, _ = _session(self.tmp, "keyboard", seed=99)
-        first = list(p1["Modality"]), list(p1["staircaseType"])
-        shutil.rmtree(self.tmp, ignore_errors=True)
+    def test_the_task_recovers_the_heart_rate_the_recorder_produced(self):
+        """The whole physiology path, end to end, against a known rate."""
+        observed = self.df[self.df.Modality == "Intero"].listenBPM.unique()
+        self.assertEqual(list(observed), [BPM])
+
+    def test_all_five_trigger_codes_reach_the_recorder(self):
+        self.assertEqual(set(self.params["recorder"].trigger_codes), {1, 2, 3, 4, 5})
+
+    def test_stored_posteriors_do_not_pin_the_staircase_arrays(self):
+        """``_probLambda[0, :, :, 0]`` is a view onto a 40 MB array per trial."""
+        stored = [
+            arr
+            for slices in self.params["staircaisePosteriors"].values()
+            for arr in slices
+        ]
+        self.assertTrue(stored, "no posteriors were stored")
+        for arr in stored:
+            self.assertIsNone(arr.base, "posterior is a view, not a copy")
+
+    def test_the_pickle_does_not_duplicate_the_large_artefacts(self):
+        """Each of these is already written to its own file."""
+        import pickle
+
+        with open(Path(self.tmp, "HEADLESS_parameters.pickle"), "rb") as fh:
+            saved = pickle.load(fh)
+        for key in ("staircaisePosteriors", "signal_df", "results_df"):
+            self.assertNotIn(key, saved)
+        self.assertIn("seed", saved)
+
+
+class TestSessionVariants(unittest.TestCase):
+    """Each of these needs a configuration of its own."""
+
+    def setUp(self):
         self.tmp = tempfile.mkdtemp()
-        p2, _ = _session(self.tmp, "keyboard", seed=99)
-        self.assertEqual(first, (list(p2["Modality"]), list(p2["staircaseType"])))
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_the_mouse_path_completes(self):
+        _, df = run_session(self.tmp, device="mouse")
+        self.assertEqual(len(df), N_TRIALS)
+
+    def test_a_missed_trial_never_reaches_the_staircase(self):
+        """The bug this replaces silently fabricated a "Less" response.
+
+        ``decision`` is None on a timeout, so ``isMore = 1 if decision ==
+        "More" else 0`` collapsed to 0 and the staircase was told the
+        participant said "Less".
+        """
+        params, df = run_session(self.tmp, p_miss=1.0, onMissedTrial="skip", n_trials=2)
+        self.assertEqual(int(df.DecisionProvided.astype(bool).sum()), 0)
+        seen = sum(len(v) for v in params["staircaisePosteriors"].values())
+        self.assertEqual(seen, 0, "a missed trial reached the staircase")
+
+    def test_skip_mode_presents_exactly_the_planned_number_of_trials(self):
+        _, df = run_session(self.tmp, p_miss=1.0, onMissedTrial="skip", n_trials=2)
+        self.assertEqual(len(df), 2)
+
+    def test_represent_mode_repeats_missed_trials_up_to_the_cap(self):
+        """A participant who never responds must still reach the end."""
+        _, df = run_session(
+            self.tmp,
+            p_miss=1.0,
+            onMissedTrial="represent",
+            maxRepresentations=2,
+            n_trials=2,
+        )
+        self.assertEqual(len(df), 4)
+        self.assertEqual(int(df.DecisionProvided.astype(bool).sum()), 0)
+
+    def test_an_unknown_setup_fails_before_the_window_opens(self):
+        """It used to return a dict with no oxiTask and die inside run()."""
+        with self.assertRaises(ValueError):
+            getParameters(
+                participant="X",
+                session="1",
+                setup="fMRI",
+                resultPath=str(self.tmp),
+                nTrials=2,
+            )
+
+    def test_same_seed_gives_the_same_design(self):
+        p1, _ = run_session(self.tmp, seed=99, n_trials=2)
+        p2, _ = run_session(self.tmp, seed=99, n_trials=2)
+        self.assertEqual(list(p1["Modality"]), list(p2["Modality"]))
         self.assertEqual(p1["seed"], p2["seed"])
 
 

@@ -82,10 +82,15 @@ Cardioception copies the images and sound files the tasks need (~ 160 Mo). Unins
 
 Both the Heartbeat Counting task (HBC) and the Heart Rate Discrimination task (HRD) need a physiological recording device during the task, either to estimate the heart rate or to count the number of heartbeats in a given time window. Cardioception natively supports:
 
-* The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/) 
-* Remote Data Access (RDA) via BrainVision Recorder together with [Brain product ExG amplifier](https://www.brainproducts.com/).
+* The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/)
 
-You can add other devices by writing a recording class that interfaces with your own hardware (ECG, pulse oximeters, or any kind of recording that gives a precise estimate of the cardiac frequency).
+Other devices can be added by writing a recorder and passing it in:
+
+```python
+parameters = getParameters(..., recorder=MyRecorder())
+```
+
+This bypasses `setup` entirely, so nothing touches a serial port. The recorder has to provide a real-time estimate of cardiac frequency during the trial, because that is what sets the tone frequency: a device that only records for later analysis cannot drive the HRD on its own. See `cardioception.devices.ReplayRecorder` for a worked example, which is also what the test suite runs against.
 
 ## Running the tasks
 
