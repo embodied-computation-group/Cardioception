@@ -70,6 +70,9 @@ jobs:
           # carries it. PulseAudio's null sink loads fine without it but
           # PortAudio does not enumerate it, so it is only a last resort.
           sudo apt-get install -y --no-install-recommends "linux-modules-extra-$(uname -r)" || true
+          # modprobe consults modules.dep, which the package does not refresh.
+          sudo depmod -a || true
+          ls /lib/modules/"$(uname -r)"/kernel/sound/drivers/ || echo "no sound/drivers"
           sudo modprobe snd-dummy || true
           if ! aplay -l 2>/dev/null | grep -q '^card'; then
             pulseaudio --start --exit-idle-time=-1
@@ -84,5 +87,5 @@ jobs:
       # This is the first time any CI job has run the task itself.
       - name: Run
         run: |
-          python -c "import psychtoolbox as ptb; d = ptb.audio.get_devices(); print('PTB sees', len(d), 'devices')" || true
+          python -c "from psychtoolbox import audio; print('PTB sees', len(audio.get_devices()), 'devices')" || true
           xvfb-run -a pytest tests/test_headless.py -v --cov=cardioception --cov-report=term-missing
