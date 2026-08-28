@@ -191,15 +191,27 @@ def run(
                 if trialType == "psi":
                     logger.info("... update psi staircase.")
 
-                    # Update the Psi staircase with forced intensity value
-                    # if impossible BPM was generated
-                    if outcome.listenBPM + outcome.alpha < TONE_BPM_MIN:
+                    # A tone outside TONE_BPM_MIN..MAX is clamped, so the
+                    # delta actually heard is not the one psi asked for. The
+                    # handler's `intensities` are deltas over intensRange, so
+                    # the correction has to be a delta too: passing the
+                    # clamped *absolute* BPM wrote 15.0 or 199.0 into a list
+                    # scaled (-50.5, 50.5).
+                    delivered = outcome.responseBPM - outcome.listenBPM
+                    if delivered != outcome.alpha:
                         parameters["stairCase"][modality].addResponse(
-                            isMore, intensity=TONE_BPM_MIN
+                            isMore, intensity=delivered
                         )
-                    elif outcome.listenBPM + outcome.alpha > TONE_BPM_MAX:
-                        parameters["stairCase"][modality].addResponse(
-                            isMore, intensity=TONE_BPM_MAX
+                        # The posterior itself cannot be corrected here:
+                        # PsiObject.update indexes the likelihood by
+                        # nextIntensityIndex, the intensity psi chose, and
+                        # ignores what addResponse was given. So this trial
+                        # updates the posterior as though the requested delta
+                        # had been delivered. Logged rather than hidden.
+                        logger.warning(
+                            f"... tone clamped: asked {outcome.alpha:+.1f} BPM, "
+                            f"delivered {delivered:+.1f}. The recorded intensity "
+                            f"is corrected; the psi posterior is not."
                         )
                     else:
                         parameters["stairCase"][modality].addResponse(isMore)
@@ -881,13 +893,21 @@ def responseDecision(
         clock = core.Clock()
         pilot = parameters.get("autopilot")
         if pilot is not None:
-            # Same shape event.waitKeys returns: [[key, rt]] or None.
+            # Answer in the condition's own terms, then map back to the key.
+            # Passing allowedKeys ("up"/"down") meant `condition in options`
+            # was never true, so the autopilot fell through to a uniform draw
+            # and every keyboard session ran at chance whatever `accuracy`
+            # said. The mouse branch passes ["Less", "More"] and was correct.
+            response_keys = parameters["response_keys"]
             answer = pilot.decide(
                 condition,
-                parameters["allowedKeys"],
+                list(response_keys),
                 max_wait=parameters["respMax"],
             )
-            responseKey = [list(answer)] if answer is not None else None
+            # Same shape event.waitKeys returns: [[key, rt]] or None.
+            responseKey = (
+                [[response_keys[answer[0]], answer[1]]] if answer is not None else None
+            )
         else:
             responseKey = event.waitKeys(
                 keyList=parameters["allowedKeys"],

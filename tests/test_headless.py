@@ -15,6 +15,7 @@ import pandas as pd
 
 from cardioception._autopilot import AutoResponder
 from cardioception.devices import ReplayRecorder
+from cardioception.HRD.config import TaskConfig
 from cardioception.HRD.parameters import getParameters
 from cardioception.HRD.task import run
 from cardioception.validate import check_trials
@@ -75,6 +76,8 @@ def run_session(
     bpm=BPM,
     n_trials=N_TRIALS,
     recorder_kw=None,
+    exteroception=True,
+    accuracy=0.8,
     **kw,
 ):
     """One session, returning its parameters and its results table."""
@@ -84,7 +87,7 @@ def run_session(
         session="1",
         setup="test",
         nTrials=n_trials,
-        exteroception=True,
+        exteroception=exteroception,
         device=device,
         nBreaking=max(n_trials // 2, 1),
         resultPath=str(tmp),
@@ -95,7 +98,7 @@ def run_session(
     )
     params["listeningDuration"] = LISTENING
     params["recorder"] = recorder
-    params["autopilot"] = AutoResponder(params["rng"], accuracy=0.8, p_miss=p_miss)
+    params["autopilot"] = AutoResponder(params["rng"], accuracy=accuracy, p_miss=p_miss)
     try:
         run(params, confidenceRating=True, runTutorial=False)
     finally:
@@ -297,3 +300,79 @@ class TestSessionVariants(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestStaircaseIsNotExhausted(unittest.TestCase):
+    """Regressions found reviewing the branch for merge."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_representing_every_trial_does_not_end_the_session_early(self):
+        """The single-modality worst case: every trial missed and re-presented.
+
+        `PsiHandler` raises StopIteration once `next()` has been called
+        nTrials times, and a re-presented trial calls it again. Sized to the
+        design's trial count, one missed trial killed the session -- and with
+        no exteroceptive control and no catch trials, a single handler takes
+        every call, so there is no slack at all. Nothing catches StopIteration
+        in `run()`.
+        """
+        params, df = run_session(
+            self.tmp,
+            exteroception=False,
+            catchTrials=0.0,
+            n_trials=2,
+            p_miss=1.0,
+        )
+        # Reaching this line at all is the regression: before the fix it
+        # raised StopIteration part way through.
+        self.assertFalse(df["DecisionProvided"].any())
+        self.assertTrue((df["nRepresentations"] > 0).any())
+
+    def test_a_clamped_tone_records_a_delta_not_an_absolute_rate(self):
+        """A clamped trial must not write a BPM into a list of deltas.
+
+        `intensities` is on the staircase's own scale, `intensRange`. Passing
+        the clamped absolute BPM put 199.0 into a list bounded (-50.5, 50.5).
+        """
+        # Restricting intensRange to deltas that carry the default 72 BPM
+        # past TONE_BPM_MAX makes the clamp certain, rather than leaving it
+        # to whichever intensity psi happens to choose. Clamping at the top
+        # rather than the bottom keeps the heart rate inside HRcutOff, so no
+        # stay-still screen appears and the recorded rate is trustworthy.
+        params, df = run_session(
+            self.tmp,
+            exteroception=False,
+            catchTrials=0.0,
+            n_trials=4,
+            config=TaskConfig(intensRange=(130.0, 140.0)),
+        )
+        clamped = df["responseBPM"] != (df["listenBPM"] + df["Alpha"])
+        self.assertTrue(
+            clamped.any(),
+            "no tone was clamped, so this asserts nothing; raise bpm or nTrials",
+        )
+        # The clamped delta is legitimately outside intensRange -- that is
+        # the point of clamping. What must hold is that the staircase
+        # recorded the delta actually delivered, not the absolute rate: with
+        # a 72 BPM heart and a tone held at 199, that is 127 and not 199.
+        delivered = (df["responseBPM"] - df["listenBPM"]).tolist()
+        self.assertEqual(
+            [float(v) for v in params["stairCase"]["Intero"].intensities],
+            [float(v) for v in delivered],
+        )
+
+    def test_a_perfect_autopilot_answers_every_keyboard_trial_correctly(self):
+        """`accuracy` was ignored on the keyboard path.
+
+        The autopilot was handed key names while it compares against the
+        condition, so it never matched and fell through to a uniform draw.
+        Every headless keyboard session ran at chance.
+        """
+        _, df = run_session(self.tmp, device="keyboard", accuracy=1.0, n_trials=4)
+        self.assertTrue(df["DecisionProvided"].all())
+        self.assertTrue(df["ResponseCorrect"].all())

@@ -108,7 +108,14 @@ def _build_staircases(
     def psiHandler():
         """One psi staircase over the full stimulus range."""
         return data.PsiHandler(
-            nTrials=nTrials,
+            # Every next() appends to the handler's `intensities`, and it
+            # raises StopIteration once that reaches nTrials. A re-presented
+            # trial calls next() again, so sizing this to the design's trial
+            # count means one missed trial ends the session with a traceback
+            # in front of the participant -- reachable on defaults, since
+            # onMissedTrial is "represent". A trial can be presented at most
+            # maxRepresentations times, so this is the true upper bound.
+            nTrials=nTrials * parameters["maxRepresentations"],
             intensRange=list(parameters["intensRange"]),
             alphaRange=list(parameters["alphaRange"]),
             betaRange=list(parameters["betaRange"]),

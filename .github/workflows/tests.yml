@@ -99,8 +99,12 @@ jobs:
           # Read it back in a fresh process: that is what pytest will see.
           python -c "from psychtoolbox import audio; [print('PTB:', d['DeviceName'], d['NrOutputChannels']) for d in audio.get_devices()]" || true
           python -c "from psychopy import prefs; print('audioLib ->', prefs.hardware['audioLib'], 'audioDevice ->', prefs.hardware['audioDevice'])"
-      # A whole HRD session, both input devices, against the replay recorder.
-      # This is the first time any CI job has run the task itself.
+      # The whole suite, not just the session tests. It ran only
+      # test_headless.py, so 13 of the 16 test files never executed in CI at
+      # all -- a regression in the language loader, the confidence scales,
+      # SessionPaths, the trigger registry or the tutorial table would have
+      # shipped green. test_reports.py is excluded because it needs papermill
+      # and reports is deprecated; it is excluded locally for the same reason.
       #
       # A per-test timeout dumps the stack of whatever is stuck; thread
       # method, because the signal method cannot interrupt a blocking call
@@ -110,4 +114,4 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
         run: |
-          xvfb-run -a pytest tests/test_headless.py -v --timeout=180 --timeout-method=thread --cov=cardioception --cov-report=term-missing
+          xvfb-run -a pytest tests/ -v --ignore=tests/test_reports.py --timeout=180 --timeout-method=thread --cov=cardioception --cov-report=term-missing
