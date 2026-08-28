@@ -33,6 +33,7 @@ def getParameters(
     language: str = "english",
     systole_kw: dict = {},
     seed: Optional[int] = None,
+    autopilot=None,
 ):
     """Create Heart Rate Discrimination task parameters.
 
@@ -219,6 +220,8 @@ def getParameters(
     # One generator for the whole session. The seed is always recorded, so a
     # session can be replayed even when the caller did not choose one.
     parameters["rng"], parameters["seed"] = make_rng(seed)
+    # A synthetic participant, for headless runs and tests. None means a human.
+    parameters["autopilot"] = autopilot
     parameters["ExteroCondition"] = exteroception
     parameters["device"] = device
     if parameters["device"] == "keyboard":
