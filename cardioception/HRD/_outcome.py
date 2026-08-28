@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """What one trial produced, and how it becomes a row of the results file.
 
 `trial()` returned an 18-element tuple, unpacked positionally at its one

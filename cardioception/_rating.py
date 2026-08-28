@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Keyboard-driven confidence rating, shared by both tasks.
 
 Both tasks used ``visual.RatingScale`` for the keyboard confidence rating. From

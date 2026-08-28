@@ -1,4 +1,4 @@
-# Copyright (C) 2020–2025 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 import os
 import codecs
 from setuptools import find_packages, setup
@@ -6,11 +6,13 @@ from setuptools import find_packages, setup
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 REQUIREMENTS_FILE = os.path.join(PROJECT_ROOT, "requirements.txt")
 
+
 def read(fname):
     with codecs.open(
         os.path.join(os.path.dirname(__file__), fname), encoding="utf-8"
     ) as buff:
         return buff.read()
+
 
 def get_requirements():
     """Requirement specifiers from requirements.txt, ignoring comments.
@@ -22,6 +24,7 @@ def get_requirements():
     with codecs.open(REQUIREMENTS_FILE, encoding="utf-8") as buff:
         lines = (line.strip() for line in buff.read().splitlines())
         return [line for line in lines if line and not line.startswith("#")]
+
 
 DESCRIPTION = (
     "Measuring interoceptive performance with Psychopy - the official "

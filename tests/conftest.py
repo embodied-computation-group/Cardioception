@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Keep tests that need a human out of an unattended run.
 
 Two of the inherited tests call ``run()`` directly. That opens a window and

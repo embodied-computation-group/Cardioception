@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """The tutorial runs through, in the right shape, for every configuration.
 
 Not what it says — that is the language files' business, and pinning the text

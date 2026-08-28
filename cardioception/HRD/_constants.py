@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Fixed values of the Heart Rate Discrimination task.
 
 These were literals scattered through task.py. The trigger codes are the ones

@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Event callbacks fired at trial boundaries, for parallel port or LSL markers.
 
 Registered as {event: callable} in ``parameters["triggers"]``. ``validate``

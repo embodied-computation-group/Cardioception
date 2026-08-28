@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Confidence scale definitions, independent of input device.
 
 ``Confidence`` used to hold three different scales in one column: 0-100 from
