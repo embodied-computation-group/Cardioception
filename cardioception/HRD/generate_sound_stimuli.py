@@ -1,5 +1,4 @@
-# Authors: Nicolas Legrand and Micah Allen, 2019-2022. Contact: micah@cfin.au.dk
-# Maintained by the Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 # Adapted from: https://stackoverflow.com/questions/33879523/python-how-can-i-generate-a-wav-file-with-beeps
 # This script generates the BPM stimuli (wav files) used by the task.
 # Not called by the actual task, but included for reproducibility.
@@ -11,15 +10,17 @@ import wave
 import numpy as np
 
 
-def append_silence(audio: list, duration_milliseconds: int = 500):
+def append_silence(audio: list, duration_milliseconds: float = 500):
     """Add silence to the signal.
 
     Parameters
     ----------
     audio : list
         The signal where the sine should be added.
-    duration_milliseconds : int
-        The sine length.
+    duration_milliseconds : float
+        The silence length. Fractional milliseconds are kept: the inter-beat
+        interval is rarely a whole number, and rounding it here would change
+        every file this script generates.
 
     Returns
     -------
@@ -96,8 +97,9 @@ def save_wav(audio: list, file_name: str):
 
 
 # Generate wav files for frequencies between 15 and 200 beats per minutes
-for bpm in np.arange(15, 200, 0.5):
-
+# .tolist() yields Python floats. The values are exact and str(bpm) produces the
+# same filenames, so the generated set is unchanged.
+for bpm in np.arange(15, 200, 0.5).tolist():
     rr = (60000 / bpm) - 200
     audio: list = []
     sample_rate = 44100.0
@@ -105,7 +107,6 @@ for bpm in np.arange(15, 200, 0.5):
     # Create
     beats = 5
     while beats > 0:
-
         # Sound
         audio = append_sinewave(audio, volume=0.5)
         audio = append_silence(audio, duration_milliseconds=rr)

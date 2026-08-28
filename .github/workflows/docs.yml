@@ -35,7 +35,11 @@ jobs:
         run: |
           sphinx-build -b html docs/source docs/build/html
 
+      # Build on every pull request, publish only from master. Without this
+      # guard a pull request deployed straight to gh-pages, so any PR could
+      # replace the live documentation before anyone reviewed it.
       - name: Deploy 🚀
+        if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs/build/html

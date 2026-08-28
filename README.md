@@ -99,12 +99,11 @@ Installing the package also copies about 140 MB of images and sounds that the ta
 
 ## Recording devices
 
-Both tasks read the participant's cardiac signal while the task runs, either to estimate heart rate or to count beats in a time window. Two setups work out of the box:
+Both tasks read the participant's cardiac signal while the task runs, either to estimate heart rate or to count beats in a time window. One setup works out of the box:
 
 * The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) with [Nonin 8000SM soft-clip fingertip sensors](https://www.nonin.com/products/8000s/), which plugs into the stimulus PC over USB and needs no extra code.
-* Remote Data Access through BrainVision Recorder with a [Brain Products ExG amplifier](https://www.brainproducts.com/).
 
-Other hardware is straightforward to add. Write a recording class that interfaces with your device and hand it to the task. Anything that gives a reliable estimate of cardiac frequency will do, whether that is ECG, a different pulse oximeter, or something you built yourself.
+Other hardware can be added by writing a recorder and passing it to `getParameters(recorder=...)`, which bypasses the built-in setup entirely. It needs to supply a real-time estimate of cardiac frequency during the trial, since that is what sets the tone frequency; a device that only records for later analysis is not enough on its own. `cardioception.devices.ReplayRecorder` is a worked example, and is what the test suite runs against.
 
 ## Running a task
 
