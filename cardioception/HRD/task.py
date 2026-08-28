@@ -10,7 +10,7 @@ import pandas as pd
 from systole.detection import ppg_peaks
 
 from .._log import get_logger
-from .._present import accept_press, hold  # noqa: F401
+from .._present import accept_press, hold, on_every_frame  # noqa: F401
 from .._resources import resource_filename
 from .._screens import AskFingerNumber, Practice, Screen
 from .._screens import fixation as fixation_cross
@@ -95,6 +95,15 @@ def run(
     """
     # Initialization of the Pulse Oximeter
     parameters["oxiTask"].setup().read(duration=1)
+
+    # Continuous recording is one hook, because Phase 1 replaced every
+    # core.wait with hold(): draining once per frame there covers the fixation
+    # crosses, the feedback, the between-trial waits and the tutorial -- most
+    # of a session's wall clock, and all of what used to fall outside the
+    # saved signal. Installed before the tutorial so it is covered too.
+    if parameters.get("continuousRecording"):
+        on_every_frame(parameters["win"], parameters["oxiTask"].readInWaiting)
+        logger.info("... continuous recording on: draining every frame.")
 
     # Show tutorial and training trials
     if runTutorial is True:

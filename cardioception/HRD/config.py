@@ -81,6 +81,12 @@ class TaskConfig:
     #: Heart rates outside this range are treated as artefact and the listening
     #: window is retaken. Biologically implausible values, not clinical limits.
     HRcutOff: Tuple[float, float] = (40.0, 120.0)
+    #: Keep the pulse recorded for the whole session, not only inside the
+    #: listening windows. Off by default: it costs per-frame work, and every
+    #: existing study is calibrated against the trial-window behaviour. When
+    #: on, the recorder is a `ContinuousOximeter` and the serial buffer is
+    #: drained on every frame the task holds a screen for.
+    continuousRecording: bool = False
     #: How many times to retake a window before accepting whatever it holds and
     #: flagging the trial.
     maxHeartRateAttempts: int = 10

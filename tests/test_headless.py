@@ -6,6 +6,7 @@ modality and one break; listeningDuration is shortened because none of this
 tests tone timing.
 """
 
+import json
 import shutil
 import tempfile
 import unittest
@@ -16,6 +17,7 @@ import pandas as pd
 from cardioception._autopilot import AutoResponder
 from cardioception._triggers import EVENTS
 from cardioception.devices import ReplayRecorder
+from cardioception.devices import ContinuousOximeter, ReplayRecorder
 from cardioception.HRD.config import TaskConfig
 from cardioception.HRD.parameters import getParameters
 from cardioception.HRD.task import run
@@ -409,3 +411,60 @@ class TestEveryTriggerFires(unittest.TestCase):
         run_session(self.tmp, triggers={name: counter(name) for name in EVENTS})
         never = sorted(name for name, count in seen.items() if count == 0)
         self.assertEqual(never, [], f"declared but never fired: {never}")
+class TestContinuousRecording(unittest.TestCase):
+    """The whole-session recording of issue #95, behind its opt-in flag."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.other = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+        shutil.rmtree(self.other, ignore_errors=True)
+
+    def test_it_is_off_unless_asked_for(self):
+        params, _ = run_session(self.tmp)
+        self.assertFalse(params["continuousRecording"])
+
+    def test_the_pulse_keeps_being_read_while_a_screen_is_merely_held(self):
+        """Off, the buffer is drained only around trial events.
+
+        On, `hold()` drains once a frame, so the same session with the same
+        seed accumulates strictly more signal -- the fixation crosses, the
+        feedback and the between-trial waits, which is where the gaps were.
+        """
+        off, _ = run_session(self.tmp)
+        on, _ = run_session(self.other, config=TaskConfig(continuousRecording=True))
+        self.assertGreater(
+            len(on["oxiTask"].recording),
+            len(off["oxiTask"].recording),
+        )
+
+    def test_the_manifest_records_whether_it_was_on(self):
+        """Anything on TaskConfig is written to the manifest at session start."""
+        params, _ = run_session(self.tmp, config=TaskConfig(continuousRecording=True))
+        target = Path(params["paths"].directory) / "manifest.json"
+        manifest = json.loads(target.read_text())
+        self.assertTrue(manifest["config"]["continuousRecording"])
+
+    def test_asking_for_it_selects_the_recorder_that_can_afford_it(self):
+        """Without an explicit recorder, the flag picks ContinuousOximeter.
+
+        Stock `Oximeter` is O(N) per sample, so a whole session is exactly
+        what it cannot pay for.
+        """
+        params = getParameters(
+            participant="HEADLESS",
+            session="1",
+            setup="test",
+            nTrials=2,
+            exteroception=False,
+            resultPath=str(self.tmp),
+            language="english",
+            seed=SEED,
+            config=TaskConfig(continuousRecording=True),
+        )
+        try:
+            self.assertIsInstance(params["oxiTask"], ContinuousOximeter)
+        finally:
+            params["win"].close()
