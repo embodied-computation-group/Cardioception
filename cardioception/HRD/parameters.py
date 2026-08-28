@@ -17,6 +17,7 @@ from .._log import get_logger, start_session_log
 from .._resources import resource_filename
 from .._rng import make_rng
 from .._triggers import validate as validate_triggers
+from ..devices import ContinuousOximeter
 from ..output import SessionPaths
 from ..scales import DISCRETE_1_10, VAS_0_100, ConfidenceScale
 from .config import TaskConfig
@@ -147,6 +148,12 @@ def _open_recording(
     An explicit ``recorder`` wins over ``setup`` and touches no serial port,
     which is what lets a session run with no hardware attached.
     """
+    # A whole session's samples make stock systole's O(N) add_paquet the
+    # dominant per-frame cost; see cardioception.devices.continuous.
+    recorder_class = (
+        ContinuousOximeter if parameters.get("continuousRecording") else Oximeter
+    )
+
     if recorder is not None:
         # Wins over `setup`, and touches no serial port.
         parameters["oxiTask"] = recorder
@@ -156,7 +163,7 @@ def _open_recording(
         # A read that finds no data returns after a second rather than blocking
         # forever, so an unplugged or stalled oximeter fails visibly.
         port = serial.Serial(serialPort, timeout=1)
-        parameters["oxiTask"] = Oximeter(
+        parameters["oxiTask"] = recorder_class(
             serial=port, sfreq=75, add_channels=1, **systole_kw
         )
         parameters["oxiTask"].setup().read(duration=1)
@@ -166,7 +173,7 @@ def _open_recording(
     elif setup == "test":
         # Use pre-recorded pulse time series for testing
         port = serialSim()
-        parameters["oxiTask"] = Oximeter(
+        parameters["oxiTask"] = recorder_class(
             serial=port, sfreq=75, add_channels=1, **systole_kw
         )
         parameters["oxiTask"].setup().read(duration=1)
