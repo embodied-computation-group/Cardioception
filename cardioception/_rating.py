@@ -111,13 +111,18 @@ def keyboard_rating(
     event.clearEvents(eventType="keyboard")
     clock = core.Clock()
 
-    watched: List[str] = ["left", "right"] + list(accept_keys)
+    watched: List[str] = ["left", "right", "escape"] + list(accept_keys)
 
     while True:
         elapsed = clock.getTime()
 
         for key in event.getKeys(keyList=watched):
-            if key == "left":
+            if key == "escape":
+                # The rating scale is the longest a participant waits with
+                # nothing else to press, so an abort has to work from here.
+                win.close()
+                core.quit()
+            elif key == "left":
                 slider.markerPos = max(low, slider.markerPos - granularity)
             elif key == "right":
                 slider.markerPos = min(high, slider.markerPos + granularity)

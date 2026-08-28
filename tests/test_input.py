@@ -1,6 +1,8 @@
 # Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Mouse input must be edge triggered, not level triggered."""
 
+import inspect
+import re
 import unittest
 
 from cardioception.HRD.task import accept_press
@@ -80,3 +82,38 @@ class TestHeldMouseIsIgnored(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestEscapeAborts(unittest.TestCase):
+    """The response and rating screens must honour escape.
+
+    The changelog claimed they did from the moment the abort path was added,
+    and they did not: the keyboard decision passed `keyList=allowedKeys` to
+    `waitKeys`, which discards escape rather than merely ignoring it, and the
+    rating scale watched only the arrows and its accept keys. An experimenter
+    stopping a distressed participant had to wait for the next trial boundary.
+    """
+
+    def test_the_rating_scale_watches_for_escape(self):
+        import cardioception._rating as rating
+
+        source = inspect.getsource(rating.keyboard_rating)
+        self.assertIn('"escape"', source)
+        watched = re.search(r"watched: List\[str\] = (\[[^\]]*\])", source)
+        self.assertIsNotNone(watched, "the watched key list moved; update this")
+        self.assertIn("escape", watched.group(1))
+
+    def test_the_keyboard_decision_asks_waitKeys_for_escape(self):
+        """`waitKeys` drops keys outside keyList, so escape has to be in it."""
+        import cardioception.HRD.task as task
+
+        source = inspect.getsource(task.responseDecision)
+        call = re.search(r"keyList=([^,]+),\s*\n\s*maxWait", source)
+        self.assertIsNotNone(call, "the waitKeys call moved; update this")
+        self.assertIn("escape", call.group(1))
+
+    def test_the_mouse_decision_polls_for_escape(self):
+        import cardioception.HRD.task as task
+
+        source = inspect.getsource(task.responseDecision)
+        self.assertIn('event.getKeys(keyList=["escape"])', source)
