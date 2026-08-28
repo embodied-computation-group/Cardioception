@@ -103,14 +103,19 @@ class TestEscapeAborts(unittest.TestCase):
         self.assertIsNotNone(watched, "the watched key list moved; update this")
         self.assertIn("escape", watched.group(1))
 
-    def test_the_keyboard_decision_asks_waitKeys_for_escape(self):
-        """`waitKeys` drops keys outside keyList, so escape has to be in it."""
+    def test_the_keyboard_decision_watches_for_escape(self):
+        """getKeys drops keys outside keyList, so escape has to be in it.
+
+        This asserted against `waitKeys` until the decision phase became
+        a polling loop, so the recorder could be drained while the tone
+        plays. The call changed and the requirement did not, which is why
+        it is worth pinning the requirement rather than the call.
+        """
         import cardioception.HRD.task as task
 
         source = inspect.getsource(task.responseDecision)
-        call = re.search(r"keyList=([^,]+),\s*\n\s*maxWait", source)
-        self.assertIsNotNone(call, "the waitKeys call moved; update this")
-        self.assertIn("escape", call.group(1))
+        self.assertIn('watched = list(parameters["allowedKeys"]) + ["escape"]', source)
+        self.assertIn("keyList=watched", source)
 
     def test_the_mouse_decision_polls_for_escape(self):
         import cardioception.HRD.task as task

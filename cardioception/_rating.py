@@ -15,7 +15,7 @@ The arrow keys move the marker and the accept key confirms, which is what
 ``RatingScale`` did with ``acceptKeys="down"``.
 """
 
-from typing import List, Optional, Sequence, Tuple
+from typing import Callable, List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -40,6 +40,7 @@ def keyboard_rating(
     granularity: float = 1,
     label_height: float = 0.06,
     rng: Optional[np.random.Generator] = None,
+    on_frame: Optional[Callable[[], None]] = None,
 ) -> Tuple[Optional[float], Optional[float], bool]:
     """Collect a confidence rating using the arrow keys.
 
@@ -72,6 +73,12 @@ def keyboard_rating(
     rng :
         The session generator, so the randomised starting position is
         reproducible. Falls back to a fresh generator when omitted.
+    on_frame :
+        Called once per frame. Continuous recording passes the recorder's
+        drain here: this loop flips for itself rather than going through
+        :func:`cardioception._present.hold`, so the window's per-frame hook
+        does not reach it, and the rating scale is the longest a participant
+        spends on a single screen.
 
     Returns
     -------
@@ -149,6 +156,8 @@ def keyboard_rating(
         if max_time is not None and elapsed > max_time:
             break
 
+        if on_frame is not None:
+            on_frame()
         slider.draw()
         message.draw()
         win.flip()

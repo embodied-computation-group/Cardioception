@@ -988,6 +988,15 @@ def responseDecision(
 
     logger.info("...starting decision phase.")
 
+    # Neither input loop flips, so the window's per-frame hook does not reach
+    # them. The decision phase is up to respMax long and the rating scale
+    # longer still, which together are most of a trial.
+    drain = (
+        parameters["oxiTask"].readInWaiting
+        if parameters.get("continuousRecording")
+        else None
+    )
+
     decision, decisionRT, isCorrect = None, None, None
 
     if parameters["device"] == "keyboard":
@@ -1011,13 +1020,23 @@ def responseDecision(
                 [[response_keys[answer[0]], answer[1]]] if answer is not None else None
             )
         else:
-            # `escape` has to be in keyList or waitKeys discards it, and the
-            # abort is then lost rather than merely deferred.
-            responseKey = event.waitKeys(
-                keyList=list(parameters["allowedKeys"]) + ["escape"],
-                maxWait=parameters["respMax"],
-                timeStamped=clock,
-            )
+            # Poll rather than block, so the recorder is drained while the
+            # tone plays. `waitKeys` is itself a tight `while` loop over
+            # `getKeys` -- it holds no lock and adds no timing guarantee -- so
+            # this has the same response-time characteristics and drains as
+            # well. The mouse branch has always polled.
+            #
+            # `escape` still has to be in the keyList: getKeys discards keys
+            # outside it, so the abort would be lost rather than deferred.
+            watched = list(parameters["allowedKeys"]) + ["escape"]
+            responseKey = None
+            while clock.getTime() < parameters["respMax"]:
+                if drain is not None:
+                    drain()
+                pressed = event.getKeys(keyList=watched, timeStamped=clock)
+                if pressed:
+                    responseKey = pressed
+                    break
             if responseKey and responseKey[0][0] == "escape":
                 this_hr.stop()
                 logger.warning("User abort")
@@ -1188,6 +1207,14 @@ def confidenceRatingTask(
 
     logger.info("...starting confidence rating.")
 
+    # Both rating loops flip for themselves rather than through hold(), so the
+    # window's per-frame hook does not reach either of them.
+    rating_drain = (
+        parameters["oxiTask"].readInWaiting
+        if parameters.get("continuousRecording")
+        else None
+    )
+
     # Initialise default values
     confidence, confidenceRT = None, None
 
@@ -1216,6 +1243,7 @@ def confidenceRatingTask(
         # same widget.
         scale = parameters["confidenceScale"]
         confidence, confidenceRT, ratingProvided = keyboard_rating(
+            on_frame=rating_drain,
             win=parameters["win"],
             message=message,
             low=scale.low,
@@ -1320,6 +1348,8 @@ def confidenceRatingTask(
                 )
                 hold(parameters["win"], 0.5, message)
                 break
+            if rating_drain is not None:
+                rating_drain()
             slider.draw()
             message.draw()
             parameters["win"].flip()

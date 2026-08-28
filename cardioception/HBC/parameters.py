@@ -255,6 +255,12 @@ def getParameters(
             serial=port, sfreq=75, add_channels=1, **systole_kw
         )
         parameters["oxiTask"].setup().read(duration=1)
+    else:
+        # Any other value used to fall through and return a dictionary with no
+        # `oxiTask` in it, so the session died inside `trial()` -- after the
+        # window had opened, in front of the participant, on a KeyError rather
+        # than on the typo that caused it. HRD raises here; so does this now.
+        raise ValueError(f"setup should be 'behavioral' or 'test', got {setup!r}.")
 
     #######
     # Texts
