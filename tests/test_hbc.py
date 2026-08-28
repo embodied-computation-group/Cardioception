@@ -5,30 +5,45 @@
 # Shoult not be used for data acquisition
 
 import shutil
+import tempfile
 import unittest
 from unittest import TestCase
+
+import pytest
 
 from cardioception.HBC.parameters import getParameters
 from cardioception.HBC.task import run
 
 
 class TestHBC(TestCase):
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
     def test_parameters(self):
         """Test get_parameters function"""
         # Get parameters
-        parameters = getParameters(setup="test")
+        parameters = getParameters(setup="test", resultPath=self.tmp)
         parameters["win"].close()
-        shutil.rmtree(parameters["resultPath"])
 
+    @pytest.mark.blocking
     def test_run(self):
-        """Test run function"""
+        """A whole session, with a person pressing space at each screen.
+
+        HBC has no autopilot yet: its instruction screens call event.waitKeys,
+        and its counting window blocks inside oxiTask.read(). Until the
+        recorder interface lands this cannot run unattended.
+        """
         # Get parameters
-        parameters = getParameters(setup="test", taskVersion="test")
+        parameters = getParameters(
+            setup="test", taskVersion="test", resultPath=self.tmp
+        )
 
         run(parameters)
 
         parameters["win"].close()
-        shutil.rmtree(parameters["resultPath"])
 
 
 if __name__ == "__main__":

@@ -18,3 +18,6 @@ docs/auto_examples
 
 # Build output from pip install -e
 *.egg-info/
+
+# Session output
+/data/
