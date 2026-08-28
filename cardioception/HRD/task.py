@@ -940,6 +940,12 @@ def responseDecision(
 
         responseMadeTrigger = time.time()
 
+        # Drain before branching. This sat inside the response-provided branch,
+        # so a missed trial -- the longest wait in the task, a full respMax --
+        # left the serial buffer alone until the next trial's trigger, which is
+        # where a gap is most likely rather than least.
+        parameters["oxiTask"].readInWaiting()
+
         # Check for response provided by the participant
         if not responseKey:
             respProvided = False
@@ -961,9 +967,6 @@ def responseDecision(
                 decision = decision_label
             else:
                 isCorrect = True if (decision == condition) else False
-
-            # Read oximeter
-            parameters["oxiTask"].readInWaiting()
 
             # Feedback
             if feedback is True:
