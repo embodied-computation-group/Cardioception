@@ -26,6 +26,7 @@ from ._constants import (
     TONE_BPM_MIN,
     Trigger,
 )
+from ._outcome import TrialOutcome
 
 logger = get_logger()
 
@@ -158,26 +159,7 @@ def run(
             fire(parameters, "trialStart")
 
             # Start trial
-            (
-                condition,
-                listenBPM,
-                responseBPM,
-                quality,
-                decision,
-                decisionRT,
-                confidence,
-                confidenceRT,
-                alpha,
-                isCorrect,
-                respProvided,
-                ratingProvided,
-                startTrigger,
-                soundTrigger,
-                responseMadeTrigger,
-                ratingStartTrigger,
-                ratingEndTrigger,
-                endTrigger,
-            ) = trial(
+            outcome = trial(
                 parameters,
                 alpha,
                 modality,
@@ -188,7 +170,7 @@ def run(
             # A missed trial must not reach the staircase: decision is None,
             # which used to collapse to isMore = 0 and enter the posterior as
             # a "Less" the participant never gave.
-            if not respProvided:
+            if not outcome.respProvided:
                 canRepresent = (
                     onMissedTrial == "represent"
                     and thisItem["attempt"] + 1 < maxRepresentations
@@ -202,20 +184,20 @@ def run(
                 else:
                     logger.warning("... no response, trial not repeated.")
 
-            if respProvided:
+            if outcome.respProvided:
                 # Check if response is 'More' or 'Less'
-                isMore = 1 if decision == "More" else 0
+                isMore = 1 if outcome.decision == "More" else 0
 
                 if trialType == "psi":
                     logger.info("... update psi staircase.")
 
                     # Update the Psi staircase with forced intensity value
                     # if impossible BPM was generated
-                    if listenBPM + alpha < TONE_BPM_MIN:
+                    if outcome.listenBPM + outcome.alpha < TONE_BPM_MIN:
                         parameters["stairCase"][modality].addResponse(
                             isMore, intensity=TONE_BPM_MIN
                         )
-                    elif listenBPM + alpha > TONE_BPM_MAX:
+                    elif outcome.listenBPM + outcome.alpha > TONE_BPM_MAX:
                         parameters["stairCase"][modality].addResponse(
                             isMore, intensity=TONE_BPM_MAX
                         )
@@ -237,52 +219,37 @@ def run(
                     ].estimateLambda()
 
             logger.info(
-                f"... Initial BPM: {listenBPM} - Staircase value: {alpha} "
-                f"- Response: {decision} ({isCorrect})"
+                f"... Initial BPM: {outcome.listenBPM} - Staircase value: "
+                f"{outcome.alpha} - Response: {outcome.decision} "
+                f"({outcome.isCorrect})"
             )
 
             # Confidence on 0-1 so sessions run on different scales stay
             # comparable, and the scale definition on every row so the file can
             # be read without the parameters pickle.
             scale = parameters["confidenceScale"]
-            scaleColumns = scale.describe()
-            confidenceUnit = None if confidence is None else scale.to_unit(confidence)
+            confidence = outcome.confidence
 
-            # Store results
             parameters["results_df"] = pd.concat(
                 [
                     parameters["results_df"],
                     pd.DataFrame(
-                        {
-                            "TrialType": [trialType],
-                            "Condition": [condition],
-                            "Modality": [modality],
-                            "StairCond": [stairCond],
-                            "Decision": [decision],
-                            "DecisionRT": [decisionRT],
-                            "Confidence": [confidence],
-                            "ConfidenceRT": [confidenceRT],
-                            "ConfidenceUnit": [confidenceUnit],
-                            "Device": [parameters["device"]],
-                            **{k: [v] for k, v in scaleColumns.items()},
-                            "Alpha": [alpha],
-                            "listenBPM": [listenBPM],
-                            "responseBPM": [responseBPM],
-                            "nRepresentations": [thisItem["attempt"]],
-                            **{k: [v] for k, v in quality.items()},
-                            "ResponseCorrect": [isCorrect],
-                            "DecisionProvided": [respProvided],
-                            "RatingProvided": [ratingProvided],
-                            "nTrials": [nTrial],
-                            "EstimatedThreshold": [estimatedThreshold],
-                            "EstimatedSlope": [estimatedSlope],
-                            "StartListening": [startTrigger],
-                            "StartDecision": [soundTrigger],
-                            "ResponseMade": [responseMadeTrigger],
-                            "RatingStart": [ratingStartTrigger],
-                            "RatingEnds": [ratingEndTrigger],
-                            "endTrigger": [endTrigger],
-                        }
+                        outcome.row(
+                            TrialType=trialType,
+                            Modality=modality,
+                            StairCond=stairCond,
+                            Device=parameters["device"],
+                            ConfidenceUnit=(
+                                None
+                                if confidence is None
+                                else scale.to_unit(confidence)
+                            ),
+                            scale=scale.describe(),
+                            nRepresentations=thisItem["attempt"],
+                            nTrials=nTrial,
+                            EstimatedThreshold=estimatedThreshold,
+                            EstimatedSlope=estimatedSlope,
+                        )
                     ),
                 ],
                 ignore_index=True,
@@ -704,25 +671,25 @@ def trial(
         "DroppedFrames": parameters["win"].nDroppedFrames - droppedAtStart,
     }
 
-    return (
-        condition,
-        listenBPM,
-        responseBPM,
-        quality,
-        decision,
-        decisionRT,
-        confidence,
-        confidenceRT,
-        alpha,
-        isCorrect,
-        respProvided,
-        ratingProvided,
-        startTrigger,
-        soundTrigger,
-        responseMadeTrigger,
-        ratingStartTrigger,
-        ratingEndTrigger,
-        endTrigger,
+    return TrialOutcome(
+        condition=condition,
+        listenBPM=listenBPM,
+        responseBPM=responseBPM,
+        decision=decision,
+        decisionRT=decisionRT,
+        confidence=confidence,
+        confidenceRT=confidenceRT,
+        alpha=alpha,
+        isCorrect=isCorrect,
+        respProvided=respProvided,
+        ratingProvided=ratingProvided,
+        startTrigger=startTrigger,
+        soundTrigger=soundTrigger,
+        responseMadeTrigger=responseMadeTrigger,
+        ratingStartTrigger=ratingStartTrigger,
+        ratingEndTrigger=ratingEndTrigger,
+        endTrigger=endTrigger,
+        quality=quality,
     )
 
 
