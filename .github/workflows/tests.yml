@@ -57,36 +57,32 @@ jobs:
             xvfb libgl1 libglu1-mesa libegl1 libglib2.0-0 libsdl2-2.0-0 \
             portaudio19-dev libasound2-dev libsndfile1 \
             alsa-utils libasound2-plugins pulseaudio
-      # xvfb gives the runner a screen but not a sound card, and PsychoPy's
-      # PTB backend asks PortAudio for a speaker the moment the first tone is
-      # constructed. With no device the list comes back empty and every session
-      # test dies in SpeakerDevice with `IndexError: list index out of range`.
-      # snd-dummy is a real ALSA card that discards whatever it is given; a null
-      # PulseAudio sink is the fallback where that kernel module is unavailable.
-      # Neither one plays anything, which is all the task needs.
-      - name: A sound device for the tones to open
-        run: |
-          # snd-dummy is not in the runner's stock kernel; the module package
-          # carries it. PulseAudio's null sink loads fine without it but
-          # PortAudio does not enumerate it, so it is only a last resort.
-          sudo apt-get install -y --no-install-recommends "linux-modules-extra-$(uname -r)" || true
-          # modprobe consults modules.dep, which the package does not refresh.
-          sudo depmod -a || true
-          ls /lib/modules/"$(uname -r)"/kernel/sound/drivers/ || echo "no sound/drivers"
-          sudo modprobe snd-dummy || true
-          if ! aplay -l 2>/dev/null | grep -q '^card'; then
-            pulseaudio --start --exit-idle-time=-1
-            pactl load-module module-null-sink sink_name=dummy
-          fi
-          aplay -l || true
       - name: Install
         run: |
           python -m pip install --upgrade pip
           pip install -e . pytest pytest-cov
+      # xvfb gives the runner a screen but not a sound card, and the PTB
+      # backend asks PortAudio for a speaker the moment the first tone is
+      # constructed. This kernel ships no snd-dummy to load -- its
+      # linux-modules-extra has no kernel/sound/drivers at all -- so the
+      # device is a null PulseAudio sink, which PortAudio sees through ALSA
+      # as `pulse` with 32 output channels and which discards what it plays.
+      #
+      # That is not sufficient on its own. PsychoPy's own
+      # SpeakerDevice.getAvailableDevices() returns [] here even though
+      # PsychPortAudio lists the device, and `audioDevice = 'default'` is the
+      # sentinel for "no preference", which sends PsychoPy to that empty list
+      # and straight into `IndexError: list index out of range`. Naming the
+      # device takes the other branch, which resolves against PortAudio's own
+      # list. The name has to be `pulse`: `default` is also a real ALSA
+      # device here, but it collides with the sentinel.
+      - name: A sound device for the tones to open
+        run: |
+          pulseaudio --start --exit-idle-time=-1
+          pactl load-module module-null-sink sink_name=dummy
+          python -c "from psychopy import prefs; prefs.hardware['audioDevice'] = 'pulse'; prefs.saveUserPrefs(); print('audioDevice ->', prefs.hardware['audioDevice'])"
       # A whole HRD session, both input devices, against the replay recorder.
       # This is the first time any CI job has run the task itself.
       - name: Run
         run: |
-          python -c "from psychtoolbox import audio; [print('PTB:', {k: v for k, v in d.items() if 'Name' in k or 'Channels' in k}) for d in audio.get_devices()]" || true
-          python -c "from psychopy.hardware.speaker import SpeakerDevice; print('PsychoPy speakers:', SpeakerDevice.getAvailableDevices())" || true
           xvfb-run -a pytest tests/test_headless.py -v --cov=cardioception --cov-report=term-missing
