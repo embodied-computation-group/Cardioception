@@ -95,3 +95,26 @@ class TestConfidenceScale(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestTicksMatchLabels(unittest.TestCase):
+    """PsychoPy snaps each label to a tick, so the counts have to agree.
+
+    `Slider._getLabelParams` spreads labels with `linspace(left, right,
+    num=len(labels))` and then snaps each to the nearest tick position. Three
+    labels against two ticks put the midpoint label on top of an end label,
+    which is what a signed scale with a "No idea" midpoint always did.
+    """
+
+    def test_a_two_label_scale_has_two_ticks(self):
+        self.assertEqual(len(VAS_0_100.ticks), len(VAS_0_100.labels))
+        self.assertEqual(VAS_0_100.ticks, VAS_0_100.bounds)
+
+    def test_a_three_label_scale_gets_a_midpoint_tick(self):
+        self.assertEqual(len(VAS_SIGNED_100.ticks), len(VAS_SIGNED_100.labels))
+        self.assertEqual(VAS_SIGNED_100.ticks, (-100, 0.0, 100))
+
+    def test_every_shipped_scale_agrees(self):
+        for scale in (DISCRETE_1_10, VAS_0_100, VAS_SIGNED_100):
+            with self.subTest(scale=scale.labels):
+                self.assertEqual(len(scale.ticks), len(scale.labels))

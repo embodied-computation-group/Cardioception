@@ -34,6 +34,8 @@ than a design choice, and every knob here costs a reader something.
 from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, Mapping, Tuple
 
+from ._constants import LISTENING_DURATION
+
 
 @dataclass(frozen=True)
 class TaskConfig:
@@ -69,10 +71,11 @@ class TaskConfig:
     #: Inter-stimulus interval, drawn uniformly between the two values. The
     #: default is a fixed 0.25 s.
     isi: Tuple[float, float] = (0.25, 0.25)
-    #: Seconds of listening per trial. Matches the interoceptive recording
-    #: window so both modalities give the same listening time; changing it
-    #: changes the exteroceptive control as well as the recording.
-    listeningDuration: float = 5.0
+    #: Seconds of listening per trial, in both modalities: the exteroceptive
+    #: tone plays for this long and the interoceptive pulse is recorded for
+    #: it. The peak-detection window follows from it, so shortening it below
+    #: about two seconds leaves too few beats to measure a rate.
+    listeningDuration: float = LISTENING_DURATION
 
     # --- physiology ----------------------------------------------------------
     #: Heart rates outside this range are treated as artefact and the listening

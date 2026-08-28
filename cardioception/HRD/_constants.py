@@ -32,16 +32,13 @@ OXIMETER_SFREQ = 75
 #: times written to the signal file are spaced at this rate.
 PPG_SFREQ = 1000
 
-#: Seconds of pulse recorded per listening window.
+#: Default seconds of pulse recorded per listening window. The value in force
+#: is ``TaskConfig.listeningDuration``; this is only its default.
 LISTENING_DURATION = 5.0
 
-#: Seconds of that recording kept for peak detection. Longer than the window so
-#: a beat straddling the boundary is not lost.
-ANALYSIS_WINDOW = 6
-
-#: Samples of the resampled signal used to measure the heart rate, at
-#: ``PPG_SFREQ``. Five seconds.
-PEAK_WINDOW_SAMPLES = 5000
+#: Extra seconds of recording kept beyond the listening window, so a beat
+#: straddling the boundary is not lost.
+ANALYSIS_MARGIN = 1.0
 
 #: Range the pre-generated tone files cover, in BPM. A staircase value that
 #: would take the tone outside this has no sound file, so it is clamped and the

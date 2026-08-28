@@ -328,7 +328,7 @@ def tutorial(parameters: dict):
     event.waitKeys(keyList=[parameters["startKey"]])
 
     # Tutorial 3
-    if parameters["taskVersion"] == "Shandry":
+    if parameters["taskVersion"] == "Schandry":
         messageStart = text(
             parameters, parameters["texts"]["Tutorial3"], pos=(0.0, 0.2)
         )
