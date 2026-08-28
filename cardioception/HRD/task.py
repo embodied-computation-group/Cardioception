@@ -378,10 +378,10 @@ def trial(
         rate (interoceptive condition), expressed in BPM.
     responseBPM : float
         The frequency of thefeebdack tones, expressed in BPM.
-    decision : str
-        The participant decision. Can be `'up'` (the participant indicates
-        the beats are faster than the recorded heart rate) or `'down'` (the
-        participant indicates the beats are slower than recorded heart rate).
+    decision : str or None
+        `'More'` if the participant judged the beeps faster than their heart,
+        `'Less'` if slower, `None` if they did not answer in time. These are
+        the strings compared against `condition`, not the key names.
     decisionRT : float
         The response time from sound start to choice (seconds).
     confidence : int
@@ -393,10 +393,9 @@ def trial(
         The difference between the true heart rate and the delivered tone BPM.
         Alpha is defined by the stairCase.intensities values and is updated
         on each trial.
-    isCorrect : int
-        `0` for incorrect response, `1` for correct responses. Note that this
-        value is not feeded to the staircase when using the (Yes/No) version
-        of the task, but instead will check if the response is `'More'` or not.
+    isCorrect : bool or None
+        Whether `decision` matched `condition`. `None` on a trial with no
+        response, which is excluded from the staircase rather than scored.
     respProvided : bool
         Was the decision provided (`True`) or not (`False`).
     ratingProvided : bool
@@ -487,12 +486,6 @@ def trial(
             # Only use the last 5 seconds of the recording
             ibi = np.diff(np.where(peaks[-PEAK_WINDOW_SAMPLES:])[0])
             bpm = 60000 / ibi
-
-            # # for Nonin3231USB
-            # # Only use the last 5 seconds of the recording
-            # bpm =  pd.Series(parameters["oxiTask"].read(duration=5.0).bpm)[-5:]
-            # # use bpm as signal, Nonin3231USB gives no raw signal
-            # signal = bpm
 
             logger.info(f"... bpm: {[round(i) for i in bpm]}")
 
@@ -640,7 +633,6 @@ def trial(
     #####################
     (
         responseMadeTrigger,
-        responseTrigger,
         respProvided,
         decision,
         decisionRT,
@@ -975,12 +967,10 @@ def responseDecision(
     -------
     responseMadeTrigger : float
         Time stamp of response provided.
-    responseTrigger : float
-        Time stamp of response start.
     respProvided : bool
         `True` if the response was provided, `False` otherwise.
     decision : str or None
-        The decision made ('Higher', 'Lower' or None)
+        `'More'`, `'Less'`, or `None` if no response was given in time.
     decisionRT : float
         Decision response time (seconds).
     isCorrect : bool or None
@@ -993,7 +983,6 @@ def responseDecision(
     logger.info("...starting decision phase.")
 
     decision, decisionRT, isCorrect = None, None, None
-    responseTrigger = time.time()
 
     if parameters["device"] == "keyboard":
         this_hr.play()
@@ -1145,7 +1134,6 @@ def responseDecision(
 
     return (
         responseMadeTrigger,
-        responseTrigger,
         respProvided,
         decision,
         decisionRT,

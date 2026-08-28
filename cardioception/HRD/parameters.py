@@ -76,7 +76,7 @@ def getParameters(
         Number of staircase to use per condition (exteroceptive and
         interoceptive).
     nTrials : int
-        The number of trials to run (UpDown and psi staircase).
+        The number of trials to run.
 
         .. note::
            This number indicates the total number of trials that will be presented
@@ -157,12 +157,6 @@ def getParameters(
         fixed at `0.25`.
     labelsRating : list
         The labels of the confidence rating scale.
-    lambdaExtero : np.ndarray
-        (3d) Posterior estimate of the psychophysics function parameters (slope and
-        threshold) across trials for the exteroceptive condition.
-    lambdaIntero : np.ndarray
-        (3d) Posterior estimate of the psychophysics function parameters (slope and
-        threshold) across trials for the interoceptive condition.
     listenLogo, heartLogo : Psychopy visual instance
         Image used for the inference and recording phases, respectively.
     maxRatingTime : float
@@ -175,48 +169,36 @@ def getParameters(
     nBreaking : int
         Number of trials to run before the break.
     nConfidence : int
-        The number of trial with feedback during the tutorial phase (no
-        feedback).
+        Number of tutorial trials that ask for a confidence rating.
     nFeedback : int
-        The number of trial with feedback during the tutorial phase (no
-        confidence rating).
+        Number of tutorial trials that show whether the answer was correct.
     nFinger : str or None
         The finger number ("1", "2", "3", "4" or "5") where the participant
         decided to place the pulse oximeter (if relevant).
     nTrials : int
-        The number of trials to run (UpDown and psi staircase).
-
-        .. note::
-           This number indicates the total number of trials that will be presented
-           during the experiment. If `nTrials=50` and `exteroception=False`, the task
-           contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,
-           the task contains 25 interoceptive trials and 25 exteroceptive trials.
+        The number of trials to run. See the parameter of the same name.
     participant : str
         Subject ID. Default is 'Participant'.
     path : str
         The task working directory.
     resultPath : str | None
         Where to save the results.
-    serial : PySerial instance
-        The serial port used to record the PPG activity.
     screenNb : int
         The screen number (Psychopy parameter). Default set to 0.
     signal_df : pandas.DataFrame instance
         Dataframe where the pulse signal recorded during the interoception
         condition will be stored.
     stairCase : dict
-        The staircase instances for 'psi' and 'UpDown'. Each entry contain
-        dictionary for 'Intero' and 'Extero conditions' (if relevant).
+        One `psychopy.data.PsiHandler` per modality, keyed `'Intero'` and,
+        when the exteroceptive condition is included, `'Extero'`.
     staircaseType : 1d array-like
-        Vector indexing stairce type (`'UpDown'`, `'psi'`, `'psiCatchTrial'`).
+        Which staircase drives each trial: `'psi'` or `'CatchTrial'`.
     startKey : str
         The key to press to start the task and go to next steps.
     response_keys : dict
         Mapping from trial conditions to keyboard response keys.
     respMax : float
         The maximum time for decision (in seconds).
-    results : str
-        The result directory.
     session : int
         Session number. Default to '001'.
     setup : str
@@ -247,14 +229,18 @@ def getParameters(
     When using the `behavioral` setup, triggers will be sent to the PPG  recording. The
     trigger channel is coding for different events during the task as follows:
 
-    - Trial start: 1
-    - recording trigger: 2
-    - sound trigger : 3
-    - rating trigger: 4
-    - end trigger: 5
+    - 1: trial start
+    - 2: listening window opens
+    - 3: tone starts, decision begins
+    - 4: confidence rating begins
+    - 5: trial end
 
-    All these events, except trial start, have also their time stamps encoded in the
-    behavioral results data frame.
+    See :class:`cardioception.HRD._constants.Trigger`. The Heartbeat Counting
+    task writes different meanings to the same channel, so a recording has to be
+    read knowing which task produced it.
+
+    Every one of these except the trial start also has a timestamp in the
+    behavioural results.
 
     """
     from psychopy import data, event, visual
@@ -294,8 +280,6 @@ def getParameters(
     parameters["allowedKeys"] = list(parameters["response_keys"].values())
     parameters["nTrials"] = nTrials
     parameters["nBreaking"] = nBreaking
-    parameters["lambdaIntero"] = []  # Save the history of lambda values
-    parameters["lambdaExtero"] = []  # Save the history of lambda values
     parameters["nFinger"] = None
     parameters["signal_df"] = pd.DataFrame([])  # Physiological recording
     parameters["results_df"] = pd.DataFrame([])  # Behavioral results
@@ -413,7 +397,6 @@ def getParameters(
         )
         parameters["oxiTask"].setup().read(duration=1)
 
-        # # for Nonin 3231 USB
         # parameters['oxiTask'] = Nonin3231USB(serial=port, add_channels=1).setup().read(1)
 
     elif setup == "test":

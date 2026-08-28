@@ -105,6 +105,28 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   moved to the `psychopy-legacy` plugin in PsychoPy 2026 and now raises.
 - A crash or an abort still saves everything the session produced.
 
+### Internal
+
+Structural work from the audit's refactoring report. None of it changes what a
+participant sees or what a trial records, and each step was checked against the
+code it replaced rather than read over.
+
+- Participant-facing text moves from 484 lines of Python to one YAML file per
+  language, validated against a required key set when the session starts. A
+  language missing a key, or a `language` that does not exist, used to fail
+  mid-session with a `KeyError`; both are now errors at launch.
+- The 64 `visual.TextStim` constructions become one `text()` helper, 370 lines
+  to 95.
+- The trigger codes and signal constants are named. Worth knowing: **the two
+  tasks write different meanings to the same marker channel.** In HRD, 1 is the
+  trial starting and 2 the listening window opening; in HBC, 1 is the listening
+  window opening and 2 its closing.
+
+**`responseDecision` returns five values, not six.** The second, a
+`responseTrigger` timestamp, was unpacked by its only caller and never read.
+`parameters` no longer carries `lambdaIntero` or `lambdaExtero`, which were
+always empty lists, so a `_parameters.pickle` will not contain them.
+
 ### Packaging
 
 - `package_data` listed `*.wav` and `*.png`, but the stimuli live in
