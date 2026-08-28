@@ -24,6 +24,208 @@ from ..scales import DISCRETE_1_10, VAS_0_100, ConfidenceScale
 logger = get_logger()
 
 
+def _build_design(
+    parameters: Dict[str, Any],
+    exteroception: bool,
+    catchTrials: float,
+    stairType: str,
+) -> None:
+    """Decide which trial is which, and in what order.
+
+    Writes ``Modality``, ``staircaseType`` and the posterior store. Everything
+    random here comes from ``parameters["rng"]``, so the design is reproducible
+    from the recorded seed alone.
+    """
+    # Store posterior in a dictionary
+    parameters["staircaisePosteriors"] = {}
+    parameters["staircaisePosteriors"]["Intero"] = []
+    if exteroception is True:
+        parameters["staircaisePosteriors"]["Extero"] = []
+
+    nCatch = int(parameters["nTrials"] * catchTrials)
+    nStaircase = parameters["nTrials"] - nCatch
+
+    if stairType != "psi":
+        raise ValueError(
+            f"stairType={stairType!r}. The nUp/nDown staircase was removed in "
+            "0.8.0: it was a 1-up/1-down rule, which converges on 50% correct, "
+            "not the 71% the documentation claimed, and it was never used for "
+            "published data. 'psi' is the only staircase."
+        )
+    sc = np.array(["psi"] * nStaircase)
+
+    # Create and randomize condition vectors separately for each staircase
+    if exteroception is True:
+        # Alternate the two modalities, then trim to exactly nTrials.
+        #
+        # This used to build `["Extero", "Intero"] * int(nTrials / 2)`, which is
+        # one entry short whenever nTrials is odd. The shuffle below then indexed
+        # past the end of it, so every odd nTrials failed at parameter setup with
+        # `IndexError: index 0 is out of bounds for axis 0 with size 0`, naming
+        # neither nTrials nor exteroception.
+        pairs = -(-parameters["nTrials"] // 2)  # ceiling division
+        parameters["Modality"] = np.array(["Extero", "Intero"] * pairs)[
+            : parameters["nTrials"]
+        ]
+        if parameters["nTrials"] % 2:
+            logger.warning(
+                f"... nTrials={parameters['nTrials']} is odd, so the two modalities"
+                " cannot be balanced: there will be one more Extero trial than"
+                " Intero. Use an even number if you want them balanced."
+            )
+    elif exteroception is False:
+        # Create a modality vector containing nTrials/2 Intero and Extero conditions
+        parameters["Modality"] = np.array(["Intero"] * int(parameters["nTrials"]))
+    else:
+        raise ValueError("exteroception should be a boolean")
+
+    # Vector encoding the type of trial (psi, up/down or catch)
+    parameters["staircaseType"] = np.hstack(
+        [
+            sc,
+            np.array(["CatchTrial"] * int((parameters["nTrials"] * catchTrials))),
+        ]
+    )
+
+    # Shuffle all trials
+    shuffler = parameters["rng"].permutation(parameters["nTrials"])
+    parameters["Modality"] = parameters["Modality"][shuffler]
+    parameters["staircaseType"] = parameters["staircaseType"][shuffler]
+
+
+def _build_staircases(
+    parameters: Dict[str, Any], exteroception: bool, nTrials: int
+) -> None:
+    """One psi staircase per modality."""
+    from psychopy import data
+
+    # Default parameters for the basic staircase are set here. Please see
+    # PsychoPy Staircase Handler Documentation for full options. By default,
+    # the task implements a staircase using Psi method.
+    # If UpDown is selected, 1 or 2 interleaved staircases are used (see
+    # options in parameters dictionary), one is initalized 'high' and the other
+    # 'low'.
+    def psiHandler():
+        """One psi staircase over the full stimulus range."""
+        return data.PsiHandler(
+            nTrials=nTrials,
+            intensRange=[-50.5, 50.5],
+            alphaRange=[-50.5, 50.5],
+            betaRange=[0.1, 25],
+            intensPrecision=1,
+            alphaPrecision=1,
+            betaPrecision=0.1,
+            delta=0.02,
+            stepType="lin",
+            expectedMin=0,
+        )
+
+    parameters["stairCase"] = {"Intero": psiHandler()}
+    if exteroception is True:
+        parameters["stairCase"]["Extero"] = psiHandler()
+
+
+def _open_recording(
+    parameters: Dict[str, Any],
+    setup: str,
+    serialPort: str,
+    systole_kw: dict,
+    recorder,
+) -> None:
+    """Attach the device the pulse will be read from.
+
+    An explicit ``recorder`` wins over ``setup`` and touches no serial port,
+    which is what lets a session run with no hardware attached.
+    """
+    if recorder is not None:
+        # Wins over `setup`, and touches no serial port.
+        parameters["oxiTask"] = recorder
+        parameters["oxiTask"].setup().read(duration=1)
+    elif setup == "behavioral":
+        # PPG recording
+        port = serial.Serial(serialPort)
+        parameters["oxiTask"] = Oximeter(
+            serial=port, sfreq=75, add_channels=1, **systole_kw
+        )
+        parameters["oxiTask"].setup().read(duration=1)
+
+        # parameters['oxiTask'] = Nonin3231USB(serial=port, add_channels=1).setup().read(1)
+
+    elif setup == "test":
+        # Use pre-recorded pulse time series for testing
+        port = serialSim()
+        parameters["oxiTask"] = Oximeter(
+            serial=port, sfreq=75, add_channels=1, **systole_kw
+        )
+        parameters["oxiTask"].setup().read(duration=1)
+
+    else:
+        # Unguarded before, so an unknown value returned a dict with no
+        # "oxiTask" and died inside run() after the window had opened.
+        raise ValueError(
+            f"setup should be 'behavioral' or 'test', got {setup!r}. "
+            "Pass recorder= to use a device other than the Nonin oximeter."
+        )
+
+
+def _build_stimuli(parameters: Dict[str, Any], fullscr: bool) -> None:
+    """Open the window and load every image the task will draw."""
+    from psychopy import event, visual
+
+    # Open window
+    if parameters["setup"] == "test":
+        fullscr = False
+    parameters["win"] = visual.Window(
+        monitor=parameters["monitor"],
+        screen=parameters["screenNb"],
+        fullscr=fullscr,
+        units="height",
+    )
+    parameters["win"].mouseVisible = False
+    # Needed for nDroppedFrames to count anything, which is what the per-trial
+    # DroppedFrames column reports.
+    parameters["win"].recordFrameIntervals = True
+
+    ###############
+    # Image loading
+    ###############
+    if parameters["setup"] in ["test", "behavioral"]:
+        parameters["pulseSchema"] = visual.ImageStim(
+            win=parameters["win"],
+            units="height",
+            image=resource_filename("cardioception.HRD", "Images/pulseOximeter.png"),
+            pos=(0.0, 0.0),
+        )
+        parameters["pulseSchema"].size *= 0.2
+        parameters["handSchema"] = visual.ImageStim(
+            win=parameters["win"],
+            units="height",
+            image=resource_filename("cardioception.HRD", "Images/hand.png"),
+            pos=(0.0, -0.08),
+        )
+        parameters["handSchema"].size *= 0.15
+
+    parameters["listenLogo"] = visual.ImageStim(
+        win=parameters["win"],
+        units="height",
+        image=resource_filename("cardioception.HRD", "Images/listen.png"),
+        pos=(0.0, 0.0),
+    )
+    parameters["listenLogo"].size *= 0.08
+
+    parameters["heartLogo"] = visual.ImageStim(
+        win=parameters["win"],
+        units="height",
+        image=resource_filename("cardioception.HRD", "Images/heartbeat.png"),
+        pos=(0.0, 0.0),
+    )
+    parameters["heartLogo"].size *= 0.04
+    parameters["textSize"] = 0.04
+    parameters["HRcutOff"] = [40, 120]
+    if parameters["device"] == "mouse":
+        parameters["myMouse"] = event.Mouse()
+
+
 def getParameters(
     participant: str = "SubjectTest",
     session: str = "001",
@@ -243,8 +445,6 @@ def getParameters(
     behavioural results.
 
     """
-    from psychopy import data, event, visual
-
     from .. import __version__
 
     parameters: Dict[str, Any] = {}
@@ -303,117 +503,12 @@ def getParameters(
     parameters["resultPath"] = parameters["paths"].directory
     parameters["logFile"] = start_session_log(parameters["paths"].directory)
 
-    # Store posterior in a dictionary
-    parameters["staircaisePosteriors"] = {}
-    parameters["staircaisePosteriors"]["Intero"] = []
-    if exteroception is True:
-        parameters["staircaisePosteriors"]["Extero"] = []
+    _build_design(parameters, exteroception, catchTrials, stairType)
 
-    nCatch = int(parameters["nTrials"] * catchTrials)
-    nStaircase = parameters["nTrials"] - nCatch
-
-    if stairType != "psi":
-        raise ValueError(
-            f"stairType={stairType!r}. The nUp/nDown staircase was removed in "
-            "0.8.0: it was a 1-up/1-down rule, which converges on 50% correct, "
-            "not the 71% the documentation claimed, and it was never used for "
-            "published data. 'psi' is the only staircase."
-        )
-    sc = np.array(["psi"] * nStaircase)
-
-    # Create and randomize condition vectors separately for each staircase
-    if exteroception is True:
-        # Alternate the two modalities, then trim to exactly nTrials.
-        #
-        # This used to build `["Extero", "Intero"] * int(nTrials / 2)`, which is
-        # one entry short whenever nTrials is odd. The shuffle below then indexed
-        # past the end of it, so every odd nTrials failed at parameter setup with
-        # `IndexError: index 0 is out of bounds for axis 0 with size 0`, naming
-        # neither nTrials nor exteroception.
-        pairs = -(-parameters["nTrials"] // 2)  # ceiling division
-        parameters["Modality"] = np.array(["Extero", "Intero"] * pairs)[
-            : parameters["nTrials"]
-        ]
-        if parameters["nTrials"] % 2:
-            logger.warning(
-                f"... nTrials={parameters['nTrials']} is odd, so the two modalities"
-                " cannot be balanced: there will be one more Extero trial than"
-                " Intero. Use an even number if you want them balanced."
-            )
-    elif exteroception is False:
-        # Create a modality vector containing nTrials/2 Intero and Extero conditions
-        parameters["Modality"] = np.array(["Intero"] * int(parameters["nTrials"]))
-    else:
-        raise ValueError("exteroception should be a boolean")
-
-    # Vector encoding the type of trial (psi, up/down or catch)
-    parameters["staircaseType"] = np.hstack(
-        [
-            sc,
-            np.array(["CatchTrial"] * int((parameters["nTrials"] * catchTrials))),
-        ]
-    )
-
-    # Shuffle all trials
-    shuffler = parameters["rng"].permutation(parameters["nTrials"])
-    parameters["Modality"] = parameters["Modality"][shuffler]
-    parameters["staircaseType"] = parameters["staircaseType"][shuffler]
-
-    # Default parameters for the basic staircase are set here. Please see
-    # PsychoPy Staircase Handler Documentation for full options. By default,
-    # the task implements a staircase using Psi method.
-    # If UpDown is selected, 1 or 2 interleaved staircases are used (see
-    # options in parameters dictionary), one is initalized 'high' and the other
-    # 'low'.
-    def psiHandler():
-        """One psi staircase over the full stimulus range."""
-        return data.PsiHandler(
-            nTrials=nTrials,
-            intensRange=[-50.5, 50.5],
-            alphaRange=[-50.5, 50.5],
-            betaRange=[0.1, 25],
-            intensPrecision=1,
-            alphaPrecision=1,
-            betaPrecision=0.1,
-            delta=0.02,
-            stepType="lin",
-            expectedMin=0,
-        )
-
-    parameters["stairCase"] = {"Intero": psiHandler()}
-    if exteroception is True:
-        parameters["stairCase"]["Extero"] = psiHandler()
+    _build_staircases(parameters, exteroception, nTrials)
 
     parameters["setup"] = setup
-    if recorder is not None:
-        # Wins over `setup`, and touches no serial port.
-        parameters["oxiTask"] = recorder
-        parameters["oxiTask"].setup().read(duration=1)
-    elif setup == "behavioral":
-        # PPG recording
-        port = serial.Serial(serialPort)
-        parameters["oxiTask"] = Oximeter(
-            serial=port, sfreq=75, add_channels=1, **systole_kw
-        )
-        parameters["oxiTask"].setup().read(duration=1)
-
-        # parameters['oxiTask'] = Nonin3231USB(serial=port, add_channels=1).setup().read(1)
-
-    elif setup == "test":
-        # Use pre-recorded pulse time series for testing
-        port = serialSim()
-        parameters["oxiTask"] = Oximeter(
-            serial=port, sfreq=75, add_channels=1, **systole_kw
-        )
-        parameters["oxiTask"].setup().read(duration=1)
-
-    else:
-        # Unguarded before, so an unknown value returned a dict with no
-        # "oxiTask" and died inside run() after the window had opened.
-        raise ValueError(
-            f"setup should be 'behavioral' or 'test', got {setup!r}. "
-            "Pass recorder= to use a device other than the Nonin oximeter."
-        )
+    _open_recording(parameters, setup, serialPort, systole_kw, recorder)
 
     ##############
     # Load texts #
@@ -422,58 +517,7 @@ def getParameters(
     # surfaced as a KeyError at whatever screen first needed a string.
     parameters["texts"] = get_texts(language, device, exteroception)
 
-    # Open window
-    if parameters["setup"] == "test":
-        fullscr = False
-    parameters["win"] = visual.Window(
-        monitor=parameters["monitor"],
-        screen=parameters["screenNb"],
-        fullscr=fullscr,
-        units="height",
-    )
-    parameters["win"].mouseVisible = False
-    # Needed for nDroppedFrames to count anything, which is what the per-trial
-    # DroppedFrames column reports.
-    parameters["win"].recordFrameIntervals = True
-
-    ###############
-    # Image loading
-    ###############
-    if parameters["setup"] in ["test", "behavioral"]:
-        parameters["pulseSchema"] = visual.ImageStim(
-            win=parameters["win"],
-            units="height",
-            image=resource_filename("cardioception.HRD", "Images/pulseOximeter.png"),
-            pos=(0.0, 0.0),
-        )
-        parameters["pulseSchema"].size *= 0.2
-        parameters["handSchema"] = visual.ImageStim(
-            win=parameters["win"],
-            units="height",
-            image=resource_filename("cardioception.HRD", "Images/hand.png"),
-            pos=(0.0, -0.08),
-        )
-        parameters["handSchema"].size *= 0.15
-
-    parameters["listenLogo"] = visual.ImageStim(
-        win=parameters["win"],
-        units="height",
-        image=resource_filename("cardioception.HRD", "Images/listen.png"),
-        pos=(0.0, 0.0),
-    )
-    parameters["listenLogo"].size *= 0.08
-
-    parameters["heartLogo"] = visual.ImageStim(
-        win=parameters["win"],
-        units="height",
-        image=resource_filename("cardioception.HRD", "Images/heartbeat.png"),
-        pos=(0.0, 0.0),
-    )
-    parameters["heartLogo"].size *= 0.04
-    parameters["textSize"] = 0.04
-    parameters["HRcutOff"] = [40, 120]
-    if parameters["device"] == "mouse":
-        parameters["myMouse"] = event.Mouse()
+    _build_stimuli(parameters, fullscr)
 
     # Resolved here rather than above because the default takes its end labels
     # from the chosen language.

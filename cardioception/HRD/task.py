@@ -26,7 +26,7 @@ from ._constants import (
     TONE_BPM_MIN,
     Trigger,
 )
-from ._outcome import TrialOutcome
+from ._outcome import HeartRateReading, TrialOutcome
 
 logger = get_logger()
 
@@ -400,157 +400,17 @@ def trial(
     heartRateAttempts, heartRateAccepted = None, None
 
     if modality == "Intero":
-        ###########
-        # Recording
-        ###########
-        messageRecord = text(
-            parameters, parameters["texts"]["textHeartListening"], pos=(0.0, 0.2)
-        )
-        messageRecord.draw()
-
-        # Start recording trigger
-        parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.LISTENING_START
-        fire(parameters, "listeningStart")
-
-        parameters["heartLogo"].draw()
-        parameters["win"].flip()
-
-        startTrigger = time.time()
-
-        # Recording.
-        #
-        # Bounded and escapable. Unbounded before, with no escape poll inside
-        # it, so one artefactual interval could hold a participant on this
-        # screen indefinitely: np.any rejects the whole window on a single bad
-        # value. On giving up it takes the window anyway and flags the trial,
-        # which is recoverable, unlike a session that never advances.
-        maxAttempts = parameters.get("maxHeartRateAttempts", 10)
-        listenBPM = None
-        attempt = 0
-        for attempt in range(maxAttempts):
-            if "escape" in event.getKeys(keyList=["escape"]):
-                logger.warning("User abort")
-                parameters["win"].close()
-                core.quit()
-
-            # Read the raw PPG signal from the pulse oximeter
-            # You can adapt these line to work with a different setup provided that
-            # it can measure and create the new variable `bpm` (the average beats per
-            # minute over the 5 seconds of recording).
-            signal = (
-                parameters["oxiTask"]
-                .read(duration=LISTENING_DURATION)
-                .recording[-OXIMETER_SFREQ * ANALYSIS_WINDOW :]  # noqa
-            )
-            signal, peaks = ppg_peaks(
-                signal, sfreq=OXIMETER_SFREQ, new_sfreq=PPG_SFREQ, clipping=True
-            )
-
-            recordedAt = time.time()
-
-            # Get actual heart Rate
-            # Only use the last 5 seconds of the recording
-            ibi = np.diff(np.where(peaks[-PEAK_WINDOW_SAMPLES:])[0])
-            bpm = 60000 / ibi
-
-            logger.info(f"... bpm: {[round(i) for i in bpm]}")
-
-            # Prevent crash if NaN value
-            if np.isnan(bpm).any() or (bpm is None) or (bpm.size == 0):
-                message = text(
-                    parameters, parameters["texts"]["checkOximeter"], color="red"
-                )
-                hold(parameters["win"], 2, message)
-
-            else:
-                # Check for extreme heart rate values, if crosses theshold,
-                # hold the task until resolved. Cutoff values determined in
-                # parameters to correspond to biologically unlikely values.
-                if not (
-                    (np.any(bpm < parameters["HRcutOff"][0]))
-                    or (np.any(bpm > parameters["HRcutOff"][1]))
-                ):
-                    # Rate over the window, not the average of the
-                    # per-beat rates. Averaging 60000/IBI overestimates by
-                    # Jensen's inequality, measured at +0.33 BPM on real PPG,
-                    # so the tone was reliably faster than the heart it was
-                    # meant to match. Round to the nearest .5 for the sound
-                    # files.
-                    listenBPM = round((60000 / ibi.mean()) * 2) / 2
-                    listenBPM_arithmetic = round(bpm.mean() * 2) / 2
-                    break
-                else:
-                    message = text(
-                        parameters, parameters["texts"]["stayStill"], color="red"
-                    )
-                    hold(parameters["win"], 2, message)
-
-        heartRateAttempts = attempt + 1
-        heartRateAccepted = listenBPM is not None
-
-        if listenBPM is None:
-            # Out of attempts. Use the last window regardless and mark the
-            # trial, rather than holding the session on this screen.
-            logger.warning(
-                f"... no acceptable heart rate after {maxAttempts} attempts."
-            )
-            usable = bpm.size and not np.isnan(bpm).all()
-            listenBPM = (
-                round((60000 / np.nanmean(ibi)) * 2) / 2
-                if usable
-                else float(np.mean(parameters["HRcutOff"]))
-            )
-            listenBPM_arithmetic = (
-                round(float(np.nanmean(bpm)) * 2) / 2
-                if usable
-                else float(np.mean(parameters["HRcutOff"]))
-            )
-
+        reading = listen_to_heart(parameters)
     elif modality == "Extero":
-        ###########
-        # Recording
-        ###########
-        messageRecord = text(
-            parameters, parameters["texts"]["textToneListening"], pos=(0.0, 0.2)
-        )
-        messageRecord.draw()
-
-        # Start recording trigger
-        parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.LISTENING_START
-        fire(parameters, "listeningStart")
-
-        parameters["listenLogo"].draw()
-        parameters["win"].flip()
-
-        startTrigger = time.time()
-
-        # Random selection of HR frequency
-        listenBPM = parameters["rng"].choice(np.arange(40, 100, 0.5))
-        # No recording on this modality, so the two averages coincide.
-        listenBPM_arithmetic = listenBPM
-
-        # Play the corresponding beat file
-        listenFile = resource_filename("cardioception.HRD", f"Sounds/{listenBPM}.wav")
-        logger.info(f"...loading file (Listen): {listenFile}")
-
-        # 5 s matches the interoceptive recording window, so both
-        # modalities give the same listening time. Do not derive it from
-        # the rate. Parameterised only so tests can shorten it.
-        listenSound = sound.Sound(listenFile)
-        listenSound.play()
-        hold(
-            parameters["win"],
-            parameters.get("listeningDuration", 5.0),
-            messageRecord,
-            parameters["listenLogo"],
-        )
-        listenSound.stop()
-
+        reading = listen_to_tone(parameters)
     else:
-        raise ValueError("Invalid modality")
+        raise ValueError(f"modality should be 'Intero' or 'Extero', got {modality!r}")
 
+    listenBPM = reading.bpm
+    listenBPM_arithmetic = reading.bpm_arithmetic
+    startTrigger = reading.started
+    signal, recordedAt = reading.signal, reading.recorded_at
+    heartRateAttempts, heartRateAccepted = reading.attempts, reading.accepted
     # Fixation cross
     fixation = fixation_cross(parameters)
     hold(parameters["win"], 0.5, fixation)
@@ -691,6 +551,149 @@ def trial(
         endTrigger=endTrigger,
         quality=quality,
     )
+
+
+def listen_to_heart(parameters: dict) -> HeartRateReading:
+    """Record the participant's pulse and derive the rate the tone will match.
+
+    Bounded and escapable. This loop was unbounded and polled no keys, so a
+    single artefactual interval could hold a participant on the listening
+    screen indefinitely: np.any rejects the whole window on one bad value. On
+    running out of attempts it takes the last window anyway and flags the
+    trial, which is recoverable; a session that never advances is not.
+
+    This is the only place the task touches physiology, which is what makes it
+    the seam a different recording device would be fitted at.
+    """
+    from psychopy import core, event
+
+    messageRecord = text(
+        parameters, parameters["texts"]["textHeartListening"], pos=(0.0, 0.2)
+    )
+    messageRecord.draw()
+
+    parameters["oxiTask"].readInWaiting()
+    parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.LISTENING_START
+    fire(parameters, "listeningStart")
+
+    parameters["heartLogo"].draw()
+    parameters["win"].flip()
+
+    started = time.time()
+    maxAttempts = parameters.get("maxHeartRateAttempts", 10)
+    listenBPM = None
+    listenBPM_arithmetic = None
+    attempt = 0
+    signal = None
+    recordedAt = None
+
+    for attempt in range(maxAttempts):
+        if "escape" in event.getKeys(keyList=["escape"]):
+            logger.warning("User abort")
+            parameters["win"].close()
+            core.quit()
+
+        # Adapt these lines for a different setup, provided it can produce
+        # `bpm`, the per-beat rates over the listening window.
+        signal = (
+            parameters["oxiTask"]
+            .read(duration=LISTENING_DURATION)
+            .recording[-OXIMETER_SFREQ * ANALYSIS_WINDOW :]  # noqa
+        )
+        signal, peaks = ppg_peaks(
+            signal, sfreq=OXIMETER_SFREQ, new_sfreq=PPG_SFREQ, clipping=True
+        )
+        recordedAt = time.time()
+
+        ibi = np.diff(np.where(peaks[-PEAK_WINDOW_SAMPLES:])[0])
+        bpm = 60000 / ibi
+        logger.info(f"... bpm: {[round(i) for i in bpm]}")
+
+        if np.isnan(bpm).any() or (bpm is None) or (bpm.size == 0):
+            message = text(
+                parameters, parameters["texts"]["checkOximeter"], color="red"
+            )
+            hold(parameters["win"], 2, message)
+            continue
+
+        # Cutoffs correspond to biologically unlikely values.
+        outside = (np.any(bpm < parameters["HRcutOff"][0])) or (
+            np.any(bpm > parameters["HRcutOff"][1])
+        )
+        if outside:
+            message = text(parameters, parameters["texts"]["stayStill"], color="red")
+            hold(parameters["win"], 2, message)
+            continue
+
+        # Rate over the window, not the average of the per-beat rates.
+        # Averaging 60000/IBI overestimates by Jensen's inequality, measured at
+        # +0.33 BPM on real PPG, so the tone was reliably faster than the heart
+        # it was meant to match. Rounded to the nearest .5 for the sound files.
+        listenBPM = round((60000 / ibi.mean()) * 2) / 2
+        listenBPM_arithmetic = round(bpm.mean() * 2) / 2
+        break
+
+    accepted = listenBPM is not None
+    if not accepted:
+        logger.warning(f"... no acceptable heart rate after {maxAttempts} attempts.")
+        usable = bpm.size and not np.isnan(bpm).all()
+        fallback = float(np.mean(parameters["HRcutOff"]))
+        listenBPM = round((60000 / np.nanmean(ibi)) * 2) / 2 if usable else fallback
+        listenBPM_arithmetic = (
+            round(float(np.nanmean(bpm)) * 2) / 2 if usable else fallback
+        )
+
+    return HeartRateReading(
+        bpm=listenBPM,
+        bpm_arithmetic=listenBPM_arithmetic,
+        signal=signal,
+        recorded_at=recordedAt,
+        attempts=attempt + 1,
+        accepted=accepted,
+        started=started,
+    )
+
+
+def listen_to_tone(parameters: dict) -> HeartRateReading:
+    """Play a reference tone at a random rate: the exteroceptive control.
+
+    Nothing is recorded, so the two averages coincide and there is no heart
+    rate to accept or reject.
+    """
+    from psychopy import sound
+
+    messageRecord = text(
+        parameters, parameters["texts"]["textToneListening"], pos=(0.0, 0.2)
+    )
+    messageRecord.draw()
+
+    parameters["oxiTask"].readInWaiting()
+    parameters["oxiTask"].channels["Channel_0"][-1] = Trigger.LISTENING_START
+    fire(parameters, "listeningStart")
+
+    parameters["listenLogo"].draw()
+    parameters["win"].flip()
+
+    started = time.time()
+    listenBPM = parameters["rng"].choice(np.arange(40, 100, 0.5))
+
+    listenFile = resource_filename("cardioception.HRD", f"Sounds/{listenBPM}.wav")
+    logger.info(f"...loading file (Listen): {listenFile}")
+
+    # 5 s matches the interoceptive recording window, so both modalities give
+    # the same listening time. Do not derive it from the rate. Parameterised
+    # only so tests can shorten it.
+    listenSound = sound.Sound(listenFile)
+    listenSound.play()
+    hold(
+        parameters["win"],
+        parameters.get("listeningDuration", 5.0),
+        messageRecord,
+        parameters["listenLogo"],
+    )
+    listenSound.stop()
+
+    return HeartRateReading(bpm=listenBPM, bpm_arithmetic=listenBPM, started=started)
 
 
 def waitInput(parameters: dict):
