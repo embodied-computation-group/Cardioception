@@ -134,12 +134,7 @@ def run(
                 waitInput(parameters)
 
             # Next intensity value
-            if trialType == "updown":
-                print("... load UpDown staircase.")
-                thisTrial = parameters["stairCase"][modality].next()
-                stairCond = thisTrial[1]["label"]
-                alpha = thisTrial[0]
-            elif trialType == "psi":
+            if trialType == "psi":
                 print("... load psi staircase.")
                 alpha = parameters["stairCase"][modality].next()
                 stairCond = "psi"
@@ -209,11 +204,7 @@ def run(
                 # Check if response is 'More' or 'Less'
                 isMore = 1 if decision == "More" else 0
 
-                if trialType == "updown":
-                    print("... update UpDown staircase.")
-                    parameters["stairCase"][modality].addResponse(isMore)
-
-                elif trialType == "psi":
+                if trialType == "psi":
                     print("... update psi staircase.")
 
                     # Update the Psi staircase with forced intensity value

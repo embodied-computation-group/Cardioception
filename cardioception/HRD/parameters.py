@@ -128,7 +128,9 @@ def getParameters(
         pulse oximeter and `"test"` will use pre-recorded pulse time series (for
         testing only).
     stairType : str
-        Staircase type. Can be "psi" or "updown". Default set to "psi".
+        Staircase type. `"psi"` is the only value; `"updown"` was removed in
+        0.8.0 and now raises. Kept as an argument so scripts passing it fail
+        with an explanation rather than a TypeError.
     systole_kw : dict
         Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.
 
@@ -322,13 +324,14 @@ def getParameters(
     nCatch = int(parameters["nTrials"] * catchTrials)
     nStaircase = parameters["nTrials"] - nCatch
 
-    # Vector encoding the staircase type
-    if stairType == "psi":
-        sc = np.array(["psi"] * nStaircase)
-    elif stairType == "updown":
-        sc = np.array(["updown"] * nStaircase)
-    else:
-        raise ValueError("stairType should be 'psi' or 'updown'")
+    if stairType != "psi":
+        raise ValueError(
+            f"stairType={stairType!r}. The nUp/nDown staircase was removed in "
+            "0.8.0: it was a 1-up/1-down rule, which converges on 50% correct, "
+            "not the 71% the documentation claimed, and it was never used for "
+            "published data. 'psi' is the only staircase."
+        )
+    sc = np.array(["psi"] * nStaircase)
 
     # Create and randomize condition vectors separately for each staircase
     if exteroception is True:
@@ -374,37 +377,9 @@ def getParameters(
     # If UpDown is selected, 1 or 2 interleaved staircases are used (see
     # options in parameters dictionary), one is initalized 'high' and the other
     # 'low'.
-    parameters["stairCase"] = {}
-
-    if stairType == "updown":
-        conditions = [
-            {
-                "label": "low",
-                "startVal": -40.5,
-                "nUp": 1,
-                "nDown": 1,
-                "stepSizes": [20, 12, 12, 7, 4, 3, 2, 1],
-                "stepType": "lin",
-                "minVal": -40.5,
-                "maxVal": 40.5,
-            },
-            {
-                "label": "high",
-                "startVal": 40.5,
-                "nUp": 1,
-                "nDown": 1,
-                "stepSizes": [20, 12, 12, 7, 4, 3, 2, 1],
-                "stepType": "lin",
-                "minVal": -40.5,
-                "maxVal": 40.5,
-            },
-        ]
-        parameters["stairCase"]["Intero"] = data.MultiStairHandler(
-            conditions=conditions, nTrials=parameters["nTrials"]
-        )
-
-    elif stairType == "psi":
-        parameters["stairCase"]["Intero"] = data.PsiHandler(
+    def psiHandler():
+        """One psi staircase over the full stimulus range."""
+        return data.PsiHandler(
             nTrials=nTrials,
             intensRange=[-50.5, 50.5],
             alphaRange=[-50.5, 50.5],
@@ -417,47 +392,9 @@ def getParameters(
             expectedMin=0,
         )
 
+    parameters["stairCase"] = {"Intero": psiHandler()}
     if exteroception is True:
-        if stairType == "updown":
-            conditions = [
-                {
-                    "label": "low",
-                    "startVal": -40.5,
-                    "nUp": 1,
-                    "nDown": 1,
-                    "stepSizes": [20, 12, 12, 7, 4, 3, 2, 1],
-                    "stepType": "lin",
-                    "minVal": -40.5,
-                    "maxVal": 40.5,
-                },
-                {
-                    "label": "high",
-                    "startVal": 40.5,
-                    "nUp": 1,
-                    "nDown": 1,
-                    "stepSizes": [20, 12, 12, 7, 4, 3, 2, 1],
-                    "stepType": "lin",
-                    "minVal": -40.5,
-                    "maxVal": 40.5,
-                },
-            ]
-            parameters["stairCase"]["Extero"] = data.MultiStairHandler(
-                conditions=conditions, nTrials=parameters["nTrials"]
-            )
-
-        elif stairType == "psi":
-            parameters["stairCase"]["Extero"] = data.PsiHandler(
-                nTrials=nTrials,
-                intensRange=[-50.5, 50.5],
-                alphaRange=[-50.5, 50.5],
-                betaRange=[0.1, 25],
-                intensPrecision=1,
-                alphaPrecision=1,
-                betaPrecision=0.1,
-                delta=0.02,
-                stepType="lin",
-                expectedMin=0,
-            )
+        parameters["stairCase"]["Extero"] = psiHandler()
 
     parameters["setup"] = setup
     if recorder is not None:
