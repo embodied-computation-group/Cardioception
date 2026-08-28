@@ -53,10 +53,15 @@ def text(
     )
 
 
-def fixation(parameters, size: float = 0.1, pos=(0, 0)):
-    """The fixation cross shown between trials."""
+def fixation(parameters, size: Optional[float] = None, pos=(0, 0)):
+    """The fixation cross shown between trials.
+
+    Size comes from ``parameters["fixationSize"]`` unless given.
+    """
     from psychopy import visual
 
+    if size is None:
+        size = parameters.get("fixationSize", 0.04)
     return visual.GratingStim(
         win=parameters["win"], mask="cross", size=size, pos=pos, sf=0
     )

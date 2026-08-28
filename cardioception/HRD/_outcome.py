@@ -52,7 +52,7 @@ class TrialOutcome:
         if self.quality is None:
             self.quality = {}
 
-    def row(self, **context) -> Dict[str, list]:
+    def row(self, **context) -> Dict[str, Any]:
         """This trial as one row, ready for ``pd.DataFrame``.
 
         ``context`` carries what the run knows and the trial does not:
@@ -98,7 +98,7 @@ class TrialOutcome:
                 "endTrigger": self.endTrigger,
             }
         )
-        return {key: [value] for key, value in row.items()}
+        return row
 
     def __iter__(self):
         """Unpack like the tuple this replaced, for the tutorial call sites."""
