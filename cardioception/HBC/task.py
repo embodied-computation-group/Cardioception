@@ -5,6 +5,7 @@ from typing import Optional, Tuple
 
 import pandas as pd
 
+from .._present import hold
 from .._triggers import fire
 
 
@@ -24,7 +25,7 @@ def run(
 
     """
 
-    from psychopy import core, visual
+    from psychopy import visual
 
     # Run tutorial
     if runTutorial is True:
@@ -93,9 +94,7 @@ def run(
         pos=(0.0, 0.0),
         text="You have completed the task. Thank you for your participation.",
     )
-    end.draw()
-    parameters["win"].flip()
-    core.wait(3)
+    hold(parameters, 3, end)
 
 
 def trial(
@@ -150,6 +149,7 @@ def trial(
     parameters["oxiTask"].read(duration=2)
 
     # Show instructions
+    shown: tuple = ()
     if condition == "Rest":
         message = visual.TextStim(
             parameters["win"],
@@ -159,6 +159,7 @@ def trial(
         )
         message.draw()
         parameters["restLogo"].draw()
+        shown = (message, parameters["restLogo"])
     elif (condition == "Count") | (condition == "Training"):
         message = visual.TextStim(
             parameters["win"],
@@ -168,11 +169,12 @@ def trial(
         )
         message.draw()
         parameters["heartLogo"].draw()
+        shown = (message, parameters["heartLogo"])
     parameters["win"].flip()
 
     # Wait for a beat to start the task
     parameters["oxiTask"].waitBeat()
-    core.wait(3)
+    hold(parameters, 3, *shown)
 
     # Sound signaling trial start
     if (condition == "Count") | (condition == "Training"):
@@ -181,7 +183,7 @@ def trial(
         parameters["oxiTask"].channels["Channel_0"][-1] = 1
         parameters["noteStart"].play()
         fire(parameters, "listeningStart")
-        core.wait(1)
+        hold(parameters, 1, *shown)
 
     # Record for a desired time length
     parameters["oxiTask"].read(duration=duration - 1)
@@ -193,7 +195,7 @@ def trial(
         parameters["oxiTask"].channels["Channel_0"][-1] = 2
         parameters["noteStop"].play()
         fire(parameters, "listeningStop")
-        core.wait(3)
+        hold(parameters, 3, *shown)
         parameters["oxiTask"].readInWaiting()
 
     # Hide instructions
@@ -275,9 +277,7 @@ def trial(
                         pos=(0, 0.2),
                         text="You should only provide numbers",
                     )
-                    messageError.draw()
-                    parameters["win"].flip()
-                    core.wait(2)
+                    hold(parameters, 2, messageError)
                 elif nCounts == "":
                     messageError = visual.TextStim(
                         parameters["win"],
@@ -285,9 +285,7 @@ def trial(
                         pos=(0, 0.2),
                         text="You should provide numbers",
                     )
-                    messageError.draw()
-                    parameters["win"].flip()
-                    core.wait(2)
+                    hold(parameters, 2, messageError)
                 else:
                     break
 

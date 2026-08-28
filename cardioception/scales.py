@@ -46,11 +46,47 @@ class ConfidenceScale:
             raise ValueError(f"high ({self.high}) must exceed low ({self.low})")
         if self.granularity <= 0:
             raise ValueError(f"granularity must be positive, got {self.granularity}")
+        if len(self.labels) not in (2, 3):
+            raise ValueError("labels should be two ends, or two ends and a midpoint")
 
     @property
     def n_levels(self) -> int:
         """Number of positions a participant can select."""
         return int(round((self.high - self.low) / self.granularity)) + 1
+
+    @property
+    def signed(self) -> bool:
+        """Whether the scale spans zero, so its sign carries meaning.
+
+        A signed scale is a judgement about accuracy: one end is certainty of
+        having been wrong, the other certainty of having been right, and the
+        midpoint is no idea. The sign is the believed decision outcome and the
+        magnitude is the confidence in it, so the two must be separated before
+        either is modelled.
+        """
+        return self.low < 0 < self.high
+
+    @property
+    def midpoint(self) -> float:
+        return (self.low + self.high) / 2
+
+    def magnitude(self, value: float) -> float:
+        """Confidence, on 0-1, ignoring which outcome was believed."""
+        if not self.signed:
+            return self.to_unit(value)
+        return abs(float(value) - self.midpoint) / max(
+            self.high - self.midpoint, self.midpoint - self.low
+        )
+
+    def believes_correct(self, value: float):
+        """Whether the participant thought they were right.
+
+        ``None`` on an unsigned scale, which carries no such judgement, and at
+        the exact midpoint of a signed one.
+        """
+        if not self.signed or float(value) == self.midpoint:
+            return None
+        return float(value) > self.midpoint
 
     @property
     def bounds(self) -> Tuple[float, float]:
@@ -77,6 +113,7 @@ class ConfidenceScale:
             "ConfidenceHigh": self.high,
             "ConfidenceGranularity": self.granularity,
             "ConfidenceLevels": self.n_levels,
+            "ConfidenceSigned": self.signed,
         }
 
 
@@ -88,3 +125,16 @@ DISCRETE_1_7 = ConfidenceScale(kind="discrete", low=1, high=7, granularity=1)
 
 #: Ten discrete steps, what the HRD keyboard branch actually used.
 DISCRETE_1_10 = ConfidenceScale(kind="discrete", low=1, high=10, granularity=1)
+
+#: A signed judgement about accuracy rather than about the stimulus: one
+#: response carries both which outcome the participant believes and how sure
+#: they are. Use :meth:`ConfidenceScale.magnitude` and
+#: :meth:`ConfidenceScale.believes_correct` to separate the two before
+#: modelling, since a raw signed rating is neither a confidence nor a choice.
+VAS_SIGNED_100 = ConfidenceScale(
+    kind="vas",
+    low=-100,
+    high=100,
+    granularity=1,
+    labels=("Certain error", "Certain correct", "No idea"),
+)

@@ -10,44 +10,9 @@ import numpy as np
 import pandas as pd
 from systole.detection import ppg_peaks
 
+from .._present import accept_press, hold  # noqa: F401
 from .._resources import resource_filename
 from .._triggers import fire
-
-
-def accept_press(buttons, armed: bool):
-    """Filter a level-triggered mouse state down to a press edge.
-
-    ``Mouse.getPressed`` reports the button's current level and
-    ``clickReset`` resets click times, not state, so a button still held from
-    an earlier screen reads as a fresh press. Returns ``(buttons, armed)``,
-    where a button that has not been released since arming reports nothing.
-    """
-    if not any(buttons):
-        return [0, 0, 0], True
-    if not armed:
-        return [0, 0, 0], False
-    return list(buttons), True
-
-
-def hold(parameters: dict, duration: float, *stims) -> float:
-    """Keep ``stims`` on screen for ``duration`` seconds, flipping every frame.
-
-    Replaces ``core.wait``, which blocks without flipping, so the window stops
-    redrawing and no frame intervals are recorded. Durations are unchanged.
-
-    Stimuli must be passed in and are redrawn every frame: PsychoPy clears the
-    back buffer on flip, so flipping without drawing blanks the screen.
-
-    Returns the time held, quantised up to the next frame boundary.
-    """
-    from psychopy import core
-
-    clock = core.Clock()
-    while clock.getTime() < duration:
-        for stim in stims:
-            stim.draw()
-        parameters["win"].flip()
-    return clock.getTime()
 
 
 def _save_session(parameters: dict, nTrial: int) -> None:
@@ -134,7 +99,7 @@ def run(
         If `True`, will present a tutorial with 10 training trial with feedback
         and 5 trials with confidence rating.
     """
-    from psychopy import core, visual
+    from psychopy import visual
 
     # Initialization of the Pulse Oximeter
     parameters["oxiTask"].setup().read(duration=1)
@@ -390,9 +355,7 @@ def run(
         pos=(0.0, 0.0),
         text=parameters["texts"]["done"],
     )
-    end.draw()
-    parameters["win"].flip()
-    core.wait(3)
+    hold(parameters, 3, end)
 
 
 def trial(
@@ -841,7 +804,7 @@ def tutorial(parameters: dict):
 
     """
 
-    from psychopy import core, event, visual
+    from psychopy import event, visual
 
     # Introduction
     intro = visual.TextStim(
@@ -855,10 +818,7 @@ def tutorial(parameters: dict):
         pos=(0.0, -0.4),
         text=parameters["texts"]["textNext"],
     )
-    intro.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
+    hold(parameters, 1, intro, press)
 
     waitInput(parameters)
 
@@ -875,11 +835,7 @@ def tutorial(parameters: dict):
         pos=(0.0, -0.4),
         text=parameters["texts"]["textNext"],
     )
-    pulse1.draw()
-    parameters["pulseSchema"].draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
+    hold(parameters, 1, pulse1, parameters["pulseSchema"], press)
 
     waitInput(parameters)
 
@@ -897,11 +853,7 @@ def tutorial(parameters: dict):
             pos=(0.0, -0.2),
             text=parameters["texts"]["pulseTutorial3"],
         )
-        pulse2.draw()
-        pulse3.draw()
-        press.draw()
-        parameters["win"].flip()
-        core.wait(1)
+        hold(parameters, 1, pulse2, pulse3, press)
 
         waitInput(parameters)
 
@@ -911,10 +863,7 @@ def tutorial(parameters: dict):
         pos=(0.0, 0.3),
         text=parameters["texts"]["pulseTutorial4"],
     )
-    pulse4.draw()
-    parameters["handSchema"].draw()
-    parameters["win"].flip()
-    core.wait(1)
+    hold(parameters, 1, pulse4, parameters["handSchema"])
 
     # Record number
     nFinger = ""
@@ -940,7 +889,7 @@ def tutorial(parameters: dict):
             # Save the finger number in the task parameters dictionary
             parameters["nFinger"] = nFinger
 
-            core.wait(0.5)
+            hold(parameters, 0.5, pulse4, parameters["handSchema"])
             break
 
     # Heartrate recording
@@ -950,11 +899,7 @@ def tutorial(parameters: dict):
         pos=(0.0, 0.3),
         text=parameters["texts"]["Tutorial2"],
     )
-    recording.draw()
-    parameters["heartLogo"].draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
+    hold(parameters, 1, recording, parameters["heartLogo"], press)
 
     waitInput(parameters)
 
@@ -965,11 +910,7 @@ def tutorial(parameters: dict):
         pos=(0.0, 0.3),
         text=parameters["texts"]["Tutorial3_icon"],
     )
-    parameters["heartLogo"].draw()
-    listenIcon.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
+    hold(parameters, 1, parameters["heartLogo"], listenIcon, press)
 
     waitInput(parameters)
 
@@ -980,10 +921,7 @@ def tutorial(parameters: dict):
         pos=(0.0, 0.0),
         text=parameters["texts"]["Tutorial3_responses"],
     )
-    listenResponse.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
+    hold(parameters, 1, listenResponse, press)
 
     waitInput(parameters)
 
@@ -1011,11 +949,7 @@ def tutorial(parameters: dict):
             pos=(0.0, -0.2),
             text=parameters["texts"]["Tutorial3bis"],
         )
-        exteroText.draw()
-        parameters["listenLogo"].draw()
-        press.draw()
-        parameters["win"].flip()
-        core.wait(1)
+        hold(parameters, 1, exteroText, parameters["listenLogo"], press)
 
         waitInput(parameters)
 
@@ -1025,10 +959,7 @@ def tutorial(parameters: dict):
             pos=(0.0, 0.0),
             text=parameters["texts"]["Tutorial3ter"],
         )
-        exteroResponse.draw()
-        press.draw()
-        parameters["win"].flip()
-        core.wait(1)
+        hold(parameters, 1, exteroResponse, press)
 
         waitInput(parameters)
 
@@ -1056,10 +987,7 @@ def tutorial(parameters: dict):
         height=parameters["textSize"],
         text=parameters["texts"]["Tutorial4"],
     )
-    confidenceText.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
+    hold(parameters, 1, confidenceText, press)
 
     waitInput(parameters)
 
@@ -1096,10 +1024,7 @@ def tutorial(parameters: dict):
         height=parameters["textSize"],
         text=parameters["texts"]["Tutorial5"],
     )
-    taskPresentation.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
+    hold(parameters, 1, taskPresentation, press)
     waitInput(parameters)
 
     # Task
@@ -1108,10 +1033,7 @@ def tutorial(parameters: dict):
         height=parameters["textSize"],
         text=parameters["texts"]["Tutorial6"],
     )
-    taskPresentation.draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
+    hold(parameters, 1, taskPresentation, press)
     waitInput(parameters)
 
 
@@ -1193,9 +1115,7 @@ def responseDecision(
                 height=parameters["textSize"],
                 text=parameters["texts"]["tooLate"],
             )
-            message.draw()
-            parameters["win"].flip()
-            core.wait(1)
+            hold(parameters, 1, message)
         else:
             respProvided = True
             decision = responseKey[0][0]
@@ -1223,9 +1143,7 @@ def responseDecision(
                         color="red",
                         text="False",
                     )
-                    acc.draw()
-                    parameters["win"].flip()
-                    core.wait(2)
+                    hold(parameters, 2, acc)
                 elif isCorrect is True:
                     acc = visual.TextStim(
                         parameters["win"],
@@ -1233,9 +1151,7 @@ def responseDecision(
                         color="green",
                         text="Correct",
                     )
-                    acc.draw()
-                    parameters["win"].flip()
-                    core.wait(2)
+                    hold(parameters, 2, acc)
 
     if parameters["device"] == "mouse":
 
@@ -1289,25 +1205,21 @@ def responseDecision(
                 decisionRT = decisionRT[0]
                 decision, respProvided = "Less", True
                 slower.color = "blue"
-                slower.draw()
-                parameters["win"].flip()
 
                 # Show feedback for .5 seconds if enough time
                 remain = parameters["respMax"] - trialdur
                 pauseFeedback = 0.5 if (remain > 0.5) else remain
-                core.wait(pauseFeedback)
+                hold(parameters, pauseFeedback, slower, faster)
                 break
             elif buttons == [0, 0, 1]:
                 decisionRT = decisionRT[-1]
                 decision, respProvided = "More", True
                 faster.color = "blue"
-                faster.draw()
-                parameters["win"].flip()
 
                 # Show feedback for .5 seconds if enough time
                 remain = parameters["respMax"] - trialdur
                 pauseFeedback = 0.5 if (remain > 0.5) else remain
-                core.wait(pauseFeedback)
+                hold(parameters, pauseFeedback, slower, faster)
                 break
             elif trialdur > parameters["respMax"]:  # if too long
                 respProvided = False
@@ -1330,9 +1242,7 @@ def responseDecision(
                 color="red",
                 pos=(0.0, -0.2),
             )
-            message.draw()
-            parameters["win"].flip()
-            core.wait(0.5)
+            hold(parameters, 0.5, message)
         else:
             # Is the answer Correct?
             isCorrect = True if (decision == condition) else False
@@ -1350,9 +1260,7 @@ def responseDecision(
                     color=colorFeedback,
                     text=textFeedback,
                 )
-                acc.draw()
-                parameters["win"].flip()
-                core.wait(1)
+                hold(parameters, 1, acc)
 
     return (
         responseMadeTrigger,
@@ -1512,10 +1420,7 @@ def confidenceRatingTask(
                     )
                 # Change marker color after response provided
                 slider.marker.color = "green"
-                slider.draw()
-                message.draw()
-                parameters["win"].flip()
-                core.wait(0.2)
+                hold(parameters, 0.2, slider, message)
                 break
             elif trialdur > parameters["maxRatingTime"]:  # if too long
                 ratingProvided = False
@@ -1529,9 +1434,7 @@ def confidenceRatingTask(
                     color="red",
                     pos=(0.0, -0.2),
                 )
-                message.draw()
-                parameters["win"].flip()
-                core.wait(0.5)
+                hold(parameters, 0.5, message)
                 break
             slider.draw()
             message.draw()
