@@ -1,9 +1,18 @@
 name: Linting
 
+# This job was called "test" and its one step was called "Run tests and
+# coverage", but it ran neither: the steps were mypy, black, isort and flake8.
+# It is now named for what it does, and the test suite has a workflow of its own.
+#
+# black and isort ran *without* --check, and before flake8, so they rewrote the
+# files in place and flake8 only ever saw the reformatted result. CI could not
+# fail on formatting, and could pass on code a contributor's local flake8 would
+# reject. They now check rather than write.
+
 on: [push, pull_request]
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -25,9 +34,11 @@ jobs:
       run: |
         pip install isort flake8 black mypy
         pip install types-setuptools
-    - name: Run tests and coverage
+    - name: Type check
+      run: mypy ./cardioception/ --ignore-missing-imports
+    - name: Formatting
       run: |
-        mypy ./cardioception/ --ignore-missing-imports
-        black ./cardioception/
-        isort ./cardioception/
-        flake8 ./cardioception/ --extend-ignore=E501
+        black --check --diff ./cardioception/ ./tests/
+        isort --check --diff ./cardioception/ ./tests/
+    - name: Lint
+      run: flake8 ./cardioception/ --extend-ignore=E501
