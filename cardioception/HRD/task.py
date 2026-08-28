@@ -13,6 +13,7 @@ from systole.detection import ppg_peaks
 from .._log import get_logger
 from .._present import accept_press, hold  # noqa: F401
 from .._resources import resource_filename
+from .._screens import AskFingerNumber, Practice, Screen
 from .._screens import fixation as fixation_cross
 from .._screens import text
 from .._triggers import fire
@@ -737,49 +738,95 @@ def waitInput(parameters: dict):
                 core.quit()
 
 
-def tutorial(parameters: dict):
-    """Run tutorial before task run.
+#: The tutorial, phase by phase, in the order participants meet them.
+#:
+#: A tutorial is the experiment in miniature: instruction screens interleaved
+#: with short practice blocks that differ in what the participant is asked to
+#: do. Written out this way the sequence is visible and editable — which
+#: screens, in what order, how long each practice block runs and at what
+#: difficulty — without touching the code that presents it.
+TUTORIAL = (
+    Screen([("Tutorial1", (0.0, 0.0))]),
+    Screen([("pulseTutorial1", (0.0, 0.3))], image="pulseSchema"),
+    # The Danish children's version leaves pulseTutorial2 empty to skip this.
+    Screen(
+        [("pulseTutorial2", (0.0, 0.2)), ("pulseTutorial3", (0.0, -0.2))],
+        requires="pulseTutorial2",
+    ),
+    AskFingerNumber(
+        screen=Screen(
+            [("pulseTutorial4", (0.0, 0.3))],
+            image="handSchema",
+            prompt=False,
+            wait=False,
+        ),
+    ),
+    Screen([("Tutorial2", (0.0, 0.3))], image="heartLogo"),
+    # The icon is drawn before the text here. Preserved from the original.
+    Screen([("Tutorial3_icon", (0.0, 0.3))], image="heartLogo", image_first=True),
+    Screen([("Tutorial3_responses", (0.0, 0.0))]),
+    # First practice: judge, with feedback, at an easy fixed difference.
+    Practice("Intero", count="nFeedback", feedback=True, intensities=(20.0,)),
+    Screen([("Tutorial3bis", (0.0, -0.2))], image="listenLogo", extero_only=True),
+    Screen([("Tutorial3ter", (0.0, 0.0))], extero_only=True),
+    Practice(
+        "Extero",
+        count="nFeedback",
+        feedback=True,
+        intensities=(20.0,),
+        extero_only=True,
+    ),
+    Screen([("Tutorial4", (0.0, 0.0))]),
+    # Second practice: judge and rate confidence, no feedback, mixed difficulty.
+    Practice("Intero", count="nConfidence", rating=True, intensities=(1, 10, 30)),
+    Practice(
+        "Extero",
+        count="nConfidence",
+        rating=True,
+        intensities=(1, 10, 30),
+        # The original does not reset the recording before this block. Extero
+        # records nothing, so it makes no difference, but it is preserved
+        # rather than quietly regularised.
+        setup_recording=False,
+        extero_only=True,
+    ),
+    Screen([("Tutorial5", (0.0, 0.0))]),
+    Screen([("Tutorial6", (0.0, 0.0))]),
+)
 
-    Parameters
-    ----------
-    parameters : dict
-        Task parameters.
 
+def show_screen(parameters: dict, screen, prompt=None) -> list:
+    """Draw one instruction screen and, unless told otherwise, wait.
+
+    Returns the stimuli it built, so a caller that keeps the screen up can
+    redraw the same objects rather than constructing them again.
     """
+    stims = [
+        text(parameters, parameters["texts"][key], pos=pos) for key, pos in screen.texts
+    ]
+    if screen.image:
+        image = parameters[screen.image]
+        stims = [image] + stims if screen.image_first else stims + [image]
+    if screen.prompt and prompt is not None:
+        stims.append(prompt)
 
+    hold(parameters["win"], screen.seconds, *stims)
+    if screen.wait:
+        waitInput(parameters)
+    return stims
+
+
+def ask_finger_number(parameters: dict, step) -> None:
+    """Record which finger the oximeter is on.
+
+    Kept apart from the screen table because it is the one place the tutorial
+    reads something other than "continue" from the participant.
+    """
     from psychopy import event
 
-    # Introduction
-    intro = text(parameters, parameters["texts"]["Tutorial1"])
-    press = text(parameters, parameters["texts"]["textNext"], pos=(0.0, -0.4))
-    hold(parameters["win"], 1, intro, press)
+    stims = show_screen(parameters, step.screen)
 
-    waitInput(parameters)
-
-    # Pusle oximeter tutorial
-    pulse1 = text(parameters, parameters["texts"]["pulseTutorial1"], pos=(0.0, 0.3))
-    press = text(parameters, parameters["texts"]["textNext"], pos=(0.0, -0.4))
-    hold(parameters["win"], 1, pulse1, parameters["pulseSchema"], press)
-
-    waitInput(parameters)
-
-    # Get finger number - Skip this part for the danish_children version (empty string)
-    if parameters["texts"]["pulseTutorial2"]:
-        pulse2 = text(parameters, parameters["texts"]["pulseTutorial2"], pos=(0.0, 0.2))
-        pulse3 = text(
-            parameters, parameters["texts"]["pulseTutorial3"], pos=(0.0, -0.2)
-        )
-        hold(parameters["win"], 1, pulse2, pulse3, press)
-
-        waitInput(parameters)
-
-    pulse4 = text(parameters, parameters["texts"]["pulseTutorial4"], pos=(0.0, 0.3))
-    hold(parameters["win"], 1, pulse4, parameters["handSchema"])
-
-    # Record number
-    nFinger = ""
     while True:
-        # Record new key
         key = event.waitKeys(
             keyList=[
                 "1",
@@ -795,120 +842,45 @@ def tutorial(parameters: dict):
             ]
         )
         if key:
-            nFinger += [s for s in key[0] if s.isdigit()][0]
-
-            # Save the finger number in the task parameters dictionary
-            parameters["nFinger"] = nFinger
-
-            hold(parameters["win"], 0.5, pulse4, parameters["handSchema"])
+            parameters["nFinger"] = [s for s in key[0] if s.isdigit()][0]
+            hold(parameters["win"], 0.5, *stims)
             break
 
-    # Heartrate recording
-    recording = text(parameters, parameters["texts"]["Tutorial2"], pos=(0.0, 0.3))
-    hold(parameters["win"], 1, recording, parameters["heartLogo"], press)
 
-    waitInput(parameters)
+def run_practice(parameters: dict, block) -> None:
+    """A short run of the real task, at fixed difficulty."""
+    if block.setup_recording:
+        parameters["oxiTask"].setup().read(duration=2)
 
-    # Show reponse icon
-    listenIcon = text(parameters, parameters["texts"]["Tutorial3_icon"], pos=(0.0, 0.3))
-    hold(parameters["win"], 1, parameters["heartLogo"], listenIcon, press)
-
-    waitInput(parameters)
-
-    # Response instructions
-    listenResponse = text(parameters, parameters["texts"]["Tutorial3_responses"])
-    hold(parameters["win"], 1, listenResponse, press)
-
-    waitInput(parameters)
-
-    # Run training trials with feedback
-    parameters["oxiTask"].setup().read(duration=2)
-    for i in range(parameters["nFeedback"]):
-        # Ramdom selection of condition
+    for _ in range(parameters[block.count]):
         condition = parameters["rng"].choice(["More", "Less"])
-        alpha = -20.0 if condition == "Less" else 20.0
-
+        magnitude = parameters["rng"].choice(np.array(block.intensities))
+        alpha = -magnitude if condition == "Less" else magnitude
         _ = trial(
             parameters,
             alpha,
-            "Intero",
-            feedback=True,
-            confidenceRating=False,
+            block.modality,
+            feedback=block.feedback,
+            confidenceRating=block.rating,
         )
 
-    # If extero conditions required, show tutorial.
-    if parameters["ExteroCondition"] is True:
-        exteroText = text(
-            parameters, parameters["texts"]["Tutorial3bis"], pos=(0.0, -0.2)
-        )
-        hold(parameters["win"], 1, exteroText, parameters["listenLogo"], press)
 
-        waitInput(parameters)
+def tutorial(parameters: dict):
+    """Walk the participant through the task before it starts.
 
-        exteroResponse = text(parameters, parameters["texts"]["Tutorial3ter"])
-        hold(parameters["win"], 1, exteroResponse, press)
+    The sequence lives in :data:`TUTORIAL`; this only presents it.
+    """
+    prompt = text(parameters, parameters["texts"]["textNext"], pos=(0.0, -0.4))
 
-        waitInput(parameters)
-
-        # Run 10 training trials with feedback
-        parameters["oxiTask"].setup().read(duration=2)
-        for i in range(parameters["nFeedback"]):
-            # Ramdom selection of condition
-            condition = parameters["rng"].choice(["More", "Less"])
-            alpha = -20.0 if condition == "Less" else 20.0
-
-            _ = trial(
-                parameters,
-                alpha,
-                "Extero",
-                feedback=True,
-                confidenceRating=False,
-            )
-
-    ###################
-    # Confidence rating
-    ###################
-    confidenceText = text(parameters, parameters["texts"]["Tutorial4"])
-    hold(parameters["win"], 1, confidenceText, press)
-
-    waitInput(parameters)
-
-    parameters["oxiTask"].setup().read(duration=2)
-
-    # Run n training trials with confidence rating
-    for i in range(parameters["nConfidence"]):
-        modality = "Intero"
-        condition = parameters["rng"].choice(["More", "Less"])
-        stim_intense = parameters["rng"].choice(np.array([1, 10, 30]))
-        alpha = -stim_intense if condition == "Less" else stim_intense
-        _ = trial(parameters, alpha, modality, confidenceRating=True)
-
-    # If extero conditions required, show tutorial.
-    if parameters["ExteroCondition"] is True:
-        # Run n training trials with confidence rating
-        for i in range(parameters["nConfidence"]):
-            modality = "Extero"
-            condition = parameters["rng"].choice(["More", "Less"])
-            stim_intense = parameters["rng"].choice(np.array([1, 10, 30]))
-            alpha = -stim_intense if condition == "Less" else stim_intense
-            _ = trial(
-                parameters,
-                alpha,
-                modality,
-                confidenceRating=True,
-            )
-
-    #################
-    # End of tutorial
-    #################
-    taskPresentation = text(parameters, parameters["texts"]["Tutorial5"])
-    hold(parameters["win"], 1, taskPresentation, press)
-    waitInput(parameters)
-
-    # Task
-    taskPresentation = text(parameters, parameters["texts"]["Tutorial6"])
-    hold(parameters["win"], 1, taskPresentation, press)
-    waitInput(parameters)
+    for step in TUTORIAL:
+        if step.skipped(parameters):
+            continue
+        if isinstance(step, Practice):
+            run_practice(parameters, step)
+        elif isinstance(step, AskFingerNumber):
+            ask_finger_number(parameters, step)
+        else:
+            show_screen(parameters, step, prompt)
 
 
 def responseDecision(
