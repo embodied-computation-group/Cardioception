@@ -527,6 +527,32 @@ def trial(
     )
 
 
+def _drain_for(parameters: dict, duration: float, *stims) -> None:
+    """Record for ``duration`` seconds while the window keeps redrawing.
+
+    What `Oximeter.read(duration=...)` does, without blocking: it busy-waits
+    inside systole for the whole window, so the screen freezes, PsychoPy
+    records no frame intervals, and a keypress cannot be seen until it ends.
+
+    Escape is honoured here too. The listening window is the longest stretch
+    of a trial in which the participant is asked to do nothing, so it is where
+    an experimenter is most likely to want to stop.
+    """
+    from psychopy import core, event
+
+    recorder = parameters["oxiTask"]
+    clock = core.Clock()
+    while clock.getTime() < duration:
+        recorder.readInWaiting()
+        for stim in stims:
+            stim.draw()
+        parameters["win"].flip()
+        if "escape" in event.getKeys(keyList=["escape"]):
+            logger.warning("User abort")
+            parameters["win"].close()
+            core.quit()
+
+
 def listen_to_heart(parameters: dict) -> HeartRateReading:
     """Record the participant's pulse and derive the rate the tone will match.
 
@@ -577,11 +603,26 @@ def listen_to_heart(parameters: dict) -> HeartRateReading:
 
         # Adapt these lines for a different setup, provided it can produce
         # `bpm`, the per-beat rates over the listening window.
-        signal = parameters["oxiTask"].read(duration=duration).recording[-kept:]  # noqa
+        #
+        # Drain per frame rather than block. `Oximeter.read` busy-waits for
+        # the whole window inside systole: nothing is drawn, no frame
+        # intervals are recorded, and escape cannot be seen until the window
+        # is over. Draining while flipping records the same samples and keeps
+        # the screen alive. It also yields a cleaner slice -- a buffer emptied
+        # continuously holds the listening window, where a buffer read once at
+        # the end holds the window plus whatever backlog preceded it.
+        _drain_for(parameters, duration, messageRecord, parameters["heartLogo"])
+
+        # Stamped where the recording stops, not after the analysis. This sat
+        # below ppg_peaks, which resamples the window to 1000 Hz and detects
+        # peaks first, so every sample time written to the signal file was late
+        # by however long that took -- a variable offset in the one column
+        # whose purpose is aligning the pulse to the triggers.
+        recordedAt = time.time()
+        signal = parameters["oxiTask"].recording[-kept:]
         signal, peaks = ppg_peaks(
             signal, sfreq=OXIMETER_SFREQ, new_sfreq=PPG_SFREQ, clipping=True
         )
-        recordedAt = time.time()
 
         ibi = np.diff(np.where(peaks[-peak_window:])[0])
         bpm = 60000 / ibi
