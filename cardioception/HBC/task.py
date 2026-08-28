@@ -5,6 +5,8 @@ from typing import Optional, Tuple
 
 import pandas as pd
 
+from .._triggers import fire
+
 
 def run(
     parameters: dict,
@@ -38,13 +40,13 @@ def run(
         range(0, len(parameters["conditions"])),
     ):
 
-        parameters["triggers"]["trialStart"]  # Send trigger or None
+        fire(parameters, "trialStart")
 
         nCount, confidence, confidenceRT = trial(
             condition, duration, nTrial, parameters
         )
 
-        parameters["triggers"]["trialStop"]  # Send trigger or None
+        fire(parameters, "trialStop")
 
         # Store results in a DataFrame
         parameters["results_df"] = pd.concat(
@@ -178,7 +180,7 @@ def trial(
         # Add event marker
         parameters["oxiTask"].channels["Channel_0"][-1] = 1
         parameters["noteStart"].play()
-        parameters["triggers"]["listeningStart"]
+        fire(parameters, "listeningStart")
         core.wait(1)
 
     # Record for a desired time length
@@ -190,7 +192,7 @@ def trial(
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 2
         parameters["noteStop"].play()
-        parameters["triggers"]["listeningStop"]
+        fire(parameters, "listeningStop")
         core.wait(3)
         parameters["oxiTask"].readInWaiting()
 
@@ -221,7 +223,7 @@ def trial(
         messageCount.draw()
         parameters["win"].flip()
 
-        parameters["triggers"]["decisionStart"]  # Send trigger or None
+        fire(parameters, "decisionStart")
 
         nCounts = ""
         while True:
@@ -255,13 +257,20 @@ def trial(
                 ]
             )
 
+            # Escape aborts here, and used to raise IndexError instead.
+            #
+            # event.waitKeys above has already consumed the keypress and, by
+            # default, cleared the buffer, so the `event.getKeys()` this replaces
+            # always came back empty and the abort never fired. Worse, the test
+            # for it was a separate `if` rather than part of the chain below, so
+            # "escape" fell through to the digit parser and evaluated
+            # `[s for s in "escape" if s.isdigit()][0]` on an empty list. The one
+            # way out of the Heartbeat Counting task crashed, from Feb 2021.
             if key[0] == "escape":
-                keys = event.getKeys()
-                if "escape" in keys:
-                    print("User abort")
-                    parameters["win"].close()
-                    core.quit()
-            if key[0] == "backspace":
+                print("User abort")
+                parameters["win"].close()
+                core.quit()
+            elif key[0] == "backspace":
                 if nCounts:
                     nCounts = nCounts[:-1]
             elif key[0] == "return":
@@ -300,7 +309,7 @@ def trial(
             messageCount.draw()
             parameters["win"].flip()
 
-        parameters["triggers"]["decisionStop"]  # Send trigger or None
+        fire(parameters, "decisionStop")
 
         ##############
         # Rating scale
@@ -312,7 +321,7 @@ def trial(
                 height=parameters["textSize"],
                 pos=(0, 0.2),
             )
-            parameters["triggers"]["confidenceStart"]
+            fire(parameters, "confidenceStart")
 
             # Arrow keys move the marker, the down key confirms. This was a
             # visual.RatingScale until PsychoPy 2026 moved that class into the
@@ -328,7 +337,7 @@ def trial(
                 label_height=parameters["textSize"] * 0.6,
                 rng=parameters["rng"],
             )
-            parameters["triggers"]["confidenceStop"]
+            fire(parameters, "confidenceStop")
 
     finalCount = int(nCounts) if nCounts else None
 

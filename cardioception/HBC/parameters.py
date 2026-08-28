@@ -12,6 +12,7 @@ from systole.recording import Oximeter
 
 from .._resources import resource_filename
 from .._rng import make_rng
+from .._triggers import validate as validate_triggers
 
 
 def getParameters(
@@ -25,6 +26,7 @@ def getParameters(
     resultPath: Optional[str] = None,
     systole_kw: dict = {},
     seed: Optional[int] = None,
+    triggers: Optional[Dict[str, Any]] = None,
 ) -> Dict:
     """Create Heartbeat Counting task parameters.
 
@@ -127,19 +129,10 @@ def getParameters(
     parameters["results_df"] = pd.DataFrame({})
     parameters["setup"] = setup
 
-    # Initialize triggers dictionary with None
-    # Some or all can later be overwrited with callable
-    # sending the information needed.
-    parameters["triggers"] = {
-        "trialStart": None,
-        "trialStop": None,
-        "listeningStart": None,
-        "listeningStop": None,
-        "decisionStart": None,
-        "decisionStop": None,
-        "confidenceStart": None,
-        "confidenceStop": None,
-    }
+    # Callables run at each trial event, for a parallel port, an LSL marker
+    # stream or an amplifier. Validated here so a typo or a non-callable fails
+    # at launch rather than at trial eighty.
+    parameters["triggers"] = validate_triggers(triggers)
 
     # Experimental design - can choose between a version based on recent
     # papers from Sarah Garfinkel's group, or the classic Schandry approach.

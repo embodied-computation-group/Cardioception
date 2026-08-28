@@ -3,6 +3,7 @@
 
 import pickle
 import time
+from collections import deque
 from typing import Optional, Tuple
 
 import numpy as np
@@ -10,6 +11,80 @@ import pandas as pd
 from systole.detection import ppg_peaks
 
 from .._resources import resource_filename
+from .._triggers import fire
+
+
+def _save_session(parameters: dict, nTrial: int) -> None:
+    """Write everything the session produced.
+
+    Called from a finally clause, so an abort or a crash saves as much as a
+    normal ending does. Before this, core.quit() raised SystemExit straight past
+    the saving code and Escape threw away the PPG signal file, the posteriors
+    and the parameters, keeping only the rolling per-trial results.
+    """
+    print("Saving final results in .txt file...")
+    parameters["results_df"].to_csv(
+        parameters["resultPath"]
+        + "/"
+        + parameters["participant"]
+        + parameters["session"]
+        + "_final.txt",
+        index=False,
+    )
+
+    print("Saving PPG signal data frame...")
+    parameters["signal_df"].to_csv(
+        parameters["resultPath"] + "/" + parameters["participant"] + "_signal.txt",
+        index=False,
+    )
+
+    parameters["oxiTask"].save(
+        f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}_end.txt"
+    )
+
+    print("Saving posterior distributions...")
+    for k in set(parameters["Modality"]):
+        np.save(
+            parameters["resultPath"]
+            + "/"
+            + parameters["participant"]
+            + k
+            + "_posterior.npy",
+            np.array(parameters["staircaisePosteriors"][k]),
+        )
+
+    print("Saving Parameters in pickle...")
+    save_parameter = parameters.copy()
+    # The unpicklable keys.
+    for k in [
+        "win",
+        "heartLogo",
+        "listenLogo",
+        "stairCase",
+        "oxiTask",
+        "myMouse",
+        "handSchema",
+        "pulseSchema",
+        "autopilot",
+        "recorder",
+        "triggers",
+    ]:
+        save_parameter.pop(k, None)
+    # The large ones. Each of these was already written to its own file a few
+    # lines above, so keeping them here wrote every artefact twice: the pickle
+    # measured 30.3 MB, of which 80.9% was a duplicate posterior stack and 19.0%
+    # a duplicate signal frame, leaving the settings the file is named for at
+    # 7 KB, 0.02% of it.
+    for k in ["staircaisePosteriors", "signal_df", "results_df"]:
+        save_parameter.pop(k, None)
+    with open(
+        save_parameter["resultPath"]
+        + "/"
+        + save_parameter["participant"]
+        + "_parameters.pickle",
+        "wb",
+    ) as handle:
+        pickle.dump(save_parameter, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 def run(
@@ -38,256 +113,258 @@ def run(
     if runTutorial is True:
         tutorial(parameters)
 
-    for nTrial, modality, trialType in zip(
-        range(parameters["nTrials"]),
-        parameters["Modality"],
-        parameters["staircaseType"],
-    ):
-
-        # Initialize variable
-        estimatedThreshold, estimatedSlope = None, None
-
-        # Wait for key press if this is the first trial
-        if nTrial == 0:
-
-            # Ask the participant to press default button to start
-            messageStart = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                text=parameters["texts"]["textTaskStart"],
-            )
-            press = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                pos=(0.0, -0.4),
-                text=parameters["texts"]["textNext"],
-            )
-            press.draw()
-            messageStart.draw()  # Show instructions
-            parameters["win"].flip()
-
-            waitInput(parameters)
-
-        # Next intensity value
-        if trialType == "updown":
-            print("... load UpDown staircase.")
-            thisTrial = parameters["stairCase"][modality].next()
-            stairCond = thisTrial[1]["label"]
-            alpha = thisTrial[0]
-        elif trialType == "psi":
-            print("... load psi staircase.")
-            alpha = parameters["stairCase"][modality].next()
-            stairCond = "psi"
-        elif trialType == "CatchTrial":
-            print("... load catch trial.")
-            # Select pseudo-random extrem value based on number
-            # of previous catch trial.
-            catchIdx = sum(
-                parameters["staircaseType"][:nTrial][
-                    parameters["Modality"][:nTrial] == modality
-                ]
-                == "CatchTrial"
-            )
-            alpha = np.array([-30, 10, -20, 20, -10, 30])[catchIdx % 6]
-            stairCond = "CatchTrial"
-
-        # Before trial triggers
-        parameters["oxiTask"].readInWaiting()
-        parameters["oxiTask"].channels["Channel_0"][-1] = 1  # Trigger
-
-        # Start trial
-        (
-            condition,
-            listenBPM,
-            responseBPM,
-            decision,
-            decisionRT,
-            confidence,
-            confidenceRT,
-            alpha,
-            isCorrect,
-            respProvided,
-            ratingProvided,
-            startTrigger,
-            soundTrigger,
-            responseMadeTrigger,
-            ratingStartTrigger,
-            ratingEndTrigger,
-            endTrigger,
-        ) = trial(
-            parameters,
-            alpha,
-            modality,
-            confidenceRating=confidenceRating,
-            nTrial=nTrial,
-        )
-
-        # Check if response is 'More' or 'Less'
-        isMore = 1 if decision == "More" else 0
-        # Update the UpDown staircase if initialization trial
-        if trialType == "updown":
-            print("... update UpDown staircase.")
-            # Update the UpDown staircase
-            parameters["stairCase"][modality].addResponse(isMore)
-        elif trialType == "psi":
-            print("... update psi staircase.")
-
-            # Update the Psi staircase with forced intensity value
-            # if impossible BPM was generated
-            if listenBPM + alpha < 15:
-                parameters["stairCase"][modality].addResponse(isMore, intensity=15)
-            elif listenBPM + alpha > 199:
-                parameters["stairCase"][modality].addResponse(isMore, intensity=199)
-            else:
-                parameters["stairCase"][modality].addResponse(isMore)
-
-            # Store posteriors in list for each trials
-            parameters["staircaisePosteriors"][modality].append(
-                parameters["stairCase"][modality]._psi._probLambda[0, :, :, 0]
-            )
-
-            # Save estimated threshold and slope for each trials
-            estimatedThreshold, estimatedSlope = parameters["stairCase"][
-                modality
-            ].estimateLambda()
-
-        print(
-            f"... Initial BPM: {listenBPM} - Staircase value: {alpha} "
-            f"- Response: {decision} ({isCorrect})"
-        )
-
-        # Store results
-        parameters["results_df"] = pd.concat(
-            [
-                parameters["results_df"],
-                pd.DataFrame(
-                    {
-                        "TrialType": [trialType],
-                        "Condition": [condition],
-                        "Modality": [modality],
-                        "StairCond": [stairCond],
-                        "Decision": [decision],
-                        "DecisionRT": [decisionRT],
-                        "Confidence": [confidence],
-                        "ConfidenceRT": [confidenceRT],
-                        "Alpha": [alpha],
-                        "listenBPM": [listenBPM],
-                        "responseBPM": [responseBPM],
-                        "ResponseCorrect": [isCorrect],
-                        "DecisionProvided": [respProvided],
-                        "RatingProvided": [ratingProvided],
-                        "nTrials": [nTrial],
-                        "EstimatedThreshold": [estimatedThreshold],
-                        "EstimatedSlope": [estimatedSlope],
-                        "StartListening": [startTrigger],
-                        "StartDecision": [soundTrigger],
-                        "ResponseMade": [responseMadeTrigger],
-                        "RatingStart": [ratingStartTrigger],
-                        "RatingEnds": [ratingEndTrigger],
-                        "endTrigger": [endTrigger],
-                    }
-                ),
-            ],
-            ignore_index=True,
-        )
-
-        # Save the results at each iteration
-        parameters["results_df"].to_csv(
-            parameters["resultPath"]
-            + "/"
-            + parameters["participant"]
-            + parameters["session"]
-            + ".txt",
-            index=False,
-        )
-
-        # Breaks
-        if (nTrial % parameters["nBreaking"] == 0) & (nTrial != 0):
-            message = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                text=parameters["texts"]["textBreaks"],
-            )
-            percRemain = round((nTrial / parameters["nTrials"]) * 100, 2)
-            remain = visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                pos=(0.0, 0.2),
-                text=f" ---- {percRemain} % ---- ",
-            )
-            remain.draw()
-            message.draw()
-            parameters["win"].flip()
-            parameters["oxiTask"].save(
-                f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}.txt"
-            )
-
-            # Wait for participant input before continue
-            waitInput(parameters)
-
-            # Fixation cross
-            fixation = visual.GratingStim(
-                win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
-            )
-            fixation.draw()
-            parameters["win"].flip()
-
-            # Reset recording when ready
-            parameters["oxiTask"].setup()
-            parameters["oxiTask"].read(duration=1)
-
-    # Save the final results
-    print("Saving final results in .txt file...")
-    parameters["results_df"].to_csv(
-        parameters["resultPath"]
-        + "/"
-        + parameters["participant"]
-        + parameters["session"]
-        + "_final.txt",
-        index=False,
+    # A work queue rather than a zip, so a trial the participant missed can be
+    # returned to the end of the queue instead of being lost. Re-presentation is
+    # capped, or a participant who stops responding would never finish.
+    queue = deque(
+        {"modality": m, "trialType": s, "attempt": 0, "alpha": None}
+        for m, s in zip(parameters["Modality"], parameters["staircaseType"])
     )
+    maxRepresentations = parameters.get("maxRepresentations", 3)
+    onMissedTrial = parameters.get("onMissedTrial", "represent")
+    # Counted as we go rather than re-derived by slicing the design arrays,
+    # which stops working once a trial can be presented more than once.
+    catchSeen = {"Intero": 0, "Extero": 0}
+    nTrial = 0
+    nPlanned = parameters["nTrials"]
 
-    # Save the final signals file
-    print("Saving PPG signal data frame...")
-    parameters["signal_df"].to_csv(
-        parameters["resultPath"] + "/" + parameters["participant"] + "_signal.txt",
-        index=False,
-    )
+    try:
+        while queue:
+            thisItem = queue.popleft()
+            modality, trialType = thisItem["modality"], thisItem["trialType"]
 
-    # Save last pulse oximeter recording, if relevant
-    parameters["oxiTask"].save(
-        f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}_end.txt"
-    )
+            # Initialize variable
+            estimatedThreshold, estimatedSlope = None, None
 
-    # Save posterios (if relevant)
-    print("Saving posterior distributions...")
-    for k in set(parameters["Modality"]):
-        np.save(
-            parameters["resultPath"]
-            + "/"
-            + parameters["participant"]
-            + k
-            + "_posterior.npy",
-            np.array(parameters["staircaisePosteriors"][k]),
-        )
+            # Wait for key press if this is the first trial
+            if nTrial == 0:
 
-    # Save parameters
-    print("Saving Parameters in pickle...")
-    save_parameter = parameters.copy()
-    for k in ["win", "heartLogo", "listenLogo", "stairCase", "oxiTask"]:
-        del save_parameter[k]
-    if parameters["device"] == "mouse":
-        del save_parameter["myMouse"]
-    del save_parameter["handSchema"]
-    del save_parameter["pulseSchema"]
-    with open(
-        save_parameter["resultPath"]
-        + "/"
-        + save_parameter["participant"]
-        + "_parameters.pickle",
-        "wb",
-    ) as handle:
-        pickle.dump(save_parameter, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                # Ask the participant to press default button to start
+                messageStart = visual.TextStim(
+                    parameters["win"],
+                    height=parameters["textSize"],
+                    text=parameters["texts"]["textTaskStart"],
+                )
+                press = visual.TextStim(
+                    parameters["win"],
+                    height=parameters["textSize"],
+                    pos=(0.0, -0.4),
+                    text=parameters["texts"]["textNext"],
+                )
+                press.draw()
+                messageStart.draw()  # Show instructions
+                parameters["win"].flip()
+
+                waitInput(parameters)
+
+            # Next intensity value
+            if trialType == "updown":
+                print("... load UpDown staircase.")
+                thisTrial = parameters["stairCase"][modality].next()
+                stairCond = thisTrial[1]["label"]
+                alpha = thisTrial[0]
+            elif trialType == "psi":
+                print("... load psi staircase.")
+                alpha = parameters["stairCase"][modality].next()
+                stairCond = "psi"
+            elif trialType == "CatchTrial":
+                print("... load catch trial.")
+                # Pseudo-random extreme value, by position in the catch sequence.
+                # A re-presented catch trial keeps the intensity it was first given,
+                # so requeueing cannot shift the sequence for later trials.
+                if thisItem["alpha"] is None:
+                    catchIdx = catchSeen[modality]
+                    catchSeen[modality] += 1
+                    thisItem["alpha"] = float(
+                        np.array([-30, 10, -20, 20, -10, 30])[catchIdx % 6]
+                    )
+                alpha = thisItem["alpha"]
+                stairCond = "CatchTrial"
+
+            # Before trial triggers
+            parameters["oxiTask"].readInWaiting()
+            parameters["oxiTask"].channels["Channel_0"][-1] = 1  # Trigger
+            fire(parameters, "trialStart")
+
+            # Start trial
+            (
+                condition,
+                listenBPM,
+                responseBPM,
+                decision,
+                decisionRT,
+                confidence,
+                confidenceRT,
+                alpha,
+                isCorrect,
+                respProvided,
+                ratingProvided,
+                startTrigger,
+                soundTrigger,
+                responseMadeTrigger,
+                ratingStartTrigger,
+                ratingEndTrigger,
+                endTrigger,
+            ) = trial(
+                parameters,
+                alpha,
+                modality,
+                confidenceRating=confidenceRating,
+                nTrial=nTrial,
+            )
+
+            # A trial with no decision must not reach the staircase. It used to:
+            # `decision` is None on a timeout, so `isMore` collapsed to 0 and a
+            # response the participant never made entered the posterior as "Less",
+            # moving the threshold estimate and the placement of every later
+            # stimulus. Simulated at the task's own parameters, a 10% miss rate
+            # shifted a true -8 BPM threshold to -4.9.
+            if not respProvided:
+                canRepresent = (
+                    onMissedTrial == "represent"
+                    and thisItem["attempt"] + 1 < maxRepresentations
+                )
+                if canRepresent:
+                    queue.append({**thisItem, "attempt": thisItem["attempt"] + 1})
+                    print(
+                        f"... no response, re-queued "
+                        f"(attempt {thisItem['attempt'] + 2} of {maxRepresentations})."
+                    )
+                else:
+                    print("... no response, trial not repeated.")
+
+            if respProvided:
+                # Check if response is 'More' or 'Less'
+                isMore = 1 if decision == "More" else 0
+
+                if trialType == "updown":
+                    print("... update UpDown staircase.")
+                    parameters["stairCase"][modality].addResponse(isMore)
+
+                elif trialType == "psi":
+                    print("... update psi staircase.")
+
+                    # Update the Psi staircase with forced intensity value
+                    # if impossible BPM was generated
+                    if listenBPM + alpha < 15:
+                        parameters["stairCase"][modality].addResponse(
+                            isMore, intensity=15
+                        )
+                    elif listenBPM + alpha > 199:
+                        parameters["stairCase"][modality].addResponse(
+                            isMore, intensity=199
+                        )
+                    else:
+                        parameters["stairCase"][modality].addResponse(isMore)
+
+                    # Store posteriors in list for each trials.
+                    #
+                    # .copy() is load bearing. Indexing with [0, :, :, 0] is basic
+                    # indexing, so it returns a *view*, and the view keeps its base
+                    # alive: the 40 MB likelihood array PsychoPy builds for that
+                    # trial and then rebinds. Without the copy every psi trial pins
+                    # another 40 MB, measured at 201 MB to 1,496 MB across a 20
+                    # trial session and 479 MB to 5,432 MB across 120. The saved
+                    # .npy is identical either way.
+                    parameters["staircaisePosteriors"][modality].append(
+                        parameters["stairCase"][modality]
+                        ._psi._probLambda[0, :, :, 0]
+                        .copy()
+                    )
+
+                    # Save estimated threshold and slope for each trials
+                    estimatedThreshold, estimatedSlope = parameters["stairCase"][
+                        modality
+                    ].estimateLambda()
+
+            print(
+                f"... Initial BPM: {listenBPM} - Staircase value: {alpha} "
+                f"- Response: {decision} ({isCorrect})"
+            )
+
+            # Store results
+            parameters["results_df"] = pd.concat(
+                [
+                    parameters["results_df"],
+                    pd.DataFrame(
+                        {
+                            "TrialType": [trialType],
+                            "Condition": [condition],
+                            "Modality": [modality],
+                            "StairCond": [stairCond],
+                            "Decision": [decision],
+                            "DecisionRT": [decisionRT],
+                            "Confidence": [confidence],
+                            "ConfidenceRT": [confidenceRT],
+                            "Alpha": [alpha],
+                            "listenBPM": [listenBPM],
+                            "responseBPM": [responseBPM],
+                            "ResponseCorrect": [isCorrect],
+                            "DecisionProvided": [respProvided],
+                            "RatingProvided": [ratingProvided],
+                            "nTrials": [nTrial],
+                            "EstimatedThreshold": [estimatedThreshold],
+                            "EstimatedSlope": [estimatedSlope],
+                            "StartListening": [startTrigger],
+                            "StartDecision": [soundTrigger],
+                            "ResponseMade": [responseMadeTrigger],
+                            "RatingStart": [ratingStartTrigger],
+                            "RatingEnds": [ratingEndTrigger],
+                            "endTrigger": [endTrigger],
+                        }
+                    ),
+                ],
+                ignore_index=True,
+            )
+
+            # Save the results at each iteration
+            parameters["results_df"].to_csv(
+                parameters["resultPath"]
+                + "/"
+                + parameters["participant"]
+                + parameters["session"]
+                + ".txt",
+                index=False,
+            )
+
+            nTrial += 1
+
+            # Breaks
+            if parameters["nBreaking"] and nTrial % parameters["nBreaking"] == 0:
+                message = visual.TextStim(
+                    parameters["win"],
+                    height=parameters["textSize"],
+                    text=parameters["texts"]["textBreaks"],
+                )
+                percRemain = round(min(nTrial / nPlanned, 1.0) * 100, 2)
+                remain = visual.TextStim(
+                    parameters["win"],
+                    height=parameters["textSize"],
+                    pos=(0.0, 0.2),
+                    text=f" ---- {percRemain} % ---- ",
+                )
+                remain.draw()
+                message.draw()
+                parameters["win"].flip()
+                parameters["oxiTask"].save(
+                    f"{parameters['resultPath']}/{parameters['participant']}_ppg_{nTrial}.txt"
+                )
+
+                # Wait for participant input before continue
+                waitInput(parameters)
+
+                # Fixation cross
+                fixation = visual.GratingStim(
+                    win=parameters["win"], mask="cross", size=0.1, pos=[0, 0], sf=0
+                )
+                fixation.draw()
+                parameters["win"].flip()
+
+                # Reset recording when ready
+                parameters["oxiTask"].setup()
+                parameters["oxiTask"].read(duration=1)
+    finally:
+        _save_session(parameters, nTrial)
 
     # End of the task
     end = visual.TextStim(
@@ -424,6 +501,7 @@ def trial(
         # Start recording trigger
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
+        fire(parameters, "listeningStart")
 
         parameters["heartLogo"].draw()
         parameters["win"].flip()
@@ -503,6 +581,7 @@ def trial(
         # Start recording trigger
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 2  # Trigger
+        fire(parameters, "listeningStart")
 
         parameters["listenLogo"].draw()
         parameters["win"].flip()
@@ -516,10 +595,20 @@ def trial(
         listenFile = resource_filename("cardioception.HRD", f"Sounds/{listenBPM}.wav")
         print(f"...loading file (Listen): {listenFile}")
 
-        # Play selected BPM frequency
+        # Play selected BPM frequency.
+        #
+        # The duration is a parameter rather than a literal 5. It was the only
+        # thing setting how long an exteroceptive stimulus lasts, it was buried
+        # inside the trial function where no caller could reach it, and it is
+        # not actually matched to the stimulus: each wav holds five beats, so at
+        # 40 BPM five beats run 7.5 s and this truncates them, while at 100 BPM
+        # they run 3 s and this waits out 2 s of silence. Stimulus duration is
+        # therefore confounded with the rate being judged. Changing the default
+        # would change the stimulus, so it stays at 5.0 until that is decided
+        # deliberately; exposing it lets a test run in a sensible time.
         listenSound = sound.Sound(listenFile)
         listenSound.play()
-        core.wait(5)
+        core.wait(parameters.get("listeningDuration", 5.0))
         listenSound.stop()
 
     else:
@@ -579,6 +668,7 @@ def trial(
     # Sound trigger
     parameters["oxiTask"].readInWaiting()
     parameters["oxiTask"].channels["Channel_0"][-1] = 3
+    fire(parameters, "decisionStart")
     soundTrigger = time.time()
     parameters["win"].flip()
 
@@ -611,6 +701,7 @@ def trial(
         # Confidence rating start trigger
         parameters["oxiTask"].readInWaiting()
         parameters["oxiTask"].channels["Channel_0"][-1] = 4  # Trigger
+        fire(parameters, "confidenceStart")
 
         # Confidence rating scale
         ratingStartTrigger: Optional[float] = time.time()
@@ -626,6 +717,7 @@ def trial(
     # Confidence rating end trigger
     parameters["oxiTask"].readInWaiting()
     parameters["oxiTask"].channels["Channel_0"][-1] = 5
+    fire(parameters, "trialStop")
     endTrigger = time.time()
 
     # Save PPG signal

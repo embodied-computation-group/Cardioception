@@ -79,11 +79,19 @@ class ReplayRecorder:
         }
         self.n_saves = 0
         self.saved_paths: List[str] = []
+        self._archived_codes: List[int] = []
 
     # -- the surface the tasks use --------------------------------------
 
     def setup(self) -> "ReplayRecorder":
-        """Clear the buffers, as ``Oximeter.setup`` does."""
+        """Clear the buffers, as ``Oximeter.setup`` does.
+
+        The markers written into the auxiliary channel are archived first. The
+        real recorder is reset at every break, which discards every trigger
+        written since the last one, and a test asking "did all five codes get
+        written" would otherwise only ever see the final block's worth.
+        """
+        self._archived_codes.extend(int(v) for v in self.channels["Channel_0"] if v)
         self.recording, self.times, self.peaks, self.instant_rr = [], [], [], []
         for key in self.channels:
             self.channels[key] = []
@@ -161,5 +169,5 @@ class ReplayRecorder:
 
     @property
     def trigger_codes(self) -> List[int]:
-        """Every non-zero value written into the first auxiliary channel."""
-        return [int(v) for v in self.channels["Channel_0"] if v]
+        """Every marker written, including those cleared by a reset."""
+        return self._archived_codes + [int(v) for v in self.channels["Channel_0"] if v]

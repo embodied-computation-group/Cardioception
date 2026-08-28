@@ -14,6 +14,7 @@ from cardioception.HRD.languages import danish, danish_children, english, french
 
 from .._resources import resource_filename
 from .._rng import make_rng
+from .._triggers import validate as validate_triggers
 
 
 def getParameters(
@@ -35,6 +36,9 @@ def getParameters(
     seed: Optional[int] = None,
     autopilot=None,
     recorder=None,
+    onMissedTrial: str = "represent",
+    maxRepresentations: int = 3,
+    triggers: Optional[Dict[str, Any]] = None,
 ):
     """Create Heart Rate Discrimination task parameters.
 
@@ -70,6 +74,23 @@ def getParameters(
            contains 50 interoceptive trials. If `nTrials=50` and `exteroception=True`,
            the task contains 25 interoceptive trials and 25 exteroceptive trials.
 
+    onMissedTrial : str
+        What to do when the participant does not respond in time. `"represent"`
+        (the default) returns the trial to the end of the queue so the intended
+        number of usable trials is collected, at the cost of a session whose
+        length varies. `"skip"` moves on, giving a fixed number of presentations
+        and a variable number of usable trials.
+
+        .. note::
+           Under either setting the missed trial is written to the results with
+           `DecisionProvided=False` and is **not** used to update the staircase.
+           Before this was fixed, a missed trial entered the staircase as a
+           fabricated `"Less"` response.
+
+    maxRepresentations : int
+        How many times in total a trial may be presented before it is abandoned,
+        when `onMissedTrial="represent"`. Defaults to `3`. Without a cap, a
+        participant who stops responding would never reach the end.
     participant : str
         Subject ID. Default is 'Participant'.
     catchTrials : float
@@ -223,6 +244,19 @@ def getParameters(
     parameters["rng"], parameters["seed"] = make_rng(seed)
     # A synthetic participant, for headless runs and tests. None means a human.
     parameters["autopilot"] = autopilot
+
+    if onMissedTrial not in ("represent", "skip"):
+        raise ValueError(
+            f"onMissedTrial should be 'represent' or 'skip', got {onMissedTrial!r}"
+        )
+    parameters["onMissedTrial"] = onMissedTrial
+    parameters["maxRepresentations"] = maxRepresentations
+
+    # Callables run at each trial event, for a parallel port, an LSL marker
+    # stream or an amplifier. This docstring documented the key for years while
+    # the function never created it, so anyone following the documentation got a
+    # KeyError. Validated here so a typo fails at launch, not at trial eighty.
+    parameters["triggers"] = validate_triggers(triggers)
     parameters["ExteroCondition"] = exteroception
     parameters["device"] = device
     if parameters["device"] == "keyboard":
@@ -434,6 +468,19 @@ def getParameters(
             serial=port, sfreq=75, add_channels=1, **systole_kw
         )
         parameters["oxiTask"].setup().read(duration=1)
+
+    else:
+        # setup decides whether a recorder exists at all, and was the only
+        # string parameter with no guard. An unrecognised value returned a
+        # parameters dict with no "oxiTask" key, and the task then died on the
+        # first line of run() with KeyError, after the window had opened in
+        # front of a participant. wrappers/hrd.py offered "fMRI" in its dropdown
+        # for years after that mode was removed, so this was reachable by
+        # clicking a menu entry the project shipped.
+        raise ValueError(
+            f"setup should be 'behavioral' or 'test', got {setup!r}. "
+            "Pass recorder= to use a device other than the Nonin oximeter."
+        )
 
     ##############
     # Load texts #
