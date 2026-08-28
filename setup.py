@@ -85,9 +85,12 @@ if __name__ == "__main__":
         install_requires=get_requirements(),
         include_package_data=True,
         packages=find_packages(),
+        # The stimuli live in Images/ and Sounds/, so bare "*.wav" and "*.png"
+        # matched nothing. A wheel built from this shipped no sounds at all;
+        # only MANIFEST.in was keeping the sdist usable.
         package_data={
-            "cardioception.HBC": ["*.wav", "*.png"],
-            "cardioception.HRD": ["*.wav", "*.png"],
+            "cardioception.HBC": ["Images/*.png", "Sounds/*.wav"],
+            "cardioception.HRD": ["Images/*.png", "Images/*.svg", "Sounds/*.wav"],
             "cardioception.notebooks": ["*.ipynb"],
         },
     )

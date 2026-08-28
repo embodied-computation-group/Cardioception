@@ -14,11 +14,14 @@ from systole.recording import Oximeter
 
 from cardioception.HRD.languages import danish, danish_children, english, french
 
+from .._log import get_logger, start_session_log
 from .._resources import resource_filename
 from .._rng import make_rng
 from .._triggers import validate as validate_triggers
 from ..output import SessionPaths
 from ..scales import DISCRETE_1_10, VAS_0_100, ConfidenceScale
+
+logger = get_logger()
 
 
 def getParameters(
@@ -314,6 +317,7 @@ def getParameters(
     # Kept for scripts that read it. It is now the run directory, not
     # data/<participant><session>, which two different sessions could share.
     parameters["resultPath"] = parameters["paths"].directory
+    parameters["logFile"] = start_session_log(parameters["paths"].directory)
 
     # Store posterior in a dictionary
     parameters["staircaisePosteriors"] = {}
@@ -347,7 +351,7 @@ def getParameters(
             : parameters["nTrials"]
         ]
         if parameters["nTrials"] % 2:
-            print(
+            logger.warning(
                 f"... nTrials={parameters['nTrials']} is odd, so the two modalities"
                 " cannot be balanced: there will be one more Extero trial than"
                 " Intero. Use an even number if you want them balanced."

@@ -12,6 +12,7 @@ import serial
 from systole import serialSim
 from systole.recording import Oximeter
 
+from .._log import start_session_log
 from .._resources import resource_filename
 from .._rng import make_rng
 from .._triggers import validate as validate_triggers
@@ -193,6 +194,7 @@ def getParameters(
     # Kept for scripts that read it. It is now the run directory, not
     # data/<participant><session>, which two different sessions could share.
     parameters["resultPath"] = parameters["paths"].directory
+    parameters["logFile"] = start_session_log(parameters["paths"].directory)
 
     parameters["startTime"] = time.time()
     parameters["paths"].write_manifest(
