@@ -21,3 +21,8 @@ docs/auto_examples
 
 # Session output
 /data/
+
+# R session state and coverage output, tracked by mistake
+.RData
+.Rhistory
+.coverage

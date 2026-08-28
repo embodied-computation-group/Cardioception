@@ -185,6 +185,12 @@ class TestReferenceSession(unittest.TestCase):
         self.assertEqual(manifest["seed"], SEED)
         self.assertEqual(manifest["confidence"]["ConfidenceLevels"], 10)
 
+    def test_the_session_leaves_a_log_behind(self):
+        """The tasks used to narrate themselves to a terminal nobody keeps."""
+        log = Path(self.params["logFile"]).read_text(encoding="utf-8")
+        self.assertIn("load psi staircase", log)
+        self.assertIn("Saving final results", log)
+
     def test_the_heart_rate_search_is_reported_per_trial(self):
         intero = self.df[self.df.Modality == "Intero"]
         self.assertTrue((intero.HeartRateAttempts >= 1).all())

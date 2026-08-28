@@ -77,6 +77,10 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   session against the invariants the test suite uses.
 - A test suite that runs whole sessions without hardware or a human, and CI
   that runs it.
+- `session.log` in the run directory. The tasks narrated themselves with
+  `print`, which goes to a terminal nobody keeps and carries no timestamps, so
+  a session that failed left nothing to look at. The same messages now go to a
+  timestamped file as well as the console.
 
 ### Fixed
 
@@ -100,6 +104,20 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - The keyboard confidence rating uses `visual.Slider`. `visual.RatingScale`
   moved to the `psychopy-legacy` plugin in PsychoPy 2026 and now raises.
 - A crash or an abort still saves everything the session produced.
+
+### Packaging
+
+- `package_data` listed `*.wav` and `*.png`, but the stimuli live in
+  `Images/` and `Sounds/`, so the patterns matched nothing and a wheel built
+  from it shipped no sounds. Only `MANIFEST.in` was keeping the sdist usable.
+- `psychopy` moves from `==2026.2.2` to `>=2026.2,<2027`. The major-version
+  ceiling stays because 2026 moved `visual.RatingScale` into a plugin without a
+  deprecation cycle.
+- The documentation workflow deployed to `gh-pages` from pull requests as well
+  as from master, so a pull request could replace the live documentation before
+  review. It now builds on pull requests and publishes only from master.
+- `.RData` (50 MB), `.Rhistory` and `.coverage` are no longer tracked. They
+  remain in the history; only new clones of the working tree get smaller.
 
 ### Deprecated
 

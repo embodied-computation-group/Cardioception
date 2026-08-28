@@ -10,9 +10,12 @@ import numpy as np
 import pandas as pd
 from systole.detection import ppg_peaks
 
+from .._log import get_logger
 from .._present import accept_press, hold  # noqa: F401
 from .._resources import resource_filename
 from .._triggers import fire
+
+logger = get_logger()
 
 #: Rate ppg_peaks resamples the raw oximeter signal to, used to time the
 #: samples written to the signal file.
@@ -26,22 +29,22 @@ def _save_session(parameters: dict, nTrial: int) -> None:
     """
     paths = parameters["paths"]
 
-    print("Saving final results in .txt file...")
+    logger.info("Saving final results in .txt file...")
     parameters["results_df"].to_csv(paths.path("final"), index=False)
 
-    print("Saving PPG signal data frame...")
+    logger.info("Saving PPG signal data frame...")
     parameters["signal_df"].to_csv(paths.path("signal"), index=False)
 
     parameters["oxiTask"].save(paths.path(f"ppg-{nTrial}-end"))
 
-    print("Saving posterior distributions...")
+    logger.info("Saving posterior distributions...")
     for k in set(parameters["Modality"]):
         np.save(
             paths.path(f"posterior-{k}", ext="npy"),
             np.array(parameters["staircaisePosteriors"][k]),
         )
 
-    print("Saving Parameters in pickle...")
+    logger.info("Saving Parameters in pickle...")
     save_parameter = parameters.copy()
     # Unpicklable.
     for k in [
@@ -135,11 +138,11 @@ def run(
 
             # Next intensity value
             if trialType == "psi":
-                print("... load psi staircase.")
+                logger.info("... load psi staircase.")
                 alpha = parameters["stairCase"][modality].next()
                 stairCond = "psi"
             elif trialType == "CatchTrial":
-                print("... load catch trial.")
+                logger.info("... load catch trial.")
                 # A re-presented catch trial keeps its first intensity.
                 if thisItem["alpha"] is None:
                     catchIdx = catchSeen[modality]
@@ -193,19 +196,19 @@ def run(
                 )
                 if canRepresent:
                     queue.append({**thisItem, "attempt": thisItem["attempt"] + 1})
-                    print(
+                    logger.info(
                         f"... no response, re-queued "
                         f"(attempt {thisItem['attempt'] + 2} of {maxRepresentations})."
                     )
                 else:
-                    print("... no response, trial not repeated.")
+                    logger.warning("... no response, trial not repeated.")
 
             if respProvided:
                 # Check if response is 'More' or 'Less'
                 isMore = 1 if decision == "More" else 0
 
                 if trialType == "psi":
-                    print("... update psi staircase.")
+                    logger.info("... update psi staircase.")
 
                     # Update the Psi staircase with forced intensity value
                     # if impossible BPM was generated
@@ -234,7 +237,7 @@ def run(
                         modality
                     ].estimateLambda()
 
-            print(
+            logger.info(
                 f"... Initial BPM: {listenBPM} - Staircase value: {alpha} "
                 f"- Response: {decision} ({isCorrect})"
             )
@@ -423,7 +426,7 @@ def trial(
     from psychopy import core, event, sound, visual
 
     # Print infos at each trial start
-    print(f"Starting trial - Intensity: {alpha} - Modality: {modality}")
+    logger.info(f"Starting trial - Intensity: {alpha} - Modality: {modality}")
 
     parameters["win"].mouseVisible = False
 
@@ -442,7 +445,7 @@ def trial(
 
     keys = event.getKeys()
     if "escape" in keys:
-        print("User abort")
+        logger.warning("User abort")
         parameters["win"].close()
         core.quit()
 
@@ -483,7 +486,7 @@ def trial(
         attempt = 0
         for attempt in range(maxAttempts):
             if "escape" in event.getKeys(keyList=["escape"]):
-                print("User abort")
+                logger.warning("User abort")
                 parameters["win"].close()
                 core.quit()
 
@@ -511,7 +514,7 @@ def trial(
             # # use bpm as signal, Nonin3231USB gives no raw signal
             # signal = bpm
 
-            print(f"... bpm: {[round(i) for i in bpm]}")
+            logger.info(f"... bpm: {[round(i) for i in bpm]}")
 
             # Prevent crash if NaN value
             if np.isnan(bpm).any() or (bpm is None) or (bpm.size == 0):
@@ -555,7 +558,9 @@ def trial(
         if listenBPM is None:
             # Out of attempts. Use the last window regardless and mark the
             # trial, rather than holding the session on this screen.
-            print(f"... no acceptable heart rate after {maxAttempts} attempts.")
+            logger.warning(
+                f"... no acceptable heart rate after {maxAttempts} attempts."
+            )
             usable = bpm.size and not np.isnan(bpm).all()
             listenBPM = (
                 round((60000 / np.nanmean(ibi)) * 2) / 2
@@ -597,7 +602,7 @@ def trial(
 
         # Play the corresponding beat file
         listenFile = resource_filename("cardioception.HRD", f"Sounds/{listenBPM}.wav")
-        print(f"...loading file (Listen): {listenFile}")
+        logger.info(f"...loading file (Listen): {listenFile}")
 
         # 5 s matches the interoceptive recording window, so both
         # modalities give the same listening time. Do not derive it from
@@ -637,7 +642,7 @@ def trial(
     else:
         responseBPM = listenBPM + alpha
     responseFile = resource_filename("cardioception.HRD", f"Sounds/{responseBPM}.wav")
-    print(f"...loading file (Response): {responseFile}")
+    logger.info(f"...loading file (Response): {responseFile}")
 
     # Play selected BPM frequency
     responseSound = sound.Sound(responseFile)
@@ -788,7 +793,7 @@ def waitInput(parameters: dict):
         while True:
             keys = event.getKeys()
             if "escape" in keys:
-                print("User abort")
+                logger.warning("User abort")
                 parameters["win"].close()
                 core.quit()
             elif parameters["startKey"] in keys:
@@ -806,7 +811,7 @@ def waitInput(parameters: dict):
                 break
             keys = event.getKeys()
             if "escape" in keys:
-                print("User abort")
+                logger.warning("User abort")
                 parameters["win"].close()
                 core.quit()
 
@@ -1093,7 +1098,7 @@ def responseDecision(
 
     from psychopy import core, event, visual
 
-    print("...starting decision phase.")
+    logger.info("...starting decision phase.")
 
     decision, decisionRT, isCorrect = None, None, None
     responseTrigger = time.time()
@@ -1302,7 +1307,7 @@ def confidenceRatingTask(
 
     from .._rating import keyboard_rating
 
-    print("...starting confidence rating.")
+    logger.info("...starting confidence rating.")
 
     # Initialise default values
     confidence, confidenceRT = None, None
@@ -1349,7 +1354,7 @@ def confidenceRatingTask(
             rng=parameters["rng"],
         )
         if ratingProvided and confidenceRT is not None:
-            print(
+            logger.info(
                 f"... Confidence level: {confidence}"
                 + f" with response time {round(confidenceRT, 2)} seconds"
             )
@@ -1425,7 +1430,7 @@ def confidenceRatingTask(
                     True,
                 )
                 if confidenceRT is not None:
-                    print(
+                    logger.info(
                         f"... Confidence level: {confidence}"
                         + f" with response time {round(confidenceRT, 2)} seconds"
                     )

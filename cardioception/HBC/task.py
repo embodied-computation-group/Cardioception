@@ -5,8 +5,11 @@ from typing import Optional, Tuple
 
 import pandas as pd
 
+from .._log import get_logger
 from .._present import hold
 from .._triggers import fire
+
+logger = get_logger()
 
 
 def run(
@@ -253,7 +256,7 @@ def trial(
             # event.getKeys() guard never fired and "escape" fell through
             # to the digit parser below and raised IndexError.
             if key[0] == "escape":
-                print("User abort")
+                logger.warning("User abort")
                 parameters["win"].close()
                 core.quit()
             elif key[0] == "backspace":
