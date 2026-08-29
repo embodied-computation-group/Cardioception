@@ -9,7 +9,7 @@ run_*.log
 fit_single_subject.rds
 
 # Downloaded at run time by notebook 3
-power_all_data.csv
+power_*.csv
 
 # Handoff notes, local only
 HANDOFF.md
