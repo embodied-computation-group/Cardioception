@@ -1,129 +1,142 @@
 # Cardioception hands-on workshop
 
-Two notebooks that take a room of PhD students from "what does the HRD measure?" to a
-fitted hierarchical model, collecting real data from a volunteer along the way.
+This workshop introduces the Heart Rate Discrimination task (HRD) as a measurement
+and modelling workflow. We begin with the response model, configure and run the task,
+inspect a completed session, and finish with single-participant and hierarchical
+psychometric models. An optional third notebook covers study planning with the power
+simulations from the Hierarchical Interoception toolbox.
 
-| Notebook | Kernel | Covers |
+The workshop is intended for PhD students who know the basic concepts of
+interoception but may be new to psychophysics, PsychoPy, or hierarchical Bayesian
+modelling.
+
+| Notebook | Kernel | Content |
 |---|---|---|
-| `01_running_the_hrd.ipynb` | **Python (cardioception)** | The measurement model, installation, designing your own task, running it live |
-| `02_analysing_the_hrd.ipynb` | **R (cardioception)** | Session inspection, fitting the psychometric model, the 512-participant group models |
-| `03_power_analysis.ipynb` | **R (cardioception)** | *Optional.* How many participants and trials, from the toolbox's power simulations |
+| `01_running_the_hrd.ipynb` | **Python (cardioception)** | Measurement model, adaptive sampling, task configuration, and data collection |
+| `02_analysing_the_hrd.ipynb` | **R (cardioception)** | Session inspection, a single-participant fit, and hierarchical group models |
+| `03_power_analysis.ipynb` | **R (cardioception)** | Optional module on participants, trials, effect size, and power |
 
-The split is not arbitrary. Cardioception is a PsychoPy package, so data collection is
-Python. The models in `tutorials/` are `brms` models from the
-[Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception),
-and there is no maintained Python equivalent — so modelling is R.
+Cardioception uses Python and PsychoPy for data collection. The accompanying models
+are implemented in R with `brms` and the
+[Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception).
+The two kernels reflect that division of work.
 
-## Before the session
+## Preparing the teaching machine
 
-Both kernels must be registered. From the repository root:
-
-```bash
-# Python side
-python3 -m venv cardioception-env
-./cardioception-env/bin/python -m pip install cardioception-toolbox jupyterlab ipykernel ipywidgets
-./cardioception-env/bin/python -m ipykernel install --user \
-    --name cardioception --display-name "Python (cardioception)"
-
-# R side (needs brms, cmdstanr with a working CmdStan, ordbetareg, tidyverse, IRkernel)
-PATH="$PWD/cardioception-env/bin:$PATH" Rscript -e \
-    'IRkernel::installspec(name="ir-cardioception", displayname="R (cardioception)")'
-```
-
-Check both appear:
+Follow [PREINSTALL.md](PREINSTALL.md) to create the Python environment, install the R
+packages, and register both kernels. From the repository root, confirm that they are
+available:
 
 ```bash
 ./cardioception-env/bin/jupyter kernelspec list
 ```
 
-Then launch from **inside this directory** — the notebooks resolve the repository as
-`..`, so paths break if you start elsewhere:
+Launch JupyterLab from the workshop directory. Several cells use this directory for
+data and cached results.
 
 ```bash
 cd tutorials/workshop
-../cardioception-env/bin/jupyter lab
+../../cardioception-env/bin/jupyter lab
 ```
 
-## Hardware
+On Windows, use:
 
-Notebook 1 Part 3 needs a pulse oximeter (Nonin 3012LP Xpod with 8000SM sensors, or
-BrainVision RDA). Verify it before the session starts:
+```powershell
+cd tutorials\workshop
+..\..\cardioception-env\Scripts\jupyter lab
+```
+
+Run the single-participant model in notebook 2 once before the session. The first run
+compiles the Stan model and can take several minutes. Later runs use the cached fit.
+Models for typical study samples often complete within minutes; the 512-participant
+worked models take hours and are supplied as precomputed summaries.
+
+## Hardware and demonstration data
+
+Valid interoceptive data require a cardiac recording. Cardioception supports the Nonin
+3012LP Xpod and BrainVision Recorder over Remote Data Access without additional
+recording code. Check a pulse oximeter before the workshop:
 
 ```bash
-python -m cardioception.check_device                 # list ports
-python -m cardioception.check_device --port <PORT>   # 20 s recording, judged
+python -m cardioception.check_device --list
+python -m cardioception.check_device --port <PORT>
 ```
 
-Do not skip this. On an empty sensor the peak detector still reports a plausible heart
-rate, so a session can look fine and contain nothing. `check_device` catches that by
-checking signal *amplitude* first.
+The second command records for 20 seconds and checks both signal amplitude and beat
+detection. A plausible heart-rate estimate is not sufficient because an empty sensor
+can produce plausible false peaks.
 
-**Without hardware**, set `setup="test"` in the design cell. The task then replays a
-pre-recorded pulse signal and everything else works unchanged.
+Without hardware, `setup="test"` replays a stored pulse signal. This mode is useful for
+checking the installation, learning the task, and rehearsing a study. It does not
+measure the user’s cardiac perception, because the reference signal does not come from
+their body. Notebook 2 therefore uses the live volunteer session when available and
+otherwise loads the deidentified example session bundled with the repository.
 
-## If the live run fails
+## Suggested schedule
 
-Notebook 2 falls back to the bundled example session
-(`docs/source/examples/templates/data/HRD/HRD_final.txt`) whenever no session of your own
-is found in `tutorials/workshop/data/`. The workshop continues either way — worth knowing when a
-volunteer's oximeter misbehaves in front of an audience.
-
-## Timing
-
-Roughly 2–2.5 hours with discussion:
+The core workshop takes approximately 2 to 2.5 hours, including discussion.
 
 | Part | Content | Time |
-|---|---|---|
-| 0 | What the task measures + the simulation widget | 25 min |
-| 1 | Installation and device check | 15 min |
-| 2 | Designing an experiment | 15 min |
-| 3 | Live volunteer run | 15 min |
-| 4 | Inspecting the session | 20 min |
-| 5 | Fitting the psychometric model | 30 min |
-| 6 | The hierarchical group model | 25 min |
-| — | *Optional:* power analysis for your own study | 20 min |
+|---|---|---:|
+| 0 | The HRD response model and adaptive sampling | 25 min |
+| 1 | Environment and recording check | 10 min |
+| 2 | Configure a study | 20 min |
+| 3 | Run a short demonstration session | 15 min |
+| 4 | Inspect the session | 20 min |
+| 5 | Fit one psychometric function | 30 min |
+| 6 | Interpret a hierarchical group model | 25 min |
+| Optional | Plan a study with the power simulations | 20 min |
 
-Part 5 samples for one to three minutes, plus Stan compilation on the first run.
-**Run that cell once before the session** so the compiled model is cached and the room
-is not watching a progress bar.
+The demonstration session is deliberately short. Its estimates illustrate the model
+and its uncertainty; they should not be treated as stable participant-level
+measurements.
 
-## Files
+After the adaptive-sampling exercise in notebook 1, pause and open the
+[psychophysical model tutorial](https://www.the-ecg.org/Cardioception/tutorials/psychophysics.html#part-ii-adaptive-measurement-with-psi).
+Its animation shows the Psi posterior and implied response function after every trial,
+which is clearer in the rendered documentation than in a static workshop cell.
 
-```
-PREINSTALL.md               Send this to attendees a week ahead
-GETTING_STARTED.md          For attendees new to Python (linked from PREINSTALL)
-preflight.py                One command that reports what is missing
-01_running_the_hrd.ipynb    Python notebook (parts 0-3)
-02_analysing_the_hrd.ipynb  R notebook (parts 4-6)
-03_power_analysis.ipynb     R notebook, optional power-analysis module
-build_nb1.py                Regenerates notebook 1
-build_nb2.py                Regenerates notebook 2
-build_nb3.py                Regenerates notebook 3
-data/                       Where live sessions land (created at run time)
-```
+## Teaching contingencies
 
-## Running it with a room of people
+The workshop materials have explicit fallbacks:
 
-Send `PREINSTALL.md` out about a week ahead. It ends with `preflight.py`, which prints a
-per-component report and exactly what to fix, so problems surface before the session
-rather than during it. Ask people to send you the output if it does not say
-"Everything is ready".
-
-Everything degrades gracefully, which is what makes this survivable at scale:
-
-| Broken | Still works |
+| Unavailable component | Workshop path |
 |---|---|
-| CmdStan only | Everything, with precomputed model fits |
-| R entirely | Notebook 1 in full |
-| PsychoPy only | Notebook 2, on the bundled example session |
+| Pulse oximeter | Rehearse in `setup="test"`; analyze the bundled session |
+| CmdStan | Load the precomputed single-participant posterior |
+| R | Complete notebook 1 and follow the rendered outputs in notebook 2 |
+| PsychoPy | Begin with notebook 2 and the bundled session |
 
-**Everyone can run the task itself**, with or without hardware — `setup="test"` replays a
-pre-recorded pulse signal. Only the live volunteer demonstration needs an oximeter.
+Send [PREINSTALL.md](PREINSTALL.md) about one week in advance. Attendees run
+`preflight.py` at the end and send the complete output if a required component fails.
+The draft message is in [EMAIL.md](EMAIL.md).
 
-The notebooks are generated from the `build_*.py` scripts. Edit those and re-run them
-rather than patching the `.ipynb` files by hand, so the source of truth stays diffable.
+## Source files
 
-## Citing
+The notebooks are generated. Edit the build scripts and regenerate the notebooks so
+that the source remains readable and the cell identifiers remain deterministic.
 
-- Legrand et al. (2022). *The heart rate discrimination task.* Biological Psychology. [doi:10.1016/j.biopsycho.2021.108239](https://doi.org/10.1016/j.biopsycho.2021.108239)
-- Courtin et al. (2026). *Hierarchical Interoception toolbox.* Behavior Research Methods. [doi:10.3758/s13428-026-03137-3](https://doi.org/10.3758/s13428-026-03137-3)
+| Source | Generated file |
+|---|---|
+| `build_nb1.py` | `01_running_the_hrd.ipynb` |
+| `build_nb2.py` | `02_analysing_the_hrd.ipynb` |
+| `build_nb3.py` | `03_power_analysis.ipynb` |
+
+From `tutorials/workshop`:
+
+```bash
+../../cardioception-env/bin/python build_nb1.py
+../../cardioception-env/bin/python build_nb2.py
+../../cardioception-env/bin/python build_nb3.py
+```
+
+Live participant data belong in `tutorials/workshop/data/`, which is ignored by Git.
+Do not add participant data to this public repository.
+
+## References
+
+- Legrand et al. (2022). *The heart rate discrimination task.* Biological Psychology.
+  [doi:10.1016/j.biopsycho.2021.108239](https://doi.org/10.1016/j.biopsycho.2021.108239)
+- Courtin et al. (2026). *Hierarchical Bayesian modelling of interoceptive
+  psychophysics.* Behavior Research Methods.
+  [doi:10.3758/s13428-026-03137-3](https://doi.org/10.3758/s13428-026-03137-3)

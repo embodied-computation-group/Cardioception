@@ -45,9 +45,14 @@ def check_python() -> None:
     if (3, 10) <= (v.major, v.minor) <= (3, 11):
         record(PASS, "Python", f"version {ver}")
     else:
-        record(FAIL, "Python", f"version {ver} - need 3.10 or 3.11",
-               "PsychoPy's dependencies do not build above 3.11. Install Python 3.10 "
-               "or 3.11 and rebuild the virtual environment.")
+        record(
+            FAIL,
+            "Python",
+            f"version {ver} - need 3.10 or 3.11",
+            "Cardioception requires Python 3.10 or 3.11 because pywinhook provides "
+            "wheels only through 3.11. Rebuild the virtual environment with a "
+            "supported interpreter.",
+        )
 
     in_venv = sys.prefix != sys.base_prefix
     if in_venv:
@@ -104,9 +109,13 @@ def check_task_import() -> None:
     if rc == 0 and "ok" in out:
         record(PASS, "Task", "cardioception.HRD.task imports")
     else:
-        record(FAIL, "Task", "cannot import cardioception.HRD.task",
-               "This is the one that matters. Last lines:\n      "
-               + "\n      ".join(out.strip().splitlines()[-4:]))
+        record(
+            FAIL,
+            "Task",
+            "cannot import cardioception.HRD.task",
+            "Final output lines:\n      "
+            + "\n      ".join(out.strip().splitlines()[-4:]),
+        )
 
 
 def check_kernels() -> None:
@@ -249,8 +258,8 @@ def main() -> int:
                     print(f"        {ln}")
 
     print()
-    print("  Stuck? Send this entire output to the organiser. Do not spend")
-    print("  more than 30 minutes on it - arrive 15 minutes early instead.")
+    print("  If a check remains unresolved, send this output to the organiser.")
+    print("  Do not spend more than 30 minutes on it; arrive 15 minutes early instead.")
     print("-" * 72)
     return 1 if fails else 0
 

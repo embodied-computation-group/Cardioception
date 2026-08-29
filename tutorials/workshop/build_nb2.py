@@ -9,29 +9,31 @@ md = lambda s: c.append(nbf.v4.new_markdown_cell(s.strip()))
 co = lambda s: c.append(nbf.v4.new_code_cell(s.strip()))
 
 md(r"""
-# The Heart Rate Discrimination task — 2. Inspecting, fitting, and modelling
+# The Heart Rate Discrimination task: inspection and modelling
 
-**Continues from `01_running_the_hrd.ipynb`.** You should have a session of your own in
-`workshop/data/`. If you do not, every cell below falls back to a bundled example
-session, so you can still follow along.
+This notebook continues from `01_running_the_hrd.ipynb`. We use a completed behavioural
+session from `workshop/data/behavioral/` when one is available. Otherwise, every cell
+falls back to the bundled example session.
 
-By the end you will have:
+In this notebook we will:
 
-1. **inspected** a session properly, and know which checks would make you exclude it;
-2. **fitted the psychometric model** to your volunteer, with priors, diagnostics and posterior uncertainty;
-3. seen the **hierarchical group model** across 512 participants, and what it says that a single fit cannot.
+1. inspect a session and distinguish a warning from a prespecified exclusion;
+2. fit a psychometric function with priors, diagnostics, and posterior uncertainty;
+3. interpret a hierarchical model fitted to 512 participants;
+4. relate confidence ratings to accuracy with ordered beta regression.
 
 ---
 
-**Kernel:** `R (cardioception)`. Change it in the top right if it is not selected.
+**Kernel:** `R (cardioception)`. Select it in the upper-right corner before running
+the first cell.
 
 ### Why R for this half
 
 The models in the Cardioception tutorials are `brms` models, built on the
 [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception)
-(Courtin et al., 2026). Every number in the published tutorials came out of that R
-pipeline, and there is no maintained Python equivalent for these models. Data
-collection is Python; modelling is R.
+(Courtin et al., 2026). The published tutorial results use that R pipeline, and there
+is no maintained Python equivalent for these models. We collect data in Python and fit
+the models in R.
 """)
 
 co(r"""
@@ -59,7 +61,7 @@ find_repo <- function(start = getwd()) {
   }
 }
 REPO      <- find_repo()
-DATA_DIR  <- file.path(getwd(), "data")
+DATA_DIR  <- file.path(getwd(), "data", "behavioral")
 EXAMPLE   <- file.path(REPO, "docs/source/examples/templates/data/HRD/HRD_final.txt")
 SMALL     <- file.path(REPO, "tutorials/results/small")
 
@@ -71,17 +73,19 @@ cat("artefacts:", ifelse(dir.exists(SMALL), "found", "MISSING"), "\n")
 # ----------------------------------------------------------------- Part 4
 md(r"""
 ---
-## Part 4 — Inspect the session before you model it
+## Part 4. Inspect the session before modelling
 
-Fitting a model to a session you have not looked at is how bad data becomes a
-published number. The checks below take two minutes and are the difference between
-an exclusion you can defend and one you cannot.
+We inspect each session before modelling. These checks describe completion, recording
+quality, response patterns, and adaptive stimulus placement. They do not create
+exclusion rules after the fact. Exclusions should follow criteria specified for the
+study and applied without reference to the estimated effect.
 
 ### What the task wrote
 
 | File | Contents |
 |---|---|
-| `<participant><session>.txt` | **The trial table.** One row per trial |
+| `<participant><session>.txt` | Rolling trial table, rewritten after every trial |
+| `<participant><session>_final.txt` | Completed trial table, one row per trial |
 | `<participant>_signal.txt` | Full PPG trace |
 | `Intero_posterior.npy` | Joint Psi posterior after each adaptive trial |
 | `*.pickle` | The complete parameter set used |
@@ -93,25 +97,28 @@ an exclusion you can defend and one you cannot.
 | `Modality` | `Intero` (cardiac) or `Extero` (auditory control) |
 | `Alpha` | **The stimulus, in ΔBPM.** This is $x$ in the model |
 | `Decision` | `More` (faster) or `Less` (slower). This is $y$ |
-| `Confidence` | 0–100 visual analogue rating |
+| `Confidence` | 0 to 100 visual analogue rating |
 | `ResponseCorrect` | Whether the decision matched the sign of `Alpha` |
-| `DecisionProvided` | `FALSE` if they ran out of time — **check this** |
+| `DecisionProvided` | `FALSE` if the response window elapsed without a decision |
 | `listenBPM` | Measured heart rate during the listening window |
 | `TrialType` | `psi` (adaptive) or a catch trial |
 | `EstimatedThreshold` / `EstimatedSlope` | Psi's running online estimates |
 """)
 
 co(r"""
-# Load your volunteer's session if it exists; otherwise the bundled example.
-own <- list.files(DATA_DIR, pattern = "\\.txt$", full.names = TRUE, recursive = TRUE)
-own <- own[!grepl("signal|ppg", basename(own))]
+# Prefer a completed volunteer session; use the rolling file only after interruption.
+own <- list.files(DATA_DIR, pattern = "_final\\.txt$", full.names = TRUE, recursive = TRUE)
+if (length(own) == 0) {
+  own <- list.files(DATA_DIR, pattern = "\\.txt$", full.names = TRUE, recursive = TRUE)
+  own <- own[!grepl("signal|ppg", basename(own))]
+}
 
 if (length(own) > 0) {
   session_path <- own[1]
-  SOURCE <- "your volunteer"
+  SOURCE <- "the live workshop volunteer"
 } else {
   session_path <- EXAMPLE
-  SOURCE <- "the bundled example (no session of your own found)"
+  SOURCE <- "the bundled example (no live workshop session found)"
 }
 
 trials <- read_csv(session_path, show_col_types = FALSE)
@@ -129,16 +136,16 @@ trials |>
 """)
 
 md(r"""
-### Did the session actually complete?
+### Did the session complete?
 
-Three questions, in order of how often they matter:
+We begin with three questions:
 
-1. **Missing responses.** A participant who timed out on many trials was not doing the
-   task. A handful is normal; a run of them is not.
-2. **Heart rate plausibility.** `listenBPM` outside roughly 40–120 usually means the
-   sensor slipped, not that the heart did something interesting.
-3. **Did Psi converge?** If the online threshold estimate is still wandering at the end,
-   the session was too short or the responses too noisy.
+1. **Missing responses.** How many decisions and ratings were omitted, and did the
+   omissions occur in a run?
+2. **Heart rate and recording quality.** Do unexpected `listenBPM` values correspond to
+   a valid PPG trace or to sensor movement and dropout?
+3. **Adaptive range.** Did the staircase remain at a grid boundary, or did choices show
+   little relationship to stimulus intensity?
 """)
 
 co(r"""
@@ -169,15 +176,17 @@ cat("It is NOT the quantity we model - see notebook 1, Part 0.\n")
 """)
 
 md(r"""
-### The stimulus trace: watch Psi work
+### The stimulus trace
 
-This is the single most informative plot for a session. Each point is one trial's
+This is an informative first plot for a session. Each point is one trial's
 stimulus intensity, in the order presented. The line is Psi's running threshold
 estimate.
 
-A healthy session **funnels**: wide swings early while Psi is uncertain, converging to a
-narrow band around the participant's threshold. A session that never settles, or that
-pins to the ±50 edge of the grid, is telling you something went wrong.
+Psi selects intensities that inform both threshold and slope. Many trials will lie near
+the current threshold estimate, while some may be placed farther away to inform the
+tails. A valid trace therefore does not need to narrow steadily or become flat. We
+investigate sustained sampling at a grid boundary, long runs without a valid response,
+and little relationship between intensity and choice.
 """)
 
 co(r"""
@@ -206,13 +215,13 @@ p_trace + p_hist + plot_layout(widths = c(2, 1), guides = "collect")
 md(r"""
 ### Choices against stimulus intensity
 
-Now the quantity the model actually fits: the proportion of "faster" responses as a
+We next plot the quantity used by the model: the proportion of "faster" responses as a
 function of ΔBPM. Bin the trials and plot the proportions with point size showing how
 many trials fell in each bin.
 
-This is the raw material of the psychometric function. You should be able to see the
-sigmoid by eye — and roughly where it crosses 50%, which is the threshold the model
-will estimate formally.
+This is the raw material of the psychometric function. We look for an increasing
+pattern and obtain a rough indication of where it crosses 50%. The model will estimate
+that threshold while retaining uncertainty.
 """)
 
 co(r"""
@@ -238,16 +247,17 @@ ggplot(binned, aes(x, p, colour = Modality, size = n)) +
 md(r"""
 ### Confidence and response times
 
-Two more checks worth making before modelling.
+We also inspect confidence and response times before modelling.
 
-**Confidence** should use a reasonable spread of the 0–100 scale. A participant who
-answered 50 on every trial, or who used only the top of the scale, is not giving you a
-usable metacognitive signal. Note also that the HRD records confidence as a *continuous*
-VAS, which matters later: models like `hmetad` need discrete bins, and how you cut a
-continuous scale determines what the type-2 criteria can express.
+**Confidence** should use a reasonable spread of the 0 to 100 scale. A participant who
+answered 50 on every trial provides no within-person information about calibration.
+The HRD records confidence as a *continuous* VAS, which matters later: models such as
+`hmetad` need discrete bins, and how we cut a continuous scale determines what the
+type-2 criteria can express.
 
-**Response times** flag disengagement. A cluster of very fast responses usually means
-button-mashing rather than judging.
+**Response times** can identify procedural anomalies, including a run of responses that
+is too fast to reflect the intended judgement. Any threshold should be justified for
+the study rather than inferred from this participant.
 """)
 
 co(r"""
@@ -280,26 +290,26 @@ p_conf + p_conf_acc + p_rt + plot_layout(guides = "collect")
 """)
 
 md(r"""
-### A collection checklist
+### Questions to document during collection
 
-Before a session enters your analysis:
+For each session, record:
 
-- [ ] Fewer than ~10% missing decisions
-- [ ] `listenBPM` plausible throughout, no sensor dropout
-- [ ] Stimulus trace funnels rather than wandering or pinning to the grid edge
-- [ ] Confidence uses a real range of the scale
-- [ ] No long run of near-instant responses
-- [ ] Enough trials per condition — below ~30 the slope will not be identified
+- whether the planned number of trials and modalities were completed;
+- the number and pattern of missing decisions and ratings;
+- whether the PPG trace supports the trial-level heart-rate estimates;
+- whether intensity and choice show the expected monotonic relationship;
+- whether the staircase spent sustained periods at a parameter-grid boundary;
+- how the participant used the confidence scale; and
+- whether response-time patterns suggest a procedural problem.
 
-Write your exclusion rules down **before** you look at the effect. Deciding what counts
-as a bad session after seeing which way it pushes your result is how a defensible
-pipeline stops being one.
+The protocol should define which observations lead to exclusion. We apply those rules
+without reference to the direction or size of the study result.
 """)
 
 # ----------------------------------------------------------------- Part 5
 md(r"""
 ---
-## Part 5 — Fit the psychometric model to your volunteer
+## Part 5. Fit one psychometric function
 
 Two Bayesian procedures run in this workflow, and they have different jobs:
 
@@ -316,15 +326,15 @@ $$p_i = \frac{\ell}{2} + (1-\ell)\,\Phi\!\left[e^{\beta}(x_i-\alpha)\right], \qq
 with $\alpha$ the threshold in ΔBPM, $\beta = -\log\sigma$ the log slope, and $\ell$ the
 lapse rate on the logit scale.
 
-> ⚠️ Remember the sign convention: **larger $\beta$ = better** discrimination, while
+> **Slope parameterization.** Larger $\beta$ means better discrimination, while
 > larger Psi $\sigma$ = **worse**. They run in opposite directions.
 
 ### If CmdStan is not installed
 
 Sampling needs CmdStan, which not everyone will have got working. The next cell checks,
 and if it is missing the rest of Part 5 **loads a precomputed fit of the example
-participant** instead. Every figure and number still appears; you simply do not sample it
-yourself. Nothing downstream breaks.
+participant** instead. The remaining figures and summaries use the same posterior-draw
+structure, so the rest of the notebook is unchanged.
 """)
 
 co(r"""
@@ -337,7 +347,7 @@ if (CAN_FIT) {
   cat("CmdStan", as.character(cmdstanr::cmdstan_version()), "- we will sample the model.\n")
 } else {
   cat("CmdStan not available - Part 5 will load a precomputed fit instead.\n")
-  cat("Everything still works; you just will not sample it yourself.\n")
+  cat("The remaining cells will use the precomputed posterior.\n")
 }
 """)
 
@@ -346,7 +356,7 @@ md(r"""
 
 Trials at the same intensity are exchangeable, so we collapse them into
 successes-out-of-trials. This is algebraically identical to the Bernoulli likelihood and
-samples faster. Catch trials are kept — they did not update Psi, but they are valid
+samples faster. Catch trials are kept. They did not update Psi, but they are valid
 observations and they sample the tails, where the lapse rate is identified.
 """)
 
@@ -372,7 +382,7 @@ md(r"""
 
 `brms` compiles the non-linear formula to Stan. Two helper functions are needed in R
 itself: Stan provides `erf()` but R does not, and `posterior_epred()` evaluates the same
-expression in R at post-processing time — so without them, fitting succeeds and
+expression in R at post-processing time. Without them, fitting succeeds and
 post-processing fails.
 
 The priors come from the normative refit in the Hierarchical Interoception toolbox:
@@ -383,8 +393,9 @@ The priors come from the normative refit in the Hierarchical Interoception toolb
 | `beta ~ normal(-2.3, 0.34)` | $\sigma \approx 10$ ΔBPM | Typical discrimination precision |
 | `lambda ~ normal(-4.32, 1.96)` | ≈1.3% lapse | Lapses are rare but possible |
 
-These are *weakly informative and empirically grounded*, not flat. With 20–60 trials from
-one person, flat priors would let the sampler wander into absurd regions.
+These are empirically informed priors from the reference population, not flat priors.
+In a short single-participant session, they regularize parameters that the data only
+weakly constrain.
 """)
 
 co(r"""
@@ -405,8 +416,8 @@ priors <- c(
   set_prior("normal(-4.32, 1.96)",  class = "b", nlpar = "lambda", coef = "Intercept")
 )
 
-# Always check the coefficient names your formula actually generates. A typo in a
-# non-linear nlpar leaves an unintended FLAT prior and brms will not warn you.
+# Check the coefficient names generated by the formula. A typo in a non-linear nlpar
+# leaves an unintended flat prior without a warning from brms.
 print(as.data.frame(get_prior(bff, data = model_df))[, c("prior","class","coef","nlpar")],
       row.names = FALSE)
 """)
@@ -463,8 +474,8 @@ cat(sprintf("%d posterior draws, %s\n", nrow(post), FIT_SOURCE))
 md(r"""
 ### Read the diagnostics before the estimates
 
-Non-negotiable, and in this order. A beautiful posterior plot from a broken sampler is
-worse than no plot at all.
+We check computation before interpreting the posterior. A summary from a sampler that
+did not explore the posterior reliably is not a valid estimate.
 
 | Check | Requirement |
 |---|---|
@@ -506,7 +517,7 @@ md(r"""
 ### From priors to posterior
 
 The upper row compares prior and posterior draws for each parameter. The lower row shows
-post-warmup draws in sampling order — a *computational* diagnostic, not a record of how
+post-warmup draws in sampling order. This is a *computational* diagnostic, not a record of how
 the participant learned. All four chains should explore the same region without trends
 or long sticky periods.
 """)
@@ -547,8 +558,8 @@ md(r"""
 ### The fitted psychometric function
 
 Carrying every posterior draw through the psychometric function gives a *distribution*
-of response probabilities at each intensity — hence the credible bands. This is what a
-Bayesian fit buys you over the single point estimate Psi reports online.
+of response probabilities at each intensity, which produces the credible bands. This
+retains uncertainty that is absent from the single point estimate Psi reports online.
 
 We evaluate the curve directly from the draws rather than through `posterior_epred()`, so
 this works identically whether the fit was sampled or loaded.
@@ -631,7 +642,7 @@ Part 6 is for.
 # ----------------------------------------------------------------- Part 6
 md(r"""
 ---
-## Part 6 — The hierarchical group model
+## Part 6. The hierarchical group model
 
 The tutorial models were fitted to **512 participants**, each completing both the cardiac
 and auditory conditions, with age, gender and BMI recorded.
@@ -648,8 +659,10 @@ Rscript tutorials/R/01_fit.R psy_full        # the full model
 Rscript tutorials/R/02_summarise.R
 ```
 
-**Expect hours, not minutes.** Cut it down first to check the pipeline runs end to end —
-but do not report anything from a cut-down fit:
+The 512-participant fits used here take hours. Models for more typical sample sizes can
+complete within minutes, depending on the formula, hardware, and sampler settings. Use
+a short test fit to check the pipeline from end to end, but do not report estimates
+from that test:
 
 ```bash
 HRD_CHAINS=2 HRD_ITER=800 HRD_WARMUP=400 Rscript tutorials/R/01_fit.R psy_intero
@@ -679,20 +692,20 @@ cat("subject-level estimates:", nrow(psy_subj), "rows,",
 """)
 
 md(r"""
-### Why hierarchical, concretely
+### Why fit participants hierarchically
 
-Every participant is estimated *with* the group rather than in isolation. Someone with 60
-clean trials contributes a sharp estimate; someone with 25 noisy ones contributes a vague
-estimate and is pulled further toward the group mean. That pooling is not a nuisance — it
-is the model correctly refusing to take a noisy participant at face value.
+Every participant is estimated with the group rather than in isolation. A participant
+with more informative trials contributes a sharper estimate. A participant with fewer
+or noisier trials contributes a more uncertain estimate and is pooled more strongly
+toward the group mean.
 
-This has a direct consequence for study design: because the model uses the data more
-efficiently, it detects real effects more often than fitting each participant separately
-and running a test on the results. In the toolbox's power simulations the gain is large for
-threshold and smaller but consistent for slope — at 60 participants with 30 trials and
-d = 0.5, slope power is 0.87 for the hierarchical model against 0.73 for a *t*-test on
-per-participant estimates. The optional notebook 3 shows how to use that when planning a
-study.
+This has a direct consequence for study design. In the toolbox simulations, a
+standardized threshold difference of 0.5 reached 80% power with 20 participants and 30
+trials per condition under the hierarchical analysis, compared with 30 participants
+for the conventional two-stage analysis. For a slope difference of 0.5 with 50
+participants, the hierarchical analysis required 50 trials rather than 60. These
+examples describe the simulated within-participant design, not universal sample-size
+rules. Notebook 3 shows how to inspect the full design grid.
 
 The plot below shows the spread of individual threshold and slope estimates behind the
 population parameters.
@@ -775,11 +788,11 @@ cat(sprintf("Cardiac sigma       %.2f dBPM   (larger = poorer discrimination)\n"
 """)
 
 md(r"""
-Two findings worth pausing on.
+The fitted model illustrates two distinct findings.
 
-**The cardiac threshold sits about 9–10 ΔBPM below the auditory one.** People judge tones
+**The cardiac threshold sits about 9 to 10 ΔBPM below the auditory one.** People judge tones
 roughly 9 BPM *slower* than their measured heart rate as equally likely to be faster or
-slower — a systematic underestimation of their own heart rate. The auditory condition,
+slower, indicating systematic underestimation of their own heart rate. The auditory condition,
 where the reference is an external tone sequence, shows almost no such bias. That
 contrast is the argument that this is about cardiac belief and not a general
 tone-comparison artefact.
@@ -792,8 +805,8 @@ their heart, and either could have moved without the other.
 
 Once an interaction is in the model, a main-effect coefficient describes **the reference
 condition only**. `b_beta_genderMale` is the gender contrast in the *auditory* condition.
-The cardiac contrast is the sum of the main effect and the interaction — which you should
-compute from the draws, so the uncertainty comes along with it.
+The cardiac contrast is the sum of the main effect and the interaction. We compute that
+sum for every posterior draw so that its uncertainty is retained.
 """)
 
 co(r"""
@@ -853,8 +866,8 @@ p
 md(r"""
 ### The confidence model
 
-Confidence gets its own model, and it is **not** a psychometric function. The HRD records
-a continuous 0–100 VAS with real mass piled at both ends — participants use the extremes.
+Confidence has a separate model rather than a psychometric function. The HRD records
+a continuous 0 to 100 VAS with observations at both endpoints.
 Neither a Gaussian nor a plain beta likelihood can represent that, so the tutorials use
 **ordered beta regression**:
 
@@ -863,16 +876,17 @@ Confidence ~ Accuracy * (Modality + gender + age_z) + bmi_z +
              (Accuracy * Modality | subj)
 ```
 
-The `Accuracy × Modality` interaction is the interesting term: it asks whether the
-*confidence gap between correct and incorrect trials* — a calibration signal — differs
-between cardiac and auditory judgements.
+The `Accuracy × Modality` interaction asks whether the confidence difference between
+correct and incorrect trials, our measure of calibration, differs between cardiac and
+auditory judgements.
 
-> **Why not M-ratio / meta-d′ here?** The tutorials deliberately do not use it for HRD
-> data. It needs discrete confidence bins, and `hmetad` puts a log link on
-> M = meta-d′/d′, so any cell with d′ ≤ 0 or meta-d′ ≤ 0 is *unrepresentable* and piles
-> against a boundary. Excluding those cells selects on the dependent variable, which
-> biases the very contrast you are estimating toward zero. The ordered beta model on raw
-> confidence avoids both problems.
+> **Why not M-ratio here?** Psi places trials near each participant's point of
+> subjective equality rather than maintaining stable objective accuracy. For a biased
+> participant, one objectively defined stimulus class may therefore contain very few
+> trials. Under this design, $d'$ also combines response bias with psychophysical
+> precision. Meta-$d'$ would additionally require us to bin the continuous confidence
+> scale. We instead model trial-level confidence and describe the association with
+> accuracy as metacognitive calibration.
 """)
 
 co(r"""
@@ -901,25 +915,24 @@ cat("between cardiac and auditory judgements.\n")
 
 md(r"""
 ---
-## What you have done
+## Summary
 
-1. Built intuition for threshold, slope and lapse on simulated data you could steer.
-2. Installed Cardioception and verified the oximeter was producing a real signal.
-3. Designed a task and collected a live session.
-4. Inspected that session against a quality checklist.
-5. Fitted the psychometric model with grounded priors, checked the sampler, and reported on interpretable scales.
-6. Read a 512-participant hierarchical model, including how to read an interaction without misdescribing it.
+1. We connected the HRD choices to threshold, slope, and lapse rate.
+2. We inspected a completed session before modelling it.
+3. We fitted one psychometric function with empirically informed priors and checked the sampler.
+4. We interpreted population coefficients, interactions, and individual variation in a 512-participant model.
+5. We treated confidence bias and metacognitive calibration as distinct quantities.
 
 ### Where to go next
 
-| If you want to | Go to |
+| Next step | Resource |
 |---|---|
 | Run a real study | `wrappers/` in the repository |
-| Reproduce the group fits | `tutorials/R/`, and expect hours |
-| Understand the models properly | The [tutorial pages](https://www.the-ecg.org/Cardioception/) |
-| Adapt the models to your design | [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception) |
+| Reproduce the 512-participant group fits | `tutorials/R/`; these fits take hours |
+| Study the model derivations and diagnostics | The [tutorial pages](https://www.the-ecg.org/Cardioception/) |
+| Adapt the models to a new design | [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception) |
 
-### Three things to carry away
+### Main conclusions
 
 - **Model responses, not accuracy.** Accuracy throws away the sign of the bias, which is the main thing the HRD recovers.
 - **Threshold and slope are separate claims.** An effect on one is not evidence for the other.
@@ -930,6 +943,7 @@ md(r"""
 - Legrand et al. (2022). *The heart rate discrimination task.* Biological Psychology. [doi:10.1016/j.biopsycho.2021.108239](https://doi.org/10.1016/j.biopsycho.2021.108239)
 - Courtin et al. (2026). *Hierarchical Interoception toolbox.* Behavior Research Methods. [doi:10.3758/s13428-026-03137-3](https://doi.org/10.3758/s13428-026-03137-3)
 - Bürkner (2017). *brms.* Journal of Statistical Software. [doi:10.18637/jss.v080.i01](https://doi.org/10.18637/jss.v080.i01)
+- Kubinec (2023). *Ordered beta regression.* Political Analysis. [doi:10.1017/pan.2022.20](https://doi.org/10.1017/pan.2022.20)
 """)
 
 nb["cells"] = c
