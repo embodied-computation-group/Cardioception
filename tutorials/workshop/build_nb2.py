@@ -686,6 +686,14 @@ clean trials contributes a sharp estimate; someone with 25 noisy ones contribute
 estimate and is pulled further toward the group mean. That pooling is not a nuisance — it
 is the model correctly refusing to take a noisy participant at face value.
 
+This has a direct consequence for study design: because the model uses the data more
+efficiently, it detects real effects more often than fitting each participant separately
+and running a test on the results. In the toolbox's power simulations the gain is large for
+threshold and smaller but consistent for slope — at 60 participants with 30 trials and
+d = 0.5, slope power is 0.87 for the hierarchical model against 0.73 for a *t*-test on
+per-participant estimates. The optional notebook 3 shows how to use that when planning a
+study.
+
 The plot below shows the spread of individual threshold and slope estimates behind the
 population parameters.
 """)
