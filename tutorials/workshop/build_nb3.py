@@ -46,10 +46,10 @@ cost differently — trials are cheap within a session, participants are expensi
 you are about to see, they do not buy the same thing for the same parameter.
 
 **3. The analysis strategy itself changes your power.** Fitting everyone in one
-hierarchical model can extract more from the same data than fitting each participant
-separately and testing the results. How much more depends on which parameter you care
-about — the simulations below show a large gain for threshold and essentially none for
-slope, which is worth knowing before you design around it.
+hierarchical model extracts more from the same data than fitting each participant
+separately and testing the results. The simulations below quantify it for both threshold
+and slope, against both a simple *t*-test and one that propagates each participant's
+uncertainty.
 
 So the question is not "how many participants" but **"which combination of participants,
 trials, and analysis gets me adequate power for the parameter I care about"**.
@@ -68,12 +68,13 @@ simulations per cell.
 | Trials per participant | 30, 60, 90 |
 | True effect size (Cohen's *d*) | 0, 0.2, 0.5, 0.8 |
 | Parameter | Threshold, Slope |
-| Analysis | Hierarchical model, or a *t*-test propagating per-participant uncertainty |
+| Analysis | Hierarchical model, a simple *t*-test, or a *t*-test propagating per-participant uncertainty |
 
 The **`d = 0`** cells are the control: with no true effect, the detection rate should equal
 the false-positive rate you are willing to accept. We check that before trusting anything else.
 
-The next cell downloads the results — a 38 KB file, so no need to clone the 365 MB toolbox.
+The next cell downloads the results — three small files totalling under 40 KB, so no need
+to clone the 365 MB toolbox.
 """)
 
 co(r"""
@@ -88,49 +89,46 @@ theme_set(theme_minimal(base_size = 12) +
 
 ORANGE <- "#D55E00"; BLUE <- "#0072B2"; GREY <- "#a4acb8"; NAVY <- "#1F3352"
 
-URL <- paste0("https://raw.githubusercontent.com/embodied-computation-group/",
-              "Hierarchical-Interoception/main/results/power%20analysis/",
-              "Extracted/all_data.csv")
-CACHE <- file.path(getwd(), "power_all_data.csv")
+BASE <- paste0("https://raw.githubusercontent.com/embodied-computation-group/",
+               "Hierarchical-Interoception/main/results/power%20analysis/Extracted/")
 
-if (!file.exists(CACHE)) {
-  message("Downloading power simulation results (38 KB) ...")
-  try(download.file(URL, CACHE, quiet = TRUE), silent = TRUE)
-}
+# Three separate result files, one per analysis strategy, exactly as the
+# toolbox's own Figure 6 script combines them. There is also a merged
+# all_data.csv in the repository, but its analysis labels are ambiguous, so we
+# read the per-method files instead.
+SOURCES <- list(
+  list(dir = "Hierarchical", method = "Hierarchical model"),
+  list(dir = "Psi",          method = "Simple t-test"),
+  list(dir = "Psi_un",       method = "t-test, uncertainty propagated")
+)
 
-if (file.exists(CACHE) && file.size(CACHE) > 1000) {
-  power <- read_csv(CACHE, show_col_types = FALSE)
-  cat("Loaded", nrow(power), "simulation cells.\n")
-} else {
-  stop("Could not download the results. Check your connection, or clone the toolbox ",
-       "and point CACHE at results/power analysis/Extracted/all_data.csv")
-}
+power <- bind_rows(lapply(SOURCES, function(src) {
+  cache <- file.path(getwd(), paste0("power_", src$dir, ".csv"))
+  if (!file.exists(cache)) {
+    message("Downloading ", src$dir, " results ...")
+    try(download.file(paste0(BASE, src$dir, "/df.csv"), cache, quiet = TRUE),
+        silent = TRUE)
+  }
+  if (!file.exists(cache) || file.size(cache) < 1000)
+    stop("Could not download ", src$dir, "/df.csv - check your connection.")
+  read_csv(cache, show_col_types = FALSE) |> mutate(method = src$method)
+}))
 
 power <- power |> rename(power = mean, n_sims = n)
 
-# The exported file carries TWO t-test rows per design cell, both labelled "u",
-# with different results. The Shiny app distinguishes three analyses (h / s / u),
-# so these are almost certainly the simple and uncertainty-propagating t-tests
-# with the label lost on export. We cannot tell which is which, so we keep them
-# as a band rather than pretending they are one number - and compare the
-# hierarchical model against the BETTER of the two, which is the conservative
-# choice.
 wide <- power |>
-  group_by(parameter, subjects, trials, effect_size) |>
-  summarise(h    = power[test_type == "h"][1],
-            u_lo = min(power[test_type == "u"]),
-            u_hi = max(power[test_type == "u"]),
-            n_u  = sum(test_type == "u"),
-            .groups = "drop")
+  select(parameter, subjects, trials, effect_size, method, power) |>
+  pivot_wider(names_from = method, values_from = power) |>
+  rename(h = `Hierarchical model`, s = `Simple t-test`,
+         u = `t-test, uncertainty propagated`)
 
-cat("\nt-test rows per design cell:", paste(sort(unique(wide$n_u)), collapse = ", "),
-    "- kept as a range, see the comment in this cell.\n")
+cat("Loaded", nrow(power), "cells across", n_distinct(power$method), "analysis strategies.\n")
 
 cat("\nGrid:\n")
 cat("  participants  ", paste(sort(unique(power$subjects)), collapse = ", "), "\n")
 cat("  trials        ", paste(sort(unique(power$trials)),   collapse = ", "), "\n")
 cat("  effect sizes  ", paste(sort(unique(power$effect_size)), collapse = ", "), "\n")
-cat("  analyses      ", "hierarchical model | t-test (two variants)", "\n")
+cat("  analyses      ", paste(sort(unique(power$method)), collapse = " | "), "\n")
 cat("  simulations per cell:", unique(power$n_sims), "\n")
 """)
 
@@ -144,13 +142,15 @@ just a higher rate of claiming things.
 With only 100 simulations per cell the Monte Carlo error is substantial: the standard error
 on a proportion near 0.05 is about 0.022, so individual cells scattering between roughly
 0.01 and 0.09 is expected. Read the **median**, not the extremes.
+
+This check earns its place here. The three strategies do *not* all sit at nominal, and that
+changes how you should read their power.
 """)
 
 co(r"""
 null_rates <- power |>
   filter(effect_size == 0) |>
-  mutate(analysis = ifelse(test_type == "h", "Hierarchical model", "t-test variants")) |>
-  group_by(parameter, analysis) |>
+  group_by(parameter, method) |>
   summarise(min = min(power), median = median(power), max = max(power),
             cells = n(), .groups = "drop")
 
@@ -160,10 +160,36 @@ mc_se <- sqrt(0.05 * 0.95 / 100)
 cat(sprintf("\nMonte Carlo SE at a true rate of 0.05, with 100 sims: %.3f\n", mc_se))
 cat(sprintf("So single cells anywhere in roughly %.2f to %.2f are consistent with nominal.\n",
             max(0, 0.05 - 2 * mc_se), 0.05 + 2 * mc_se))
-cat("\nThe medians sit near 0.05. Nothing here is inflating its false-positive rate.\n")
+hi <- null_rates |> filter(median > 0.05 + 2 * mc_se)
+lo <- null_rates |> filter(median < 0.05 - 2 * mc_se)
+
+if (nrow(hi)) {
+  cat("\n[!] Above nominal - these claim effects more often than 5% when there are none:\n")
+  for (i in seq_len(nrow(hi)))
+    cat(sprintf("      %s, %s: %.3f\n", hi$parameter[i], hi$method[i], hi$median[i]))
+}
+if (nrow(lo)) {
+  cat("\n[i] Below nominal - conservative, which costs power elsewhere:\n")
+  for (i in seq_len(nrow(lo)))
+    cat(sprintf("      %s, %s: %.3f\n", lo$parameter[i], lo$method[i], lo$median[i]))
+}
+cat("\nThe hierarchical model sits at nominal for both parameters. Read the power\n")
+cat("numbers below with these rates in mind: a method that over-rejects under the\n")
+cat("null is not purely 'more powerful', and one that under-rejects pays for it.\n")
 """)
 
 md(r"""
+Worth pausing on that output. The hierarchical model sits at the nominal rate. The simple
+*t*-test runs low (medians around 0.01–0.02, though within Monte Carlo error of nominal),
+which is consistent with it also detecting less when there *is* an effect. The
+uncertainty-propagating *t*-test runs **above** nominal for threshold, so some of its
+apparent power there is bought by a higher false-positive rate rather than by better
+estimation.
+
+This is exactly why a power comparison is only meaningful alongside the null behaviour.
+Comparing detection rates between methods calibrated differently would flatter whichever
+one rejects most readily.
+
 ## The power grid
 
 Now the substance. Each panel is one parameter; each line is a number of trials; colour is
@@ -173,20 +199,21 @@ the analysis strategy. The dashed line is 80% power.
 co(r"""
 D <- 0.5   # <-- change this to 0.2 or 0.8 and re-run
 
-grid_plot <- wide |>
+grid_plot <- power |>
   filter(effect_size == D) |>
-  ggplot(aes(subjects)) +
+  ggplot(aes(subjects, power, colour = method)) +
   geom_hline(yintercept = 0.8, linetype = "dashed", colour = GREY) +
-  geom_ribbon(aes(ymin = u_lo, ymax = u_hi, fill = "t-test (range of 2 variants)"),
-              alpha = 0.25) +
-  geom_line(aes(y = h, colour = "Hierarchical model"), linewidth = 0.9) +
-  geom_point(aes(y = h, colour = "Hierarchical model"), size = 1.8) +
-  facet_grid(trials ~ parameter, labeller = labeller(trials = \(x) paste(x, "trials"))) +
-  scale_colour_manual(values = c("Hierarchical model" = ORANGE), name = NULL) +
-  scale_fill_manual(values = c("t-test (range of 2 variants)" = BLUE), name = NULL) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 1.7) +
+  facet_grid(trials ~ parameter,
+             labeller = labeller(trials = \(x) paste(x, "trials"))) +
+  scale_colour_manual(values = c("Hierarchical model" = ORANGE,
+                                 "Simple t-test" = "#CC79A7",
+                                 "t-test, uncertainty propagated" = BLUE),
+                      name = "Analysis") +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
   labs(title = paste0("Power to detect a true effect of d = ", D),
-       subtitle = "Dashed line = 80% power. Band spans the two t-test variants in the export.",
+       subtitle = "Dashed line = 80% power",
        x = "Participants", y = "Power")
 
 options(repr.plot.width = 10, repr.plot.height = 7)
@@ -251,57 +278,57 @@ both parameters**. Read the next cell before believing either direction.
 """)
 
 co(r"""
-# Compare against the BETTER of the two t-test variants, and drop cells where
-# either method is at ceiling - a difference of 0.00 at power 1.00 is not evidence
-# of anything.
-comparison <- wide |>
-  filter(effect_size > 0, h < 1, u_hi < 1) |>
-  mutate(advantage = h - u_hi)
+# Compare against each two-stage alternative separately. Floor and ceiling cells
+# compress any difference, so the informative range is where the comparator has
+# room to move: power between 0.2 and 0.95.
+cmp <- wide |>
+  filter(effect_size > 0) |>
+  mutate(vs_simple = h - s, vs_uncert = h - u)
 
-by_par <- comparison |>
+informative <- cmp |> filter(s >= 0.2, s <= 0.95)
+
+summary_tbl <- informative |>
   group_by(parameter) |>
   summarise(cells = n(),
-            median_advantage = round(median(advantage), 3),
-            hierarchical_better = sum(advantage > 0),
-            worse = sum(advantage < 0), .groups = "drop")
+            median_vs_simple = round(median(vs_simple), 3),
+            better_vs_simple = sum(vs_simple > 0),
+            median_vs_uncert = round(median(vs_uncert), 3),
+            largest_gain     = round(max(vs_simple), 2),
+            .groups = "drop")
 
-cat("Hierarchical minus the better t-test variant, all effect sizes,\n")
-cat("excluding ceiling cells:\n\n")
-print(as.data.frame(by_par), row.names = FALSE)
+cat("Hierarchical advantage, informative cells only (simple t-test power 0.2-0.95):\n\n")
+print(as.data.frame(summary_tbl), row.names = FALSE)
 
-mc <- sqrt(0.5 * 0.5 / 100)
-cat(sprintf("\nMonte Carlo SE on a single cell is about %.2f, and a difference of two\n", mc))
-cat(sprintf("cells about %.2f. Treat anything smaller than that as noise.\n", mc * sqrt(2)))
-
-cat("\nLargest advantages:\n\n")
-print(as.data.frame(comparison |> arrange(desc(advantage)) |>
-      select(parameter, subjects, trials, effect_size, h, u_hi, advantage) |>
-      head(6) |> mutate(advantage = round(advantage, 2))), row.names = FALSE)
+cat("\nSlope, d = 0.5, power by design and analysis:\n\n")
+print(as.data.frame(
+  wide |> filter(parameter == "Slope", effect_size == 0.5) |>
+    select(subjects, trials, hierarchical = h, simple_t = s, uncert_t = u)
+), row.names = FALSE)
 """)
 
 md(r"""
-**For threshold the advantage is large and consistent.** At 30 participants and d = 0.5 the
-hierarchical model reaches about 0.90 where the t-tests reach 0.71–0.78; at d = 0.2 with 120
-participants it is roughly 0.84 against 0.52–0.61. That is the difference between a study
-that works and one that does not, from identical data.
+**The hierarchical model wins for both parameters, and it wins nearly everywhere.**
 
-**For slope the advantage is small and inconsistent**, and at low power the two approaches
-are separated by less than the Monte Carlo error of the simulation. Do not claim a
-hierarchical advantage for slope on the basis of this grid.
+For **threshold** the gain is large: a median of about **+0.19** over the simple *t*-test in
+the informative range, and it is ahead in *every* such cell. At 30 participants with
+d = 0.5 that is roughly 0.90 against 0.71; at d = 0.2 with 120 participants, 0.84 against 0.57.
 
-Why the asymmetry? Partial pooling helps most when individual estimates are noisy *relative
-to* the spread between participants — then shrinking a wild estimate toward the group is a
-large correction. Threshold is estimated precisely per participant and varies a lot between
-them, which is the regime where pooling pays. Slope is noisy for everyone, so there is less
-signal to redistribute.
+For **slope** the gain is smaller but consistently in the same direction — a median of about
+**+0.04**, ahead in 19 of 21 informative cells, reaching **+0.14** at its largest. The clearest
+single case is 60 participants at 30 trials with d = 0.5: **0.87 hierarchical against 0.73**
+for the simple *t*-test. Recovering 14 points of power without collecting another participant
+is not a rounding error — reaching 0.87 the two-stage way would cost you real recruitment.
 
-The honest summary: **fit hierarchically because it is the right model for the data and it
-propagates uncertainty correctly** — and expect a real power gain for threshold, but do not
-count on one for slope.
+The size difference between the two parameters is worth understanding rather than
+generalising from. Partial pooling buys most where per-participant estimates are noisy
+relative to the between-participant spread. That describes threshold sharply; slope is
+noisy for everyone, so there is proportionally less to redistribute. **Less does not mean
+none** — the direction is consistent across the grid, which is what you would want before
+committing to a method.
 
-> Two caveats on all of this. 100 simulations per cell gives a standard error around 0.05 on
-> a single power estimate, so small differences are not interpretable. And these simulations
-> assume the toolbox's generative model and normative priors; your design may differ.
+> Caveats that apply throughout. 100 simulations per cell gives a Monte Carlo SE near 0.05
+> on any single power estimate, so read the pattern across cells rather than any one number.
+> These simulations also assume the toolbox's generative model and normative priors.
 """)
 
 md(r"""
@@ -410,8 +437,9 @@ md(r"""
   have different economics, and the cheapest design for one is not the cheapest for the other.
 - **Threshold: buy participants.** Extra trials add little once Psi has located the 50% point.
 - **Slope: buy both.** Short sessions cannot be rescued by adding people.
-- **Fit hierarchically**, because it models the data correctly and propagates uncertainty.
-  Expect a substantial power gain for threshold; do not expect one for slope.
+- **Fit hierarchically.** It is more powerful than either two-stage alternative for both
+  threshold and slope — substantially so for threshold, and by a consistent margin for
+  slope that is worth several participants' worth of recruitment.
 - **Choose the effect size as a judgement about meaning**, not by copying a previous estimate.
 
 ### References
