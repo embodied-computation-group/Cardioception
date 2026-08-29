@@ -493,8 +493,8 @@ DESIGN = dict(
     catchTrials   = 0.0,
     device        = "mouse",
     language      = "english",
-    setup         = "behavioral",
-)
+    setup         = "test",      # "test" = simulated pulse, no hardware needed
+)                                #  switch to "behavioral" if you have an oximeter
 # ------------------------------------------------------------------------
 
 def describe(d):
@@ -567,27 +567,57 @@ md(r"""
 ---
 ## Part 3 — Run it on a volunteer
 
-**You need a volunteer at the keyboard with the oximeter on a finger.**
+There are two ways to run this, and **you should do the first one yourself**.
 
-Before you start:
+### Path A — everyone: `setup="test"`
+
+With `setup="test"` the task replays a **pre-recorded pulse signal**, so it runs on any
+laptop with no hardware at all. Everything else is the real experiment: the same tones,
+the same Psi staircase, the same trial structure, the same output files.
+
+Run it. Do the trials properly rather than clicking through — you will be analysing your
+own responses in notebook 2, and it is much more interesting when the data is really yours.
+
+Put **headphones on** if the room is noisy. The task is a listening task and the tones
+matter.
+
+### Path B — the demonstrator: `setup="behavioral"`
+
+One machine with a pulse oximeter runs the genuine cardiac version, projected, so everyone
+sees what real interoceptive data collection looks like. Set `setup="behavioral"` in the
+design cell and `SERIAL_PORT` below.
+
+Before that run:
 
 - [ ] `check_device` gave **"clean physiological signal"**
-- [ ] Sensor on the **non-dominant** hand, hand resting still and below heart level
-- [ ] Volunteer can hear the tones clearly (**headphones** if the room is noisy)
+- [ ] Sensor on the **non-dominant** hand, resting still and below heart level
+- [ ] Volunteer can hear the tones clearly
 - [ ] They know **escape aborts** the task
-- [ ] Everyone else stays quiet — this is a listening task
+- [ ] Everyone else stays quiet
 
-Set the serial port, then run the next cell. It launches the task in a **separate
-process**, which matters: PsychoPy takes over the display, and if it crashed inside
-the notebook kernel it would take the kernel with it.
+---
+
+Either way, the next cell launches the task in a **separate process**. That matters:
+PsychoPy takes over the display, and a crash inside the notebook kernel would take the
+kernel with it.
+
+> **The window opens fullscreen and takes over your screen.** Escape aborts at any point.
+> If you abort during the tutorial, no data is written — the task saves from the first
+> real trial onward.
 """)
 
 co(r"""
 from pathlib import Path
 import subprocess, sys, textwrap, datetime
 
-SERIAL_PORT = "/dev/cu.usbserial-FT4TET5J"   # <-- set to your port from Part 1
-RUN_TUTORIAL = True                          # False to skip straight to trials
+# Only used when setup="behavioral". Ignored entirely in test mode.
+SERIAL_PORT  = "/dev/cu.usbserial-FT4TET5J"   # <-- your port from Part 1
+RUN_TUTORIAL = True                           # False to skip straight to the trials
+
+if DESIGN["setup"] == "test":
+    print("Test mode: simulated pulse signal, no hardware used.\n")
+else:
+    print(f"Behavioral mode: recording from {SERIAL_PORT}\n")
 
 workshop = Path.cwd()
 result_dir = workshop / "data"

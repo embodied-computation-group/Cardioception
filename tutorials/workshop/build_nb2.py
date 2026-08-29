@@ -319,6 +319,29 @@ lapse rate on the logit scale.
 > ⚠️ Remember the sign convention: **larger $\beta$ = better** discrimination, while
 > larger Psi $\sigma$ = **worse**. They run in opposite directions.
 
+### If CmdStan is not installed
+
+Sampling needs CmdStan, which not everyone will have got working. The next cell checks,
+and if it is missing the rest of Part 5 **loads a precomputed fit of the example
+participant** instead. Every figure and number still appears; you simply do not sample it
+yourself. Nothing downstream breaks.
+""")
+
+co(r"""
+CAN_FIT <- tryCatch({
+  suppressMessages(library(cmdstanr))
+  !is.null(cmdstanr::cmdstan_version()) && dir.exists(cmdstanr::cmdstan_path())
+}, error = function(e) FALSE)
+
+if (CAN_FIT) {
+  cat("CmdStan", as.character(cmdstanr::cmdstan_version()), "- we will sample the model.\n")
+} else {
+  cat("CmdStan not available - Part 5 will load a precomputed fit instead.\n")
+  cat("Everything still works; you just will not sample it yourself.\n")
+}
+""")
+
+md(r"""
 ### Aggregate to binomial cells
 
 Trials at the same intensity are exchangeable, so we collapse them into
@@ -389,54 +412,52 @@ print(as.data.frame(get_prior(bff, data = model_df))[, c("prior","class","coef",
 """)
 
 md(r"""
-### Check the priors before seeing the data
-
-Sampling from the prior alone and drawing the *implied psychometric curves* is far more
-informative than inspecting three prior densities separately. It answers the question
-that matters: does this combination of priors put probability on response curves that
-could plausibly happen over the intensities the participant will meet?
-""")
-
-co(r"""
-prior_fit <- brm(
-  bff, data = model_df, prior = priors, sample_prior = "only",
-  chains = 2, iter = 1000, refresh = 0, backend = "cmdstanr", seed = 5101
-)
-
-grid <- data.frame(x = seq(-50.5, 50.5, length.out = 150), n = 1)
-prior_curves <- posterior_epred(prior_fit, newdata = grid)
-
-prior_long <- as.data.frame(t(prior_curves[1:120, ])) |>
-  mutate(x = grid$x) |>
-  pivot_longer(-x, names_to = "draw", values_to = "p")
-
-options(repr.plot.width = 7, repr.plot.height = 4)
-ggplot(prior_long, aes(x, p, group = draw)) +
-  geom_line(alpha = 0.1, colour = NAVY) +
-  geom_hline(yintercept = 0.5, colour = GREY, linetype = "dotted") +
-  labs(title = "120 psychometric functions drawn from the priors alone",
-       subtitle = "Plausible curves, not yet informed by any response",
-       x = expression(Delta*"BPM"), y = 'P("faster")')
-""")
-
-md(r"""
 ### Sample the posterior
 
 Four chains, 3000 iterations with 1000 warmup. `sample_prior = "yes"` keeps prior draws
 alongside the posterior so we can show directly how much the data moved each parameter.
 
-This takes **one to three minutes**. The first run also compiles the Stan model.
+This takes **one to three minutes**, plus Stan compilation on the first run.
+
+Everything after this cell works from a single tidy data frame, `post`, with one row per
+draw. That is what lets the precomputed path substitute cleanly for the sampled one.
 """)
 
 co(r"""
-fit <- brm(
-  bff, data = model_df, prior = priors, sample_prior = "yes",
-  chains = 4, cores = 4, warmup = 1000, iter = 3000,
-  control = list(adapt_delta = 0.95, max_treedepth = 12),
-  backend = "cmdstanr", seed = 5102, refresh = 0,
-  file = file.path(getwd(), "fit_single_subject"), file_refit = "on_change"
-)
-cat("done\n")
+if (CAN_FIT) {
+  fit <- brm(
+    bff, data = model_df, prior = priors, sample_prior = "yes",
+    chains = 4, cores = 4, warmup = 1000, iter = 3000,
+    control = list(adapt_delta = 0.95, max_treedepth = 12),
+    backend = "cmdstanr", seed = 5102, refresh = 0,
+    file = file.path(getwd(), "fit_single_subject"), file_refit = "on_change"
+  )
+
+  d <- as_draws_df(fit) |> as.data.frame()
+  post <- data.frame(
+    chain = d$.chain, iteration = d$.iteration,
+    alpha = d$b_alpha_Intercept,
+    beta  = d$b_beta_Intercept,
+    sigma = exp(-d$b_beta_Intercept),
+    lapse = plogis(d$b_lambda_Intercept),
+    prior_alpha = d$prior_b_alpha_Intercept,
+    prior_beta  = d$prior_b_beta_Intercept,
+    prior_sigma = exp(-d$prior_b_beta_Intercept),
+    prior_lapse = plogis(d$prior_b_lambda_Intercept)
+  )
+  FIT_SOURCE <- "sampled here"
+
+} else {
+  # Precomputed fit of the example participant, from tutorials/R/05_single_subject.R
+  post <- read_csv(file.path(SMALL, "psy_single_subject_draws.csv.gz"),
+                   show_col_types = FALSE) |> as.data.frame()
+  model_df <- read_csv(file.path(SMALL, "psy_single_subject_data.csv.gz"),
+                       show_col_types = FALSE) |>
+              select(x, y, n) |> as.data.frame()
+  FIT_SOURCE <- "loaded from precomputed results (example participant)"
+}
+
+cat(sprintf("%d posterior draws, %s\n", nrow(post), FIT_SOURCE))
 """)
 
 md(r"""
@@ -454,24 +475,30 @@ worse than no plot at all.
 """)
 
 co(r"""
-np <- nuts_params(fit)
-ds <- summarise_draws(as_draws_array(fit))
-energy <- np |> filter(Parameter == "energy__") |> group_by(Chain) |>
-  summarise(ebfmi = mean(diff(Value)^2) / var(Value), .groups = "drop")
+if (CAN_FIT) {
+  np <- nuts_params(fit)
+  ds <- summarise_draws(as_draws_array(fit))
+  energy <- np |> filter(Parameter == "energy__") |> group_by(Chain) |>
+    summarise(ebfmi = mean(diff(Value)^2) / var(Value), .groups = "drop")
 
-diagnostics <- data.frame(
-  divergences  = sum(np$Value[np$Parameter == "divergent__"]),
-  max_treedepth = max(np$Value[np$Parameter == "treedepth__"]),
-  max_rhat     = round(max(ds$rhat, na.rm = TRUE), 4),
-  min_ess_bulk = round(min(ds$ess_bulk, na.rm = TRUE)),
-  min_ess_tail = round(min(ds$ess_tail, na.rm = TRUE)),
-  min_ebfmi    = round(min(energy$ebfmi), 3)
-)
+  diagnostics <- data.frame(
+    divergences   = sum(np$Value[np$Parameter == "divergent__"]),
+    max_treedepth = max(np$Value[np$Parameter == "treedepth__"]),
+    max_rhat      = round(max(ds$rhat, na.rm = TRUE), 4),
+    min_ess_bulk  = round(min(ds$ess_bulk, na.rm = TRUE)),
+    min_ess_tail  = round(min(ds$ess_tail, na.rm = TRUE)),
+    min_ebfmi     = round(min(energy$ebfmi), 3)
+  )
+} else {
+  diagnostics <- read_csv(file.path(SMALL, "psy_single_subject_diagnostics.csv"),
+                          show_col_types = FALSE) |> as.data.frame()
+  cat("Diagnostics from the precomputed fit:\n")
+}
 print(diagnostics, row.names = FALSE)
 
-verdict <- with(diagnostics,
-  divergences == 0 && max_rhat < 1.01 && min_ess_bulk > 400 && min_ebfmi > 0.3)
-cat("\n", ifelse(verdict, "No indication of a sampling problem.",
+ok <- with(diagnostics, divergences == 0 && max_rhat < 1.01 &&
+             min_ess_bulk > 400 && min_ebfmi > 0.3)
+cat("\n", ifelse(ok, "No indication of a sampling problem.",
                  "[!] Something is off - do not interpret these estimates yet."), "\n")
 """)
 
@@ -485,16 +512,16 @@ or long sticky periods.
 """)
 
 co(r"""
-draws <- as_draws_df(fit) |> as.data.frame()
-
 comp <- bind_rows(
-  data.frame(parameter = "threshold (dBPM)", source = "prior",     value = draws$prior_b_alpha_Intercept),
-  data.frame(parameter = "threshold (dBPM)", source = "posterior", value = draws$b_alpha_Intercept),
-  data.frame(parameter = "sigma (dBPM)",     source = "prior",     value = exp(-draws$prior_b_beta_Intercept)),
-  data.frame(parameter = "sigma (dBPM)",     source = "posterior", value = exp(-draws$b_beta_Intercept)),
-  data.frame(parameter = "lapse",            source = "prior",     value = plogis(draws$prior_b_lambda_Intercept)),
-  data.frame(parameter = "lapse",            source = "posterior", value = plogis(draws$b_lambda_Intercept))
-)
+  data.frame(parameter = "threshold (dBPM)", source = "prior",     value = post$prior_alpha),
+  data.frame(parameter = "threshold (dBPM)", source = "posterior", value = post$alpha),
+  data.frame(parameter = "sigma (dBPM)",     source = "prior",     value = post$prior_sigma),
+  data.frame(parameter = "sigma (dBPM)",     source = "posterior", value = post$sigma),
+  data.frame(parameter = "lapse",            source = "prior",     value = post$prior_lapse),
+  data.frame(parameter = "lapse",            source = "posterior", value = post$lapse)
+) |>
+  # The sigma prior has a very long right tail; clip the display, not the data.
+  filter(!(parameter == "sigma (dBPM)" & value > 60))
 
 p_dens <- ggplot(comp, aes(value, fill = source, colour = source)) +
   geom_density(alpha = 0.45, linewidth = 0.4) +
@@ -503,10 +530,10 @@ p_dens <- ggplot(comp, aes(value, fill = source, colour = source)) +
   scale_colour_manual(values = c(prior = GREY, posterior = RED)) +
   labs(title = "The data moved the parameters", x = NULL, y = NULL)
 
-p_trace2 <- draws |>
-  select(.chain, .iteration, alpha = b_alpha_Intercept, beta = b_beta_Intercept) |>
+p_trace2 <- post |>
+  select(chain, iteration, alpha, beta) |>
   pivot_longer(c(alpha, beta)) |>
-  ggplot(aes(.iteration, value, colour = factor(.chain))) +
+  ggplot(aes(iteration, value, colour = factor(chain))) +
   geom_line(alpha = 0.55, linewidth = 0.3) +
   facet_wrap(~name, scales = "free_y", nrow = 1) +
   scale_colour_brewer(palette = "Set2", name = "chain") +
@@ -522,20 +549,25 @@ md(r"""
 Carrying every posterior draw through the psychometric function gives a *distribution*
 of response probabilities at each intensity — hence the credible bands. This is what a
 Bayesian fit buys you over the single point estimate Psi reports online.
+
+We evaluate the curve directly from the draws rather than through `posterior_epred()`, so
+this works identically whether the fit was sampled or loaded.
 """)
 
 co(r"""
-grid  <- data.frame(x = seq(-50.5, 50.5, by = 0.5), n = 1)
-pd    <- posterior_epred(fit, newdata = grid)
+curve_x <- seq(-50.5, 50.5, by = 0.5)
+pmat <- vapply(curve_x, function(xx) {
+  post$lapse / 2 + (1 - post$lapse) * pnorm((xx - post$alpha) / post$sigma)
+}, numeric(nrow(post)))
 
 curve <- data.frame(
-  x      = grid$x,
-  median = apply(pd, 2, median),
-  lo95   = apply(pd, 2, quantile, 0.025), hi95 = apply(pd, 2, quantile, 0.975),
-  lo80   = apply(pd, 2, quantile, 0.100), hi80 = apply(pd, 2, quantile, 0.900),
-  lo50   = apply(pd, 2, quantile, 0.250), hi50 = apply(pd, 2, quantile, 0.750)
+  x      = curve_x,
+  median = apply(pmat, 2, median),
+  lo95   = apply(pmat, 2, quantile, 0.025), hi95 = apply(pmat, 2, quantile, 0.975),
+  lo80   = apply(pmat, 2, quantile, 0.100), hi80 = apply(pmat, 2, quantile, 0.900),
+  lo50   = apply(pmat, 2, quantile, 0.250), hi50 = apply(pmat, 2, quantile, 0.750)
 )
-thr <- median(draws$b_alpha_Intercept)
+thr <- median(post$alpha)
 
 options(repr.plot.width = 8, repr.plot.height = 5)
 ggplot(curve, aes(x)) +
@@ -551,7 +583,8 @@ ggplot(curve, aes(x)) +
   scale_size_continuous(range = c(1.5, 6), name = "trials") +
   coord_cartesian(ylim = c(0, 1)) +
   labs(title = "Observed responses and the posterior psychometric function",
-       subtitle = "Bands contain 50%, 80% and 95% of posterior probability",
+       subtitle = paste0("Bands contain 50%, 80% and 95% of posterior probability  (",
+                         FIT_SOURCE, ")"),
        x = expression(Delta*"BPM"), y = 'P("faster")')
 """)
 
@@ -563,12 +596,9 @@ logit scale; neither is interpretable raw.
 """)
 
 co(r"""
-summary_tbl <- data.frame(
-  threshold_dBPM    = draws$b_alpha_Intercept,
-  log_slope_beta    = draws$b_beta_Intercept,
-  sigma_dBPM        = exp(-draws$b_beta_Intercept),
-  lapse_probability = plogis(draws$b_lambda_Intercept)
-) |>
+summary_tbl <- post |>
+  transmute(threshold_dBPM = alpha, log_slope_beta = beta,
+            sigma_dBPM = sigma, lapse_probability = lapse) |>
   pivot_longer(everything(), names_to = "parameter", values_to = "value") |>
   group_by(parameter) |>
   summarise(median = median(value), q2.5 = quantile(value, 0.025),
@@ -577,8 +607,8 @@ summary_tbl <- data.frame(
 
 print(as.data.frame(summary_tbl), row.names = FALSE)
 
-a  <- median(draws$b_alpha_Intercept)
-ci <- quantile(draws$b_alpha_Intercept, c(0.025, 0.975))
+a  <- median(post$alpha)
+ci <- quantile(post$alpha, c(0.025, 0.975))
 cat(sprintf(
   "\nThreshold %+.1f dBPM [%.1f, %.1f].\nTones had to be about %.0f BPM %s than the measured rate\nbefore 'faster' and 'slower' were equally likely: %s.\n",
   a, ci[1], ci[2], abs(a), ifelse(a > 0, "faster", "slower"),

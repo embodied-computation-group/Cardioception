@@ -88,12 +88,33 @@ is not watching a progress bar.
 ## Files
 
 ```
+PREINSTALL.md               Send this to attendees a week ahead
+GETTING_STARTED.md          For attendees new to Python (linked from PREINSTALL)
+preflight.py                One command that reports what is missing
 01_running_the_hrd.ipynb    Python notebook (parts 0-3)
 02_analysing_the_hrd.ipynb  R notebook (parts 4-6)
 build_nb1.py                Regenerates notebook 1
 build_nb2.py                Regenerates notebook 2
 data/                       Where live sessions land (created at run time)
 ```
+
+## Running it with a room of people
+
+Send `PREINSTALL.md` out about a week ahead. It ends with `preflight.py`, which prints a
+per-component report and exactly what to fix, so problems surface before the session
+rather than during it. Ask people to send you the output if it does not say
+"Everything is ready".
+
+Everything degrades gracefully, which is what makes this survivable at scale:
+
+| Broken | Still works |
+|---|---|
+| CmdStan only | Everything, with precomputed model fits |
+| R entirely | Notebook 1 in full |
+| PsychoPy only | Notebook 2, on the bundled example session |
+
+**Everyone can run the task itself**, with or without hardware — `setup="test"` replays a
+pre-recorded pulse signal. Only the live volunteer demonstration needs an oximeter.
 
 The notebooks are generated from the `build_*.py` scripts. Edit those and re-run them
 rather than patching the `.ipynb` files by hand, so the source of truth stays diffable.
