@@ -32,9 +32,29 @@ python3 --version
 
 If it is outside 3.10–3.11, install one:
 
-- **macOS / Windows:** [python.org/downloads](https://www.python.org/downloads/) — pick 3.11
-- **Linux:** `sudo apt install python3.11 python3.11-venv`
-- **conda users:** `conda create -n cardioception python=3.11` then `conda activate cardioception`, and skip the `venv` line below
+**macOS — from the terminal, if you have Homebrew:**
+
+```bash
+brew install python@3.11
+/opt/homebrew/bin/python3.11 --version    # Apple Silicon
+/usr/local/bin/python3.11 --version       # Intel
+```
+
+Then use that path in Step 2 instead of `python3`. Homebrew builds Python as a *framework*,
+which is what PsychoPy needs to open a window on macOS, so this route works fine.
+
+**macOS / Windows — installer, if you would rather click:**
+[python.org/downloads](https://www.python.org/downloads/) — pick 3.11.
+
+**Linux:** `sudo apt install python3.11 python3.11-venv`
+
+**conda users:** `conda create -n cardioception python=3.11`, then `conda activate
+cardioception`, and skip the `venv` line in Step 2.
+
+> ⚠️ **Do not use `uv python install` or a default `pyenv` build on macOS.** Those install
+> *standalone* Pythons rather than framework builds. They are excellent for most work, but
+> PsychoPy needs a framework build to create a window, and you will hit a confusing failure
+> at the point where the task should appear. Homebrew, python.org and conda are all fine.
 
 ## Step 2 — The Python environment
 
