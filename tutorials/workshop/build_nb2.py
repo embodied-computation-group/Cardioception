@@ -933,6 +933,11 @@ md(r"""
 """)
 
 nb["cells"] = c
+
+# Deterministic cell ids, so rebuilding produces no spurious diff.
+for i, cell in enumerate(nb["cells"]):
+    cell["id"] = f"c{i:03d}"
+
 nb.metadata = {
     "kernelspec": {"display_name": "R (cardioception)", "language": "R",
                    "name": "ir-cardioception"},

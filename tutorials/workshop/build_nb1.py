@@ -763,6 +763,11 @@ modelling it is R.
 """)
 
 nb["cells"] = c
+
+# Deterministic cell ids, so rebuilding produces no spurious diff.
+for i, cell in enumerate(nb["cells"]):
+    cell["id"] = f"c{i:03d}"
+
 nb.metadata = {
     "kernelspec": {"display_name": "Python (cardioception)", "language": "python",
                    "name": "cardioception"},
