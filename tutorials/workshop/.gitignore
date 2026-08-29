@@ -13,3 +13,7 @@ power_*.csv
 
 # Handoff notes, local only
 HANDOFF.md
+
+# JupyterLab strays
+Untitled*.ipynb
+.virtual_documents/
