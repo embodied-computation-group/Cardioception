@@ -1,161 +1,131 @@
-# Never used Python before? Start here
+# Python setup for participants who mainly use R
 
-**Read this only if the commands in [PREINSTALL.md](PREINSTALL.md) look like magic.**
-If you already work in Python, skip it — there is nothing here you do not know.
+This page introduces the few Python and Jupyter concepts used in
+[PREINSTALL.md](PREINSTALL.md). It is not a general Python tutorial, and the workshop
+does not assume that you can write Python code independently.
 
-This page does not teach you Python. It explains the five ideas you need to get the
-workshop environment running, and points you at the good existing guides for everything
-else. You will write essentially no Python at the workshop: the notebooks are already
-written, and you run them.
+## The terminal
 
-Most of you know R. So each idea below is given with its R equivalent, which is usually
-the fastest way in.
+The terminal accepts commands for the operating system, much as the R console accepts
+commands for R.
 
----
-
-## The five ideas
-
-### 1. The terminal
-
-A window where you type commands instead of clicking. Every install instruction assumes
-you have one open.
-
-| | How to open it |
+| System | How to open it |
 |---|---|
-| **macOS** | Cmd+Space, type `Terminal`, Enter |
-| **Windows** | Start menu, type `PowerShell`, Enter |
-| **Linux** | Ctrl+Alt+T |
+| macOS | Press Command+Space, type `Terminal`, and press Enter |
+| Windows | Open the Start menu and search for `PowerShell` |
+| Linux | Press Ctrl+Alt+T on many desktop environments |
 
-*R equivalent:* the RStudio Console, except it talks to your operating system rather than
-to R. If you have used RStudio's **Terminal** tab, that is exactly this.
+RStudio’s Terminal tab is also suitable. When documentation displays `$` or `>` before
+a command, that symbol represents the prompt and should not be typed.
 
-When a guide shows a line starting with `$` or `>`, that is the prompt — do not type it.
+## Python interpreters
 
-New to this? [Ubuntu's terminal overview](https://ubuntu.com/tutorials/command-line-for-beginners)
-is short and applies almost unchanged to macOS.
+A computer can contain several Python installations. The command `python` or `python3`
+selects one of them according to the system `PATH`. Cardioception requires Python 3.10
+or 3.11.
 
-### 2. Python, and *a* Python
+The workshop instructions use explicit paths such as
+`./cardioception-env/bin/python`. This states exactly which interpreter should run the
+command and which package library it should use.
 
-R is one thing you install once. Python is not: a machine can have several Pythons, and
-which one you get when you type `python` depends on your PATH. This is the single biggest
-source of confusion for people arriving from R.
+You can inspect the interpreter selected by the shell with:
 
-This is why the workshop instructions write out full paths like
-`./cardioception-env/bin/python` instead of just `python`. It removes all ambiguity about
-which interpreter is running.
+```bash
+which python3       # macOS or Linux
+where.exe python    # Windows PowerShell
+```
 
-**We need Python 3.10 or 3.11 specifically** — PsychoPy's dependencies do not build on
-newer versions.
+## Installing Python packages
 
-Install it from [python.org/downloads](https://www.python.org/downloads/). If you want
-hand-holding, [Real Python's installation guide](https://realpython.com/installing-python/)
-covers every platform properly and is better than anything we would write here.
+`pip` installs packages from [PyPI](https://pypi.org/), which serves a role similar to
+CRAN. The rough R equivalent is:
 
-### 3. `pip` — installing packages
+| Python | R |
+|---|---|
+| `python -m pip install package` | `install.packages("package")` |
+| `import package` | `library(package)` |
 
-`pip install X` is Python's `install.packages("X")`.
+For this project, the installation name and import name differ:
 
-Packages come from [PyPI](https://pypi.org), which is Python's CRAN. It is less curated
-than CRAN: **check you are installing the name you were given.** For us that is
-`cardioception-toolbox`.
+| Use | Name |
+|---|---|
+| Install from PyPI | `cardioception-toolbox` |
+| Import in Python | `cardioception` |
 
-### 4. Virtual environments — the one genuinely new idea
+The distribution named only `cardioception` on PyPI is a different package.
 
-R installs packages into one shared library, and mostly gets away with it. Python
-projects conflict more, so the convention is to give each project its own private folder
-of packages, called a **virtual environment**.
+## Virtual environments
+
+A virtual environment is a project-specific Python interpreter and package library.
+It keeps Cardioception’s dependencies separate from other Python projects.
 
 ```bash
 python3 -m venv cardioception-env
 ```
 
-That creates a folder `cardioception-env/` containing its own Python and its own
-packages. Nothing is installed system-wide, and deleting the folder removes everything
-cleanly — which is also your escape hatch if the install goes wrong. Just delete it and
-start Step 2 again.
+This creates a directory containing its own Python executable. The closest R analogue
+is an `renv` project library. Removing the environment directory removes the installed
+packages without changing the system Python.
 
-*R equivalent:* [`renv`](https://rstudio.github.io/renv/), if you have met it.
-
-Guides usually tell you to "activate" the environment. We deliberately do not, and use
-full paths instead, because activation is where people lose an hour to a shell alias
-silently pointing `python` somewhere else.
-
-If you want the concept properly:
-[Real Python on virtual environments](https://realpython.com/python-virtual-environments-a-primer/).
-
-### 5. Jupyter, notebooks, and kernels
-
-A **notebook** is a document of alternating text and code cells that you run one at a
-time, seeing the output under each. *R equivalent:* an R Markdown or Quarto document, run
-interactively.
-
-**JupyterLab** is the app you open notebooks in. It runs in your browser but everything is
-local — nothing is uploaded anywhere.
-
-A **kernel** is the language process running behind a notebook. This matters here because
-the workshop uses two:
-
-| Notebook | Kernel | Why |
-|---|---|---|
-| `01_running_the_hrd.ipynb` | Python (cardioception) | The task is a PsychoPy program |
-| `02_analysing_the_hrd.ipynb` | R (cardioception) | The models are `brms` models |
-
-Same app, same browser tab, different language behind the cells. The kernel name shows in
-the **top right** of an open notebook — if it says something else, click it and choose the
-right one. Registering these two kernels is what the `ipykernel install` and
-`IRkernel::installspec` lines in PREINSTALL do.
-
-Start JupyterLab with:
+Python guides often activate an environment before use. The workshop instead calls
+the executable by its full path:
 
 ```bash
-/path/to/cardioception-env/bin/jupyter lab
+./cardioception-env/bin/python -m pip install cardioception-toolbox
 ```
 
-It opens a browser tab. To stop it, press Ctrl+C twice in the terminal.
+Both approaches are valid. Explicit paths are useful here because they remain clear
+when several Python or conda installations are present.
 
----
+## JupyterLab, notebooks, and kernels
 
-## Running a notebook, briefly
+A notebook contains text cells and executable code cells. JupyterLab is the local
+application used to open and run it. It displays in a browser, but the code and data
+remain on your computer.
 
-- **Shift+Enter** runs the current cell and moves to the next
-- Cells share state, so **run them in order, top to bottom**
-- `[*]` beside a cell means still running; a number means finished
-- If things get confused: **Kernel → Restart Kernel and Clear Outputs**, then run from the top
-- Editing a cell does not undo what it already did — the restart is how you get a clean slate
+The kernel is the language process that executes a notebook. This workshop uses two:
 
-The [JupyterLab interface tour](https://jupyterlab.readthedocs.io/en/stable/user/interface.html)
-covers the rest.
+| Notebook | Kernel |
+|---|---|
+| `01_running_the_hrd.ipynb` | Python (cardioception) |
+| `02_analysing_the_hrd.ipynb` | R (cardioception) |
+| `03_power_analysis.ipynb` | R (cardioception) |
 
----
+The kernel name appears near the upper-right corner of an open notebook. If it is
+incorrect, click the name and select the required kernel.
 
-## Three confusions worth pre-empting
+From `tutorials/workshop`, start JupyterLab with:
 
-**"Which Python am I using?"** Run `which python3` (macOS/Linux) or `where python`
-(Windows). If the answer surprises you, that is the problem. Use full paths.
+```bash
+../../cardioception-env/bin/jupyter lab
+```
 
-**"I installed it but the notebook says it is missing."** You installed into one Python and
-the notebook is running another. Check the kernel name in the top right — it must be
-**Python (cardioception)**, not plain "Python 3".
+Stop the JupyterLab server by returning to the terminal and pressing Ctrl+C twice.
 
-**"Do I need RStudio?"** No. Both notebooks run in JupyterLab. R must be installed, but you
-never have to open RStudio — though you can use it for the R packages in Step 3 if you
-find that more comfortable.
+## Running a notebook
 
----
+- Shift+Enter runs the selected cell and moves to the next one.
+- Cells share an active session, so run them in order from the top.
+- `[*]` beside a cell means that it is still running.
+- Editing a completed cell does not undo its earlier effects.
+- If the state becomes unclear, restart the kernel, clear the outputs, and run again
+  from the first cell.
 
-## If it goes wrong
+## Diagnosing two common problems
 
-1. Run `preflight.py` (Step 5 of PREINSTALL) — it names the problem and the fix
-2. Delete the `cardioception-env` folder and redo Step 2. This is cheap and fixes most things
-3. Send the preflight output to the organiser and come 15 minutes early
+If a package was installed but the notebook cannot import it, the installation and the
+notebook are probably using different Python interpreters. Confirm that the kernel is
+**Python (cardioception)** and run:
 
-**Do not spend more than 30 minutes on this alone.** Every part of the workshop has a
-fallback, and arriving with a half-working setup is completely fine.
+```python
+import sys
+print(sys.executable)
+```
 
----
+If the R kernel is absent, R may be installed correctly but not registered with the
+same Jupyter installation. Repeat the `IRkernel::installspec()` command in
+[PREINSTALL.md](PREINSTALL.md), then restart JupyterLab.
 
-## Worth reading afterwards, not before
-
-- [The Cardioception documentation](https://www.the-ecg.org/Cardioception/)
-- [PsychoPy's Coder tutorials](https://www.psychopy.org/coder/index.html) — if you want to build experiments
-- [Real Python](https://realpython.com/) — the best general Python reference for scientists
+For a general introduction, see the
+[JupyterLab interface guide](https://jupyterlab.readthedocs.io/en/stable/user/interface.html)
+or [Real Python’s virtual-environment guide](https://realpython.com/python-virtual-environments-a-primer/).

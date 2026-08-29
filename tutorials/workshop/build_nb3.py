@@ -9,43 +9,49 @@ md = lambda s: c.append(nbf.v4.new_markdown_cell(s.strip()))
 co = lambda s: c.append(nbf.v4.new_code_cell(s.strip()))
 
 md(r"""
-# Optional — Planning your own study
+# Optional module: planning an HRD study
 
-**Optional module. Nothing else depends on it.**
-
-The Hierarchical Interoception toolbox ships a **sample size widget**: a Shiny app that
-tells you what power a given design has. This notebook shows you how to use it, and gives
-you a quick offline lookup so you can get an answer right now.
+The Hierarchical Interoception toolbox includes a Shiny application for examining power
+across participant numbers, trial numbers, effect sizes, and analysis strategies. This
+notebook introduces the simulation design, shows how to run the application, and reads
+the underlying results directly in R.
 
 **Kernel:** `R (cardioception)`.
 """)
 
 md(r"""
-## The design question
+## Match the simulation to the planned design
 
-You have two knobs, not one:
+Study planning requires decisions about both:
 
 - **How many participants**
-- **How many trials each**
+- **How many trials per condition**
 
-They cost differently, and they do not buy the same thing. The widget lets you try
-combinations and read the power off, so you can pick a design before committing to it.
+Recruitment and additional trials have different practical costs and contribute
+differently to estimation.
 
-Decide one thing first: **are you testing an effect on threshold or on slope?** They
-behave differently, and the widget shows you that immediately.
+The simulations represent a within-participant comparison between two interoceptive HRD
+conditions. They use 15, 30, 60, or 120 participants; 30, 60, or 90 trials per
+condition; standardized effects of 0, 0.2, 0.5, or 0.8; and 100 simulated datasets per
+cell. The results do not directly provide power for a between-group design or a
+different task structure.
+
+We must also specify whether the hypothesis concerns threshold or slope. Under matched
+designs, slope effects generally require more data.
 """)
 
 md(r"""
 ## Launching the widget
 
-It lives in the toolbox repository, so you need that first. The clone is about 365 MB.
+The application is part of the toolbox repository. The clone is about 365 MB.
 
 ```bash
 git clone https://github.com/embodied-computation-group/Hierarchical-Interoception.git
 cd Hierarchical-Interoception
 ```
 
-Then in R, **from the repository root** — the app finds its data with `here::here()`, so
+Then run the following in R from the repository root. The app finds its data with
+`here::here()`, so
 starting anywhere else fails:
 
 ```r
@@ -61,7 +67,7 @@ shiny::runApp("Ressources (app, tutorial, and updated thresholding scripts)/samp
 | Tab | Use it to |
 |---|---|
 | **Power Grid** | See power contours over trials × participants. Set parameter, effect size and target power, then read off which combinations clear the line |
-| **Effect Size vs. Power** | Fix a design and see how power varies with effect size — useful when you are unsure what to expect |
+| **Effect Size vs. Power** | Fix a design and examine how power varies with effect size |
 | **Manual Input** | Type in one specific design, get a single power estimate back |
 
 Each tab compares analysis strategies: the hierarchical model against a simple *t*-test on
@@ -69,10 +75,10 @@ per-participant estimates, and against a *t*-test that propagates their uncertai
 """)
 
 md(r"""
-## A quick lookup, without the clone
+## Read the simulation grid directly
 
-If you just want an answer now, the underlying simulation results are small enough to pull
-directly.
+The following cell downloads and caches the extracted simulation results. It therefore
+requires an internet connection on its first run.
 """)
 
 co(r"""
@@ -111,11 +117,11 @@ cat("  100 simulations per cell, so read any single number as +/- about 0.05\n")
 """)
 
 md(r"""
-### Look up your design
+### Examine a proposed design
 """)
 
 co(r"""
-# ---- your study --------------------------------------------------
+# ---- proposed study ----------------------------------------------
 MY_PARAMETER <- "Threshold"   # "Threshold" or "Slope"
 MY_EFFECT    <- 0.5           # smallest effect worth detecting (Cohen's d)
 MY_POWER     <- 0.80
@@ -138,9 +144,8 @@ if (nrow(feasible) == 0) {
     arrange(desc(power)) |> head(3) |> select(subjects, trials, power)), row.names = FALSE)
 } else {
   print(as.data.frame(feasible), row.names = FALSE)
-  ch <- feasible |> slice(1)
-  cat(sprintf("\nCheapest option here: %d participants x %d trials (power %.2f)\n",
-              ch$subjects, ch$trials, ch$power))
+  cat("\nThese designs meet the target in the simulated grid. Choosing among them\n")
+  cat("requires the relative cost of recruitment and additional trials.\n")
 }
 """)
 
@@ -168,29 +173,29 @@ power |>
 """)
 
 md(r"""
-## Three things to take from the plot
+## Interpret the plot
 
-**Threshold is cheaper than slope.** Compare the two columns. If your hypothesis is about
-discrimination precision rather than bias, budget for more of everything.
+**Threshold effects are easier to detect than slope effects under matched designs.**
+Compare the two columns before selecting a trial count.
 
-**Trials matter far more for slope than for threshold.** Compare rows within a column. At
-30 participants, going from 30 to 90 trials moves threshold power by about +0.02 and slope
-power by about +0.25. A short session cannot be rescued by recruiting more people if slope
-is your outcome.
+**Additional trials contribute more strongly to slope estimation.** Compare rows within
+a column. Threshold power approaches its upper range sooner, whereas slope power
+continues to improve as the number of trials increases.
 
-**Your analysis choice is part of the design.** The orange line sits above the others, so
-plan your sample size for the analysis you intend to run. Notebook 2, Part 6 covers why the
-hierarchical model behaves this way.
+**The planned analysis is part of the design.** The hierarchical and two-stage analyses
+do not have identical power. Plan for the analysis that will be used, and preregister
+that analysis rather than selecting it after observing the results.
 
 ## Choosing the effect size
 
-Do not take *d* from a small previous study — published effects from underpowered work are
-biased upward, and designing around one plans an underpowered study. Use the smallest
-effect you would actually care about, and report it that way.
+Use the smallest effect that would support the intended scientific conclusion. An
+estimate from a small earlier study is often too uncertain to serve as a single design
+value. We can examine several plausible effects and report the assumptions used for the
+chosen design.
 
 ---
 
-- [The toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception) — models, priors, power suite
+- [The toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception): models, priors, and power analysis
 - Courtin et al. (2026). [doi:10.3758/s13428-026-03137-3](https://doi.org/10.3758/s13428-026-03137-3)
 """)
 

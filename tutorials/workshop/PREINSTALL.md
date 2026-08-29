@@ -1,67 +1,66 @@
-# Before the Cardioception workshop — please install this in advance
+# Prepare for the Cardioception workshop
 
-You will be running the Heart Rate Discrimination task on your own laptop and
-analysing the data you collect. That needs a Python environment and an R environment.
-**Please do this before the session** — it involves some large downloads and one step
-that compiles for 10–20 minutes, and we cannot wait for 30 people to do that in the room.
+During the workshop we will run the Heart Rate Discrimination task and analyze a
+completed session. Please prepare your laptop before the session. The installation
+takes approximately 30 to 45 minutes, mainly for downloads and compilation, and uses
+about 4 GB of disk space.
 
-> **Never installed Python before?** Read
-> [GETTING_STARTED.md](GETTING_STARTED.md) first — it explains the handful of concepts
-> these instructions assume, with the R equivalent of each. Fifteen minutes, and the
-> commands below stop looking like magic.
+If the terminal, virtual environments, or Jupyter kernels are unfamiliar, read
+[GETTING_STARTED.md](GETTING_STARTED.md) first. It introduces only the concepts needed
+for these instructions.
 
-**Time:** 30–45 minutes, most of it unattended downloading.
-**Disk:** about 4 GB (PsychoPy ~1.5 GB, CmdStan ~2 GB).
-**You do not need a pulse oximeter.** The task runs against a pre-recorded pulse signal,
-so everyone can run the real experiment on their own machine.
+No recording hardware is required for the workshop exercises. The software includes a
+test mode that replays a stored pulse signal. We will use a pulse oximeter for the live
+demonstration and a bundled deidentified session for analysis if live collection is not
+available.
 
-When you are done, one command tells you whether it worked. If you only have time for
-one thing, do Steps 1–2 and 5 — you will still be able to follow most of the workshop.
+## 1. Check Python
 
----
-
-## Step 1 — Python 3.10 or 3.11
-
-**Not 3.12 or newer.** PsychoPy's dependencies do not build above 3.11.
-
-Check what you have:
+Cardioception supports Python 3.10 and 3.11.
 
 ```bash
 python3 --version
 ```
 
-If it is outside 3.10–3.11, install one:
+The upper limit comes from `pywinhook`, which provides wheels only through Python 3.11.
+PsychoPy itself supports newer Python versions. If necessary, install Python 3.11 from
+[python.org](https://www.python.org/downloads/). On Windows, select **Add Python to
+PATH** in the installer.
 
-**macOS — from the terminal, if you have Homebrew:**
+Platform-specific alternatives are:
 
 ```bash
+# macOS with Homebrew
 brew install python@3.11
-/opt/homebrew/bin/python3.11 --version    # Apple Silicon
-/usr/local/bin/python3.11 --version       # Intel
+
+# Ubuntu or Debian
+sudo apt install python3.11 python3.11-venv
 ```
 
-Then use that path in Step 2 instead of `python3`. Homebrew builds Python as a *framework*,
-which is what PsychoPy needs to open a window on macOS, so this route works fine.
+After installation, use the command that reports Python 3.11 in Step 3. For example,
+Homebrew commonly provides `python3.11` rather than changing the existing `python3`.
 
-**macOS / Windows — installer, if you would rather click:**
-[python.org/downloads](https://www.python.org/downloads/) — pick 3.11.
+If you already use conda, you may instead create and activate a Python 3.11
+environment. Use the activated environment in place of the virtual-environment paths
+below.
 
-**Linux:** `sudo apt install python3.11 python3.11-venv`
+## 2. Download the workshop materials
 
-**conda users:** `conda create -n cardioception python=3.11`, then `conda activate
-cardioception`, and skip the `venv` line in Step 2.
-
-> ⚠️ **Do not use `uv python install` or a default `pyenv` build on macOS.** Those install
-> *standalone* Pythons rather than framework builds. They are excellent for most work, but
-> PsychoPy needs a framework build to create a window, and you will hit a confusing failure
-> at the point where the task should appear. Homebrew, python.org and conda are all fine.
-
-## Step 2 — The Python environment
-
-From wherever you keep projects:
+If you do not already have the repository:
 
 ```bash
-# macOS / Linux
+git clone https://github.com/embodied-computation-group/Cardioception.git
+cd Cardioception
+```
+
+Run the remaining terminal commands from the repository root unless a step says
+otherwise.
+
+## 3. Create the Python environment
+
+On macOS or Linux:
+
+```bash
 python3 -m venv cardioception-env
 ./cardioception-env/bin/python -m pip install --upgrade pip
 ./cardioception-env/bin/python -m pip install cardioception-toolbox jupyterlab ipykernel ipywidgets
@@ -69,8 +68,9 @@ python3 -m venv cardioception-env
     --name cardioception --display-name "Python (cardioception)"
 ```
 
+On Windows PowerShell:
+
 ```powershell
-# Windows (PowerShell)
 python -m venv cardioception-env
 cardioception-env\Scripts\python -m pip install --upgrade pip
 cardioception-env\Scripts\python -m pip install cardioception-toolbox jupyterlab ipykernel ipywidgets
@@ -78,137 +78,134 @@ cardioception-env\Scripts\python -m ipykernel install --user `
     --name cardioception --display-name "Python (cardioception)"
 ```
 
-This downloads about 1.5 GB, including 370 pre-generated tone files the task plays.
+The PyPI distribution is `cardioception-toolbox`; the Python import is
+`cardioception`. Do not install the unrelated distribution named `cardioception`.
 
-> **Note the deliberate use of full paths** (`./cardioception-env/bin/python`) rather than
-> activating the environment. If your shell aliases `python` — lazy conda initialisers do
-> this — then `python` after `activate` can still resolve to the alias and fail with a
-> confusing error, even though the environment is fine. Full paths sidestep it entirely.
+We use full paths to the environment’s Python so that each command targets the same
+interpreter. This avoids a common problem in which a shell alias or conda initialization
+selects a different Python after activation.
 
-## Step 3 — R, and the modelling packages
+## 4. Install R and the modelling packages
 
-The analysis half uses `brms`. Install **R 4.2 or newer** from
-[cran.r-project.org](https://cran.r-project.org/). RStudio is *not* required — everything
-runs in Jupyter — but it is fine to have.
+Install R 4.2 or newer from [CRAN](https://cran.r-project.org/). RStudio is optional
+because the workshop runs R inside JupyterLab.
 
-Then, in an R console:
+In an R console, run:
 
 ```r
-install.packages(c("brms", "tidyverse", "posterior", "patchwork", "IRkernel"))
+install.packages(c(
+  "brms", "tidyverse", "posterior", "patchwork", "IRkernel"
+))
 
-# cmdstanr comes from the Stan repository, not CRAN
-install.packages("cmdstanr",
-  repos = c("https://stan-dev.r-universe.dev", getOption("repos")))
+install.packages(
+  "cmdstanr",
+  repos = c("https://stan-dev.r-universe.dev", getOption("repos"))
+)
+```
 
-# This one compiles. Expect 10-20 minutes. Run it and go and get coffee.
+CmdStan is optional but allows you to sample the single-participant model during the
+workshop. It requires a C++ toolchain:
+
+- macOS: run `xcode-select --install` in the terminal
+- Windows: install the version of [RTools](https://cran.r-project.org/bin/windows/Rtools/)
+  that matches your R version
+- Ubuntu or Debian: run `sudo apt install build-essential`
+
+Then install CmdStan from R. Compilation commonly takes 10 to 20 minutes.
+
+```r
 cmdstanr::install_cmdstan(cores = 2)
 ```
 
-`install_cmdstan()` needs a C++ toolchain:
+If this step fails, continue with the installation. The notebook will load a
+precomputed posterior instead.
 
-- **macOS:** run `xcode-select --install` in a terminal first
-- **Windows:** install [RTools](https://cran.r-project.org/bin/windows/Rtools/) matching your R version
-- **Linux:** `sudo apt install build-essential`
-
-Finally, register R as a Jupyter kernel. It needs to find the `jupyter` command, which is
-in the Python environment from Step 2:
+Register the R kernel from the repository root. On macOS or Linux:
 
 ```bash
-# macOS / Linux - adjust the path to where you made the environment
 PATH="$PWD/cardioception-env/bin:$PATH" Rscript -e \
     'IRkernel::installspec(name="ir-cardioception", displayname="R (cardioception)")'
 ```
 
+On Windows PowerShell:
+
 ```powershell
-# Windows (PowerShell)
 $env:PATH = "$PWD\cardioception-env\Scripts;$env:PATH"
 Rscript -e 'IRkernel::installspec(name="ir-cardioception", displayname="R (cardioception)")'
 ```
 
-> **If `install_cmdstan()` defeats you, stop and move on.** The notebook detects a missing
-> CmdStan and loads precomputed model results instead. You will see every figure and
-> number; you just will not sample the model yourself. That is a perfectly good workshop.
+## 5. Run the preflight check
 
-## Step 4 — Get the materials
+On macOS or Linux:
 
 ```bash
-git clone https://github.com/embodied-computation-group/Cardioception.git
-cd Cardioception/tutorials/workshop
+cd tutorials/workshop
+../../cardioception-env/bin/python preflight.py
 ```
 
-## Step 5 — Check it worked
+On Windows PowerShell:
 
-```bash
-# macOS / Linux  (path to wherever your environment is)
-/path/to/cardioception-env/bin/python preflight.py
-
-# Windows
-C:\path\to\cardioception-env\Scripts\python preflight.py
+```powershell
+cd tutorials\workshop
+..\..\cardioception-env\Scripts\python preflight.py
 ```
 
-It prints one line per component and, at the end, exactly what to fix:
+The script checks the Python version and packages, both Jupyter kernels, the R
+packages, and the CmdStan toolchain. A complete setup ends with:
 
-```
-[  ok  ] Python      version 3.11.9
-[  ok  ] Python pkg  cardioception 0.7.1
-[  ok  ] Media       370 tone files present
-[  ok  ] Task        cardioception.HRD.task imports
-[  ok  ] Jupyter     kernel 'cardioception' registered
-[  ok  ] Jupyter     kernel 'ir-cardioception' registered
-[  ok  ] CmdStan     compiles a test model
+```text
 ------------------------------------------------------------------------
   Everything is ready. Nothing to do before the workshop.
 ```
 
-**If it says "Everything is ready", you are done.** Otherwise it lists each problem with
-the command that fixes it.
+Warnings about CmdStan are acceptable. A failure is followed by the relevant repair
+command. If a required check still fails after 30 minutes of troubleshooting, send the
+complete output to the organiser and arrive 15 minutes early.
 
-## Step 6 — Optional, but it saves everyone time
+## 6. Open and browse the notebooks
 
-Open JupyterLab and run the first few cells so the heavy imports are cached:
+From `tutorials/workshop`, start JupyterLab:
 
 ```bash
-cd Cardioception/tutorials/workshop
-/path/to/cardioception-env/bin/jupyter lab
+../../cardioception-env/bin/jupyter lab
 ```
 
-Open `01_running_the_hrd.ipynb`, check the kernel says **Python (cardioception)** in the
-top right, and run the first two code cells. The first PsychoPy import takes 20–30 seconds;
-after that it is quick.
+On Windows:
 
----
+```powershell
+..\..\cardioception-env\Scripts\jupyter lab
+```
 
-## Things that commonly go wrong
+Open each notebook and browse its headings, explanations, and exercises. This brief
+preview will make the sequence and terminology familiar before the workshop. You do
+not need to complete the notebooks in advance.
 
-| Symptom | Cause and fix |
+In `01_running_the_hrd.ipynb`, confirm that the kernel is **Python
+(cardioception)** and run the first two code cells. The first PsychoPy-related import
+may take some time. Notebooks 2 and 3 should use **R (cardioception)**.
+
+## Common installation problems
+
+| Symptom | Likely cause and response |
 |---|---|
-| `command not found: _initialize_conda` after activating | A shell alias is shadowing `python`. Use the full path `./cardioception-env/bin/python` |
-| `ERROR: Could not find a version that satisfies psychopy` | Python is 3.12+. Go back to Step 1 |
-| `IRkernel::installspec()` says jupyter not found | The `jupyter` command is not on PATH. Use the `PATH=...` form in Step 3 |
-| `install_cmdstan()` fails to compile | Missing C++ toolchain — see Step 3. Or skip it; the notebook falls back |
-| Kernel dropdown has no R option | Step 3's `installspec` did not run. Re-run it and restart JupyterLab |
-| Install runs out of disk | You need ~4 GB. CmdStan alone is ~2 GB |
-| macOS: task window never appears | Grant your terminal **Input Monitoring** in System Settings → Privacy & Security |
+| The package requires Python `<3.12` | Recreate the environment with Python 3.10 or 3.11 |
+| `command not found: _initialize_conda` | A shell alias is shadowing Python; use the full environment path shown above |
+| `IRkernel::installspec()` cannot find Jupyter | Repeat the registration command with the environment directory on `PATH` |
+| CmdStan does not compile | Install the platform C++ toolchain, or continue with the precomputed fit |
+| The R kernel is absent | Repeat `IRkernel::installspec()` and restart JupyterLab |
+| The installation runs out of disk space | Free approximately 4 GB, mainly for PsychoPy and CmdStan |
+| A task window does not respond on macOS | Allow the terminal application under System Settings, Privacy & Security, Input Monitoring |
 
-## If you get stuck
+## What we will do in the workshop
 
-**Do not spend more than 30 minutes on this.** Send the full output of `preflight.py` to
-the organiser and arrive 15 minutes early — it is almost always a two-minute fix in person.
+We will:
 
-The workshop degrades gracefully by design:
+1. connect HRD trials to the psychometric response model;
+2. examine how adaptive stimulus placement changes the information in a session;
+3. configure and run a short task demonstration;
+4. inspect a completed session before fitting it;
+5. fit a psychometric function with empirically informed priors; and
+6. interpret the same model fitted hierarchically across participants.
 
-| If this is broken | You can still do |
-|---|---|
-| CmdStan only | Everything, with precomputed model fits |
-| R entirely | Notebook 1 in full — the task, the theory, running the experiment |
-| PsychoPy only | Notebook 2 in full, using the bundled example session |
-
-## What you will actually do on the day
-
-1. Build intuition for the psychometric model on simulated data you control
-2. Design a task, then **run the real experiment on your own laptop**
-3. Inspect the session and decide whether you would keep it
-4. Fit the psychometric model, with priors and sampler diagnostics
-5. See the same model across 512 participants, and what changes at that scale
-
-See you there.
+The optional final notebook uses simulation results to compare combinations of
+participant numbers and trial numbers for a planned study.

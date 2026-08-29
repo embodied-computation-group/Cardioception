@@ -9,29 +9,26 @@ md = lambda s: c.append(nbf.v4.new_markdown_cell(s.strip()))
 co = lambda s: c.append(nbf.v4.new_code_cell(s.strip()))
 
 md(r"""
-# The Heart Rate Discrimination task — 1. Understanding, installing, and running it
+# The Heart Rate Discrimination task: measurement and data collection
 
-**A hands-on workshop notebook.** For PhD students who know what interoception is,
-but have not necessarily run a psychophysics task or fitted a psychometric function.
+In this notebook we work from the HRD response model to a short task session. We will:
 
-By the end of this notebook you will have:
+1. define the stimulus and response used by the psychometric function;
+2. distinguish threshold, discrimination precision, and lapse rate;
+3. examine how Psi selects informative stimuli;
+4. check the Cardioception installation and recording setup;
+5. configure a study and run a short demonstration.
 
-1. a working mental model of **what the HRD actually measures**, and why it is not a heartbeat-counting score;
-2. Cardioception **installed and verified** on your own machine;
-3. a **task design of your own**, with the parameters chosen deliberately rather than copied;
-4. **real data**, collected live from a volunteer in the room.
+Notebook 2, `02_analysing_the_hrd.ipynb`, continues with session inspection,
+single-participant estimation, and hierarchical group models.
 
-Notebook 2 (`02_analysing_the_hrd.ipynb`, R kernel) then takes that data through
-inspection, a psychometric model fit, and the group-level hierarchical models.
-
----
-
-**Kernel:** `Python (cardioception)`. If that is not selected in the top right, change it now.
+**Kernel:** `Python (cardioception)`. Select it in the upper-right corner before
+running the first cell.
 """)
 
 # ----------------------------------------------------------------- Part 0
 md(r"""
-## Part 0 — What the task actually measures
+## Part 0. What the task measures
 
 ### The trial
 
@@ -40,7 +37,7 @@ On each trial the participant:
 1. **listens to their own heart for 5 seconds** and forms an estimate of its rate;
 2. hears **five tones** played at some frequency;
 3. judges whether the tones were **faster or slower** than their heart;
-4. rates their **confidence** in that judgement on a 0–100 visual analogue scale.
+4. rates their **confidence** in that judgement on a 0 to 100 visual analogue scale.
 
 The tone rate is not arbitrary. It is set relative to the participant's *measured*
 heart rate on that trial:
@@ -56,22 +53,21 @@ The response is coded
 
 $$y_i = \begin{cases} 1 & \text{"faster"} \\ 0 & \text{"slower"} \end{cases}$$
 
-### The one idea that matters most
+### Responses and accuracy answer different questions
 
-**We model $P(y=1)$ — the probability of a "faster" response — not accuracy.**
-
-This trips up almost everyone at first, so it is worth being concrete about why.
+We model $P(y=1)$, the probability of a "faster" response. We do not model
+objective accuracy.
 
 Imagine a participant who believes their heart is beating 10 BPM slower than it
 actually is. When the tones are played at exactly their true heart rate, those tones
 sound *fast* to them, and they will say "faster". Their responses will only split
-50/50 when the tones are around **−10 ΔBPM**. That 50/50 point is their **subjective
-match** — the quantity we want.
+50/50 when the tones are around **−10 ΔBPM**. That 50/50 point is their subjective
+match, which is the quantity represented by the threshold.
 
 Now score those same responses for correctness. Accuracy is *lowest* near their
 subjective threshold and rises in both directions, so it is a **V-shape, not a
-sigmoid**. Fitting accuracy would throw away the sign of the bias, which is the
-main thing the HRD was designed to recover.
+sigmoid**. Fitting accuracy would discard the sign of the bias that the HRD was
+designed to recover.
 
 Run the cell below to see both views of the *same* simulated participant.
 """)
@@ -118,7 +114,7 @@ for ax in axes:
 fig.tight_layout()
 plt.show()
 
-print("Note where accuracy bottoms out: at the participant's subjective threshold,")
+print("Accuracy is lowest at the participant's subjective threshold,")
 print(f"not at zero. Their bias of {ALPHA_TRUE:+.0f} dBPM is invisible in the accuracy curve.")
 """)
 
@@ -132,109 +128,138 @@ separated because they answer different scientific questions.
 |---|---|---|
 | $\alpha$ | ΔBPM | **Threshold** (point of subjective equality). Where the participant's belief about their heart rate sits. $\alpha < 0$ = underestimation. |
 | $\sigma$ | ΔBPM | **Slope / precision.** How sharply responses switch from "slower" to "faster". Smaller $\sigma$ = finer discrimination. |
-| $\lambda$ | probability | **Lapse rate.** Stimulus-independent responding — inattention, button errors. Pulls both asymptotes toward 0.5. |
+| $\lambda$ | probability | **Lapse rate.** Stimulus-independent responding, including inattention or response errors. Pulls both asymptotes toward 0.5. |
 
-This separation is the reason the HRD improves on heartbeat counting. A counting
-score confounds *how biased* someone's cardiac belief is with *how precisely* they
-can discriminate. Here they are two numbers, and an experimental effect can move
-one without the other.
+The model estimates bias and precision separately. This is a central advantage over
+heartbeat-counting scores, which do not distinguish these sources of variation. An
+experimental effect may alter one psychometric parameter without altering the other.
 
-> **A caution worth stating early.** Threshold and slope describe *judgements about
+> **Interpretive scope.** Threshold and slope describe *judgements about
 > heart rate*. They are not pure measures of ascending cardiac afferent signal.
 > Participants can draw on somatic cues, prior beliefs about what a normal resting
 > pulse feels like, time estimation, and memory of the listening interval. The
 > exteroceptive condition helps identify general temporal-comparison biases, but it
 > does not make the interoceptive estimate process-pure.
 
-### A simulated participant you can steer
+### A simulated adaptive session
 
-The widget below is a complete simulated experiment. You set the participant's true
-parameters and how many trials you run; it generates actual trial-by-trial responses,
-bins them, and fits the psychometric function back.
+The widget below generates trial-level responses from parameters that we control. For
+adaptive placement, it maintains a posterior over threshold and sigma and selects the
+next stimulus by expected information gain. This is the same decision principle as
+Psi, implemented on a coarser grid so that it remains responsive in a notebook.
 
-**Things worth doing with it — each takes ten seconds and teaches something:**
+Use the controls to examine five features of the design:
 
-1. **Move $\alpha$ alone.** The curve slides sideways without changing shape. This is
-   *bias*, and it is what heartbeat-counting scores cannot separate out.
-2. **Move $\sigma$ alone.** The curve stretches around a fixed 50% point. This is
-   *precision*, and it is a completely different claim about a participant.
-3. **Drop the trial count to 20.** Watch the recovered estimates jump around every time
-   you change the seed. This is exactly your live volunteer session in Part 3, and it is
-   why we quote credible intervals rather than point estimates.
-4. **Push lapse to 0.3.** The asymptotes collapse toward 0.5. Now try to recover
-   $\sigma$ — a high lapse rate looks a lot like a shallow slope, which is precisely why
-   the offline model estimates lapse rather than fixing it.
-5. **Switch stimulus placement to `uniform`.** With the same trial count the estimates
-   get noticeably worse, because most trials land where the answer was never in doubt.
-   That gap is what Psi buys you.
+1. Change $\alpha$ while holding $\sigma$ fixed. The curve moves horizontally.
+2. Change $\sigma$ while holding $\alpha$ fixed. The transition changes width around
+   the same 50% point.
+3. Reduce the number of trials and change the random seed. The posterior estimate
+   becomes more variable.
+4. Increase the true lapse rate. The adaptive model continues to assume the task
+   value of 0.02, so this deliberately introduces model mismatch.
+5. Compare adaptive and uniform placement with the same participant and trial count.
 """)
 
 co(r"""
 import ipywidgets as widgets
-from scipy.optimize import minimize
+
+def binary_entropy(prob):
+    prob = np.clip(prob, 1e-12, 1 - 1e-12)
+    return -(prob * np.log2(prob) + (1 - prob) * np.log2(1 - prob))
 
 def simulate_experiment(alpha=-9.0, sigma=8.0, lapse=0.02, n_trials=60,
-                        placement="adaptive (Psi-like)", seed=1):
+                        placement="adaptive", seed=1):
     rng = np.random.default_rng(seed)
 
-    # Where the trials are placed.
-    if placement.startswith("adaptive"):
-        # Psi converges to sampling near the threshold it is homing in on.
-        xs = rng.normal(alpha, max(sigma, 1.0) * 1.2, n_trials)
-    else:
-        xs = rng.uniform(-40, 40, n_trials)
-    xs = np.clip(np.round(xs), -50, 50)
+    # A deliberately coarse teaching grid. Cardioception uses the finer grid below.
+    stimulus_grid = np.arange(-40, 41, 2, dtype=float)
+    alpha_grid = np.arange(-40, 41, 2, dtype=float)
+    sigma_grid = np.arange(2, 26, 1, dtype=float)
+    grid_alpha, grid_sigma = np.meshgrid(alpha_grid, sigma_grid, indexing="ij")
 
-    # The participant responds.
-    ys = rng.random(n_trials) < p_faster(xs, alpha, sigma, lapse)
+    # The online staircase assumes a lapse rate of 0.02.
+    online_lapse = 0.02
+    response_prob = p_faster(
+        stimulus_grid[:, None, None],
+        grid_alpha[None, :, :],
+        grid_sigma[None, :, :],
+        online_lapse,
+    )
+    posterior = np.ones_like(grid_alpha, dtype=float)
+    posterior /= posterior.sum()
 
-    # Fit alpha and sigma back from the responses (lapse fixed at truth here).
-    def nll(theta):
-        a, log_s = theta
-        pr = np.clip(p_faster(xs, a, np.exp(log_s), lapse), 1e-9, 1 - 1e-9)
-        return -np.sum(np.where(ys, np.log(pr), np.log(1 - pr)))
+    xs, ys = [], []
+    for _ in range(n_trials):
+        if placement == "adaptive":
+            # Mutual information between the next response and the parameter grid.
+            predictive = np.sum(response_prob * posterior[None, :, :], axis=(1, 2))
+            expected_noise = np.sum(
+                binary_entropy(response_prob) * posterior[None, :, :], axis=(1, 2)
+            )
+            intensity_index = int(np.argmax(binary_entropy(predictive) - expected_noise))
+        else:
+            intensity_index = int(rng.integers(len(stimulus_grid)))
 
-    fit = minimize(nll, x0=[np.median(xs), np.log(8.0)], method="Nelder-Mead")
-    a_hat, s_hat = fit.x[0], np.exp(fit.x[1])
+        stimulus = stimulus_grid[intensity_index]
+        response = rng.random() < p_faster(stimulus, alpha, sigma, lapse)
+        likelihood = response_prob[intensity_index]
+        if not response:
+            likelihood = 1 - likelihood
+        posterior *= likelihood
+        posterior /= posterior.sum()
+        xs.append(stimulus)
+        ys.append(response)
 
-    # Bin the simulated responses for display.
-    edges = np.arange(-50, 55, 5.0)
+    xs, ys = np.asarray(xs), np.asarray(ys)
+    a_hat = np.sum(posterior * grid_alpha)
+    s_hat = np.sum(posterior * grid_sigma)
+
+    # Bin responses for display only. Estimation uses every exact intensity.
+    edges = np.arange(-42, 47, 6.0)
     idx = np.digitize(xs, edges) - 1
     bx, by, bn = [], [], []
     for b in np.unique(idx):
-        m = idx == b
-        if m.sum():
-            bx.append(xs[m].mean()); by.append(ys[m].mean()); bn.append(m.sum())
+        selected = idx == b
+        bx.append(xs[selected].mean())
+        by.append(ys[selected].mean())
+        bn.append(selected.sum())
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.2),
-                             gridspec_kw={"width_ratios": [2, 1]})
+    posterior_curve = np.sum(
+        p_faster(
+            x[:, None, None], grid_alpha[None, :, :], grid_sigma[None, :, :],
+            online_lapse,
+        ) * posterior[None, :, :],
+        axis=(1, 2),
+    )
+
+    fig, axes = plt.subplots(
+        1, 2, figsize=(12, 4.2), gridspec_kw={"width_ratios": [2, 1]}
+    )
     ax = axes[0]
     ax.plot(x, p_faster(x, alpha, sigma, lapse), color="#1f3352", lw=2.5,
-            label=f"true:      a={alpha:+.1f}, s={sigma:.1f}")
-    ax.plot(x, p_faster(x, a_hat, s_hat, lapse), color="#A8455F", lw=2, ls="--",
-            label=f"recovered: a={a_hat:+.1f}, s={s_hat:.1f}")
-    ax.scatter(bx, by, s=np.array(bn) * 14, color="#A8455F", alpha=0.55,
-               edgecolor="white", zorder=3, label="simulated data")
+            label=f"true: alpha={alpha:+.1f}, sigma={sigma:.1f}")
+    ax.plot(x, posterior_curve, color="#A8455F", lw=2, ls="--",
+            label=f"posterior: alpha={a_hat:+.1f}, sigma={s_hat:.1f}")
+    ax.scatter(bx, by, s=np.asarray(bn) * 14, color="#A8455F", alpha=0.55,
+               edgecolor="white", zorder=3, label="simulated responses")
     ax.axvline(alpha, ls=":", color="#1f3352", lw=1)
     ax.axhline(0.5, ls=":", color="#a4acb8", lw=1)
     ax.set(xlabel="Stimulus intensity (dBPM)", ylabel='P("faster")',
-           ylim=(-0.04, 1.04), xlim=(-45, 45))
+           ylim=(-0.04, 1.04), xlim=(-42, 42))
     ax.spines[["top", "right"]].set_visible(False)
     ax.legend(loc="upper left", fontsize=8, frameon=False)
 
-    # Where the trials actually went.
-    axes[1].hist(xs, bins=np.arange(-50, 55, 5), color="#2F6F8F", alpha=0.75)
+    axes[1].hist(xs, bins=np.arange(-42, 47, 6), color="#2F6F8F", alpha=0.75)
     axes[1].axvline(alpha, ls="--", color="#1f3352", lw=1.2)
     axes[1].set(xlabel="Stimulus intensity (dBPM)", ylabel="Trials",
-                title="Where the trials were spent", xlim=(-45, 45))
+                title="Stimulus allocation", xlim=(-42, 42))
     axes[1].spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     plt.show()
 
-    err_a, err_s = a_hat - alpha, s_hat - sigma
-    print(f"threshold  true {alpha:+6.1f}   recovered {a_hat:+6.1f}   error {err_a:+.1f} dBPM")
-    print(f"sigma      true {sigma:6.1f}   recovered {s_hat:6.1f}   error {err_s:+.1f} dBPM")
-    print(f"\n{n_trials} trials. Change the seed to resample the same participant.")
+    print(f"threshold  true {alpha:+6.1f}   posterior mean {a_hat:+6.1f} dBPM")
+    print(f"sigma      true {sigma:6.1f}   posterior mean {s_hat:6.1f} dBPM")
+    print(f"\n{n_trials} trials. Change the seed to simulate another response sequence.")
 
 widgets.interact(
     simulate_experiment,
@@ -246,8 +271,8 @@ widgets.interact(
                               description="lapse", continuous_update=False),
     n_trials=widgets.IntSlider(min=10, max=200, step=10, value=60,
                                description="n trials", continuous_update=False),
-    placement=widgets.Dropdown(options=["adaptive (Psi-like)", "uniform"],
-                               value="adaptive (Psi-like)", description="placement"),
+    placement=widgets.Dropdown(options=["adaptive", "uniform"],
+                               value="adaptive", description="placement"),
     seed=widgets.IntSlider(min=1, max=50, step=1, value=1,
                            description="seed", continuous_update=False),
 );
@@ -257,12 +282,12 @@ md(r"""
 ### How the task chooses what to play: the Psi staircase
 
 We could present a fixed grid of intensities, but most of those trials would be
-wasted — a tone 45 BPM faster than your heart is trivially easy and tells us almost
-nothing about where your threshold lies.
+uninformative. Once a response is almost certain, another observation at that
+intensity changes the parameter estimates very little.
 
 Instead Cardioception runs **Psi**, an adaptive Bayesian procedure. It maintains a
 joint posterior over threshold and slope, and on each trial picks the intensity
-expected to be *most informative* — the one that will shrink that posterior most.
+expected to reduce uncertainty in that posterior.
 
 | Quantity | Range | Resolution |
 |---|---:|---:|
@@ -272,81 +297,54 @@ expected to be *most informative* — the one that will shrink that posterior mo
 
 The online lapse rate is fixed at 0.02.
 
-Two practical consequences you will meet again in notebook 2:
+Two practical consequences return in notebook 2:
 
-- **Psi concentrates trials near the threshold.** Your stimulus histogram will look
-  clustered, not uniform. That is the procedure working, not a bug.
+- **The stimulus distribution is not uniform.** Psi often samples near the current
+  threshold estimate, but it also samples farther into the tails when those trials
+  are informative about slope. A healthy trace does not need to become flat.
 - **The online estimate is not the final answer.** Psi is optimised for choosing the
   *next* stimulus, and it fixes the lapse rate. We refit offline with `brms`, where
   lapse is free and we keep full posterior uncertainty.
 
-> ⚠️ **A parameterisation trap that has bitten published analyses.** PsychoPy's online
-> Psi reports $\sigma$, where **larger = worse** discrimination. The offline `brms`
+> **Slope parameterization.** PsychoPy's online Psi reports $\sigma$, where
+> **larger = worse** discrimination. The offline `brms`
 > model estimates $\beta = -\log\sigma$, where **larger = better**. They point in
-> opposite directions. Legrand et al. (2022) use the Psi convention. Always state which
-> one you are reporting.
+> opposite directions. Legrand et al. (2022) use the Psi convention. We therefore state
+> the parameterization whenever we report slope.
+
+### Follow the posterior trial by trial
+
+At this point we pause the notebook and open the
+[psychophysical model tutorial](https://www.the-ecg.org/Cardioception/tutorials/psychophysics.html#part-ii-adaptive-measurement-with-psi).
+Its animation follows the joint Psi posterior and the implied psychometric function
+after every adaptive trial in a completed HRD session. The animation also shows why an
+unexpected response can move or widen the posterior without indicating a software
+failure.
 """)
 
 md(r"""
-Go back to the widget above and switch **placement** to `uniform`, keeping everything
-else fixed. The recovered threshold gets worse for the same number of trials — most of
-those trials landed where the answer was never in doubt. That difference is the whole
-argument for adaptive sampling.
+Return to the widget and switch **placement** to `uniform`, keeping the participant,
+trial count, and seed fixed. Compare the posterior estimates and the stimulus
+histogram. Repeat the comparison with another seed before drawing a conclusion from a
+single simulated session.
 """)
 
 # ----------------------------------------------------------------- Part 1
 md(r"""
 ---
-## Part 1 — Installing Cardioception
+## Part 1. Check the environment and recording device
 
-Skip to Part 2 if it is already working. Otherwise, the whole install is four commands.
+The pre-installation guide contains the platform-specific setup instructions. Here we
+confirm that the selected notebook kernel can import the packages and find the media
+files used by the task.
 
-### Requirements
+Cardioception requires Python 3.10 or 3.11. The upper limit comes from `pywinhook`,
+not PsychoPy. The PyPI distribution is named `cardioception-toolbox`, while the Python
+import remains `cardioception`.
 
-**Python 3.10 or 3.11.** The ceiling is not PsychoPy (which allows 3.12) but
-`pywinhook`, which publishes wheels only up to 3.11 and otherwise needs a C toolchain
-on Windows.
-
-```bash
-python -m venv cardioception-env
-source cardioception-env/bin/activate      # macOS / Linux
-cardioception-env\Scripts\activate         # Windows
-pip install cardioception-toolbox
-python -c "from cardioception.HRD import task; print('ok')"
-```
-
-The package name is `cardioception-toolbox`; the *import* name stays `cardioception`,
-so older scripts keep working. If you already use conda, `conda env create -f
-environment.yml` is an alternative to all four lines — it pins 3.10 and gets
-`pywinhook` prebuilt from conda-forge.
-
-The install pulls down about **140 MB of media**, most of it the 370 pre-generated
-tone files the task plays. This is normal.
-
-### Four things that actually go wrong
-
-These are the ones worth knowing in advance — the first two cost real time.
-
-1. **A shell alias shadows the venv Python.** If your `.zshrc`/`.bashrc` aliases
-   `python` (lazy conda initialisers do this), then after activating the venv, `python`
-   still resolves to the alias and you get a confusing `command not found`. The venv is
-   *fine*; the alias is intercepting. Call `./cardioception-env/bin/python` by absolute
-   path, or use `command python`.
-
-2. **`serialPort=None` fails with `setup='behavioral'`.** The README's script example
-   passes `None`, which reaches `serial.Serial(None)`. pyserial accepts that but leaves
-   the port *unopened*, so the setup read immediately after it raises. That example only
-   works under `setup='test'`. Pass the real port.
-
-3. **`resultPath` defaults relative to the current working directory** —
-   `os.getcwd() + "/data/" + participant + session`. Launch the same script from two
-   different folders and your data quietly scatters. Set it explicitly.
-
-4. **Piping the task through another command hides its exit code.** `python task.py |
-   tail` reports *tail's* status, so a crash looks like success. Redirect instead:
-   `python task.py > run.log 2>&1`.
-
-Run the cell below to check your own environment.
+Run the next cell and compare the displayed interpreter with the environment created
+for the workshop. A different path usually means that the notebook is using the wrong
+kernel.
 """)
 
 co(r"""
@@ -378,8 +376,8 @@ md(r"""
 
 Two setups work without extra code: the **Nonin 3012LP Xpod USB pulse oximeter**
 (with 8000SM soft-clip sensors), and BrainVision Recorder over Remote Data Access.
-Anything else needs a small recording class of your own — the task only requires a
-reliable estimate of cardiac frequency.
+Anything else needs a recording class that supplies the same interface. The task
+requires a reliable estimate of cardiac frequency.
 
 Before collecting any data, verify the oximeter is producing a *real* signal:
 
@@ -388,13 +386,13 @@ python -m cardioception.check_device                 # lists serial ports
 python -m cardioception.check_device --port <PORT>   # records 20 s and judges it
 ```
 
-This check exists because **the obvious check does not work**. On an empty sensor the
-peak detector still reports beats at an entirely plausible rate — a session can look
-fine and contain nothing at all. What separates the cases is *signal amplitude*: a
-finger gives a swing of a couple of hundred ADC units, an empty sensor gives one or two.
+The beat count alone is not a sufficient check. On an empty sensor the peak detector
+can report beats at a plausible rate. Signal amplitude distinguishes this case: a
+finger typically gives a swing of hundreds of ADC units, whereas an empty sensor gives
+one or two.
 
-Here is real output from an empty sensor. Note that it reports a perfectly believable
-67 BPM and is still, correctly, rejected:
+Here is output from an empty sensor. It reports 67 BPM but is rejected because the
+signal amplitude is negligible:
 
 ```
   signal amplitude   1.0      (needs > 20)
@@ -414,9 +412,9 @@ And the same sensor, properly seated on a finger:
   VERDICT: clean physiological signal
 ```
 
-If you get "signal present but detection unreliable" in between these, reseat the
+If the result is "signal present but detection unreliable," reseat the
 clip so the emitter sits flat on the fingerpad, keep the hand still and below heart
-level, and re-run. It usually takes one adjustment.
+level, and run the check again.
 """)
 
 co(r"""
@@ -438,14 +436,14 @@ print("  python -m cardioception.check_device --port <PORT>")
 # ----------------------------------------------------------------- Part 2
 md(r"""
 ---
-## Part 2 — Designing your own experiment
+## Part 2. Configure an experiment
 
 A task splits into two submodules:
 
-- **`parameters`** — the experimental settings (`getParameters()`)
-- **`task`** — the PsychoPy script that runs them (`task.run()`)
+- **`parameters`** contains the experimental settings (`getParameters()`)
+- **`task`** runs the PsychoPy experiment (`task.run()`)
 
-Almost everything you would want to change is an argument to `getParameters`.
+Almost every setting we may want to change is an argument to `getParameters`.
 The ones that matter scientifically:
 
 | Argument | Default | What it controls |
@@ -453,7 +451,7 @@ The ones that matter scientifically:
 | `nTrials` | 120 | **Total** trials, *including* both modalities |
 | `exteroception` | `True` | Adds the auditory control condition, splitting `nTrials` in half |
 | `stairType` | `'psi'` | `'psi'` (adaptive Bayesian) or `'updown'` |
-| `catchTrials` | 0.0 | Fraction placed at ±20 BPM extremes. Use `0.2` if you want the tails sampled |
+| `catchTrials` | 0.0 | Fraction assigned to predetermined intensities in the response-function tails |
 | `device` | `'mouse'` | `'mouse'` or `'keyboard'` |
 | `setup` | `'behavioral'` | `'behavioral'` = real oximeter; `'test'` = **pre-recorded signal, no hardware** |
 | `nBreaking` | 20 | Trials between rest breaks |
@@ -461,29 +459,32 @@ The ones that matter scientifically:
 | `resultPath` | `None` | Where data goes. **Set this.** |
 | `screenNb` / `fullscr` | 0 / `True` | Which monitor, and whether to take it over |
 
-### Three design decisions worth thinking about
+### Three design decisions
 
 **How many trials?** `nTrials` is the *total*. With `exteroception=True`, `nTrials=120`
-gives you **60 interoceptive and 60 exteroceptive** trials, not 120 of each. The Psi
-posterior is usually usable by around 40–60 trials per condition; below ~30 the slope
-in particular stays poorly identified. Note also that an odd `nTrials` with
-`exteroception=True` cannot split evenly — recent versions warn and round rather than
-crash, but pick an even number.
+gives 60 interoceptive and 60 exteroceptive trials, not 120 of each. Threshold and
+slope have different data requirements, and the appropriate trial count depends on the
+effect and analysis. We return to that decision in the power-analysis notebook. An odd
+`nTrials` with `exteroception=True` produces one additional Extero trial, so an even
+number gives a balanced design.
 
-**Do you need the auditory control?** It costs half your trials. It buys the ability to
-say an effect is *specific to interoception* rather than a general bias in comparing
-tone sequences to a remembered rate. For most between-group questions this is worth it.
-For a first pilot on one person, drop it and spend everything on the cardiac condition.
+**Do we need the auditory control?** It uses half the trials and allows us to test whether
+an effect is *specific to interoception* rather than a general bias in comparing
+tone sequences to a remembered rate. Its inclusion should follow from the contrast
+needed for the research question. For a short software demonstration, a single modality
+keeps the session brief.
 
-**`setup='test'` is your friend.** It replays a pre-recorded pulse signal, so the whole
-task runs with no oximeter attached. Use it to debug your design, time your session,
-and let students rehearse the procedure — then switch to `'behavioral'` for real data.
+**Use `setup='test'` for rehearsal.** It replays a pre-recorded pulse signal, so the
+task runs without an oximeter. This is useful for checking the design and learning the
+procedure. It does not yield a valid measure of the user’s interoceptive performance,
+because the cardiac reference is not their own signal. Use `setup='behavioral'` with a
+checked recording device for data collection.
 
-Set your design below. This cell only *describes* it — it does not open a window.
+Set the demonstration design below. This cell describes it without opening a window.
 """)
 
 co(r"""
-# ---- Your design -------------------------------------------------------
+# ---- Workshop design --------------------------------------------------
 DESIGN = dict(
     participant   = "Volunteer_01",
     session       = "Workshop",
@@ -494,13 +495,13 @@ DESIGN = dict(
     device        = "mouse",
     language      = "english",
     setup         = "test",      # "test" = simulated pulse, no hardware needed
-)                                #  switch to "behavioral" if you have an oximeter
+)                                #  use "behavioral" with a checked oximeter
 # ------------------------------------------------------------------------
 
 def describe(d):
     n = d["nTrials"]
     if d["exteroception"]:
-        intero, extero = n // 2 + n % 2, n // 2
+        intero, extero = n // 2, n // 2 + n % 2
         split = f"{intero} interoceptive + {extero} exteroceptive"
         if n % 2:
             split += "   [!] odd nTrials cannot split evenly"
@@ -514,7 +515,7 @@ def describe(d):
     print(f"Design: {d['participant']} / {d['session']}")
     print(f"  trials            {n}  ->  {split}")
     if catch:
-        print(f"  catch trials      {catch} at +/-20 BPM extremes")
+        print(f"  catch trials      {catch} at predetermined tail intensities")
     print(f"  staircase         {d['stairType']}")
     print(f"  responses via     {d['device']}")
     print(f"  recording         {d['setup']}"
@@ -522,8 +523,8 @@ def describe(d):
     print(f"  rough duration    ~{secs // 60} min, excluding the tutorial")
     print()
     if intero and intero < 30:
-        print(f"  [!] {intero} interoceptive trials is below ~30. Expect a wide, poorly")
-        print( "      identified slope. Fine for a demo; not enough for a real estimate.")
+        print(f"  [i] {intero} interoceptive trials makes this a short demonstration.")
+        print( "      Do not treat its participant-level estimates as stable measurements.")
     if d["setup"] == "behavioral":
         print("  [i] Run check_device first and confirm a clean signal.")
 
@@ -533,9 +534,9 @@ describe(DESIGN)
 md(r"""
 ### Writing it as a script
 
-For real data collection you would not use a notebook — you would copy one of the
+For real data collection we would not use a notebook. We would copy one of the
 scripts in [`wrappers/`](https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers)
-into your own study folder and run it from a terminal. The whole thing is five lines:
+into the study directory, set the parameters, and run it from a terminal:
 
 ```python
 from cardioception.HRD.parameters import getParameters
@@ -543,7 +544,7 @@ from cardioception.HRD import task
 
 parameters = getParameters(
     participant='Subject_01', session='Test',
-    serialPort='/dev/cu.usbserial-XXXX',    # your port; see Part 1
+    serialPort='/dev/cu.usbserial-XXXX',    # recording port; see Part 1
     setup='behavioral', nTrials=120, screenNb=0,
     resultPath='/absolute/path/to/my_study/data',
 )
@@ -552,12 +553,12 @@ task.run(parameters, confidenceRating=True, runTutorial=True)
 parameters['win'].close()
 ```
 
-> ⚠️ **`getParameters()` opens the PsychoPy window immediately** (it builds all the
-> visual stimuli). You cannot call it just to inspect settings — by the time it
+> **Window creation.** `getParameters()` opens the PsychoPy window immediately because
+> it builds the visual stimuli. Do not call it only to inspect settings; by the time it
 > returns, the screen is already taken over. That is why the design cell above is
 > plain Python.
 
-`task.run()` takes two arguments of its own: `confidenceRating` (collect the 0–100
+`task.run()` takes two arguments of its own: `confidenceRating` (collect the 0 to 100
 rating after each decision) and `runTutorial` (walk through the instructions and
 practice trials first). Turn the tutorial off for a participant's *second* session.
 """)
@@ -565,44 +566,43 @@ practice trials first). Turn the tutorial off for a participant's *second* sessi
 # ----------------------------------------------------------------- Part 3
 md(r"""
 ---
-## Part 3 — Run it on a volunteer
+## Part 3. Run a short session
 
-There are two ways to run this, and **you should do the first one yourself**.
+We use two forms of the task in the workshop.
 
-### Path A — everyone: `setup="test"`
+### Path A: software rehearsal with `setup="test"`
 
 With `setup="test"` the task replays a **pre-recorded pulse signal**, so it runs on any
-laptop with no hardware at all. Everything else is the real experiment: the same tones,
-the same Psi staircase, the same trial structure, the same output files.
+laptop without recording hardware. It uses the same tones, Psi staircase, trial
+structure, and output format as the behavioural setup.
 
-Run it. Do the trials properly rather than clicking through — you will be analysing your
-own responses in notebook 2, and it is much more interesting when the data is really yours.
+Run the task to learn the participant experience and confirm that the software works.
+The resulting responses are not a measure of the user’s interoceptive performance
+because the replayed cardiac reference is not their own. Notebook 2 will analyze the live
+volunteer session or, if that session is unavailable, a bundled example.
 
-Put **headphones on** if the room is noisy. The task is a listening task and the tones
-matter.
+Use headphones if the room is noisy.
 
-### Path B — the demonstrator: `setup="behavioral"`
+### Path B: live collection with `setup="behavioral"`
 
-One machine with a pulse oximeter runs the genuine cardiac version, projected, so everyone
-sees what real interoceptive data collection looks like. Set `setup="behavioral"` in the
-design cell and `SERIAL_PORT` below.
+The teaching machine runs the task with a pulse oximeter and a volunteer. Set
+`setup="behavioral"` in the design cell and set `SERIAL_PORT` below.
 
 Before that run:
 
 - [ ] `check_device` gave **"clean physiological signal"**
 - [ ] Sensor on the **non-dominant** hand, resting still and below heart level
 - [ ] Volunteer can hear the tones clearly
-- [ ] They know **escape aborts** the task
+- [ ] They know that Escape aborts the task
 - [ ] Everyone else stays quiet
 
 ---
 
-Either way, the next cell launches the task in a **separate process**. That matters:
-PsychoPy takes over the display, and a crash inside the notebook kernel would take the
-kernel with it.
+The next cell launches the task in a separate process so that the notebook kernel
+remains available if PsychoPy exits unexpectedly.
 
-> **The window opens fullscreen and takes over your screen.** Escape aborts at any point.
-> If you abort during the tutorial, no data is written — the task saves from the first
+> **Task window.** In behavioural mode the window opens full screen. Escape aborts at
+> any point. If the task is aborted during the tutorial, no data is written; the task saves from the first
 > real trial onward.
 """)
 
@@ -611,7 +611,7 @@ from pathlib import Path
 import subprocess, sys, textwrap, datetime
 
 # Only used when setup="behavioral". Ignored entirely in test mode.
-SERIAL_PORT  = "/dev/cu.usbserial-FT4TET5J"   # <-- your port from Part 1
+SERIAL_PORT  = "/dev/cu.usbserial-FT4TET5J"   # recording port from Part 1
 RUN_TUTORIAL = True                           # False to skip straight to the trials
 
 if DESIGN["setup"] == "test":
@@ -620,7 +620,7 @@ else:
     print(f"Behavioral mode: recording from {SERIAL_PORT}\n")
 
 workshop = Path.cwd()
-result_dir = workshop / "data"
+result_dir = workshop / "data" / DESIGN["setup"]
 log_path = workshop / f"run_{DESIGN['participant']}.log"
 
 script = textwrap.dedent(f'''
@@ -666,30 +666,31 @@ for f in sorted(result_dir.rglob("*")):
 """)
 
 md(r"""
-### If nothing was written
+### If no trial file was written
 
 The task saves the trial table **after every single trial**, so an empty output
-directory means it never completed trial 1. In order of likelihood:
+directory means it never completed trial 1.
 
 | Symptom | Cause |
 |---|---|
 | Empty folder, exit code 0, no error | Aborted with escape during the tutorial |
 | `SerialException` in the log | Wrong port, or the oximeter is unplugged |
-| Hangs with no window | On macOS, grant your terminal **Input Monitoring** in System Settings → Privacy & Security |
-| `Attempting to use a port that is not open` | `serialPort=None` with `setup='behavioral'` — see Part 1 |
+| Hangs with no window | On macOS, grant your terminal Input Monitoring in System Settings, Privacy & Security |
+| `Attempting to use a port that is not open` | `serialPort=None` with `setup='behavioral'`; see Part 1 |
 | Window opens then closes instantly | Another PsychoPy window still holds the display; restart the kernel |
 
-Read `run_<participant>.log` — the real error is at the bottom. The `Font Helvetica
+Read the final lines of `run_<participant>.log`. The `Font Helvetica
 Bold was requested` and `No default speaker specified` warnings are cosmetic and appear
 in every successful run too.
 
-### What you just collected
+### Files produced by the task
 
 One folder per participant/session, containing:
 
 | File | Contents |
 |---|---|
-| `<participant><session>.txt` | **The trial table.** One row per trial — this is your data |
+| `<participant><session>.txt` | Rolling trial table, rewritten after every trial |
+| `<participant><session>_final.txt` | Completed trial table, one row per trial |
 | `<participant>_signal.txt` | The full PPG trace |
 | `Intero_posterior.npy` | The joint Psi posterior after every adaptive trial |
 | `<participant>_ppg_*.txt` | Per-trial PPG segments |
@@ -715,11 +716,12 @@ repo = find_repo()
 EXAMPLE = repo / "docs/source/examples/templates/data/HRD/HRD_final.txt"
 
 candidates = sorted(result_dir.rglob(f"{DESIGN['participant']}*.txt")) if result_dir.exists() else []
-trial_files = [f for f in candidates if "signal" not in f.name and "ppg" not in f.name]
+trial_files = [f for f in candidates if f.name.endswith("_final.txt")]
+if not trial_files:
+    trial_files = [f for f in candidates if "signal" not in f.name and "ppg" not in f.name]
 
 if not trial_files:
-    print("No session of your own found - falling back to the bundled example")
-    print("so you can continue to notebook 2 regardless.\n")
+    print("No workshop session found; using the bundled example.\n")
     trial_files = [EXAMPLE]
 
 path = trial_files[0]
@@ -737,11 +739,11 @@ if "DecisionProvided" in d:
 
 md(r"""
 ---
-## What you have now
+## Summary
 
-- A design you chose, and the reasoning behind each parameter.
-- A real session from a real person, in a folder you can point at.
-- The vocabulary — threshold, slope, lapse, Psi, ΔBPM — that the next notebook assumes.
+- A demonstration design and the reasoning behind each parameter.
+- Experience with the task interface and, when hardware was available, a live session.
+- The vocabulary of threshold, slope, lapse, Psi, and ΔBPM used in notebook 2.
 
 **Continue to `02_analysing_the_hrd.ipynb`** (switch to the **R (cardioception)**
 kernel). It inspects this session properly, fits the psychometric model to it, and
@@ -749,17 +751,19 @@ then shows what the same model looks like across 512 participants.
 
 ### Why the analysis is in R
 
-Not arbitrary. The psychometric and metacognition models in the Cardioception
-tutorials are `brms` models, built on the
+The psychometric and metacognition models in the Cardioception tutorials are `brms`
+models built on the
 [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception)
-(Courtin et al., 2026). Every number in the published tutorials came out of that R
-pipeline, and there is no maintained Python equivalent. Collecting data is Python;
-modelling it is R.
+(Courtin et al., 2026). The published tutorial results use that R pipeline, and there
+is no maintained Python equivalent. We therefore collect data in Python and fit the
+models in R.
 
 ### References
 
 - Legrand et al. (2022). *The heart rate discrimination task.* Biological Psychology. [doi:10.1016/j.biopsycho.2021.108239](https://doi.org/10.1016/j.biopsycho.2021.108239)
 - Courtin et al. (2026). *Hierarchical Interoception toolbox.* Behavior Research Methods. [doi:10.3758/s13428-026-03137-3](https://doi.org/10.3758/s13428-026-03137-3)
+- Brener and Ring (2016). *Towards a psychophysics of interoceptive processes: the measurement of heartbeat detection.* Philosophical Transactions of the Royal Society B. [doi:10.1098/rstb.2016.0015](https://doi.org/10.1098/rstb.2016.0015)
+- Desmedt et al. (2023). *The new measures of interoceptive accuracy: A systematic review and assessment.* Neuroscience & Biobehavioral Reviews. [doi:10.1016/j.neubiorev.2023.105388](https://doi.org/10.1016/j.neubiorev.2023.105388)
 """)
 
 nb["cells"] = c
