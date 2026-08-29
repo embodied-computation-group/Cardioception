@@ -7,6 +7,7 @@ fitted hierarchical model, collecting real data from a volunteer along the way.
 |---|---|---|
 | `01_running_the_hrd.ipynb` | **Python (cardioception)** | The measurement model, installation, designing your own task, running it live |
 | `02_analysing_the_hrd.ipynb` | **R (cardioception)** | Session inspection, fitting the psychometric model, the 512-participant group models |
+| `03_power_analysis.ipynb` | **R (cardioception)** | *Optional.* How many participants and trials, from the toolbox's power simulations |
 
 The split is not arbitrary. Cardioception is a PsychoPy package, so data collection is
 Python. The models in `tutorials/` are `brms` models from the
@@ -80,6 +81,7 @@ Roughly 2–2.5 hours with discussion:
 | 4 | Inspecting the session | 20 min |
 | 5 | Fitting the psychometric model | 30 min |
 | 6 | The hierarchical group model | 25 min |
+| — | *Optional:* power analysis for your own study | 20 min |
 
 Part 5 samples for one to three minutes, plus Stan compilation on the first run.
 **Run that cell once before the session** so the compiled model is cached and the room
@@ -93,8 +95,10 @@ GETTING_STARTED.md          For attendees new to Python (linked from PREINSTALL)
 preflight.py                One command that reports what is missing
 01_running_the_hrd.ipynb    Python notebook (parts 0-3)
 02_analysing_the_hrd.ipynb  R notebook (parts 4-6)
+03_power_analysis.ipynb     R notebook, optional power-analysis module
 build_nb1.py                Regenerates notebook 1
 build_nb2.py                Regenerates notebook 2
+build_nb3.py                Regenerates notebook 3
 data/                       Where live sessions land (created at run time)
 ```
 
