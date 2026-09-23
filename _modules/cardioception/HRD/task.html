@@ -1488,13 +1488,19 @@
 
     <span class="k">elif</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"mouse"</span><span class="p">:</span>
 
-        <span class="c1"># Use the mouse position to update the slider position</span>
-        <span class="c1"># The mouse movement is limited to a rectangle above the Slider</span>
-        <span class="c1"># To avoid being dragged out of the screen (in case of multi screens)</span>
-        <span class="c1"># and to avoid interferences with the Slider when clicking.</span>
+        <span class="c1"># The horizontal cursor position drives the slider marker. The cursor</span>
+        <span class="c1"># is hidden and warped once to a random start, so the marker does not</span>
+        <span class="c1"># begin where the decision click left it.</span>
+        <span class="c1">#</span>
+        <span class="c1"># The cursor must not be warped on every frame. On macOS each warp</span>
+        <span class="c1"># (CGDisplayMoveCursorToPoint, via pyglet) suppresses hardware mouse</span>
+        <span class="c1"># events, motion and clicks alike, for 0.25 s. Warping per frame kept</span>
+        <span class="c1"># that suppression permanently active and left the slider frozen</span>
+        <span class="c1"># (issue #103). The cursor is only brought back if it strays far from</span>
+        <span class="c1"># the slider, which keeps it from wandering onto a second screen while</span>
+        <span class="c1"># costing at most an occasional quarter second of input.</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">mouseVisible</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">setPos</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">),</span> <span class="mf">0.2</span><span class="p">))</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">clickReset</span><span class="p">()</span>
         <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
             <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
             <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
@@ -1517,35 +1523,28 @@
         <span class="n">slider</span><span class="o">.</span><span class="n">marker</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">)</span>
         <span class="n">clock</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">clickReset</span><span class="p">()</span>
-        <span class="n">buttons</span><span class="p">,</span> <span class="n">confidenceRT</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">getPressed</span><span class="p">(</span><span class="n">getTime</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">mouseVisible</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">trialdur</span> <span class="o">=</span> <span class="n">clock</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span>
-            <span class="n">buttons</span><span class="p">,</span> <span class="n">confidenceRT</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">getPressed</span><span class="p">(</span><span class="n">getTime</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">buttons</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">getPressed</span><span class="p">()</span>
 
-            <span class="c1"># Mouse position (keep in in the rectangle)</span>
-            <span class="n">newPos</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">getPos</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">newPos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">:</span>
-                <span class="n">newX</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span>
-            <span class="k">elif</span> <span class="n">newPos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
-                <span class="n">newX</span> <span class="o">=</span> <span class="mf">0.5</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">newX</span> <span class="o">=</span> <span class="n">newPos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">newPos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">:</span>
-                <span class="n">newY</span> <span class="o">=</span> <span class="mf">0.1</span>
-            <span class="k">elif</span> <span class="n">newPos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">:</span>
-                <span class="n">newY</span> <span class="o">=</span> <span class="mf">0.3</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">newY</span> <span class="o">=</span> <span class="n">newPos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">setPos</span><span class="p">((</span><span class="n">newX</span><span class="p">,</span> <span class="n">newY</span><span class="p">))</span>
+            <span class="c1"># The marker follows the cursor over the slider's extent, in</span>
+            <span class="c1"># height units. Only the marker is clamped, not the cursor.</span>
+            <span class="n">mouseX</span><span class="p">,</span> <span class="n">mouseY</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">getPos</span><span class="p">()[:</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">newX</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">mouseX</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">slider</span><span class="o">.</span><span class="n">markerPos</span> <span class="o">=</span> <span class="mi">50</span> <span class="o">+</span> <span class="p">(</span><span class="n">newX</span> <span class="o">/</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="mi">50</span>
 
-            <span class="c1"># Update marker position in Slider</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="n">newX</span> <span class="o">/</span> <span class="mf">0.5</span>
-            <span class="n">slider</span><span class="o">.</span><span class="n">markerPos</span> <span class="o">=</span> <span class="mi">50</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+            <span class="c1"># Bring the cursor back only when it is about to leave a 16:9</span>
+            <span class="c1"># full screen (half width 0.89 in height units), which is where it</span>
+            <span class="c1"># would cross onto a second monitor. See the note above on why</span>
+            <span class="c1"># this is not done every frame.</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mouseX</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.85</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mouseY</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.45</span><span class="p">:</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">setPos</span><span class="p">((</span><span class="n">newX</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">))</span>
 
-            <span class="c1"># Check if response provided</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">buttons</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">trialdur</span> <span class="o">&gt;</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"minRatingTime"</span><span class="p">]):</span>
+            <span class="c1"># A left click confirms the rating. Clicks before minRatingTime are</span>
+            <span class="c1"># ignored, as in the keyboard branch, so a participant cannot</span>
+            <span class="c1"># confirm the random start value reflexively.</span>
+            <span class="k">if</span> <span class="n">buttons</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="p">(</span><span class="n">trialdur</span> <span class="o">&gt;</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"minRatingTime"</span><span class="p">]):</span>
                 <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span><span class="p">,</span> <span class="n">ratingProvided</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">slider</span><span class="o">.</span><span class="n">markerPos</span><span class="p">,</span>
                     <span class="n">clock</span><span class="o">.</span><span class="n">getTime</span><span class="p">(),</span>
@@ -1565,7 +1564,8 @@
                 <span class="k">break</span>
             <span class="k">elif</span> <span class="n">trialdur</span> <span class="o">&gt;</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRatingTime"</span><span class="p">]:</span>  <span class="c1"># if too long</span>
                 <span class="n">ratingProvided</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="n">confidenceRT</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">clickReset</span><span class="p">()</span>
+                <span class="n">confidenceRT</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">clickReset</span><span class="p">()</span>
 
                 <span class="c1"># Text feedback if no rating provided</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
