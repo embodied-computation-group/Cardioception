@@ -83,6 +83,7 @@ Languages
     danish
     danish_children
     french
+    german
 
 Reports
 -------

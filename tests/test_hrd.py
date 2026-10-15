@@ -43,6 +43,12 @@ class TestHRD(TestCase):
         assert len(parameters["staircaseType"]) == 4
         assert sum(parameters["staircaseType"] == "updown") == 4
 
+        # German instructions
+        parameters = getParameters(setup="test", nTrials=4, language="german")
+        parameters["win"].close()
+        shutil.rmtree(parameters["resultPath"])
+        assert parameters["texts"]["faster"] == "Schneller"
+
     def test_run(self):
         """Test run function"""
 
