@@ -9,6 +9,7 @@ import unittest
 from unittest import TestCase
 
 import numpy as np
+import pytest
 
 from cardioception.HRD.parameters import getParameters
 from cardioception.HRD.task import run
@@ -42,6 +43,17 @@ class TestHRD(TestCase):
         assert len(parameters["Modality"]) == 4
         assert len(parameters["staircaseType"]) == 4
         assert sum(parameters["staircaseType"] == "updown") == 4
+
+        # German instructions
+        parameters = getParameters(setup="test", nTrials=4, language="german")
+        parameters["win"].close()
+        shutil.rmtree(parameters["resultPath"])
+        assert parameters["texts"]["faster"] == "Schneller"
+        assert parameters["labelsRating"] == ["Geraten", "Sicher"]
+
+        # An unknown language fails before any window is opened
+        with pytest.raises(ValueError):
+            getParameters(setup="test", nTrials=4, language="deutsch")
 
     def test_run(self):
         """Test run function"""

@@ -19,6 +19,17 @@ class TestHBC(TestCase):
         parameters = getParameters(setup="test")
         parameters["win"].close()
         shutil.rmtree(parameters["resultPath"])
+        assert parameters["labelsRating"] == ["Guess", "Certain"]
+        assert "labelsRating" not in parameters["texts"]
+
+        # German instructions
+        parameters = getParameters(setup="test", language="german")
+        parameters["win"].close()
+        shutil.rmtree(parameters["resultPath"])
+        assert parameters["labelsRating"] == ["Geraten", "Sicher"]
+
+        with self.assertRaises(ValueError):
+            getParameters(setup="test", language="klingon")
 
     def test_run(self):
         """Test run function"""

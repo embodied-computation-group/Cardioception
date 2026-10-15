@@ -10,7 +10,7 @@ import serial
 from systole import serialSim
 from systole.recording import Oximeter
 
-from cardioception.HRD.languages import danish, danish_children, english, french
+from cardioception.HRD.languages import danish, danish_children, english, french, german
 
 from .._resources import resource_filename
 
@@ -50,8 +50,9 @@ def getParameters(
     fullscr : bool
         If `True`, activate full screen mode.
     language : str
-        The language used for the instruction. Can be `"english"`, `"danish"` or
-        `"danish_children"` (a slightly simplified danish version), or `"french"`.
+        The language used for the instruction. Can be `"english"`, `"danish"`,
+        `"danish_children"` (a slightly simplified danish version), `"french"` or
+        `"german"`.
     nBreaking : int
         Number of trials to run before the break.
     nStaircase : int
@@ -211,6 +212,12 @@ def getParameters(
     behavioral results data frame.
 
     """
+    languages = ("english", "danish", "danish_children", "french", "german")
+    if language not in languages:
+        raise ValueError(
+            f"Invalid language: {language!r}. Can be one of {', '.join(languages)}."
+        )
+
     from psychopy import data, event, visual
 
     parameters: Dict[str, Any] = {}
@@ -218,7 +225,6 @@ def getParameters(
     parameters["device"] = device
     if parameters["device"] == "keyboard":
         parameters["confScale"] = [1, 7]
-    parameters["labelsRating"] = ["Guess", "Certain"]
     parameters["screenNb"] = screenNb
     parameters["monitor"] = "testMonitor"
     parameters["nFeedback"] = 5
@@ -439,6 +445,11 @@ def getParameters(
         parameters["texts"] = french(
             device=device, setup=setup, exteroception=exteroception
         )
+    elif language == "german":
+        parameters["texts"] = german(
+            device=device, setup=setup, exteroception=exteroception
+        )
+    parameters["labelsRating"] = parameters["texts"]["VASlabels"]
 
     # Open window
     if parameters["setup"] == "test":

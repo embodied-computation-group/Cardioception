@@ -482,3 +482,140 @@ Comme la difficulté de la tâche évolue avec le temps, il est rare que vous so
 Sinon, vous pouvez continuer avec la tâche principale."""
 
     return texts
+
+
+def german(device: str, setup: str, exteroception: bool) -> Dict[str, Collection[str]]:
+    """Create the text dictionary with instruction in German
+
+    The participant is addressed with the formal "Sie" throughout.
+
+    Parameters
+    ----------
+    device : str
+        Can be `"keyboard"` or `"mouse"`.
+    setup : str
+        The experimental setup. Can be `"behavioral"` or `"test"`.
+    exteroception : bool
+        If `True`, the task includes and exteroceptive control condition.
+
+    Returns
+    -------
+    texts : dict
+
+    """
+    btnext = (
+        "drücken Sie die LEERTASTE"
+        if device == "keyboard"
+        else "klicken Sie mit der Maus"
+    )
+    texts = {
+        "done": "Sie haben die Aufgabe abgeschlossen. Vielen Dank für Ihre Teilnahme.",
+        "slower": "Langsamer",
+        "faster": "Schneller",
+        "checkOximeter": "Bitte stellen Sie sicher, dass das Pulsoximeter richtig an Ihrem Finger befestigt ist.",
+        "stayStill": "Bitte bewegen Sie sich während der Aufzeichnung nicht",
+        "tooLate": "Zu spät",
+        "correctResponse": "Richtig",
+        "incorrectResponse": "Falsch",
+        "VASlabels": ["Geraten", "Sicher"],
+        "textHeartListening": "Achten Sie auf Ihren Herzschlag",
+        "textToneListening": "Hören Sie den Tönen zu",
+        "textTaskStart": "Die Aufgabe beginnt jetzt. Bitte machen Sie sich bereit.",
+        "textBreaks": f"Pause. Sie können sich so lange ausruhen, wie Sie möchten. Wenn Sie mit der Aufgabe fortfahren möchten, {btnext}.",
+        "textNext": f"Bitte {btnext}, um fortzufahren",
+        "textWaitTrigger": "Warten auf den fMRT-Trigger...",
+        "Decision": {
+            "Intero": """Sind diese Töne schneller oder langsamer als Ihr Herzschlag?""",
+            "Extero": """Sind diese Töne schneller oder langsamer als die vorherigen?""",
+        },
+        "Confidence": """Wie sicher sind Sie sich bei Ihrer Entscheidung?""",
+    }
+
+    if device == "keyboard":
+        texts["responseText"] = (
+            "Taste NACH UNTEN für langsamer - Taste NACH OBEN für schneller."
+        )
+    elif device == "mouse":
+        texts["responseText"] = (
+            "LINKE Maustaste für langsamer - RECHTE Maustaste für schneller."
+        )
+
+    texts[
+        "Tutorial1"
+    ] = """In diesem Experiment zeichnen wir Ihren Puls auf und spielen Töne ab, die auf Ihrer Herzfrequenz beruhen.
+
+Bitte konzentrieren Sie sich ausschließlich auf die inneren Empfindungen Ihres Herzschlags. Messen Sie Ihre Herzfrequenz nicht auf andere Weise (z. B. indem Sie den Puls am Handgelenk oder am Hals fühlen).
+        """
+    texts["pulseTutorial1"] = (
+        "Bitte stecken Sie das Pulsoximeter auf Ihren Zeigefinger. Verwenden Sie Ihre nicht dominante Hand, wie in dieser Abbildung gezeigt."
+    )
+
+    texts["pulseTutorial2"] = (
+        "Falls Sie Ihren Herzschlag spüren, wenn das Pulsoximeter an Ihrem Zeigefinger sitzt, versuchen Sie, es an einem anderen Finger anzubringen."
+    )
+
+    texts["pulseTutorial3"] = (
+        "Sie können verschiedene Positionen ausprobieren, bis Sie den Finger gefunden haben, an dem Sie am wenigsten von Ihrem Herzschlag spüren."
+    )
+
+    texts["pulseTutorial4"] = (
+        "Bitte geben Sie die Nummer des Fingers ein, an dem Sie das Pulsoximeter angebracht haben."
+    )
+
+    texts["Tutorial2"] = (
+        "Wenn Sie dieses Symbol sehen, versuchen Sie, sich 5 Sekunden lang auf Ihren Herzschlag zu konzentrieren. Bitte bewegen Sie sich nicht, da wir in dieser Zeit Ihren Puls aufzeichnen."
+    )
+
+    moreResp = "Taste NACH OBEN" if device == "keyboard" else "RECHTE Maustaste"
+    lessResp = "Taste NACH UNTEN" if device == "keyboard" else "LINKE Maustaste"
+    texts["Tutorial3_icon"] = (
+        """Nach dieser Phase, in der Sie auf Ihren Herzschlag achten, sehen Sie dasselbe Symbol und hören eine Folge von Tönen."""
+    )
+    texts[
+        "Tutorial3_responses"
+    ] = f"""Hören Sie diesen Tönen zu und entscheiden Sie so schnell und so genau wie möglich, ob sie schneller ({moreResp}) oder langsamer ({lessResp}) sind als Ihre eigene Herzfrequenz.
+
+Die Töne sind IMMER langsamer oder schneller als Ihr Herzschlag. Bitte raten Sie, auch wenn Sie unsicher sind."""
+
+    if exteroception is True:
+        texts["Tutorial3bis"] = (
+            """In manchen Durchgängen sehen Sie statt des Herzsymbols ein Hörsymbol. Dann hören Sie statt Ihres Herzschlags zunächst eine erste Folge von Tönen."""
+        )
+
+        texts[
+            "Tutorial3ter"
+        ] = f"""Nach diesen ersten Tönen erscheinen die Antwortsymbole, und eine zweite Folge von Tönen wird abgespielt.
+
+Hören Sie diesen Tönen zu und entscheiden Sie so schnell und so genau wie möglich, ob sie schneller ({moreResp}) oder langsamer ({lessResp}) sind als die erste Folge von Tönen.
+
+Die zweite Folge von Tönen ist IMMER langsamer oder schneller als die erste. Bitte raten Sie, auch wenn Sie unsicher sind."""
+
+    ratingHint = (
+        "Verwenden Sie die Maus, um Ihre Einschätzung auszuwählen"
+        if device == "mouse"
+        else "Verwenden Sie die Pfeiltasten LINKS und RECHTS, um Ihre Einschätzung auszuwählen, und bestätigen Sie mit der Taste NACH UNTEN"
+    )
+    texts[
+        "Tutorial4"
+    ] = f"""Nachdem Sie Ihre Entscheidung getroffen haben, werden Sie außerdem gebeten anzugeben, wie sicher Sie sich bei dieser Entscheidung sind.
+
+Der höchste Wert bedeutet, dass Sie sich Ihrer Wahl vollkommen sicher sind. Der niedrigste Wert bedeutet, dass Sie das Gefühl hatten zu raten.
+
+{ratingHint}"""
+
+    texts[
+        "Tutorial5"
+    ] = """Dieser Ablauf wiederholt sich während der gesamten Aufgabe.
+
+Manchmal kann die Aufgabe sehr schwierig sein, denn der Unterschied zwischen Ihrer tatsächlichen Herzfrequenz und den dargebotenen Tönen kann sehr klein sein.
+
+Versuchen Sie deshalb, die gesamte Breite der Konfidenzskala zu nutzen, um Ihre subjektive Unsicherheit in jedem Durchgang wiederzugeben.
+
+Da sich die Schwierigkeit der Aufgabe im Verlauf verändert, werden Sie sich nur selten vollkommen sicher oder vollkommen unsicher sein."""
+
+    texts[
+        "Tutorial6"
+    ] = """Damit ist die Einführung abgeschlossen. Wenn Sie Fragen haben, wenden Sie sich bitte jetzt an die Versuchsleitung.
+Andernfalls können Sie mit der Hauptaufgabe fortfahren."""
+
+    return texts
