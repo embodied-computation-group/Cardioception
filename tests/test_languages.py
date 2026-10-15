@@ -55,6 +55,14 @@ class TestLanguages(TestCase):
         )
         self.assertIn("LINKE Maustaste für langsamer", mouse["responseText"])
 
+    def test_hrd_german_rating_hint(self):
+        """The German confidence instruction names the device in use."""
+        keyboard = hrd_languages.german("keyboard", "behavioral", True)
+        self.assertNotIn("Maus", keyboard["Tutorial4"])
+        self.assertIn("Pfeiltasten", keyboard["Tutorial4"])
+        mouse = hrd_languages.german("mouse", "behavioral", True)
+        self.assertIn("Maus", mouse["Tutorial4"])
+
     def test_hbc_languages(self):
         """Every HBC language returns the same keys as English."""
         reference = _structure(hbc_languages.english())

@@ -590,13 +590,18 @@ Hören Sie diesen Tönen zu und entscheiden Sie so schnell und so genau wie mög
 
 Die zweite Folge von Tönen ist IMMER langsamer oder schneller als die erste. Bitte raten Sie, auch wenn Sie unsicher sind."""
 
+    ratingHint = (
+        "Verwenden Sie die Maus, um Ihre Einschätzung auszuwählen"
+        if device == "mouse"
+        else "Verwenden Sie die Pfeiltasten LINKS und RECHTS, um Ihre Einschätzung auszuwählen, und bestätigen Sie mit der Taste NACH UNTEN"
+    )
     texts[
         "Tutorial4"
-    ] = """Nachdem Sie Ihre Entscheidung getroffen haben, werden Sie außerdem gebeten anzugeben, wie sicher Sie sich bei dieser Entscheidung sind.
+    ] = f"""Nachdem Sie Ihre Entscheidung getroffen haben, werden Sie außerdem gebeten anzugeben, wie sicher Sie sich bei dieser Entscheidung sind.
 
-Der höchste Wert (100) bedeutet, dass Sie sich Ihrer Wahl vollkommen sicher sind. Der niedrigste Wert (0) bedeutet, dass Sie das Gefühl hatten zu raten.
+Der höchste Wert bedeutet, dass Sie sich Ihrer Wahl vollkommen sicher sind. Der niedrigste Wert bedeutet, dass Sie das Gefühl hatten zu raten.
 
-Verwenden Sie die Maus, um Ihre Einschätzung auszuwählen"""
+{ratingHint}"""
 
     texts[
         "Tutorial5"
