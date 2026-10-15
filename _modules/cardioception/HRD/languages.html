@@ -830,13 +830,18 @@
 
 <span class="s2">Die zweite Folge von Tönen ist IMMER langsamer oder schneller als die erste. Bitte raten Sie, auch wenn Sie unsicher sind."""</span>
 
+    <span class="n">ratingHint</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"Verwenden Sie die Maus, um Ihre Einschätzung auszuwählen"</span>
+        <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">"mouse"</span>
+        <span class="k">else</span> <span class="s2">"Verwenden Sie die Pfeiltasten LINKS und RECHTS, um Ihre Einschätzung auszuwählen, und bestätigen Sie mit der Taste NACH UNTEN"</span>
+    <span class="p">)</span>
     <span class="n">texts</span><span class="p">[</span>
         <span class="s2">"Tutorial4"</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="s2">"""Nachdem Sie Ihre Entscheidung getroffen haben, werden Sie außerdem gebeten anzugeben, wie sicher Sie sich bei dieser Entscheidung sind.</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""Nachdem Sie Ihre Entscheidung getroffen haben, werden Sie außerdem gebeten anzugeben, wie sicher Sie sich bei dieser Entscheidung sind.</span>
 
-<span class="s2">Der höchste Wert (100) bedeutet, dass Sie sich Ihrer Wahl vollkommen sicher sind. Der niedrigste Wert (0) bedeutet, dass Sie das Gefühl hatten zu raten.</span>
+<span class="s2">Der höchste Wert bedeutet, dass Sie sich Ihrer Wahl vollkommen sicher sind. Der niedrigste Wert bedeutet, dass Sie das Gefühl hatten zu raten.</span>
 
-<span class="s2">Verwenden Sie die Maus, um Ihre Einschätzung auszuwählen"""</span>
+<span class="si">{</span><span class="n">ratingHint</span><span class="si">}</span><span class="s2">"""</span>
 
     <span class="n">texts</span><span class="p">[</span>
         <span class="s2">"Tutorial5"</span>

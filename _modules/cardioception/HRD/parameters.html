@@ -452,6 +452,12 @@
 <span class="sd">    behavioral results data frame.</span>
 
 <span class="sd">    """</span>
+    <span class="n">languages</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"english"</span><span class="p">,</span> <span class="s2">"danish"</span><span class="p">,</span> <span class="s2">"danish_children"</span><span class="p">,</span> <span class="s2">"french"</span><span class="p">,</span> <span class="s2">"german"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">language</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">languages</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Invalid language: </span><span class="si">{</span><span class="n">language</span><span class="si">!r}</span><span class="s2">. Can be one of </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">languages</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">visual</span>
 
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -459,7 +465,6 @@
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
     <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"keyboard"</span><span class="p">:</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Guess"</span><span class="p">,</span> <span class="s2">"Certain"</span><span class="p">]</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"screenNb"</span><span class="p">]</span> <span class="o">=</span> <span class="n">screenNb</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"monitor"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"testMonitor"</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"nFeedback"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
@@ -684,6 +689,7 @@
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">german</span><span class="p">(</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span>
         <span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"VASlabels"</span><span class="p">]</span>
 
     <span class="c1"># Open window</span>
     <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"setup"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"test"</span><span class="p">:</span>
