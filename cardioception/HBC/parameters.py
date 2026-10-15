@@ -11,6 +11,7 @@ from systole import serialSim
 from systole.recording import Oximeter
 
 from .._resources import resource_filename
+from .languages import english, german
 
 
 def getParameters(
@@ -23,11 +24,15 @@ def getParameters(
     fullscr: bool = True,
     resultPath: Optional[str] = None,
     systole_kw: dict = {},
+    language: str = "english",
 ) -> Dict:
     """Create Heartbeat Counting task parameters.
 
     Parameters
     ----------
+    language : str
+        The language used for the instructions. Can be `"english"` (default) or
+        `"german"`.
     participant : str
         Subject ID. Default is 'exteroStairCase'.
     resultPath : str or None
@@ -108,6 +113,11 @@ def getParameters(
         The window in which to draw objects.
 
     """
+    if language not in ("english", "german"):
+        raise ValueError(
+            f"Invalid language: {language!r}. Can be 'english' or 'german'."
+        )
+
     from psychopy import sound, visual
 
     parameters: Dict[str, Any] = {}
@@ -117,7 +127,6 @@ def getParameters(
     parameters["startKey"] = "space"
     parameters["rating"] = True
     parameters["confScale"] = [1, 7]
-    parameters["labelsRating"] = ["Guess", "Certain"]
     parameters["taskVersion"] = taskVersion
     parameters["results_df"] = pd.DataFrame({})
     parameters["setup"] = setup
@@ -222,86 +231,12 @@ def getParameters(
     #######
     # Texts
     #######
-
-    # Task instructions
-    parameters["texts"] = dict()
-    parameters["texts"]["Rest"] = "Please sit quietly until the next session"
-    parameters["texts"]["Count"] = (
-        "After you hear START, try to count your heartbeats"
-        " by concentrating on your body feelings."
-        " Stop counting when you hear STOP"
-    )
-    parameters["texts"]["Training"] = (
-        "After you hear START, try to count your heartbeats"
-        " by concentrating on your body feelings"
-        " Stop counting when you hear STOP"
-    )
-    parameters["texts"]["nCount"] = (
-        "How many heartbeats did you count?"
-        " Write a number and press ENTER to validate."
-    )
-    parameters["texts"]["confidence"] = (
-        "How confident are you about your count?"
-        "Use the RIGHT/LEFT keys to select and the DOWN key to confirm"
-    )
-
-    # Tutorial instructions
-    parameters["texts"]["Tutorial1"] = (
-        "During this experiment, we will ask you to silently"
-        " count your heartbeats for different intervals of time."
-    )
-    parameters["texts"]["Tutorial2"] = (
-        'When you see this "heart" icon, you will silently count your'
-        " heartbeats by focusing on your body sensations."
-    )
-    parameters["texts"]["Tutorial3"] = (
-        'Sometime, you will also encounter this "rest" icon.'
-        " In this case your task will just be to sit quietly until the next"
-        " session."
-    )
-    parameters["texts"]["Tutorial4"] = (
-        "The beginning and the end of the task will be signalled when you hear"
-        " the words 'START'' and 'STOP'. While counting your heartbeats, you"
-        " may close your eyes if you find that helpful. Please keep your hand"
-        " still during the counting period, to avoid interfering with"
-        " the heartbeat recording."
-    )
-    parameters["texts"]["Tutorial5"] = (
-        "After the counting part of the task, you will be asked to report the"
-        " exact number of heartbeats you felt during the interval between"
-        " 'START' and 'STOP'. Please do not try to estimate the number of"
-        " heartbeats, but instead only report the heartbeats you actually felt"
-        " during the interval. You will input your response using the number"
-        " pad and press return when done. You can also correct your response"
-        " using backspace."
-    )
-    parameters["texts"]["Tutorial6"] = (
-        "Once you have made your response, you will estimate your subjective"
-        " feeling of confidence in how accurate your count was"
-        " for that interval. A large number here means that you are totally"
-        " certain you counted the exact number of heartbeats that occured,"
-        " and a small number means that you are totally uncertain or felt that"
-        " you were guessing about the"
-        " number of heartbeats. You should use the RIGHT and LEFT"
-        " key to select your response and the DOWN key to confirm."
-    )
-    parameters["texts"]["Tutorial7"] = (
-        "Before the main task begins there is a short resting period of"
-        " several minutes, during which we will calibrate the heartbeat"
-        " recording. During this period, please sit quietly with your"
-        " hands still to avoid interfering with the calibration."
-        " Afterwards, the counting task will begin, and will take about"
-        " 6 minutes in total."
-    )
-    parameters["texts"]["Tutorial8"] = (
-        "You will now complete a short practice task."
-        " Please ask the experimenter if you have any questions before"
-        " continuing to the main experiment."
-    )
-    parameters["texts"]["Tutorial9"] = (
-        "Good job! If you have any question, ask the experimenter now,"
-        " otherwise press SPACE to continue to the experiment."
-    )
+    if language == "english":
+        texts = english()
+    elif language == "german":
+        texts = german()
+    parameters["labelsRating"] = texts.pop("labelsRating")
+    parameters["texts"] = texts
     parameters["textSize"] = 0.04
 
     return parameters

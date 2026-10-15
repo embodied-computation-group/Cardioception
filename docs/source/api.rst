@@ -41,6 +41,17 @@ Scripts
     tutorial
     rest
 
+Languages
+*********
+
+.. currentmodule:: cardioception.HBC.languages
+
+.. autosummary::
+   :toctree: generated/HBC.languages
+
+    english
+    german
+
 Heart Rate Discrimination task
 ==============================
 
