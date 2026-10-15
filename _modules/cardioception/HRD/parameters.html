@@ -184,6 +184,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.tutorial.html">cardioception.HBC.task.tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.rest.html">cardioception.HBC.task.rest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.english.html">cardioception.HBC.languages.english</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.german.html">cardioception.HBC.languages.german</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html">cardioception.HRD.parameters.getParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.run.html">cardioception.HRD.task.run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.trial.html">cardioception.HRD.task.trial</a></li>
@@ -195,6 +197,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.danish.html">cardioception.HRD.languages.danish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.danish_children.html">cardioception.HRD.languages.danish_children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.french.html">cardioception.HRD.languages.french</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.german.html">cardioception.HRD.languages.german</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
 </ul>
@@ -247,7 +250,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole</span><span class="w"> </span><span class="kn">import</span> <span class="n">serialSim</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole.recording</span><span class="w"> </span><span class="kn">import</span> <span class="n">Oximeter</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD.languages</span><span class="w"> </span><span class="kn">import</span> <span class="n">danish</span><span class="p">,</span> <span class="n">danish_children</span><span class="p">,</span> <span class="n">english</span><span class="p">,</span> <span class="n">french</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD.languages</span><span class="w"> </span><span class="kn">import</span> <span class="n">danish</span><span class="p">,</span> <span class="n">danish_children</span><span class="p">,</span> <span class="n">english</span><span class="p">,</span> <span class="n">french</span><span class="p">,</span> <span class="n">german</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
 
@@ -287,8 +290,9 @@
 <span class="sd">    fullscr : bool</span>
 <span class="sd">        If `True`, activate full screen mode.</span>
 <span class="sd">    language : str</span>
-<span class="sd">        The language used for the instruction. Can be `"english"`, `"danish"` or</span>
-<span class="sd">        `"danish_children"` (a slightly simplified danish version), or `"french"`.</span>
+<span class="sd">        The language used for the instruction. Can be `"english"`, `"danish"`,</span>
+<span class="sd">        `"danish_children"` (a slightly simplified danish version), `"french"` or</span>
+<span class="sd">        `"german"`.</span>
 <span class="sd">    nBreaking : int</span>
 <span class="sd">        Number of trials to run before the break.</span>
 <span class="sd">    nStaircase : int</span>
@@ -674,6 +678,10 @@
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"french"</span><span class="p">:</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">french</span><span class="p">(</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"german"</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">german</span><span class="p">(</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">exteroception</span><span class="o">=</span><span class="n">exteroception</span>
         <span class="p">)</span>
 

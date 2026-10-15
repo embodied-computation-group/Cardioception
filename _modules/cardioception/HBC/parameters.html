@@ -184,6 +184,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.tutorial.html">cardioception.HBC.task.tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.rest.html">cardioception.HBC.task.rest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.english.html">cardioception.HBC.languages.english</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.german.html">cardioception.HBC.languages.german</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html">cardioception.HRD.parameters.getParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.run.html">cardioception.HRD.task.run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.trial.html">cardioception.HRD.task.trial</a></li>
@@ -195,6 +197,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.danish.html">cardioception.HRD.languages.danish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.danish_children.html">cardioception.HRD.languages.danish_children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.french.html">cardioception.HRD.languages.french</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.german.html">cardioception.HRD.languages.german</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
 </ul>
@@ -248,6 +251,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">systole.recording</span><span class="w"> </span><span class="kn">import</span> <span class="n">Oximeter</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.languages</span><span class="w"> </span><span class="kn">import</span> <span class="n">english</span><span class="p">,</span> <span class="n">german</span>
 
 
 <div class="viewcode-block" id="getParameters"><a class="viewcode-back" href="../../../generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html#cardioception.HBC.parameters.getParameters">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">getParameters</span><span class="p">(</span>
@@ -260,11 +264,15 @@
     <span class="n">fullscr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">resultPath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">systole_kw</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"english"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Create Heartbeat Counting task parameters.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    language : str</span>
+<span class="sd">        The language used for the instructions. Can be `"english"` (default) or</span>
+<span class="sd">        `"german"`.</span>
 <span class="sd">    participant : str</span>
 <span class="sd">        Subject ID. Default is 'exteroStairCase'.</span>
 <span class="sd">    resultPath : str or None</span>
@@ -345,6 +353,11 @@
 <span class="sd">        The window in which to draw objects.</span>
 
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">language</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"english"</span><span class="p">,</span> <span class="s2">"german"</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Invalid language: </span><span class="si">{</span><span class="n">language</span><span class="si">!r}</span><span class="s2">. Can be 'english' or 'german'."</span>
+        <span class="p">)</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">sound</span><span class="p">,</span> <span class="n">visual</span>
 
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -354,7 +367,6 @@
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"space"</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"rating"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"confScale"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Guess"</span><span class="p">,</span> <span class="s2">"Certain"</span><span class="p">]</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"taskVersion"</span><span class="p">]</span> <span class="o">=</span> <span class="n">taskVersion</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({})</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"setup"</span><span class="p">]</span> <span class="o">=</span> <span class="n">setup</span>
@@ -459,86 +471,12 @@
     <span class="c1">#######</span>
     <span class="c1"># Texts</span>
     <span class="c1">#######</span>
-
-    <span class="c1"># Task instructions</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Rest"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Please sit quietly until the next session"</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Count"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"After you hear START, try to count your heartbeats"</span>
-        <span class="s2">" by concentrating on your body feelings."</span>
-        <span class="s2">" Stop counting when you hear STOP"</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Training"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"After you hear START, try to count your heartbeats"</span>
-        <span class="s2">" by concentrating on your body feelings"</span>
-        <span class="s2">" Stop counting when you hear STOP"</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"nCount"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"How many heartbeats did you count?"</span>
-        <span class="s2">" Write a number and press ENTER to validate."</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"confidence"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"How confident are you about your count?"</span>
-        <span class="s2">"Use the RIGHT/LEFT keys to select and the DOWN key to confirm"</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Tutorial instructions</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial1"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"During this experiment, we will ask you to silently"</span>
-        <span class="s2">" count your heartbeats for different intervals of time."</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial2"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">'When you see this "heart" icon, you will silently count your'</span>
-        <span class="s2">" heartbeats by focusing on your body sensations."</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial3"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">'Sometime, you will also encounter this "rest" icon.'</span>
-        <span class="s2">" In this case your task will just be to sit quietly until the next"</span>
-        <span class="s2">" session."</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial4"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"The beginning and the end of the task will be signalled when you hear"</span>
-        <span class="s2">" the words 'START'' and 'STOP'. While counting your heartbeats, you"</span>
-        <span class="s2">" may close your eyes if you find that helpful. Please keep your hand"</span>
-        <span class="s2">" still during the counting period, to avoid interfering with"</span>
-        <span class="s2">" the heartbeat recording."</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial5"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"After the counting part of the task, you will be asked to report the"</span>
-        <span class="s2">" exact number of heartbeats you felt during the interval between"</span>
-        <span class="s2">" 'START' and 'STOP'. Please do not try to estimate the number of"</span>
-        <span class="s2">" heartbeats, but instead only report the heartbeats you actually felt"</span>
-        <span class="s2">" during the interval. You will input your response using the number"</span>
-        <span class="s2">" pad and press return when done. You can also correct your response"</span>
-        <span class="s2">" using backspace."</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial6"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"Once you have made your response, you will estimate your subjective"</span>
-        <span class="s2">" feeling of confidence in how accurate your count was"</span>
-        <span class="s2">" for that interval. A large number here means that you are totally"</span>
-        <span class="s2">" certain you counted the exact number of heartbeats that occured,"</span>
-        <span class="s2">" and a small number means that you are totally uncertain or felt that"</span>
-        <span class="s2">" you were guessing about the"</span>
-        <span class="s2">" number of heartbeats. You should use the RIGHT and LEFT"</span>
-        <span class="s2">" key to select your response and the DOWN key to confirm."</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial7"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"Before the main task begins there is a short resting period of"</span>
-        <span class="s2">" several minutes, during which we will calibrate the heartbeat"</span>
-        <span class="s2">" recording. During this period, please sit quietly with your"</span>
-        <span class="s2">" hands still to avoid interfering with the calibration."</span>
-        <span class="s2">" Afterwards, the counting task will begin, and will take about"</span>
-        <span class="s2">" 6 minutes in total."</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial8"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"You will now complete a short practice task."</span>
-        <span class="s2">" Please ask the experimenter if you have any questions before"</span>
-        <span class="s2">" continuing to the main experiment."</span>
-    <span class="p">)</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Tutorial9"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"Good job! If you have any question, ask the experimenter now,"</span>
-        <span class="s2">" otherwise press SPACE to continue to the experiment."</span>
-    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"english"</span><span class="p">:</span>
+        <span class="n">texts</span> <span class="o">=</span> <span class="n">english</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">"german"</span><span class="p">:</span>
+        <span class="n">texts</span> <span class="o">=</span> <span class="n">german</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">]</span> <span class="o">=</span> <span class="n">texts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"labelsRating"</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">texts</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.04</span>
 
     <span class="k">return</span> <span class="n">parameters</span></div>

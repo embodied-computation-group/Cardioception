@@ -1,0 +1,6 @@
+﻿cardioception.HRD.languages.german
+==================================
+
+.. currentmodule:: cardioception.HRD.languages
+
+.. autofunction:: german

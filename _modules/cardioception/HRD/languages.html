@@ -184,6 +184,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.tutorial.html">cardioception.HBC.task.tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.rest.html">cardioception.HBC.task.rest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.english.html">cardioception.HBC.languages.english</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.german.html">cardioception.HBC.languages.german</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html">cardioception.HRD.parameters.getParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.run.html">cardioception.HRD.task.run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.trial.html">cardioception.HRD.task.trial</a></li>
@@ -195,6 +197,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.danish.html">cardioception.HRD.languages.danish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.danish_children.html">cardioception.HRD.languages.danish_children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.french.html">cardioception.HRD.languages.french</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.german.html">cardioception.HRD.languages.german</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
 </ul>
@@ -717,6 +720,138 @@
         <span class="s2">"Tutorial6"</span>
     <span class="p">]</span> <span class="o">=</span> <span class="s2">"""Ceci conclut le tutoriel. Si vous avez des questions, veuillez les poser maintenant à l'expérimentateur.</span>
 <span class="s2">Sinon, vous pouvez continuer avec la tâche principale."""</span>
+
+    <span class="k">return</span> <span class="n">texts</span></div>
+
+
+<div class="viewcode-block" id="german"><a class="viewcode-back" href="../../../generated/HRD.languages/cardioception.HRD.languages.german.html#cardioception.HRD.languages.german">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">german</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">setup</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exteroception</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""Create the text dictionary with instruction in German</span>
+
+<span class="sd">    The participant is addressed with the formal "Sie" throughout.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    device : str</span>
+<span class="sd">        Can be `"keyboard"` or `"mouse"`.</span>
+<span class="sd">    setup : str</span>
+<span class="sd">        The experimental setup. Can be `"behavioral"` or `"test"`.</span>
+<span class="sd">    exteroception : bool</span>
+<span class="sd">        If `True`, the task includes and exteroceptive control condition.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    texts : dict</span>
+
+<span class="sd">    """</span>
+    <span class="n">btnext</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"drücken Sie die LEERTASTE"</span>
+        <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">"keyboard"</span>
+        <span class="k">else</span> <span class="s2">"klicken Sie mit der Maus"</span>
+    <span class="p">)</span>
+    <span class="n">texts</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"done"</span><span class="p">:</span> <span class="s2">"Sie haben die Aufgabe abgeschlossen. Vielen Dank für Ihre Teilnahme."</span><span class="p">,</span>
+        <span class="s2">"slower"</span><span class="p">:</span> <span class="s2">"Langsamer"</span><span class="p">,</span>
+        <span class="s2">"faster"</span><span class="p">:</span> <span class="s2">"Schneller"</span><span class="p">,</span>
+        <span class="s2">"checkOximeter"</span><span class="p">:</span> <span class="s2">"Bitte stellen Sie sicher, dass das Pulsoximeter richtig an Ihrem Finger befestigt ist."</span><span class="p">,</span>
+        <span class="s2">"stayStill"</span><span class="p">:</span> <span class="s2">"Bitte bewegen Sie sich während der Aufzeichnung nicht"</span><span class="p">,</span>
+        <span class="s2">"tooLate"</span><span class="p">:</span> <span class="s2">"Zu spät"</span><span class="p">,</span>
+        <span class="s2">"correctResponse"</span><span class="p">:</span> <span class="s2">"Richtig"</span><span class="p">,</span>
+        <span class="s2">"incorrectResponse"</span><span class="p">:</span> <span class="s2">"Falsch"</span><span class="p">,</span>
+        <span class="s2">"VASlabels"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Geraten"</span><span class="p">,</span> <span class="s2">"Sicher"</span><span class="p">],</span>
+        <span class="s2">"textHeartListening"</span><span class="p">:</span> <span class="s2">"Achten Sie auf Ihren Herzschlag"</span><span class="p">,</span>
+        <span class="s2">"textToneListening"</span><span class="p">:</span> <span class="s2">"Hören Sie auf die Töne"</span><span class="p">,</span>
+        <span class="s2">"textTaskStart"</span><span class="p">:</span> <span class="s2">"Die Aufgabe beginnt jetzt. Bitte machen Sie sich bereit."</span><span class="p">,</span>
+        <span class="s2">"textBreaks"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Pause. Sie können sich so lange ausruhen, wie Sie möchten. Wenn Sie mit der Aufgabe fortfahren möchten, </span><span class="si">{</span><span class="n">btnext</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
+        <span class="s2">"textNext"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Bitte </span><span class="si">{</span><span class="n">btnext</span><span class="si">}</span><span class="s2">, um fortzufahren"</span><span class="p">,</span>
+        <span class="s2">"textWaitTrigger"</span><span class="p">:</span> <span class="s2">"Warten auf den fMRT-Trigger..."</span><span class="p">,</span>
+        <span class="s2">"Decision"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"Intero"</span><span class="p">:</span> <span class="s2">"""Sind diese Töne schneller oder langsamer als Ihr Herzschlag?"""</span><span class="p">,</span>
+            <span class="s2">"Extero"</span><span class="p">:</span> <span class="s2">"""Sind diese Töne schneller oder langsamer als die vorherigen?"""</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">"Confidence"</span><span class="p">:</span> <span class="s2">"""Wie sicher sind Sie sich bei Ihrer Entscheidung?"""</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">"keyboard"</span><span class="p">:</span>
+        <span class="n">texts</span><span class="p">[</span><span class="s2">"responseText"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">"Taste NACH UNTEN für langsamer - Taste NACH OBEN für schneller."</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">"mouse"</span><span class="p">:</span>
+        <span class="n">texts</span><span class="p">[</span><span class="s2">"responseText"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">"LINKE Maustaste für langsamer - RECHTE Maustaste für schneller."</span>
+        <span class="p">)</span>
+
+    <span class="n">texts</span><span class="p">[</span>
+        <span class="s2">"Tutorial1"</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">"""In diesem Experiment zeichnen wir Ihren Puls auf und spielen Töne ab, die auf Ihrer Herzfrequenz beruhen.</span>
+
+<span class="s2">Bitte konzentrieren Sie sich ausschließlich auf die inneren Empfindungen Ihres Herzschlags. Messen Sie Ihre Herzfrequenz nicht auf andere Weise (z. B. indem Sie den Puls am Handgelenk oder am Hals fühlen).</span>
+<span class="s2">        """</span>
+    <span class="n">texts</span><span class="p">[</span><span class="s2">"pulseTutorial1"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"Bitte stecken Sie das Pulsoximeter auf Ihren Zeigefinger. Verwenden Sie Ihre nicht dominante Hand, wie in dieser Abbildung gezeigt."</span>
+    <span class="p">)</span>
+
+    <span class="n">texts</span><span class="p">[</span><span class="s2">"pulseTutorial2"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"Falls Sie Ihren Herzschlag spüren, wenn das Pulsoximeter an Ihrem Zeigefinger sitzt, versuchen Sie, es an einem anderen Finger anzubringen."</span>
+    <span class="p">)</span>
+
+    <span class="n">texts</span><span class="p">[</span><span class="s2">"pulseTutorial3"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"Sie können verschiedene Positionen ausprobieren, bis Sie den Finger gefunden haben, an dem Sie am wenigsten von Ihrem Herzschlag spüren."</span>
+    <span class="p">)</span>
+
+    <span class="n">texts</span><span class="p">[</span><span class="s2">"pulseTutorial4"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"Bitte geben Sie die Nummer des Fingers ein, an dem Sie das Pulsoximeter angebracht haben."</span>
+    <span class="p">)</span>
+
+    <span class="n">texts</span><span class="p">[</span><span class="s2">"Tutorial2"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"Wenn Sie dieses Symbol sehen, versuchen Sie, sich 5 Sekunden lang auf Ihren Herzschlag zu konzentrieren. Bitte bewegen Sie sich nicht, da wir in dieser Zeit Ihren Puls aufzeichnen."</span>
+    <span class="p">)</span>
+
+    <span class="n">moreResp</span> <span class="o">=</span> <span class="s2">"Taste NACH OBEN"</span> <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">"keyboard"</span> <span class="k">else</span> <span class="s2">"RECHTE Maustaste"</span>
+    <span class="n">lessResp</span> <span class="o">=</span> <span class="s2">"Taste NACH UNTEN"</span> <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">"keyboard"</span> <span class="k">else</span> <span class="s2">"LINKE Maustaste"</span>
+    <span class="n">texts</span><span class="p">[</span><span class="s2">"Tutorial3_icon"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+<span class="w">        </span><span class="sd">"""Nach dieser Phase, in der Sie auf Ihren Herzschlag achten, sehen Sie dasselbe Symbol und hören eine Folge von Tönen."""</span>
+    <span class="p">)</span>
+    <span class="n">texts</span><span class="p">[</span>
+        <span class="s2">"Tutorial3_responses"</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""Hören Sie diesen Tönen zu und entscheiden Sie so schnell und so genau wie möglich, ob sie schneller (</span><span class="si">{</span><span class="n">moreResp</span><span class="si">}</span><span class="s2">) oder langsamer (</span><span class="si">{</span><span class="n">lessResp</span><span class="si">}</span><span class="s2">) sind als Ihre eigene Herzfrequenz.</span>
+
+<span class="s2">Die Töne sind IMMER langsamer oder schneller als Ihr Herzschlag. Bitte raten Sie, auch wenn Sie unsicher sind."""</span>
+
+    <span class="k">if</span> <span class="n">exteroception</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">texts</span><span class="p">[</span><span class="s2">"Tutorial3bis"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+<span class="w">            </span><span class="sd">"""In manchen Durchgängen sehen Sie statt des Herzsymbols ein Hörsymbol. Dann hören Sie statt Ihres Herzschlags zunächst eine erste Folge von Tönen."""</span>
+        <span class="p">)</span>
+
+        <span class="n">texts</span><span class="p">[</span>
+            <span class="s2">"Tutorial3ter"</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""Nach diesen ersten Tönen erscheinen die Antwortsymbole, und eine zweite Folge von Tönen wird abgespielt.</span>
+
+<span class="s2">Hören Sie diesen Tönen zu und entscheiden Sie so schnell und so genau wie möglich, ob sie schneller (</span><span class="si">{</span><span class="n">moreResp</span><span class="si">}</span><span class="s2">) oder langsamer (</span><span class="si">{</span><span class="n">lessResp</span><span class="si">}</span><span class="s2">) sind als die erste Folge von Tönen.</span>
+
+<span class="s2">Die zweite Folge von Tönen ist IMMER langsamer oder schneller als die erste. Bitte raten Sie, auch wenn Sie unsicher sind."""</span>
+
+    <span class="n">texts</span><span class="p">[</span>
+        <span class="s2">"Tutorial4"</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">"""Nachdem Sie Ihre Entscheidung getroffen haben, werden Sie außerdem gebeten anzugeben, wie sicher Sie sich bei dieser Entscheidung sind.</span>
+
+<span class="s2">Der höchste Wert (100) bedeutet, dass Sie sich Ihrer Wahl vollkommen sicher sind. Der niedrigste Wert (0) bedeutet, dass Sie das Gefühl hatten zu raten.</span>
+
+<span class="s2">Verwenden Sie die Maus, um Ihre Einschätzung auszuwählen"""</span>
+
+    <span class="n">texts</span><span class="p">[</span>
+        <span class="s2">"Tutorial5"</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">"""Dieser Ablauf wiederholt sich während der gesamten Aufgabe.</span>
+
+<span class="s2">Manchmal kann die Aufgabe sehr schwierig sein, denn der Unterschied zwischen Ihrer tatsächlichen Herzfrequenz und den dargebotenen Tönen kann sehr klein sein.</span>
+
+<span class="s2">Versuchen Sie deshalb, die gesamte Breite der Konfidenzskala zu nutzen, um Ihre subjektive Unsicherheit in jedem Durchgang wiederzugeben.</span>
+
+<span class="s2">Da sich die Schwierigkeit der Aufgabe im Verlauf verändert, werden Sie sich nur selten vollkommen sicher oder vollkommen unsicher sein."""</span>
+
+    <span class="n">texts</span><span class="p">[</span>
+        <span class="s2">"Tutorial6"</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">"""Damit ist die Einführung abgeschlossen. Wenn Sie Fragen haben, wenden Sie sich bitte jetzt an die Versuchsleitung.</span>
+<span class="s2">Andernfalls können Sie mit der Hauptaufgabe fortfahren."""</span>
 
     <span class="k">return</span> <span class="n">texts</span></div>
 </pre></div>
