@@ -519,7 +519,7 @@ def german(device: str, setup: str, exteroception: bool) -> Dict[str, Collection
         "incorrectResponse": "Falsch",
         "VASlabels": ["Geraten", "Sicher"],
         "textHeartListening": "Achten Sie auf Ihren Herzschlag",
-        "textToneListening": "Hören Sie auf die Töne",
+        "textToneListening": "Hören Sie den Tönen zu",
         "textTaskStart": "Die Aufgabe beginnt jetzt. Bitte machen Sie sich bereit.",
         "textBreaks": f"Pause. Sie können sich so lange ausruhen, wie Sie möchten. Wenn Sie mit der Aufgabe fortfahren möchten, {btnext}.",
         "textNext": f"Bitte {btnext}, um fortzufahren",
