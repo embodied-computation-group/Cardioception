@@ -31,6 +31,7 @@ def getParameters(
     resultPath: Optional[str] = None,
     language: str = "english",
     systole_kw: dict = {},
+    recorder=None,
 ):
     """Create Heart Rate Discrimination task parameters.
 
@@ -78,6 +79,11 @@ def getParameters(
     screenNb : int
         Screen number. Used to parametrize py:func:`psychopy.visual.Window`. Defaults
         to `0`.
+    recorder : object | None
+        A recording device to use instead of the pulse oximeter `setup` would
+        open, e.g. :class:`cardioception.devices.LSLRecorder` to read ECG from an
+        LSL stream. `setup` still decides the window. Default is `None`, which
+        leaves the task exactly as it was.
     serialPort: str
         The USB port where the pulse oximeter is plugged. Should be written as a string
         e.g. `"COM3"` for USB ports on Windows.
@@ -407,7 +413,11 @@ def getParameters(
             )
 
     parameters["setup"] = setup
-    if setup == "behavioral":
+    if recorder is not None:
+        # Wins over `setup`, and touches no serial port.
+        parameters["oxiTask"] = recorder
+        parameters["oxiTask"].setup().read(duration=1)
+    elif setup == "behavioral":
         # PPG recording
         port = serial.Serial(serialPort)
         parameters["oxiTask"] = Oximeter(
@@ -425,6 +435,10 @@ def getParameters(
             serial=port, sfreq=75, add_channels=1, **systole_kw
         )
         parameters["oxiTask"].setup().read(duration=1)
+
+    # Decides the beat detector and whether the tutorial asks for a finger.
+    # Recorders that do not say are pulse oximeters, as every one was.
+    parameters["signalType"] = getattr(parameters["oxiTask"], "signal_type", "ppg")
 
     ##############
     # Load texts #

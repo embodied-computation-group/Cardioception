@@ -7,9 +7,9 @@ from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from systole.detection import ppg_peaks
 
 from .._resources import resource_filename
+from ..devices._beats import detect_beats
 
 
 def run(
@@ -437,10 +437,16 @@ def trial(
             # You can adapt these line to work with a different setup provided that
             # it can measure and create the new variable `bpm` (the average beats per
             # minute over the 5 seconds of recording).
+            # The recorder's own rate: 75 for the Nonin, far higher for ECG.
+            sfreq = getattr(parameters["oxiTask"], "sfreq", 75)
             signal = (
-                parameters["oxiTask"].read(duration=5.0).recording[-75 * 6 :]  # noqa
+                parameters["oxiTask"]
+                .read(duration=5.0)
+                .recording[-int(sfreq * 6) :]  # noqa
             )
-            signal, peaks = ppg_peaks(signal, sfreq=75, new_sfreq=1000, clipping=True)
+            signal, peaks = detect_beats(
+                signal, sfreq, parameters.get("signalType", "ppg"), new_sfreq=1000
+            )
 
             # Get actual heart Rate
             # Only use the last 5 seconds of the recording
@@ -459,7 +465,15 @@ def trial(
                 message = visual.TextStim(
                     parameters["win"],
                     height=parameters["textSize"],
-                    text=parameters["texts"]["checkOximeter"],
+                    # Only an oximeter can be fixed by the participant. A lost
+                    # ECG is the experimenter's to fix, and most often movement.
+                    text=parameters["texts"][
+                        (
+                            "checkOximeter"
+                            if parameters.get("signalType", "ppg") == "ppg"
+                            else "stayStill"
+                        )
+                    ],
                     color="red",
                 )
                 message.draw()
@@ -723,86 +737,90 @@ def tutorial(parameters: dict):
 
     waitInput(parameters)
 
-    # Pusle oximeter tutorial
-    pulse1 = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.3),
-        text=parameters["texts"]["pulseTutorial1"],
-    )
-    press = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, -0.4),
-        text=parameters["texts"]["textNext"],
-    )
-    pulse1.draw()
-    parameters["pulseSchema"].draw()
-    press.draw()
-    parameters["win"].flip()
-    core.wait(1)
+    # Pulse oximeter instructions and finger number. Meaningless to a
+    # participant wearing ECG electrodes, so skipped for them.
+    if parameters.get("signalType", "ppg") == "ppg":
 
-    waitInput(parameters)
-
-    # Get finger number - Skip this part for the danish_children version (empty string)
-    if parameters["texts"]["pulseTutorial2"]:
-        pulse2 = visual.TextStim(
+        # Pusle oximeter tutorial
+        pulse1 = visual.TextStim(
             parameters["win"],
             height=parameters["textSize"],
-            pos=(0.0, 0.2),
-            text=parameters["texts"]["pulseTutorial2"],
+            pos=(0.0, 0.3),
+            text=parameters["texts"]["pulseTutorial1"],
         )
-        pulse3 = visual.TextStim(
+        press = visual.TextStim(
             parameters["win"],
             height=parameters["textSize"],
-            pos=(0.0, -0.2),
-            text=parameters["texts"]["pulseTutorial3"],
+            pos=(0.0, -0.4),
+            text=parameters["texts"]["textNext"],
         )
-        pulse2.draw()
-        pulse3.draw()
+        pulse1.draw()
+        parameters["pulseSchema"].draw()
         press.draw()
         parameters["win"].flip()
         core.wait(1)
 
         waitInput(parameters)
 
-    pulse4 = visual.TextStim(
-        parameters["win"],
-        height=parameters["textSize"],
-        pos=(0.0, 0.3),
-        text=parameters["texts"]["pulseTutorial4"],
-    )
-    pulse4.draw()
-    parameters["handSchema"].draw()
-    parameters["win"].flip()
-    core.wait(1)
+        # Get finger number - Skip this part for the danish_children version (empty string)
+        if parameters["texts"]["pulseTutorial2"]:
+            pulse2 = visual.TextStim(
+                parameters["win"],
+                height=parameters["textSize"],
+                pos=(0.0, 0.2),
+                text=parameters["texts"]["pulseTutorial2"],
+            )
+            pulse3 = visual.TextStim(
+                parameters["win"],
+                height=parameters["textSize"],
+                pos=(0.0, -0.2),
+                text=parameters["texts"]["pulseTutorial3"],
+            )
+            pulse2.draw()
+            pulse3.draw()
+            press.draw()
+            parameters["win"].flip()
+            core.wait(1)
 
-    # Record number
-    nFinger = ""
-    while True:
-        # Record new key
-        key = event.waitKeys(
-            keyList=[
-                "1",
-                "2",
-                "3",
-                "4",
-                "5",
-                "num_1",
-                "num_2",
-                "num_3",
-                "num_4",
-                "num_5",
-            ]
+            waitInput(parameters)
+
+        pulse4 = visual.TextStim(
+            parameters["win"],
+            height=parameters["textSize"],
+            pos=(0.0, 0.3),
+            text=parameters["texts"]["pulseTutorial4"],
         )
-        if key:
-            nFinger += [s for s in key[0] if s.isdigit()][0]
+        pulse4.draw()
+        parameters["handSchema"].draw()
+        parameters["win"].flip()
+        core.wait(1)
 
-            # Save the finger number in the task parameters dictionary
-            parameters["nFinger"] = nFinger
+        # Record number
+        nFinger = ""
+        while True:
+            # Record new key
+            key = event.waitKeys(
+                keyList=[
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "num_1",
+                    "num_2",
+                    "num_3",
+                    "num_4",
+                    "num_5",
+                ]
+            )
+            if key:
+                nFinger += [s for s in key[0] if s.isdigit()][0]
 
-            core.wait(0.5)
-            break
+                # Save the finger number in the task parameters dictionary
+                parameters["nFinger"] = nFinger
+
+                core.wait(0.5)
+                break
 
     # Heartrate recording
     recording = visual.TextStim(
