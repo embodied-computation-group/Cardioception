@@ -84,6 +84,18 @@ Languages
     danish_children
     french
 
+Recording devices
+-----------------
+
+.. currentmodule:: cardioception.devices
+
+.. autosummary::
+   :toctree: generated/devices
+
+    ContinuousOximeter
+    LSLRecorder
+    ReplayRecorder
+
 Reports
 -------
 

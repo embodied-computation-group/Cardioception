@@ -90,6 +90,16 @@ The distribution is named `cardioception-toolbox`. The import name is still
 `cardioception`, so existing scripts do not change.
 ```
 
+To read ECG or PPG from a [Lab Streaming Layer](https://labstreaminglayer.org/)
+stream instead of the Nonin oximeter, install the optional dependency as well:
+
+```bash
+pip install "cardioception-toolbox[lsl]"
+```
+
+The [user guide](user_guide.md#ecg-or-ppg-over-lsl) explains how to point the
+task at the stream.
+
 ## 4. Check that it imports
 
 The install can succeed while the package still fails to load, so check

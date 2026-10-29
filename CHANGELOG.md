@@ -81,6 +81,11 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   `print`, which goes to a terminal nobody keeps and carries no timestamps, so
   a session that failed left nothing to look at. The same messages now go to a
   timestamped file as well as the console.
+- `cardioception.devices.LSLRecorder`: ECG or PPG from any Lab Streaming
+  Layer stream, passed as `recorder=`. ECG beats come from the sleepecg
+  detector, each moved to the R peak, and the task's trigger codes are also
+  sent to an LSL marker stream, so a LabRecorder file holds the physiology
+  and the events on one clock. Needs `pip install cardioception-toolbox[lsl]`.
 
 ### Fixed
 

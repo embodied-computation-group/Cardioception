@@ -99,9 +99,10 @@ Installing the package also copies about 140 MB of images and sounds that the ta
 
 ## Recording devices
 
-Both tasks read the participant's cardiac signal while the task runs, either to estimate heart rate or to count beats in a time window. One setup works out of the box:
+Both tasks read the participant's cardiac signal while the task runs, either to estimate heart rate or to count beats in a time window. Two setups work out of the box:
 
 * The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) with [Nonin 8000SM soft-clip fingertip sensors](https://www.nonin.com/products/8000s/), which plugs into the stimulus PC over USB and needs no extra code.
+* Any ECG or PPG device that streams over [Lab Streaming Layer](https://labstreaminglayer.org/) (LSL), through `cardioception.devices.LSLRecorder`. Install the optional dependency with `pip install cardioception-toolbox[lsl]`, start the device's own streaming program, and pass the recorder to `getParameters(recorder=...)`. The [user guide](https://www.the-ecg.org/Cardioception/user_guide.html#ecg-or-ppg-over-lsl) has the details.
 
 Other hardware can be added by writing a recorder and passing it to `getParameters(recorder=...)`, which bypasses the built-in setup entirely. It needs to supply a real-time estimate of cardiac frequency during the trial, since that is what sets the tone frequency; a device that only records for later analysis is not enough on its own. `cardioception.devices.ReplayRecorder` is a worked example, and is what the test suite runs against.
 
