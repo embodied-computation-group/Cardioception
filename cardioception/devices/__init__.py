@@ -2,6 +2,7 @@
 """Recording backends, passed to ``getParameters(recorder=...)``."""
 
 from .continuous import ContinuousOximeter
+from .lsl import LSLRecorder
 from .replay import ReplayRecorder
 
-__all__ = ["ContinuousOximeter", "ReplayRecorder"]
+__all__ = ["ContinuousOximeter", "LSLRecorder", "ReplayRecorder"]

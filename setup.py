@@ -86,6 +86,7 @@ if __name__ == "__main__":
         python_requires=">=3.10,<3.12",
         version=VERSION,
         install_requires=get_requirements(),
+        extras_require={"lsl": ["pylsl>=1.16"]},
         include_package_data=True,
         packages=find_packages(),
         # The stimuli live in Images/ and Sounds/, so bare "*.wav" and "*.png"

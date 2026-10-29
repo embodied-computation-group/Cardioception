@@ -186,6 +186,10 @@ def _open_recording(
             "Pass recorder= to use a device other than the Nonin oximeter."
         )
 
+    # Decides the beat detector and whether the tutorial asks for a finger.
+    # Recorders that do not say are pulse oximeters, as every one was.
+    parameters["signalType"] = getattr(parameters["oxiTask"], "signal_type", "ppg")
+
 
 def _build_stimuli(parameters: Dict[str, Any], fullscr: bool) -> None:
     """Open the window and load every image the task will draw."""
@@ -327,6 +331,10 @@ def getParameters(
         Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with some
         jitter) to control for range of stimuli presented. Default to `0.0` (no catch
         trials). If not `0.0`, recomended value is `0.2`.
+    recorder : object | None
+        A recording device to use instead of the one `setup` would open, e.g.
+        :class:`cardioception.devices.LSLRecorder` to read ECG from an LSL
+        stream. Overrides `setup`'s choice of device but not its window.
     resultPath : str | None
         Root directory holding every participant. Results go to
         `<resultPath>/sub-<participant>/ses-<session>/run-<timestamp>/`. Defaults
@@ -567,6 +575,11 @@ def getParameters(
         maxRepresentations=maxRepresentations,
         confidence=confidenceScale.describe(),
         config=config.describe(),
+        recording=(
+            parameters["oxiTask"].describe()
+            if hasattr(parameters["oxiTask"], "describe")
+            else {"signal_type": parameters["signalType"]}
+        ),
     )
 
     return parameters

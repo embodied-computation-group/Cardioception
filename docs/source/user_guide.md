@@ -83,6 +83,23 @@ Cardioception copies the images and sound files the tasks need (~ 160 Mo). Unins
 Both the Heartbeat Counting task (HBC) and the Heart Rate Discrimination task (HRD) need a physiological recording device during the task, either to estimate the heart rate or to count the number of heartbeats in a given time window. Cardioception natively supports:
 
 * The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) together with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/)
+* Any ECG or PPG device that streams over [Lab Streaming Layer](https://labstreaminglayer.org/) (LSL), through `cardioception.devices.LSLRecorder`
+
+### ECG or PPG over LSL
+
+Install the optional dependency with `pip install cardioception-toolbox[lsl]`. Start the device's own streaming program, then name the stream and the channel holding the heart signal:
+
+```python
+from cardioception.devices import LSLRecorder
+from cardioception.HRD.parameters import getParameters
+
+recorder = LSLRecorder(name="PLUX", channel="ECG2", signal_type="ecg")
+parameters = getParameters(..., recorder=recorder)
+```
+
+`channel` is an index or a label from the stream's channel metadata. With `signal_type="ecg"` the heart rate comes from systole's `ecg_peaks` (sleepecg detector) at the stream's own rate, and the tutorial skips the pulse oximeter and finger instructions.
+
+The trigger codes the task writes are also sent to an LSL marker stream, `Cardioception` by default (`marker_stream=` to rename, `None` to turn off), labelled by name (`TRIAL_START`, `LISTENING_START`, ...). Record that stream and the device's with [LabRecorder](https://github.com/labstreaminglayer/App-LabRecorder) to get the physiology and the task events on one clock. Cardioception's own signal files are written as before, with each sample's LSL timestamp added.
 
 Other devices can be added by writing a recorder and passing it in:
 
