@@ -211,6 +211,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generated/HRD.languages/cardioception.HRD.languages.danish_children.html">cardioception.HRD.languages.danish_children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/HRD.languages/cardioception.HRD.languages.french.html">cardioception.HRD.languages.french</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/HRD.languages/cardioception.HRD.languages.german.html">cardioception.HRD.languages.german</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/devices/cardioception.devices.LSLRecorder.html">cardioception.devices.LSLRecorder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
 </ul>
@@ -330,6 +331,13 @@ task plays: they compress well in the wheel and do not on disk.</p>
 <p>The distribution is named <code class="docutils literal notranslate"><span class="pre">cardioception-toolbox</span></code>. The import name is still
 <code class="docutils literal notranslate"><span class="pre">cardioception</span></code>, so existing scripts do not change.</p>
 </div>
+<p>To read ECG or PPG from a <a class="reference external" href="https://labstreaminglayer.org/">Lab Streaming Layer</a>
+stream instead of the Nonin oximeter, install the optional dependency as well:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"cardioception-toolbox[lsl]"</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="user_guide.html#ecg-or-ppg-over-lsl"><span class="std std-ref">user guide</span></a> explains how to point the
+task at the stream.</p>
 </section>
 <section id="check-that-it-imports">
 <h2>4. Check that it imports<a class="headerlink" href="#check-that-it-imports" title="Permalink to this heading">#</a></h2>

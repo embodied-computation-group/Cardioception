@@ -261,6 +261,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generated/HRD.languages/cardioception.HRD.languages.danish_children.html">cardioception.HRD.languages.danish_children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/HRD.languages/cardioception.HRD.languages.french.html">cardioception.HRD.languages.french</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/HRD.languages/cardioception.HRD.languages.german.html">cardioception.HRD.languages.german</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/devices/cardioception.devices.LSLRecorder.html">cardioception.devices.LSLRecorder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
 </ul>
@@ -341,7 +342,7 @@
 </section>
 <section id="recording-devices">
 <h2>Recording devices<a class="headerlink" href="#recording-devices" title="Permalink to this heading">#</a></h2>
-<p>The default setup uses the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>, which plugs into the stimulus PC over USB and needs no extra code. Remote Data Access through BrainVision Recorder is also supported, and you can add other devices by writing a recording class. The <a class="reference internal" href="user_guide.html"><span class="std std-doc">user guide</span></a> has the details.</p>
+<p>The default setup uses the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a>, which plugs into the stimulus PC over USB and needs no extra code. Remote Data Access through BrainVision Recorder is also supported, as is any ECG or PPG device that streams over <a class="reference external" href="https://labstreaminglayer.org/">Lab Streaming Layer</a> through <code class="docutils literal notranslate"><span class="pre">cardioception.devices.LSLRecorder</span></code>, and you can add other devices by writing a recording class. The <a class="reference internal" href="user_guide.html"><span class="std std-doc">user guide</span></a> has the details.</p>
 </section>
 <section id="analysing-your-data">
 <h2>Analysing your data<a class="headerlink" href="#analysing-your-data" title="Permalink to this heading">#</a></h2>

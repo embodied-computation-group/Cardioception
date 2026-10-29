@@ -96,6 +96,16 @@ Languages
     french
     german
 
+Recording devices
+-----------------
+
+.. currentmodule:: cardioception.devices
+
+.. autosummary::
+   :toctree: generated/devices
+
+    LSLRecorder
+
 Reports
 -------
 
