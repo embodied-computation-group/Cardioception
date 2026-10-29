@@ -19,7 +19,7 @@ import pytest
 pylsl = pytest.importorskip("pylsl")
 
 from cardioception.devices import LSLRecorder  # noqa: E402
-from cardioception.devices._beats import detect_beats  # noqa: E402
+from cardioception.devices._beats import detect_beats, snap_to_qrs  # noqa: E402
 from cardioception.HRD._constants import PPG_SFREQ, Trigger  # noqa: E402
 
 SFREQ = 1000
@@ -185,6 +185,19 @@ class TestLSLRecorder(unittest.TestCase):
             self.assertAlmostEqual(df.peaks.sum(), len(df) / SFREQ, delta=1.5)
             self.assertAlmostEqual(df.instant_rr.median(), 1000, delta=5)
             recorder.close()
+
+
+class TestSnapToQRS(unittest.TestCase):
+    def test_a_late_or_early_mark_moves_to_the_r_peak(self):
+        ecg = synthetic_ecg(10, 60).astype(float)
+        r_peaks = np.flatnonzero(detect_beats(ecg, SFREQ, "ecg", SFREQ)[1])
+        for shift in (-60, -20, 40, 90):
+            for signal in (ecg, 2 * ecg.mean() - ecg):  # either polarity
+                with self.subTest(shift=shift):
+                    marked = np.zeros(ecg.size, dtype=bool)
+                    marked[np.clip(r_peaks + shift, 0, ecg.size - 1)] = True
+                    snapped = np.flatnonzero(snap_to_qrs(signal, marked, SFREQ))
+                    np.testing.assert_array_equal(snapped, r_peaks)
 
 
 class TestSession(unittest.TestCase):
