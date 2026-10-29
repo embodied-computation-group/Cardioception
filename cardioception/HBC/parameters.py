@@ -33,6 +33,7 @@ def getParameters(
     systole_kw: dict = {},
     seed: Optional[int] = None,
     triggers: Optional[Dict[str, Any]] = None,
+    recorder=None,
 ) -> Dict:
     """Create Heartbeat Counting task parameters.
 
@@ -40,6 +41,10 @@ def getParameters(
     ----------
     participant : str
         Subject ID. Default is 'exteroStairCase'.
+    recorder : object | None
+        A recording device to use instead of the one `setup` would open, e.g.
+        :class:`cardioception.devices.LSLRecorder` to read ECG from an LSL
+        stream. Overrides `setup`'s choice of device but not its window.
     resultPath : str or None
         Root directory holding every participant. Results go to
         `<resultPath>/sub-<participant>/ses-<session>/run-<timestamp>/`. Defaults
@@ -210,6 +215,7 @@ def getParameters(
         start_local=datetime.datetime.now().isoformat(timespec="seconds"),
         seed=parameters["seed"],
         setup=setup,
+        recording=recorder.describe() if hasattr(recorder, "describe") else None,
         taskVersion=taskVersion,
         conditions=parameters["conditions"],
         times=[int(t) for t in parameters["times"]],
@@ -246,7 +252,11 @@ def getParameters(
     )
     parameters["heartLogo"].size *= 0.05
 
-    if setup == "behavioral":
+    if recorder is not None:
+        # Wins over `setup`, and touches no serial port.
+        parameters["oxiTask"] = recorder
+        parameters["oxiTask"].setup().read(duration=1)
+    elif setup == "behavioral":
         # PPG recording
         # A read that finds no data returns after a second rather than blocking
         # forever, so an unplugged or stalled oximeter fails visibly.

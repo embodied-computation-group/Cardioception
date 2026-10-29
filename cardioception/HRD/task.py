@@ -7,7 +7,6 @@ from typing import Optional, Tuple, cast
 
 import numpy as np
 import pandas as pd
-from systole.detection import ppg_peaks
 
 from .._log import get_logger
 from .._present import accept_press, hold, on_every_frame  # noqa: F401
@@ -16,6 +15,7 @@ from .._screens import AskFingerNumber, Practice, Screen
 from .._screens import fixation as fixation_cross
 from .._screens import text
 from .._triggers import fire
+from ..devices._beats import detect_beats
 from ._constants import (
     ANALYSIS_MARGIN,
     OXIMETER_SFREQ,
@@ -630,7 +630,9 @@ def listen_to_heart(parameters: dict) -> HeartRateReading:
         # listening time, and it did not. Shortening it moved the tone only,
         # leaving the control condition quietly unmatched to the recording.
         duration = parameters["listeningDuration"]
-        kept = int(OXIMETER_SFREQ * (duration + ANALYSIS_MARGIN))
+        # The recorder's own rate: an ECG stream runs far above the Nonin's 75.
+        sfreq = getattr(parameters["oxiTask"], "sfreq", OXIMETER_SFREQ)
+        kept = int(sfreq * (duration + ANALYSIS_MARGIN))
         peak_window = int(duration * PPG_SFREQ)
 
         # Adapt these lines for a different setup, provided it can produce
@@ -652,8 +654,8 @@ def listen_to_heart(parameters: dict) -> HeartRateReading:
         # whose purpose is aligning the pulse to the triggers.
         recordedAt = time.time()
         signal = parameters["oxiTask"].recording[-kept:]
-        signal, peaks = ppg_peaks(
-            signal, sfreq=OXIMETER_SFREQ, new_sfreq=PPG_SFREQ, clipping=True
+        signal, peaks = detect_beats(
+            signal, sfreq, parameters.get("signalType", "ppg"), new_sfreq=PPG_SFREQ
         )
 
         ibi = np.diff(np.where(peaks[-peak_window:])[0])
@@ -661,9 +663,14 @@ def listen_to_heart(parameters: dict) -> HeartRateReading:
         logger.info(f"... bpm: {[round(i) for i in bpm]}")
 
         if np.isnan(bpm).any() or (bpm is None) or (bpm.size == 0):
-            message = text(
-                parameters, parameters["texts"]["checkOximeter"], color="red"
+            # Only an oximeter can be fixed by the participant. A lost ECG is
+            # the experimenter's to fix, and most often movement.
+            check = (
+                "checkOximeter"
+                if parameters.get("signalType", "ppg") == "ppg"
+                else "stayStill"
             )
+            message = text(parameters, parameters["texts"][check], color="red")
             hold(parameters["win"], 2, message)
             continue
 
@@ -813,11 +820,12 @@ def waitInput(parameters: dict):
 #: difficulty — without touching the code that presents it.
 TUTORIAL = (
     Screen([("Tutorial1", (0.0, 0.0))]),
-    Screen([("pulseTutorial1", (0.0, 0.3))], image="pulseSchema"),
+    Screen([("pulseTutorial1", (0.0, 0.3))], image="pulseSchema", oximeter_only=True),
     # The Danish children's version leaves pulseTutorial2 empty to skip this.
     Screen(
         [("pulseTutorial2", (0.0, 0.2)), ("pulseTutorial3", (0.0, -0.2))],
         requires="pulseTutorial2",
+        oximeter_only=True,
     ),
     AskFingerNumber(
         screen=Screen(

@@ -98,6 +98,12 @@ class Screen:
     requires :
         Skip this screen unless the named text key holds something. The Danish
         children's version leaves ``pulseTutorial2`` empty to drop that screen.
+    extero_only :
+        Skip this screen unless the session has the exteroceptive condition.
+    oximeter_only :
+        Skip this screen unless the pulse is read from a pulse oximeter. The
+        finger instructions mean nothing to a participant wearing ECG
+        electrodes.
 
     """
 
@@ -109,9 +115,12 @@ class Screen:
     wait: bool = True
     requires: Optional[str] = None
     extero_only: bool = False
+    oximeter_only: bool = False
 
     def skipped(self, parameters: dict) -> bool:
         if self.extero_only and not parameters["ExteroCondition"]:
+            return True
+        if self.oximeter_only and parameters.get("signalType", "ppg") != "ppg":
             return True
         return bool(self.requires) and not parameters["texts"].get(self.requires)
 
@@ -166,4 +175,4 @@ class AskFingerNumber:
     screen: Screen
 
     def skipped(self, parameters: dict) -> bool:
-        return False
+        return parameters.get("signalType", "ppg") != "ppg"

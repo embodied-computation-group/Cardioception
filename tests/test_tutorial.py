@@ -36,12 +36,14 @@ class Recorder:
 
     def __init__(self):
         self.steps = []
+        self.images = set()
 
     def text(self, parameters, message, pos=(0.0, 0.0), **kwargs):
         return Stub()
 
     def hold(self, win, duration, *stims):
         self.steps.append(("show", len(stims)))
+        self.images.update(s.label for s in stims if s.label)
         return duration
 
     def wait_input(self, parameters):
@@ -82,9 +84,12 @@ class FixedChoice:
         return options[0]
 
 
-def run_tutorial(language="english", device="mouse", exteroception=True):
+def run_tutorial(
+    language="english", device="mouse", exteroception=True, signal_type="ppg"
+):
     recorder = Recorder()
     parameters = {
+        "signalType": signal_type,
         "texts": get_texts(language, device, exteroception),
         "ExteroCondition": exteroception,
         "device": device,
@@ -168,6 +173,15 @@ class TestTutorialRuns(unittest.TestCase):
     def test_the_finger_the_oximeter_is_on_is_recorded(self):
         _, parameters = run_tutorial()
         self.assertEqual(parameters["nFinger"], "3")
+
+    def test_an_ecg_session_skips_the_oximeter_instructions(self):
+        oximeter, _ = run_tutorial()
+        ecg, parameters = run_tutorial(signal_type="ecg")
+        self.assertIn("pulseSchema", oximeter.images)
+        self.assertFalse({"pulseSchema", "handSchema"} & ecg.images)
+        self.assertNotIn("nFinger", parameters)
+        # The practice is the same; only the instructions go.
+        self.assertEqual(ecg.trials, oximeter.trials)
 
     def test_every_screen_waits_for_the_participant(self):
         """Except the finger question, which waits for a digit instead."""
