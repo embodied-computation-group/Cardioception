@@ -25,6 +25,7 @@ def getParameters(
     resultPath: Optional[str] = None,
     systole_kw: dict = {},
     language: str = "english",
+    recorder=None,
 ) -> Dict:
     """Create Heartbeat Counting task parameters.
 
@@ -35,6 +36,11 @@ def getParameters(
         `"german"`.
     participant : str
         Subject ID. Default is 'exteroStairCase'.
+    recorder : object | None
+        A recording device to use instead of the pulse oximeter `setup` would
+        open, e.g. :class:`cardioception.devices.LSLRecorder` to read ECG from an
+        LSL stream. `setup` still decides the window. Default is `None`, which
+        leaves the task exactly as it was.
     resultPath : str or None
         Where to save the results.
     screenNb : int
@@ -213,7 +219,11 @@ def getParameters(
     )
     parameters["heartLogo"].size *= 0.05
 
-    if setup == "behavioral":
+    if recorder is not None:
+        # Wins over `setup`, and touches no serial port.
+        parameters["oxiTask"] = recorder
+        parameters["oxiTask"].setup().read(duration=1)
+    elif setup == "behavioral":
         # PPG recording
         port = serial.Serial(serialPort)
         parameters["oxiTask"] = Oximeter(
