@@ -99,12 +99,13 @@ Installing the package also copies about 140 MB of images and sounds that the ta
 
 ## Recording devices
 
-Both tasks read the participant's cardiac signal while the task runs, either to estimate heart rate or to count beats in a time window. Two setups work out of the box:
+Both tasks read the participant's cardiac signal while the task runs, either to estimate heart rate or to count beats in a time window. Three setups work out of the box:
 
 * The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) with [Nonin 8000SM soft-clip fingertip sensors](https://www.nonin.com/products/8000s/), which plugs into the stimulus PC over USB and needs no extra code.
 * Remote Data Access through BrainVision Recorder with a [Brain Products ExG amplifier](https://www.brainproducts.com/).
+* Any ECG or PPG device that streams over [Lab Streaming Layer](https://labstreaminglayer.org/) (LSL), through `cardioception.devices.LSLRecorder`. Install the optional dependency with `pip install cardioception-toolbox[lsl]`, start the device's own streaming program, and pass the recorder to `getParameters(recorder=...)`. The [user guide](https://www.the-ecg.org/Cardioception/user_guide.html#ecg-or-ppg-over-lsl) has the details.
 
-Other hardware is straightforward to add. Write a recording class that interfaces with your device and hand it to the task. Anything that gives a reliable estimate of cardiac frequency will do, whether that is ECG, a different pulse oximeter, or something you built yourself.
+Other hardware is straightforward to add. Write a recording class that interfaces with your device and pass it to `getParameters(recorder=...)`. Anything that gives a reliable estimate of cardiac frequency will do, whether that is ECG, a different pulse oximeter, or something you built yourself.
 
 ## Running a task
 
