@@ -332,8 +332,22 @@
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod USB pulse oximeter</a> together with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM ‘soft-clip’ fingertip sensors</a></p></li>
 <li><p>Remote Data Access (RDA) via BrainVision Recorder together with <a class="reference external" href="https://www.brainproducts.com/">Brain product ExG amplifier</a>.</p></li>
+<li><p>Any ECG or PPG device that streams over <a class="reference external" href="https://labstreaminglayer.org/">Lab Streaming Layer</a> (LSL), through <code class="docutils literal notranslate"><span class="pre">cardioception.devices.LSLRecorder</span></code></p></li>
 </ul>
+<section id="ecg-or-ppg-over-lsl">
+<h3>ECG or PPG over LSL<a class="headerlink" href="#ecg-or-ppg-over-lsl" title="Permalink to this heading">#</a></h3>
+<p>Install the optional dependency with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cardioception-toolbox[lsl]</span></code>. Start the device’s own streaming program, then name the stream and the channel holding the heart signal:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.devices</span><span class="w"> </span><span class="kn">import</span> <span class="n">LSLRecorder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD.parameters</span><span class="w"> </span><span class="kn">import</span> <span class="n">getParameters</span>
+
+<span class="n">recorder</span> <span class="o">=</span> <span class="n">LSLRecorder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"PLUX"</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">"ECG2"</span><span class="p">,</span> <span class="n">signal_type</span><span class="o">=</span><span class="s2">"ecg"</span><span class="p">)</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">getParameters</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">recorder</span><span class="o">=</span><span class="n">recorder</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">channel</span></code> is an index or a label from the stream’s channel metadata. With <code class="docutils literal notranslate"><span class="pre">signal_type=&quot;ecg&quot;</span></code> the beats come from systole’s <code class="docutils literal notranslate"><span class="pre">ecg_peaks</span></code> (sleepecg detector), each moved to the R peak, at the stream’s own rate, and the tutorial skips the pulse oximeter and finger instructions. The heart rate is then computed from the beats exactly as for the oximeter. Without <code class="docutils literal notranslate"><span class="pre">recorder</span></code>, nothing changes.</p>
+<p>The trigger codes the task writes are also sent to an LSL marker stream, <code class="docutils literal notranslate"><span class="pre">Cardioception</span></code> by default (<code class="docutils literal notranslate"><span class="pre">marker_stream=</span></code> to rename, <code class="docutils literal notranslate"><span class="pre">None</span></code> to turn off), labelled by code (<code class="docutils literal notranslate"><span class="pre">1</span></code> trial start, <code class="docutils literal notranslate"><span class="pre">2</span></code> listening start, …). Record that stream and the device’s with <a class="reference external" href="https://github.com/labstreaminglayer/App-LabRecorder">LabRecorder</a> to get the physiology and the task events on one clock.</p>
 <p>You can add other devices by writing a recording class that interfaces with your own hardware (ECG, pulse oximeters, or any kind of recording that gives a precise estimate of the cardiac frequency).</p>
+</section>
 </section>
 <section id="running-the-tasks">
 <h2>Running the tasks<a class="headerlink" href="#running-the-tasks" title="Permalink to this heading">#</a></h2>
@@ -478,7 +492,10 @@ pause
 </ul>
 </li>
 <li><a class="reference internal" href="#dependencies">Dependencies</a></li>
-<li><a class="reference internal" href="#physiological-recording">Physiological recording</a></li>
+<li><a class="reference internal" href="#physiological-recording">Physiological recording</a><ul>
+<li><a class="reference internal" href="#ecg-or-ppg-over-lsl">ECG or PPG over LSL</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#running-the-tasks">Running the tasks</a><ul>
 <li><a class="reference internal" href="#using-a-script">Using a script</a></li>
 <li><a class="reference internal" href="#the-two-tasks">The two tasks</a></li>

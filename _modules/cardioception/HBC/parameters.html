@@ -265,6 +265,7 @@
     <span class="n">resultPath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">systole_kw</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
     <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"english"</span><span class="p">,</span>
+    <span class="n">recorder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Create Heartbeat Counting task parameters.</span>
 
@@ -275,6 +276,11 @@
 <span class="sd">        `"german"`.</span>
 <span class="sd">    participant : str</span>
 <span class="sd">        Subject ID. Default is 'exteroStairCase'.</span>
+<span class="sd">    recorder : object | None</span>
+<span class="sd">        A recording device to use instead of the pulse oximeter `setup` would</span>
+<span class="sd">        open, e.g. :class:`cardioception.devices.LSLRecorder` to read ECG from an</span>
+<span class="sd">        LSL stream. `setup` still decides the window. Default is `None`, which</span>
+<span class="sd">        leaves the task exactly as it was.</span>
 <span class="sd">    resultPath : str or None</span>
 <span class="sd">        Where to save the results.</span>
 <span class="sd">    screenNb : int</span>
@@ -453,7 +459,11 @@
     <span class="p">)</span>
     <span class="n">parameters</span><span class="p">[</span><span class="s2">"heartLogo"</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">*=</span> <span class="mf">0.05</span>
 
-    <span class="k">if</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">"behavioral"</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">recorder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Wins over `setup`, and touches no serial port.</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">recorder</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">setup</span> <span class="o">==</span> <span class="s2">"behavioral"</span><span class="p">:</span>
         <span class="c1"># PPG recording</span>
         <span class="n">port</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">serialPort</span><span class="p">)</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Oximeter</span><span class="p">(</span>

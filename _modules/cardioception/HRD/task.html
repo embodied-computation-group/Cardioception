@@ -247,9 +247,9 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">systole.detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ppg_peaks</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..devices._beats</span><span class="w"> </span><span class="kn">import</span> <span class="n">detect_beats</span>
 
 
 <div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../generated/HRD.task/cardioception.HRD.task.run.html#cardioception.HRD.task.run">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
@@ -677,10 +677,16 @@
             <span class="c1"># You can adapt these line to work with a different setup provided that</span>
             <span class="c1"># it can measure and create the new variable `bpm` (the average beats per</span>
             <span class="c1"># minute over the 5 seconds of recording).</span>
+            <span class="c1"># The recorder's own rate: 75 for the Nonin, far higher for ECG.</span>
+            <span class="n">sfreq</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">],</span> <span class="s2">"sfreq"</span><span class="p">,</span> <span class="mi">75</span><span class="p">)</span>
             <span class="n">signal</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span><span class="o">.</span><span class="n">recording</span><span class="p">[</span><span class="o">-</span><span class="mi">75</span> <span class="o">*</span> <span class="mi">6</span> <span class="p">:]</span>  <span class="c1"># noqa</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"oxiTask"</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">recording</span><span class="p">[</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">sfreq</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)</span> <span class="p">:]</span>  <span class="c1"># noqa</span>
             <span class="p">)</span>
-            <span class="n">signal</span><span class="p">,</span> <span class="n">peaks</span> <span class="o">=</span> <span class="n">ppg_peaks</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">new_sfreq</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">clipping</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">signal</span><span class="p">,</span> <span class="n">peaks</span> <span class="o">=</span> <span class="n">detect_beats</span><span class="p">(</span>
+                <span class="n">signal</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"signalType"</span><span class="p">,</span> <span class="s2">"ppg"</span><span class="p">),</span> <span class="n">new_sfreq</span><span class="o">=</span><span class="mi">1000</span>
+            <span class="p">)</span>
 
             <span class="c1"># Get actual heart Rate</span>
             <span class="c1"># Only use the last 5 seconds of the recording</span>
@@ -699,7 +705,15 @@
                 <span class="n">message</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
                     <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
                     <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
-                    <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"checkOximeter"</span><span class="p">],</span>
+                    <span class="c1"># Only an oximeter can be fixed by the participant. A lost</span>
+                    <span class="c1"># ECG is the experimenter's to fix, and most often movement.</span>
+                    <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span>
+                        <span class="p">(</span>
+                            <span class="s2">"checkOximeter"</span>
+                            <span class="k">if</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"signalType"</span><span class="p">,</span> <span class="s2">"ppg"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"ppg"</span>
+                            <span class="k">else</span> <span class="s2">"stayStill"</span>
+                        <span class="p">)</span>
+                    <span class="p">],</span>
                     <span class="n">color</span><span class="o">=</span><span class="s2">"red"</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">message</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
@@ -963,86 +977,90 @@
 
     <span class="n">waitInput</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
 
-    <span class="c1"># Pusle oximeter tutorial</span>
-    <span class="n">pulse1</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
-        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"pulseTutorial1"</span><span class="p">],</span>
-    <span class="p">)</span>
-    <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
-        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"textNext"</span><span class="p">],</span>
-    <span class="p">)</span>
-    <span class="n">pulse1</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"pulseSchema"</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-    <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Pulse oximeter instructions and finger number. Meaningless to a</span>
+    <span class="c1"># participant wearing ECG electrodes, so skipped for them.</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"signalType"</span><span class="p">,</span> <span class="s2">"ppg"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"ppg"</span><span class="p">:</span>
 
-    <span class="n">waitInput</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
-
-    <span class="c1"># Get finger number - Skip this part for the danish_children version (empty string)</span>
-    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"pulseTutorial2"</span><span class="p">]:</span>
-        <span class="n">pulse2</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="c1"># Pusle oximeter tutorial</span>
+        <span class="n">pulse1</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
             <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
             <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
-            <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
-            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"pulseTutorial2"</span><span class="p">],</span>
+            <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"pulseTutorial1"</span><span class="p">],</span>
         <span class="p">)</span>
-        <span class="n">pulse3</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+        <span class="n">press</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
             <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
             <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
-            <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">),</span>
-            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"pulseTutorial3"</span><span class="p">],</span>
+            <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"textNext"</span><span class="p">],</span>
         <span class="p">)</span>
-        <span class="n">pulse2</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-        <span class="n">pulse3</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">pulse1</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"pulseSchema"</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
         <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
         <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
         <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="n">waitInput</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
 
-    <span class="n">pulse4</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
-        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
-        <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
-        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"pulseTutorial4"</span><span class="p">],</span>
-    <span class="p">)</span>
-    <span class="n">pulse4</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"handSchema"</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
-    <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Get finger number - Skip this part for the danish_children version (empty string)</span>
+        <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"pulseTutorial2"</span><span class="p">]:</span>
+            <span class="n">pulse2</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+                <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+                <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+                <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"pulseTutorial2"</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">pulse3</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+                <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+                <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">),</span>
+                <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"pulseTutorial3"</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">pulse2</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">pulse3</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">press</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="c1"># Record number</span>
-    <span class="n">nFinger</span> <span class="o">=</span> <span class="s2">""</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="c1"># Record new key</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span>
-            <span class="n">keyList</span><span class="o">=</span><span class="p">[</span>
-                <span class="s2">"1"</span><span class="p">,</span>
-                <span class="s2">"2"</span><span class="p">,</span>
-                <span class="s2">"3"</span><span class="p">,</span>
-                <span class="s2">"4"</span><span class="p">,</span>
-                <span class="s2">"5"</span><span class="p">,</span>
-                <span class="s2">"num_1"</span><span class="p">,</span>
-                <span class="s2">"num_2"</span><span class="p">,</span>
-                <span class="s2">"num_3"</span><span class="p">,</span>
-                <span class="s2">"num_4"</span><span class="p">,</span>
-                <span class="s2">"num_5"</span><span class="p">,</span>
-            <span class="p">]</span>
+            <span class="n">waitInput</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+        <span class="n">pulse4</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">],</span>
+            <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"pulseTutorial4"</span><span class="p">],</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
-            <span class="n">nFinger</span> <span class="o">+=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pulse4</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"handSchema"</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+        <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-            <span class="c1"># Save the finger number in the task parameters dictionary</span>
-            <span class="n">parameters</span><span class="p">[</span><span class="s2">"nFinger"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nFinger</span>
+        <span class="c1"># Record number</span>
+        <span class="n">nFinger</span> <span class="o">=</span> <span class="s2">""</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># Record new key</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">waitKeys</span><span class="p">(</span>
+                <span class="n">keyList</span><span class="o">=</span><span class="p">[</span>
+                    <span class="s2">"1"</span><span class="p">,</span>
+                    <span class="s2">"2"</span><span class="p">,</span>
+                    <span class="s2">"3"</span><span class="p">,</span>
+                    <span class="s2">"4"</span><span class="p">,</span>
+                    <span class="s2">"5"</span><span class="p">,</span>
+                    <span class="s2">"num_1"</span><span class="p">,</span>
+                    <span class="s2">"num_2"</span><span class="p">,</span>
+                    <span class="s2">"num_3"</span><span class="p">,</span>
+                    <span class="s2">"num_4"</span><span class="p">,</span>
+                    <span class="s2">"num_5"</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+                <span class="n">nFinger</span> <span class="o">+=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()][</span><span class="mi">0</span><span class="p">]</span>
 
-            <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
-            <span class="k">break</span>
+                <span class="c1"># Save the finger number in the task parameters dictionary</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"nFinger"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nFinger</span>
+
+                <span class="n">core</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+                <span class="k">break</span>
 
     <span class="c1"># Heartrate recording</span>
     <span class="n">recording</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">TextStim</span><span class="p">(</span>
