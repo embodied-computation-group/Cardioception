@@ -36,6 +36,10 @@ BEAT_SEARCH_WINDOW = 3.0
 #: lost signal delays a trial instead of hanging it.
 BEAT_TIMEOUT = 5.0
 
+#: Samples asked of the inlet per pull. ``_pull`` repeats until the inlet is
+#: empty, so this caps one call to the library, not what a read returns.
+PULL_CHUNK = 1024
+
 
 class _MarkerChannel(list):
     """A trigger channel that also sends what is written to it.
@@ -248,7 +252,11 @@ class LSLRecorder:
         return self
 
     def readInWaiting(self, stop: bool = False) -> None:
-        """Append whatever has arrived since the last read, without waiting."""
+        """Append everything that has arrived since the last read, without waiting.
+
+        The inlet is drained however long the gap, so a trigger written to
+        ``Channel_0[-1]`` straight after lands on a current sample.
+        """
         self._pull(timeout=0.0)
 
     def waitBeat(self) -> "LSLRecorder":
@@ -317,7 +325,21 @@ class LSLRecorder:
     # -- helpers ---------------------------------------------------------
 
     def _pull(self, timeout: float) -> None:
-        samples, stamps = self.inlet.pull_chunk(timeout=timeout)
+        """Append what the inlet holds, waiting up to ``timeout`` for the first.
+
+        A full chunk means more may be waiting, so pull again without waiting
+        until one comes back short.
+        """
+        while True:
+            samples, stamps = self.inlet.pull_chunk(
+                timeout=timeout, max_samples=PULL_CHUNK
+            )
+            self._append(samples, stamps)
+            if len(stamps) < PULL_CHUNK:
+                return
+            timeout = 0.0
+
+    def _append(self, samples, stamps) -> None:
         if not stamps:
             return
         start = len(self.recording)
