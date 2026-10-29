@@ -149,6 +149,22 @@ class TestLSLRecorder(unittest.TestCase):
             self.assertEqual(recorder.channels["Channel_0"][-1], 7)
             recorder.close()
 
+    def test_read_in_waiting_drains_the_backlog(self):
+        # After an idle gap, a trigger must land on a current sample, not on
+        # one from the start of the gap.
+        with FakeHub() as hub:
+            recorder = LSLRecorder(name=hub.name, channel="ECG2", timeout=5)
+            recorder.setup()
+            time.sleep(3.0)
+            n0 = len(recorder.recording)
+            before = pylsl.local_clock()
+            recorder.readInWaiting()
+            recorder.channels["Channel_0"][-1] = 2
+            # More than one chunk's worth, so more than a single pull returns.
+            self.assertGreaterEqual(len(recorder.recording) - n0, 2.8 * SFREQ)
+            self.assertLess(abs(recorder.lsl_times[-1] - before), 0.1)
+            recorder.close()
+
     def test_wait_beat_returns_on_a_new_beat(self):
         with FakeHub() as hub:
             recorder = LSLRecorder(name=hub.name, channel="ECG2", timeout=5)
@@ -184,6 +200,22 @@ class TestLSLRecorder(unittest.TestCase):
             self.assertAlmostEqual(df.peaks.sum(), len(df) / SFREQ, delta=1.5)
             self.assertAlmostEqual(df.instant_rr.median(), 1000, delta=5)
             recorder.close()
+
+    def test_nonin_path_is_unchanged(self):
+        # The Nonin goes through detect_beats now; it must give what the
+        # direct ppg_peaks call gave before.
+        from systole import serialSim
+        from systole.detection import ppg_peaks
+        from systole.recording import Oximeter
+
+        n = 75 * 6
+        oximeter = Oximeter(serial=serialSim(), sfreq=75, add_channels=1)
+        signal = oximeter.setup().read(duration=6).recording[-n:]
+        got = detect_beats(signal, 75, "ppg", new_sfreq=1000)
+        expected = ppg_peaks(signal, sfreq=75, new_sfreq=1000, clipping=True)
+        self.assertEqual(len(got), len(expected))
+        for a, b in zip(got, expected):
+            np.testing.assert_array_equal(a, b)
 
 
 class TestSnapToQRS(unittest.TestCase):

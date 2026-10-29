@@ -36,6 +36,10 @@ BEAT_SEARCH_WINDOW = 3.0
 #: lost signal delays a trial instead of hanging it.
 BEAT_TIMEOUT = 5.0
 
+#: Most samples one ``pull_chunk`` call returns; ``_pull`` repeats it until
+#: the inlet is empty.
+PULL_CHUNK = 1024
+
 
 class _MarkerChannel(list):
     """A trigger channel that also sends what is written to it.
@@ -248,7 +252,11 @@ class LSLRecorder:
         return self
 
     def readInWaiting(self, stop: bool = False) -> None:
-        """Append whatever has arrived since the last read, without waiting."""
+        """Append everything that has arrived since the last read, without waiting.
+
+        The recording then ends at the newest sample, so a trigger written to
+        ``channels["Channel_0"][-1]`` straight after marks the present.
+        """
         self._pull(timeout=0.0)
 
     def waitBeat(self) -> "LSLRecorder":
@@ -317,15 +325,28 @@ class LSLRecorder:
     # -- helpers ---------------------------------------------------------
 
     def _pull(self, timeout: float) -> None:
-        samples, stamps = self.inlet.pull_chunk(timeout=timeout)
-        if not stamps:
-            return
-        start = len(self.recording)
-        self.recording.extend(float(s[self.channel]) for s in samples)
-        self.peaks.extend([0] * len(stamps))
-        self.instant_rr.extend([np.nan] * len(stamps))
-        self.times.extend((start + i) / self.sfreq for i in range(len(stamps)))
-        self.lsl_times.extend(stamps)
-        self.wall_times.extend(t + self._epoch_offset for t in stamps)
-        for channel in self.channels.values():
-            channel.extend([0] * len(stamps))
+        """Append everything the inlet holds, waiting ``timeout`` for the first.
+
+        One ``pull_chunk`` returns at most ``PULL_CHUNK`` samples, about a
+        second at 1000 Hz, so after a longer gap it is repeated until the
+        inlet is empty. Otherwise a trigger written after ``readInWaiting``
+        would land on a sample from the start of the gap.
+        """
+        while True:
+            samples, stamps = self.inlet.pull_chunk(
+                timeout=timeout, max_samples=PULL_CHUNK
+            )
+            if not stamps:
+                return
+            start = len(self.recording)
+            self.recording.extend(float(s[self.channel]) for s in samples)
+            self.peaks.extend([0] * len(stamps))
+            self.instant_rr.extend([np.nan] * len(stamps))
+            self.times.extend((start + i) / self.sfreq for i in range(len(stamps)))
+            self.lsl_times.extend(stamps)
+            self.wall_times.extend(t + self._epoch_offset for t in stamps)
+            for channel in self.channels.values():
+                channel.extend([0] * len(stamps))
+            if len(stamps) < PULL_CHUNK:
+                return
+            timeout = 0.0
