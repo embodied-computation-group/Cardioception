@@ -432,6 +432,51 @@ def test_markers_are_valid_json_without_nan():
     assert outlet.kinds()[-1] == "confidence"
 
 
+def test_beat_marker_stamped_with_commit_time():
+    engine, source, player, clock, outlet = make_engine()
+    engine.start_trial(1, 180)
+    # Detected at 100.02 but pulled only at 107 (nobody polled).
+    clock.t = 107.0
+    source.feed(Beat(100.0, 1.0, 100.02))
+    engine.poll()
+    message, stamp = [m for m in outlet.samples if m[0]["kind"] == "beat"][-1]
+    assert stamp == 100.02
+    assert message["commit_time"] == 100.02
+    assert message["seen_time"] == 107.0
+    # A source that gives no commit time: stamped when seen.
+    source.feed(Beat(108.0, 1.0))
+    clock.t = 108.02
+    engine.poll()
+    message, stamp = [m for m in outlet.samples if m[0]["kind"] == "beat"][-1]
+    assert stamp == message["commit_time"] == 108.02
+
+
+def test_idle_poll_detects_without_tones():
+    engine, source, player, clock, outlet = make_engine()
+    # Before any trial: beats are marked, no tones, the source is started.
+    beat_now(engine, source, clock, 100.0)
+    clock.t = 100.02
+    source.feed(Beat(100.0, 1.0, 100.02))
+    engine.idle_poll()
+    assert source.started == 1
+    assert outlet.kinds().count("beat") == 2
+    assert player.scheduled == []
+    # Inside a trial, idle_poll schedules nothing, and poll still does.
+    engine.start_trial(1, 180)
+    source.feed(Beat(101.0, 1.0, 101.02))
+    clock.t = 101.02
+    engine.idle_poll()
+    assert player.scheduled == []
+    beat_now(engine, source, clock, 102.0)
+    assert len(player.tones) == 1
+    # After the press, between trials: onsets still collected.
+    engine.stop_tones()
+    clock.t = 103.0
+    engine.idle_poll()
+    assert np.isfinite(engine.tones[-1]["Onset"])
+    assert source.started == 1
+
+
 def test_close_stops_source_and_player():
     engine, source, player, *_ = make_engine()
     engine.start_trial(1, 0)
@@ -672,6 +717,73 @@ def test_lsl_beat_source_replay(recorded_ecg):
     assert source.period == pytest.approx(periods[-1])
     assert source.last_r_time == r[-1]
     assert np.median(lags) < 0.08
+
+
+@pytest.mark.parametrize("chunk", [10, 1024])
+def test_lsl_beat_source_commit_times(recorded_ecg, chunk):
+    """Each beat carries the stamp of its commit sample, however late it is pulled.
+
+    With 1024-sample chunks a beat can be pulled up to a second after it was
+    committed; its commit time must not move.
+    """
+    data, stamps, _ = recorded_ecg
+    n = 30_000
+    clock = FakeClock()
+    inlet = FakeInlet(data[:n], stamps[:n], clock, chunk=chunk)
+    source = LSLBeatSource(FakeRecorder(inlet, channel=1))
+    beats = []
+    while not inlet.exhausted:
+        beats += source.poll()
+    commit = np.array([b.commit_time for b in beats])
+    r = np.array([b.r_time for b in beats])
+    assert np.all(np.isin(commit, stamps[:n]))
+    lag = commit - r
+    assert np.all(lag > 0) and np.all(lag < 0.25)
+    print(f"\nchunk {chunk}: commit lag median {np.median(lag) * 1000:.1f} ms")
+
+
+def test_lsl_commit_times_do_not_depend_on_chunking(recorded_ecg):
+    data, stamps, _ = recorded_ecg
+    n = 30_000
+    out = []
+    for chunk in (7, 1024):
+        clock = FakeClock()
+        inlet = FakeInlet(data[:n], stamps[:n], clock, chunk=chunk)
+        source = LSLBeatSource(FakeRecorder(inlet, channel=1))
+        beats = []
+        while not inlet.exhausted:
+            beats += source.poll()
+        out.append([(b.r_time, b.commit_time) for b in beats])
+    assert out[0] == out[1]
+
+
+def test_engine_marks_late_beats_at_commit_time(recorded_ecg):
+    """Ten unpolled seconds (a rating screen), then start_trial catches up."""
+    data, stamps, _ = recorded_ecg
+    n = 30_000
+    clock = FakeClock()
+    inlet = FakeInlet(data[:n], stamps[:n], clock, chunk=10)
+    source = LSLBeatSource(FakeRecorder(inlet, channel=1))
+    outlet = FakeOutlet()
+    engine = PhaseEngine(
+        source, FakePlayer(clock), "relative", outlet=outlet, clock=clock
+    )
+    engine.start_trial(1, 90)
+    while clock.t < stamps[0] + 10:
+        engine.poll()
+    engine.stop_tones()
+    # The next pulls happen 10 s after the samples arrived, in big chunks.
+    inlet.chunk = 1024
+    inlet.transport = 10.0
+    engine.start_trial(2, 90)
+    for _ in range(5):
+        engine.idle_poll()
+    beats = [(m, t) for m, t in outlet.samples if m["kind"] == "beat"]
+    late = [(m, t) for m, t in beats if m["seen_time"] - m["commit_time"] > 1.0]
+    assert late, "the catch-up should have found beats from the unpolled seconds"
+    for message, stamp in beats:
+        assert stamp == message["commit_time"]
+        assert 0 < stamp - message["r_time"] < 0.25
 
 
 def test_lsl_beat_source_wait_next_beat(recorded_ecg):

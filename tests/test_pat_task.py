@@ -61,6 +61,8 @@ class FakeEngine:
         self.clock = _clock()
         self.t = self.clock()
         self.nudgePolls: List[int] = []
+        self.idlePolls = 0
+        self.idleDuringTrial = 0
 
     def start_trial(self, trial: int, start_phase_deg: float, block: str = "") -> None:
         self.trial, self.block = trial, block
@@ -101,6 +103,11 @@ class FakeEngine:
                     "Kind": "tone",
                 }
             )
+
+    def idle_poll(self) -> None:
+        self.idlePolls += 1
+        if self.active:
+            self.idleDuringTrial += 1
 
     def stop_tones(self) -> None:
         self.active = False
@@ -754,3 +761,102 @@ def test_trial_with_the_real_engine(fake_psychopy, tmp_path):
     assert set(tones.loc[tones["Kind"] == "vibration", "Anchor"]) == {"virtual"}
     assert tones["Onset"].notna().all()
     assert list(read(tmp_path / "final.txt").columns) == FINAL_COLUMNS
+
+
+##################################
+# The wheel in the rating screen #
+##################################
+
+
+@pytest.mark.parametrize("direction, expected", [(1, 10), (-1, 1)])
+def test_rating_follows_the_wheel(fake_psychopy, tmp_path, direction, expected):
+    from cardioception.PAT.task import confidenceRatingTask
+
+    parameters = make_parameters(tmp_path, wheelDirection=direction)
+    parameters["myMouse"].wheel = 3.0  # three notches away per frame
+    fake_psychopy.policy = lambda keyList: ["space"] if keyList else []
+
+    confidence, rt, provided = confidenceRatingTask(parameters)
+
+    assert provided and confidence == expected  # clamped to the scale
+    assert parameters["win"].mouseVisible is False
+
+
+def test_keyboard_rating_wheel_steps_one_per_notch(fake_psychopy):
+    from cardioception._rating import keyboard_rating
+
+    win = FakeWindow()
+    fake_psychopy.policy = lambda keyList: ["space"] if keyList else []
+    confidence, _, provided = keyboard_rating(
+        win=win,
+        message=FakeStim(),
+        low=1,
+        high=10,
+        labels=["a", "b"],
+        marker_start=5,
+        min_time=0.5,
+        accept_keys=("space",),
+        wheel=lambda: 0.5,  # half a notch per frame
+    )
+    # Accepted on the sixth or seventh frame: three whole notches either way
+    assert provided and confidence == 8
+
+
+def test_keyboard_rating_ignores_the_wheel_by_default(fake_psychopy):
+    from cardioception._rating import keyboard_rating
+
+    fake_psychopy.policy = lambda keyList: ["space"] if keyList else []
+    confidence, _, provided = keyboard_rating(
+        win=FakeWindow(),
+        message=FakeStim(),
+        low=1,
+        high=10,
+        labels=["a", "b"],
+        marker_start=5,
+        min_time=0.5,
+        accept_keys=("space",),
+    )
+    assert provided and confidence == 5
+
+
+def test_text_screens_ignore_the_wheel(fake_psychopy, tmp_path):
+    from cardioception.PAT.task import waitInput
+
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine)
+    parameters["myMouse"].wheel = 5.0
+    calls = []
+
+    def policy(keyList):
+        calls.append(keyList)
+        return ["space"] if len(calls) > 5 else []
+
+    fake_psychopy.policy = policy
+    waitInput(parameters)
+
+    assert len(calls) == 6  # only space moved on
+    assert engine.nudges == []
+    assert engine.idlePolls == 6  # beats are still detected on text screens
+
+
+def test_idle_poll_between_trials_only(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, nPractice=0)
+    fake_psychopy.policy = space_after_polls(engine)
+
+    run(parameters, runTutorial=False)
+
+    assert engine.idlePolls > 0
+    assert engine.idleDuringTrial == 0  # never while tones are scheduled
+
+
+def test_idle_poll_during_the_rating(fake_psychopy, tmp_path):
+    from cardioception.PAT.task import confidenceRatingTask
+
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine)
+    fake_psychopy.policy = lambda keyList: ["space"] if keyList else []
+
+    confidenceRatingTask(parameters)
+
+    assert engine.idlePolls >= 5  # one per frame until the rating is accepted

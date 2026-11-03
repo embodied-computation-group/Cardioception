@@ -15,7 +15,7 @@ The arrow keys move the marker and the accept key confirms, which is what
 ``RatingScale`` did with ``acceptKeys="down"``.
 """
 
-from typing import List, Optional, Sequence, Tuple
+from typing import Callable, List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -31,6 +31,7 @@ def keyboard_rating(
     max_time: Optional[float] = None,
     accept_keys: Sequence[str] = ("down",),
     label_height: float = 0.06,
+    wheel: Optional[Callable[[], float]] = None,
 ) -> Tuple[Optional[float], Optional[float], bool]:
     """Collect a confidence rating using the arrow keys.
 
@@ -58,6 +59,11 @@ def keyboard_rating(
         Keys that confirm the current value.
     label_height :
         Text height for the end labels.
+    wheel :
+        Called once per frame, returns the wheel travel since the last call in
+        notches (positive moves the marker up the scale). Each whole notch is
+        one step; fractions carry over. ``None``, the default, ignores the
+        wheel.
 
     Returns
     -------
@@ -100,9 +106,17 @@ def keyboard_rating(
     clock = core.Clock()
 
     watched: List[str] = ["left", "right"] + list(accept_keys)
+    travel = 0.0
 
     while True:
         elapsed = clock.getTime()
+
+        if wheel is not None:
+            travel += float(wheel())
+            steps = int(travel)  # whole notches, the rest carries over
+            travel -= steps
+            if steps:
+                slider.markerPos = min(high, max(low, slider.markerPos + steps))
 
         for key in event.getKeys(keyList=watched):
             if key == "left":

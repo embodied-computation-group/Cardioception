@@ -119,6 +119,10 @@ class Beat(NamedTuple):
     r_time: float
     #: Anticipated period at this beat, seconds; ``None`` until known.
     period: Optional[float]
+    #: When the beat became known, LSL seconds: the timestamp of the sample
+    #: the detector committed on (for a virtual beat, when it was released).
+    #: ``None`` if the source does not say.
+    commit_time: Optional[float] = None
 
 
 @runtime_checkable
@@ -244,20 +248,23 @@ class LSLBeatSource:
                 return
             x = np.asarray(samples, dtype=float)[:, ch]
             for found in self.detector.process(x, stamps):
-                self._on_beat(found.r_time, found.rr)
+                i = min(max(found.commit_index - self.n_samples, 0), len(stamps) - 1)
+                self._on_beat(found.r_time, found.rr, float(stamps[i]))
             self.n_samples += len(stamps)
             self.last_sample_time = float(stamps[-1])
             if len(stamps) < PULL_CHUNK:
                 return
             timeout = 0.0
 
-    def _on_beat(self, r_time: float, rr: Optional[float]) -> None:
+    def _on_beat(
+        self, r_time: float, rr: Optional[float], commit_time: Optional[float] = None
+    ) -> None:
         if rr is None or rr > MAX_RR:
             self._rr.clear()
         else:
             self._rr.append(rr)
         self.last_r_time = r_time
-        self._pending.append(Beat(r_time, self.period))
+        self._pending.append(Beat(r_time, self.period, commit_time))
 
 
 def simulated_periods(seed: Optional[int] = None) -> Iterator[float]:
@@ -387,7 +394,7 @@ class VirtualBeatSource:
         now = self.clock()
         beats = []
         while self._next_r - now <= (self._last_period or self._next_period):
-            beat = Beat(self._next_r, self._next_period)
+            beat = Beat(self._next_r, self._next_period, now)
             if beat.r_time >= now:
                 beats.append(beat)
             self._emitted.append(beat)
@@ -817,7 +824,7 @@ class PhaseEngine:
             self.source.start()
             self._started = True
         self._scheduling = False
-        self.poll()  # catch up, without tones
+        self.idle_poll()  # catch up, without tones
         self.trial = trial
         self.block = block
         self.start_phase_deg = float(start_phase_deg)
@@ -842,12 +849,36 @@ class PhaseEngine:
         )
 
     def poll(self) -> None:
-        """Pull new beats, schedule their tones, collect onsets. Call every frame."""
-        beats = self.source.poll()
-        for beat in beats:
-            self._on_beat(beat, self.clock())
-        for handle, onset in self.player.poll_onsets():
-            self._on_onset(handle, onset)
+        """Pull new beats, schedule their tones, collect onsets. Call every frame.
+
+        Outside a trial (before :meth:`start_trial`, after :meth:`stop_tones`)
+        it schedules nothing, like :meth:`idle_poll`.
+        """
+        self._poll(schedule=True)
+
+    def idle_poll(self) -> None:
+        """Pull and detect beats, push their markers, collect onsets; no tones.
+
+        Cheap; call it every frame of the screens between trials (confidence
+        rating, breaks, instructions), so beats are detected as they come
+        rather than in a burst at the next :meth:`start_trial`, and the
+        detector's period stays current.
+        """
+        self._poll(schedule=False)
+
+    def _poll(self, schedule: bool) -> None:
+        if not self._started:
+            self.source.start()
+            self._started = True
+        scheduling = self._scheduling
+        self._scheduling = scheduling and schedule
+        try:
+            for beat in self.source.poll():
+                self._on_beat(beat, self.clock())
+            for handle, onset in self.player.poll_onsets():
+                self._on_onset(handle, onset)
+        finally:
+            self._scheduling = scheduling
 
     def stop_tones(self) -> None:
         """The press: no more tones are scheduled. Those already scheduled play."""
@@ -971,11 +1002,16 @@ class PhaseEngine:
         self._beats.append(beat)
         if beat.period is not None:
             self._known_period = beat.period
+        # Stamped when the beat became known, not when it was pulled: a beat
+        # detected late (nobody polled) still carries its own time.
+        commit = beat.commit_time if beat.commit_time is not None else now
         self.mark(
             "beat",
-            now,
+            commit,
             trial=self.trial,
             r_time=beat.r_time,
+            commit_time=commit,
+            seen_time=now,
             rr=rr,
             period=beat.period,
         )

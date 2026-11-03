@@ -75,6 +75,17 @@ def _clock() -> Callable[[], float]:
         return time.perf_counter
 
 
+def _idle(parameters: dict) -> None:
+    """Keep the engine detecting beats between trials, without tones.
+
+    Called on every frame of the screens between trials, so beats keep their
+    true times and the anticipated period stays current.
+    """
+    idle_poll = getattr(parameters["engine"], "idle_poll", None)
+    if idle_poll is not None:
+        idle_poll()
+
+
 def _checkEscape(keys: List[str]) -> None:
     if "escape" in keys:
         raise TaskAbort()
@@ -691,16 +702,28 @@ def showText(
 
 
 def waitInput(parameters: dict) -> None:
-    """Wait for the start key. Esc stops the task."""
+    """Wait for the start key. Esc stops the task; the wheel does nothing."""
     from psychopy import event
 
     event.clearEvents(eventType="keyboard")
     while True:
+        _idle(parameters)
         keys = event.getKeys(keyList=[parameters["startKey"], "escape"])
         _checkEscape(keys)
         if parameters["startKey"] in keys:
+            parameters["myMouse"].getWheelRel()  # drop turns made while waiting
             return
         time.sleep(0.005)
+
+
+def _wheelNotches(parameters: dict) -> Callable[[], float]:
+    """Wheel travel since the last call, away from the participant positive.
+
+    Turns made before the call (e.g. while the trial ended) are dropped.
+    """
+    mouse = parameters["myMouse"]
+    mouse.getWheelRel()
+    return lambda: parameters["wheelDirection"] * float(mouse.getWheelRel()[1])
 
 
 def tutorial(parameters: dict) -> None:
@@ -764,6 +787,7 @@ class _EscapableText:
     def __init__(self, parameters: dict, text: str):
         from psychopy import visual
 
+        self.parameters = parameters
         self.parts = [
             visual.TextStim(
                 parameters["win"],
@@ -783,6 +807,7 @@ class _EscapableText:
     def draw(self) -> None:
         from psychopy import event
 
+        _idle(self.parameters)  # the rating draws this on every frame
         _checkEscape(event.getKeys(keyList=["escape"]))
         for part in self.parts:
             part.draw()
@@ -824,6 +849,7 @@ def confidenceRatingTask(
             max_time=parameters["maxRatingTime"],
             accept_keys=(parameters["startKey"],),
             label_height=parameters["textSize"] * 0.6,
+            wheel=_wheelNotches(parameters),
         )
     else:
         # As the HRD mouse slider: the cursor is hidden, warped once to a random

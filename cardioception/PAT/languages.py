@@ -74,7 +74,7 @@ def english(
         ),
     }
     if device == "keyboard":
-        texts["ratingHelp"] = "LEFT and RIGHT to choose, SPACE to confirm."
+        texts["ratingHelp"] = "Roll the wheel to choose, SPACE to confirm."
     else:
         texts["ratingHelp"] = "Move the mouse to choose, click to confirm."
 
@@ -204,9 +204,7 @@ def danish(
         ),
     }
     if device == "keyboard":
-        texts["ratingHelp"] = (
-            "VENSTRE og HØJRE for at vælge, MELLEMRUM for at bekræfte."
-        )
+        texts["ratingHelp"] = "Rul på hjulet for at vælge, MELLEMRUM for at bekræfte."
     else:
         texts["ratingHelp"] = "Flyt musen for at vælge, klik for at bekræfte."
 
