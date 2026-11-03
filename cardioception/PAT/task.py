@@ -15,7 +15,7 @@ import json
 import os
 import time
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -382,15 +382,22 @@ class Stage:
     ready : callable
         Takes the loop state and says whether space may end the stage. The
         state holds `elapsed` (seconds in this stage), `tones` (beeps played in
-        this stage) and `notches` (net notches in this stage, positive later).
-    footer : str | None
-        Shown below the dial once the stage is ready.
+        this stage), `notches` (net notches in this stage, positive later), and
+        `later` and `earlier` (notches rolled each way in this stage, both
+        counted up, so rolling back does not undo them).
+    footer : str | callable | None
+        A text, shown below the dial once the stage is ready, or a function of
+        the loop state that returns the text to show on each frame (or None).
     """
 
     text: Optional[str] = None
     wheel: bool = True
     ready: Callable[[dict], bool] = field(default=lambda state: True)
-    footer: Optional[str] = None
+    footer: Union[str, Callable[[dict], Optional[str]], None] = None
+
+
+def _newState() -> Dict[str, float]:
+    return {"elapsed": 0.0, "tones": 0, "notches": 0, "later": 0, "earlier": 0}
 
 
 class _Dial:
@@ -525,7 +532,10 @@ def dialLoop(
             )
         if s.footer:
             footer = visual.TextStim(
-                win, height=textSize, pos=(0, -0.35), text=s.footer
+                win,
+                height=textSize,
+                pos=(0, -0.35),
+                text=s.footer if isinstance(s.footer, str) else "",
             )
         stageTexts.append((text, footer))
     win.mouseVisible = False
@@ -546,7 +556,7 @@ def dialLoop(
     nPlayed, lastPlayed = 0, -np.inf
 
     stageIndex = 0
-    state: Dict[str, float] = {"elapsed": 0.0, "tones": 0, "notches": 0}
+    state = _newState()
     tStage = tStart
 
     while True:
@@ -596,12 +606,13 @@ def dialLoop(
             engine.nudge(notches, parameters["dialGainDeg"], parameters["dialGainMs"])
             dial.turn(turn)
             state["notches"] += notches
+            state["later" if notches > 0 else "earlier"] += abs(notches)
             nDialMoves += 1
 
         if pressed and stageIndex < len(stages) - 1:
             stageIndex += 1
             tStage = t
-            state = {"elapsed": 0.0, "tones": 0, "notches": 0}
+            state = _newState()
         elif pressed:
             pressTime, wallTime = now(), time.time()
             engine.stop_tones()
@@ -622,7 +633,14 @@ def dialLoop(
             text, footer = stageTexts[stageIndex]
             if text is not None:
                 text.draw()
-            if footer is not None and stages[stageIndex].ready(state):
+            stageFooter = stages[stageIndex].footer
+            if footer is not None and callable(stageFooter):
+                line = stageFooter(state)
+                if line:
+                    if footer.text != line:
+                        footer.text = line
+                    footer.draw()
+            elif footer is not None and stages[stageIndex].ready(state):
                 footer.draw()
             dial.draw(flash=t - lastPlayed < parameters["flashDuration"])
         else:
@@ -743,6 +761,25 @@ def tutorial(parameters: dict) -> None:
     nTones = parameters["tutorialListenTones"]
     nNotches = parameters["tutorialNotches"]
     minTime = parameters["minTrialTime"]
+    timeout = parameters["tutorialStageTimeout"]
+
+    def rolled(direction: str) -> Callable[[dict], bool]:
+        # Notches rolled that way count, whatever was rolled back afterwards;
+        # after `timeout` space works anyway, so nobody can be stuck here.
+        return lambda state: (
+            state[direction] >= nNotches or state["elapsed"] >= timeout
+        )
+
+    def progress(direction: str) -> Callable[[dict], str]:
+        ready = rolled(direction)
+
+        def footer(state: dict) -> str:
+            if ready(state):
+                return texts["tutorialReady"]
+            done = int(min(state[direction], nNotches))
+            return texts["tutorialProgress"].format(done=done, total=nNotches)
+
+        return footer
 
     showText(parameters, texts["tutorialIntro"], footer=texts["textNext"])
     waitInput(parameters)
@@ -751,22 +788,24 @@ def tutorial(parameters: dict) -> None:
         Stage(
             texts["tutorialListen"],
             wheel=False,
-            ready=lambda state: state["tones"] >= nTones,
+            ready=lambda state: (
+                state["tones"] >= nTones or state["elapsed"] >= timeout
+            ),
             footer=texts["textNext"],
         ),
         Stage(
             texts["tutorialLater"],
-            ready=lambda state: state["notches"] >= nNotches,
-            footer=texts["textNext"],
+            ready=rolled("later"),
+            footer=progress("later"),
         ),
         Stage(
             texts["tutorialEarlier"],
-            ready=lambda state: state["notches"] <= -nNotches,
-            footer=texts["textNext"],
+            ready=rolled("earlier"),
+            footer=progress("earlier"),
         ),
         Stage(
             texts["tutorialFree"],
-            ready=lambda state: state["elapsed"] >= minTime,
+            ready=lambda state: state["elapsed"] >= min(minTime, timeout),
         ),
     ]
     startPhase = float(np.random.choice(parameters["startPhases"]))

@@ -370,6 +370,7 @@ def getParameters(
     parameters["flashDuration"] = 0.1  # seconds the pointer brightens per beep
     parameters["tutorialListenTones"] = 4  # beeps heard before going on
     parameters["tutorialNotches"] = 3  # notches each way before going on
+    parameters["tutorialStageTimeout"] = 20.0  # space works after this anyway
 
     # Start phases: one sequence for practice, one for the main trials
     parameters["startPhasePractice"] = startPhaseSequence(

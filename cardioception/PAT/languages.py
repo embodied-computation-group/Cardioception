@@ -131,6 +131,8 @@ def english(
         "Now roll the wheel TOWARDS you a few notches, and listen: each beep "
         f"moves earlier {within}."
     )
+    texts["tutorialProgress"] = "Rolled {done} of {total}. Then press SPACE."
+    texts["tutorialReady"] = "Now press SPACE to continue."
     texts["tutorialFree"] = (
         f"Try to find the position where the beep falls on {feel}.\n\n"
         "Press SPACE when it does."
@@ -259,6 +261,8 @@ def danish(
         "Rul nu hjulet et par hak IND mod dig, og lyt: hvert bip flytter sig "
         f"tidligere {within}."
     )
+    texts["tutorialProgress"] = "Rullet {done} af {total}. Tryk derefter på MELLEMRUM."
+    texts["tutorialReady"] = "Tryk nu på MELLEMRUM for at fortsætte."
     texts["tutorialFree"] = (
         f"Prøv at finde den position, hvor bippet falder på {feel}.\n\n"
         "Tryk på MELLEMRUM, når det gør."

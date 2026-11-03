@@ -10,6 +10,7 @@ One test opens a small real window, and is skipped where that is impossible.
 import math
 import os
 import sys
+import time
 import types
 from typing import Callable, List, Optional
 
@@ -31,6 +32,8 @@ from cardioception.PAT.task import (
 
 #: Every stimulus drawn, in order, by the fake PsychoPy below
 DRAWN: List["FakeStim"] = []
+#: The text of every text drawn, as it read when drawn
+TEXTS: List[str] = []
 
 ##############
 # Fake engine #
@@ -170,6 +173,8 @@ class FakeStim:
     def draw(self) -> None:
         self.history.append((self.ori, self.fillColor, tuple(self.pos)))
         DRAWN.append(self)
+        if self.text:
+            TEXTS.append(self.text)
 
 
 class FakeRect(FakeStim):
@@ -250,6 +255,7 @@ class FakeKeyboard:
 @pytest.fixture
 def fake_psychopy(monkeypatch):
     DRAWN.clear()
+    TEXTS.clear()
     FakeRect.instances.clear()
     keyboard = FakeKeyboard()
     core = types.ModuleType("psychopy.core")
@@ -288,9 +294,16 @@ def make_parameters(tmp_path, engine=None, **kwargs) -> dict:
     return parameters
 
 
-def lastText() -> Optional[str]:
-    texts = [stim.text for stim in DRAWN if stim.text]
-    return texts[-1] if texts else None
+TUTORIAL_STAGES = ("tutorialListen", "tutorialLater", "tutorialEarlier", "tutorialFree")
+
+
+def lastStage(parameters: dict) -> Optional[str]:
+    """The key of the tutorial stage drawn last, footers aside."""
+    keys = {parameters["texts"][k]: k for k in TUTORIAL_STAGES}
+    for text in reversed(TEXTS):
+        if text in keys:
+            return keys[text]
+    return None
 
 
 def space_after_polls(engine: FakeEngine, n: int = 7, parameters=None):
@@ -302,7 +315,7 @@ def space_after_polls(engine: FakeEngine, n: int = 7, parameters=None):
 
     def policy(keyList):
         if parameters is not None:
-            earlier = lastText() == parameters["texts"]["tutorialEarlier"]
+            earlier = lastStage(parameters) == "tutorialEarlier"
             parameters["myMouse"].wheel = -0.5 if earlier else 0.5
         if not keyList or "space" not in keyList:
             return []
@@ -843,3 +856,89 @@ def test_idle_poll_during_the_rating(fake_psychopy, tmp_path):
     confidenceRatingTask(parameters)
 
     assert engine.idlePolls >= 5  # one per frame until the rating is accepted
+
+
+#########################################
+# Tutorial: counts each way, and timeout #
+#########################################
+
+
+def scripted_tutorial(parameters: dict, scripts: dict, limit: float = 30.0):
+    """Roll the wheel by a script per stage, then press space once it ends.
+
+    The wheel value set on one frame is read on the next, so every step of a
+    script is applied before the space press that follows it.
+    """
+    frames = {key: 0 for key in TUTORIAL_STAGES}
+    start = time.perf_counter()
+
+    def policy(keyList):
+        if not keyList or "left" not in keyList:
+            return ["space"] if keyList and "space" in keyList else []
+        assert time.perf_counter() - start < limit, "stuck in the tutorial"
+        stage = lastStage(parameters)
+        script = scripts.get(stage, [])
+        if stage is None:
+            return []
+        i = frames[stage]
+        frames[stage] += 1
+        if i < len(script):
+            parameters["myMouse"].wheel = script[i]
+            return []
+        parameters["myMouse"].wheel = 0.0
+        return ["space"]
+
+    return policy
+
+
+def test_tutorial_counts_each_way_not_the_net(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine)
+    parameters["tutorialStageTimeout"] = 1e9  # only the counts can open a stage
+    later = [1.0] * 5 + [-1.0] * 4  # net +1, but 5 notches away
+    earlier = [-1.0] * 3 + [1.0] * 3  # net 0, but 3 notches towards
+    fake_psychopy.policy = scripted_tutorial(
+        parameters, {"tutorialLater": later, "tutorialEarlier": earlier}
+    )
+
+    tutorial(parameters)
+
+    assert engine.nudges == later + earlier
+    texts = parameters["texts"]
+    for done in range(3):  # at 3 of 3 the page says to press space
+        assert texts["tutorialProgress"].format(done=done, total=3) in TEXTS
+    assert texts["tutorialReady"] in TEXTS
+    # Once ready, rolling back does not take the page back to "Rolled 2 of 3"
+    laterReady = TEXTS.index(texts["tutorialReady"])
+    stageEarlier = TEXTS.index(texts["tutorialEarlier"])
+    between = TEXTS[laterReady:stageEarlier]
+    assert not any(t.startswith("Rolled") for t in between)
+
+
+def test_tutorial_progress_in_danish(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, language="danish")
+    parameters["tutorialStageTimeout"] = 1e9
+    fake_psychopy.policy = scripted_tutorial(
+        parameters, {"tutorialLater": [1.0] * 3, "tutorialEarlier": [-1.0] * 3}
+    )
+
+    tutorial(parameters)
+
+    assert "Rullet 1 af 3. Tryk derefter på MELLEMRUM." in TEXTS
+    assert parameters["texts"]["tutorialReady"] in TEXTS
+
+
+def test_tutorial_timeout_lets_space_through(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine)
+    parameters["tutorialStageTimeout"] = 0.05
+    fake_psychopy.policy = scripted_tutorial(parameters, {})  # no wheel at all
+
+    tutorial(parameters)
+
+    assert engine.nudges == []
+    assert [s[0] for s in engine.started] == [TUTORIAL_TRIAL]
+    texts = parameters["texts"]
+    assert texts["tutorialProgress"].format(done=0, total=3) in TEXTS
+    assert texts["tutorialFree"] in TEXTS  # got through both wheel pages
