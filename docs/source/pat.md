@@ -43,9 +43,9 @@ The vibration period is set by `exteroPeriod`: `"simulated"` (the default) gives
 
 ## Hardware on our setup
 
-- **ECG**: the PLUX hub with a chest ECG lead (channel `ECG2`), streamed to LSL as `PLUX` by the hub bridge (`plux_lsl.py`). Start the bridge before the task. Electrodes as in the paper: right clavicle, lowest left rib, ground on the left clavicle.
+- **ECG**: the PLUX hub with a chest ECG lead (channel `ECG2`), streamed to LSL as `PLUX` by the hub bridge (`plux_lsl.py`). Start the bridge before the task. Electrodes as in the paper: right clavicle, lowest left rib, reference on the left clavicle or hip. With the PLUX lead set, upright R-waves came from black on the lowest left rib and red on the right clavicle; swap them if the trace is inverted.
 - **Audio**: headphones or speakers on the stimulus PC. Tones are 1000 Hz, 30 ms, with 5 ms ramps, on the left channel. The task plays them through PsychPortAudio (`psychtoolbox.audio`) directly, at latency class 1, which reports the true onset of every tone.
-- **Tactor** (exteroceptive variant only): a vibrotactile transducer (Dayton Audio TT25-16 or similar) driven from the **right** audio channel through a small amplifier. Tone and vibration come from the same stereo stream, so they are locked to the sample. The tactor also buzzes faintly; that is expected.
+- **Tactor** (exteroceptive variant only): a vibrotactile transducer (Dayton Audio TT25-16 or similar) driven from the **right** audio channel through a small amplifier. Tone and vibration come from the same stereo stream, so they are locked to the sample. The burst is silent unless `vibrationVolume` is set above its default of 0, so ordinary speakers or headphones never carry it. The tactor also buzzes faintly; that is expected.
 - **Dial**: the mouse wheel, held in the dominant hand. The left and right arrow keys move it too. Space, with the other hand, ends the trial.
 - **Recording**: [LabRecorder](https://github.com/labstreaminglayer/App-LabRecorder) with the `PLUX` stream and the task's marker stream (`PAT`, set by `markerStream`), so the ECG and every beat, tone and key press land on one clock in one XDF file.
 
