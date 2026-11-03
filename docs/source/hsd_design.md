@@ -1,0 +1,451 @@
+---
+myst:
+  html_meta:
+    description: "Design of the Heartbeat Synchrony Discrimination task: an adaptive Bayesian version of the method of constant stimuli that estimates where in the cardiac cycle a person feels the heartbeat, and how sharply."
+    keywords: "heartbeat detection, heartbeat synchrony, method of constant stimuli, Psi-marginal, adaptive psychophysics, cardiac interoception"
+---
+
+# Heartbeat Synchrony Discrimination task
+
+The Heartbeat Synchrony Discrimination task (HSD) is an adaptive Bayesian
+version of the heartbeat detection task of Brener, Liu and Ring
+{cite:p}`1993:brener`. A train of tones is played, each tone a chosen delay
+after a detected R-wave, and the participant judges whether the tones were
+synchronous with their heartbeat. After each judgement the next delay is
+chosen to be as informative as possible about where in the cardiac cycle the
+sensation lies and how sharp it is.
+
+```{note}
+This is a design document for an experimental task. The estimation engine,
+`cardioception.HSD.psi`, exists and is tested, and its
+[simulation study](#simulation-study) has run. The task runner, the hardware
+timing and the participant instructions do not exist yet; see
+[what comes next](#what-comes-next).
+```
+
+## Why a new task
+
+The two-interval task of Whitehead and colleagues {cite:p}`1977:whitehead`
+presents stimuli (light flashes in the original) at two fixed delays after the
+R-wave, usually about 128 and 384 ms, and asks which train is simultaneous
+with the heartbeat. The design
+assumes that everyone feels the heartbeat at about the same delay. They do
+not. In common versions of the task only about one person in four meets the
+detector criterion {cite:p}`2016:brener`, and a person whose sensation falls
+between the two delays has no correct answer to give.
+
+Multi-interval tasks remove that assumption. Tones are presented at several
+delays across the cardiac cycle, and each person's data show where their
+sensation lies. The cost is time: the standard method of constant stimuli
+(MCS) takes about 35 minutes. The HSD keeps the multi-interval logic and
+spends the trials where they are informative.
+
+## What the classical task established
+
+The [theory page](measuring.md) already covers
+[what fixed-delay synchrony tasks can establish](measuring.md#what-fixed-delay-synchrony-tasks-can-establish)
+and why the MCS is
+[a stronger measure of heartbeat timing](measuring.md#a-stronger-measure-of-heartbeat-timing).
+This section adds the findings that shaped the HSD design. It follows the
+review by Brener and Ring {cite:p}`2016:brener`.
+
+| Study | Procedure | Finding |
+|---|---|---|
+| Yates et al. {cite:p}`1985:yates` | Six delays, 0 to 500 ms, one light flash per trial | Only 25 percent met detector criteria, later attributed to a single stimulus per trial giving too little data |
+| Brener and Kluvitse {cite:p}`1988:brener` | Participants switched freely among tones at the six delays | Preferred intervals from 100 to 400 ms; standard deviations of the preferred interval from 43 to 167 ms |
+| Brener, Liu and Ring {cite:p}`1993:brener` | MCS: ten tones per trial at each of the six delays | 54 percent classified as detectors, against 50 percent (Brener-Kluvitse method) and 33 percent (Whitehead variant). Tones at 100 to 300 ms most often judged simultaneous. Median preferred intervals 152 to 373 ms; interquartile ranges 118 to 362 ms |
+| Brener, Ring and Liu {cite:p}`1994:brener` | MCS with fewer tones per trial | Five tones per trial did not impair reliability |
+| Ring and Brener {cite:p}`2018:ring` | MCS at six fixed delays, 48 participants, alongside heartbeat counting | Each task gave reliable scores; heartbeat detection was unrelated to heartbeat counting |
+
+The standard MCS is 20 trials at each of six delays, 120 trials in all. With
+a 30-trial exteroceptive familiarization it takes about 35 minutes. It yields
+two measures: the median of the delays judged simultaneous (the location of
+the sensation in the cardiac cycle) and their interquartile range (its
+precision).
+
+Three points carry into the HSD. Location varies between people by hundreds of
+milliseconds, so it must be estimated rather than assumed. Width varies too,
+and is a separate quantity from location. And each trial should carry several
+tones, because one stimulus per trial is too little data.
+
+```{admonition} Two claims we could not verify
+:class: warning
+
+Two figures that circulate in summaries of this literature are not used on
+this page, because we could not open the papers to check them.
+
+- Detector rates of 13, 43 and 47 percent for one, five and ten tones per
+  trial, attributed to Brener, Ring and Liu {cite:p}`1994:brener`. The review
+  confirms only that five tones per trial did not impair reliability relative
+  to ten.
+- A study by Schneider, Ring and Katkin {cite:p}`1998:schneider` said to have
+  shifted the delay range from 0 to 500 ms to 100 to 600 ms and found that
+  preferred delays did not move. We cite the paper only as a validity test of
+  the MCS, which is what its title describes.
+
+The design does not depend on either claim.
+```
+
+## Relation to the phase adjustment task
+
+The ECG-based phase adjustment task (PAT-ECG) of Hodgetts and colleagues
+{cite:p}`2026:hodgetts` is the closest current method. It descends from the
+smartphone phase adjustment task {cite:p}`2021:plans`. In the PAT-ECG,
+91 participants completed 28 trials in about 30 minutes, turning a dial until
+tones felt synchronous with their heartbeat. Consistency of the chosen delays
+was scored as the mean resultant length and tested against a Monte Carlo null;
+16.7 percent were classified as interoceptive. Confidence was rated from 1 to
+10 after each trial. The task has an absolute-delay and a relative-delay
+version, and an exteroceptive control in which a tactor vibrates on the hand.
+
+The two tasks share the trigger (the R-wave), the stimulus (a tone at a
+delay), the two possible timing axes (milliseconds or cardiac phase), a
+confidence rating and an exteroceptive control. They differ in the
+psychophysical method.
+
+| | PAT-ECG | HSD |
+|---|---|---|
+| Method | Adjustment: the participant turns a dial until the tones feel synchronous, then presses space | Constant stimuli made adaptive: the procedure sets the delay, the participant answers yes or no |
+| Who samples the delays | The participant, freely, for as long as they like (about 1 minute per trial, 28 trials in 30 minutes) | The algorithm, by expected information gain; a trial is five beats plus a response |
+| Measure | Circular consistency of the chosen delays across trials (mean resultant length), tested against a Monte Carlo null | Posterior over the location, width, floor and peak of a response envelope; credible intervals; posterior evidence that the envelope rises at all |
+| Width of the sensation | Not separable from consistency | An explicit parameter, `sigma` |
+| Lapses and bias | Not modelled; confidence weighting offered instead | Floor and peak parameters absorb lapses, and are marginalized out |
+| Stopping | Fixed 28 trials, justified by simulation (15 to 20 enough for classification) | Credible-interval width on `mu`, with a maximum |
+
+The phase adjustment task was built for smartphone photoplethysmography,
+where the participant's own exploration replaces a controlled stimulus
+schedule and a consistency score needs no psychometric model. That choice has
+costs. Adjustment mixes perception with search strategy: a participant can be
+consistent by always stopping after a similar turn of the dial. It gives no
+control over which delays are presented. And it cannot separate where the
+sensation lies from how precise it is. A yes or no judgement at a delay the
+experimenter chooses is the classical remedy, and Bayesian placement is what
+makes it short enough to use.
+
+Two ideas from the PAT carry over:
+
+- **Cardiac phase as an alternative stimulus axis.** A delay can be fixed in
+  milliseconds or as a fraction of the interbeat interval. Palmer and
+  colleagues report both delay-based and phase-based responders
+  {cite:p}`2025:palmer`. The HSD engine works on any real-valued stimulus, so a
+  phase axis needs only a different candidate set and grid.
+- **An exteroceptive version with a known delay.** The same procedure applied
+  to a stimulus whose true delay is known validates the whole pipeline, from
+  timing to estimation.
+
+## The model
+
+The probability of a "synchronous" answer at delay $d$ (ms after the R-wave)
+is a Gaussian bump on a floor:
+
+$$
+P(\text{yes} \mid d) = \text{floor} + (\text{peak} - \text{floor})
+\exp\left(-\frac{1}{2}\left(\frac{d - \mu}{\sigma}\right)^2\right)
+$$
+
+| Parameter | Meaning | Default grid |
+|---|---|---|
+| `mu` | Where in the cardiac cycle the sensation is felt, in ms after the R-wave | 0 to 600 ms in 10 ms steps (61 values) |
+| `sigma` | Width of the sensation, in ms | 20 to 300 ms, log-spaced (20 values) |
+| `floor` | Rate of "yes" far from the sensation: lapses towards "yes", and the whole response profile of a non-detector | 0, 0.05, 0.1, 0.2, 0.3, 0.4 |
+| `peak` | Rate of "yes" at the sensation: one minus the lapse rate towards "no" | 0.5, 0.6, 0.7, 0.8, 0.9, 0.97 |
+
+The grids cover the published range of observers with room to spare
+{cite:p}`1988:brener,2016:brener`, because the point of estimating the
+location is not to assume it. The candidate delays are 0 to 600 ms in 20 ms
+steps, of which the current hardware can realize those from 80 ms (see
+[delay limits](#realized-delays-and-per-trial-constraints)). The posterior is discrete on the outer product of the four grids,
+about 44,000 points; one stimulus selection takes about 13 ms.
+
+**Prior.** Uniform over `mu` by default, or any non-negative weights over the
+`mu` grid. Uniform over the `sigma` grid points, which is log-uniform because
+the grid is log-spaced. Uniform over `floor` and `peak`, with zero mass where
+the peak would lie below the floor (an inverted envelope).
+
+**A non-detector** answers "yes" at a rate that does not depend on delay. In
+the model that is a flat envelope, with the peak close to the floor. The
+detection evidence is the posterior mass on `peak - floor` above 0.2. On the
+default grids 33 of the 36 floor and peak pairs rise by more than 0.2, so the
+prior on this event is about 0.92, and the design reports the evidence
+alongside its prior as a Bayes factor (posterior odds over prior odds). A flat
+response profile can also be absorbed by a very wide `sigma` or by a `mu` at
+the edge of the grid, so the number is a sanity check. It is reported, never
+used to classify people as detectors.
+
+## Choosing the next delay
+
+**Objective.** Each trial presents the candidate delay that minimizes the
+expected entropy of the marginal posterior over the target parameters, the
+Psi-marginal method {cite:p}`2013:prins`. The default target is `mu` alone;
+`sigma`, `floor` and `peak` stay in the posterior as nuisance parameters but
+do not steer placement. Naming all four as targets reproduces the joint
+objective of the original Psi method {cite:p}`1999:kontsevich`, which also
+spends trials on the nuisance parameters.
+
+**Why not PsychoPy's `PsiHandler`.** It assumes a monotonic, cumulative
+Gaussian psychometric function, as in the HRD. A synchrony judgement rises
+towards the sensation and falls after it, so the function is not monotonic.
+The HSD has its own grid posterior for that reason.
+
+**The clustering concern.** García-Pérez {cite:p}`2014:garciaperez` names
+binary synchrony judgements as a case of a non-monotonic psychometric
+function. He proposes inward-outward staircases for them and warns that
+Bayesian placement concentrates trials in too narrow a range for a later fit.
+The HSD answers that in four ways:
+
+1. Targeting `mu` alone samples the two flanks of the bump, where a change in
+   `mu` changes the response probability most, rather than one narrow band.
+2. An `explore` fraction of trials ignores the objective and draws a delay
+   uniformly from the allowed candidates, so the tails stay sampled. The
+   engine default is 0; the planned task default is 0.1, and the simulations
+   vary it.
+3. The raw trial history is saved, so any later refit is possible, including
+   one with a different model.
+4. The simulation study measures the distribution of sampled delays directly.
+
+## Realized delays and per-trial constraints
+
+**Realized delays.** The posterior is updated with the delay the participant
+actually heard (the mean over the five tones of a trial, measured offline),
+not the delay requested. The likelihood is recomputed from the envelope, so
+any real-valued delay can be used. This is a correction the HRD, built on
+PsychoPy's `PsiHandler`, could not make.
+
+**Delay limits.** Each trial can restrict the candidates:
+
+| Limit | Set by | Why |
+|---|---|---|
+| `min_delay` | The system's R-to-tone latency | No tone can be scheduled before the system knows about the R-wave. About 80 ms on current hardware (below); the simulations use 80 ms |
+| `max_delay` | 0.75 of the anticipated interbeat interval | Keeps the last tone clear of the next beat. The envelope is periodic in the cardiac cycle and the model ignores that, so delays near the next beat would be misread |
+
+If no candidate lies between the two limits, the engine raises an error
+rather than presenting a delay outside them.
+
+**The latency floor on current hardware.** These figures come from
+measurements on the pat-ecg branch, 2026-11-03, with a PLUX ECG streamed over
+Lab Streaming Layer to the stimulus PC. They are bench measurements, not a
+published result.
+
+| Stage | Measured |
+|---|---|
+| Online R detector (`OnlineRDetector`) commits a beat | 14 ms median, 18 ms maximum after the R peak |
+| Whole chain knows about a beat | 20 ms median, 31 ms at the 95th percentile, after the R-wave |
+| Tone scheduled with psychtoolbox audio, latency class 1, 50 ms lead | Lands within 1 ms of the scheduled time (latency class 3 was unusable on that laptop) |
+| Dry run, tones anchored on the real R-wave | Within 17 ms of the intended phase at the 95th percentile |
+
+A beat is known about up to about 31 ms after the R-wave, and the tone must
+be scheduled 50 ms ahead, so the shortest delay that can be realized
+reactively is about 80 ms. Shorter delays are possible only by scheduling
+predictively from the anticipated interbeat interval (the mean of the last
+three RR intervals). That adds the beat-to-beat variability of the heart
+period to the delay as jitter, and is left for phase B. A sensation earlier
+than 80 ms can still be located, but only from the falling side of the
+envelope.
+
+The PLUX Bluetooth transport adds a further 20 to 40 ms that does not appear
+in the LSL timestamps, because those are arrival times. It does not bias the
+realized delays once they are measured from the offline recording, which is
+how the posterior is updated, but it does mean the online timestamps are late
+by that amount.
+
+**Stopping rule candidates.** Stop when the 95 percent credible interval on
+`mu` is at most a target width, with a minimum and a maximum number of trials.
+The [simulations](#results) show that the width an observer can reach depends
+mostly on how noisy their answers are. The table gives the trial at which the
+median credible-interval width under Psi-marginal on `mu` first reaches each
+value, over 150 runs per class.
+
+| Median 95% CI width on `mu` | Clean observers (floor 0.05, peak 0.95) | Noisy observers (floor 0.2, peak 0.8) |
+|---|---|---|
+| 150 ms | 26 trials | 62 trials |
+| 100 ms | 42 trials | 81 trials |
+| 80 ms | 53 trials | 106 trials |
+| 60 ms | 69 trials | Not reached by 120 |
+| 40 ms | 105 trials | Not reached by 120 |
+
+At fixed trial counts the median widths are 150, 110, 70 and 40 ms for clean
+observers at 30, 40, 60 and 120 trials, and 260, 220, 160 and 80 ms for noisy
+ones. Width also grows with `sigma`: at 60 trials the clean medians are 30, 75
+and 120 ms for `sigma` of 50, 100 and 150 ms.
+
+| Setting | Candidate | Status |
+|---|---|---|
+| Credible-interval width on `mu` | 60 ms, the original candidate, is reached in median only by clean observers, at about 70 trials; 100 ms is reached at about 40 (clean) or 80 (noisy) trials | Open |
+| Minimum trials | 15 | So that the floor and peak have data |
+| Maximum trials | 60 | Open. At 60 trials, 45 percent of clean and 17 percent of noisy runs reach 60 ms; 71 and 33 percent reach 100 ms |
+
+A stopping rule on width alone would therefore run most noisy observers to the
+maximum. Whether the target should be a width, a fixed trial count, or a width
+with a per-person cap is a choice for the task, and is left open here.
+
+## Trial structure and saved data
+
+This section describes the planned task. It is not implemented yet.
+
+1. Five tones, each at the chosen delay after a detected R-wave.
+2. A "synchronous" or "not synchronous" judgement on the keyboard.
+3. A confidence rating on the existing confidence scale, reusing the HRD's
+   keyboard rating and `cardioception.scales.ConfidenceScale`.
+
+Confidence is recorded alongside the judgement. It is not part of the
+likelihood and does not affect stimulus placement.
+
+Saved for every trial:
+
+| Column group | Contents |
+|---|---|
+| Stimulus | Requested delay; realized delay of each tone; interbeat intervals during the train; trial type (adaptive or explore) |
+| Response | Decision; response time; confidence |
+| Online estimates | Posterior mean, median and credible interval for `mu`, `sigma`, `floor` and `peak`; detection evidence |
+
+As with the HRD, the online estimates are a monitoring aid. They are not an
+analysis, and the trial history is what a later model should be fitted to.
+
+## Simulation study
+
+The study asks how many five-beat trials the adaptive procedure needs to
+recover `mu` to within about 20 to 30 ms across realistic observers,
+compared with the 120-trial MCS, and whether Bayesian placement biases
+anything.
+
+**Observers.**
+
+| Group | Parameters | Count |
+|---|---|---|
+| Detectors | `mu` in {150, 200, 250, 300, 350} ms; `sigma` in {50, 100, 150} ms; (`floor`, `peak`) in {(0.05, 0.95), (0.2, 0.8)} | 30 |
+| Non-detectors | Flat "yes" rate of 0.3 or 0.5 | 2 |
+| Misspecified | Asymmetric envelope, right tail twice as wide as the left, `mu` at 200 or 300 ms, `sigma` 100 ms, (`floor`, `peak`) = (0.05, 0.95) | 2 |
+
+**Methods.**
+
+| Label | Method |
+|---|---|
+| MCS | Six delays from 0 to 500 ms, 20 trials each, random order. Analyzed on the same grid posterior, and with the classical median interval and interquartile range |
+| Psi-marginal, `mu` | Target `mu`; `sigma`, `floor` and `peak` as nuisances |
+| Psi-marginal, `mu` and `sigma` | Target `mu` and `sigma` |
+| Psi joint | All four parameters as targets |
+
+Each adaptive method runs with `explore` at 0 and at 0.1. Every run lasts 120
+trials so that estimates can be compared at every trial count. An
+inward-outward staircase arm after García-Pérez was optional and was not run.
+The adaptive methods use a `min_delay` of 80 ms, the hardware floor measured
+above, so their candidates run from 80 to 600 ms. The MCS keeps its published
+levels from 0 to 500 ms as the classical benchmark, although 0 ms cannot be
+realized on current hardware.
+
+**Replications.** Ten seeds per observer and method, seeded through the
+package's random number generator so every run can be reproduced: 34
+observers, 7 methods (MCS and three adaptive objectives, each adaptive one
+with and without exploration), 10 repetitions and 120 trials, 2,380 runs in
+all. With seed 2026 and 28 worker processes the study took 38 minutes on a
+32-core machine:
+
+    python -m cardioception.HSD.simulate --out <dir> --reps 10 --processes 28 --trials 120 --seed 2026
+
+**Metrics.** Absolute error and root mean squared error of the posterior mean
+of `mu` at each trial count; credible-interval width; coverage of the 95
+percent interval; error in `sigma`; detection evidence for the non-detectors;
+the distribution of sampled delays, which is the check on clustering.
+
+**Outputs.** A CSV of per-trial estimates, a figure of RMSE and
+credible-interval width against trial count by method, and a table at 20, 30,
+40, 60 and 120 trials. The simulation script regenerates all three.
+
+### Results
+
+Error and interval width are over the 30 detectors (300 runs per method) unless
+stated otherwise. In the method labels, `psi_mu` targets `mu`, `psi_mu_sigma`
+targets `mu` and `sigma`, `psi_joint` targets all four parameters, and `_x10`
+marks an `explore` fraction of 0.1.
+
+```{figure} images/hsd_simulation.png
+:alt: Two panels against trial number, 1 to 120. Left, RMSE of the posterior mean of mu falls from about 85 ms for all methods; MCS stays highest until about trial 75, and all methods end between 16 and 23 ms. Right, mean 95 percent credible-interval width falls from about 570 ms to between 70 and 86 ms, with MCS widest throughout.
+
+RMSE of the posterior mean of `mu` (left) and mean width of its 95 percent
+credible interval (right) against trial count, by method, for the 30 detectors.
+```
+
+| `mu` RMSE (ms) at trial | 20 | 30 | 40 | 60 | 120 |
+|---|---|---|---|---|---|
+| MCS | 58.8 | 54.8 | 45.4 | 35.5 | 20.7 |
+| `psi_mu` | 46.8 | 38.5 | 33.3 | 25.1 | 17.1 |
+| `psi_mu_x10` | 46.0 | 37.3 | 32.6 | 23.2 | 15.7 |
+| `psi_mu_sigma` | 39.8 | 34.7 | 31.6 | 27.4 | 19.8 |
+| `psi_mu_sigma_x10` | 42.0 | 36.7 | 32.4 | 27.8 | 21.1 |
+| `psi_joint` | 47.0 | 37.7 | 34.2 | 30.6 | 22.4 |
+| `psi_joint_x10` | 46.6 | 39.5 | 33.6 | 28.7 | 22.2 |
+| Median absolute error, `psi_mu` | 22.8 | 18.1 | 14.8 | 11.7 | 6.8 |
+| Mean CI width, MCS | 351 | 274 | 224 | 164 | 86 |
+| Mean CI width, `psi_mu` | 288 | 214 | 172 | 120 | 70 |
+
+**Accuracy of `mu`.** Every adaptive method has a lower RMSE than MCS within
+the first few trials, and a narrower interval from about trial 12. The joint
+objectives and `psi_mu_sigma_x10` lose that advantage from about trial 75 to
+90 and end slightly worse than MCS at 120 trials (21.1 to 22.4 ms against
+20.7 ms); `psi_mu`, `psi_mu_x10` and `psi_mu_sigma` stay ahead throughout.
+`psi_mu_sigma` has the lowest RMSE up to about trial 45, by up to 7 ms; from
+about trial 50, `psi_mu` (with or without exploration) is lowest. `psi_mu`
+reaches the 60-trial MCS error of 35.5 ms at trial 37 (`psi_mu_sigma` at
+trial 29), and the 120-trial MCS error of 20.7 ms at trial 81. Its median
+absolute error is 18 ms at 30 trials and 15 ms at 40, so the plan's 20 to
+30 ms target is met in median by about 30 trials. The mean credible interval
+at those counts (214 and 172 ms) is far wider, mostly because of the noisy
+observers; the [stopping-rule candidates](#realized-delays-and-per-trial-constraints)
+give the widths by observer class. Exploration at 0.1 changes RMSE by at most
+about 2 ms in either direction. On the same MCS data, the classical median
+interval has an RMSE of 37.7 ms at 120 trials against 20.7 ms for the grid
+posterior, so part of the gain over the classical analysis comes from the
+model, not the placement.
+
+**Calibration and bias.** Coverage of the 95 percent interval lies between 0.96
+and 1.00 for every method at every trial count from 20, so the intervals are
+honest, if conservative. MCS is biased upward early (+10.9 ms at 20 trials,
++3.7 ms at 60, -0.2 ms at 120); the adaptive methods stay within about -6 to
++2 ms throughout. Error in `sigma` improves little for any method, from about
+36 ms at 20 trials to 23 to 28 ms at 120, including the methods that target
+`sigma`. The two asymmetric observers (20 runs per method) have a `mu` RMSE of
+45 to 71 ms for every method, with little improvement over trials (`psi_mu`
+50 to 45 ms, MCS 71 to 54 ms). That is the cost of the Gaussian assumption
+when the envelope is skewed, and a reason to keep the raw trial history for
+refitting.
+
+**Detection evidence.** For detectors the median log10 Bayes factor passes +1
+between trials 30 and 41 depending on method (33 for `psi_mu`, 41 for MCS)
+and reaches +2.9 to +4.8 by trial 120, highest for the joint objectives, which
+target `floor` and `peak` directly. For the two flat non-detectors it is
+negative throughout, from about -0.3 to -0.5 at 20 trials to -0.6 to -1.2 at
+120, and their posterior detection evidence is still 0.47 to 0.65 at 120
+trials against a prior of 0.92. The evidence moves in the right direction for
+both groups, but slowly, which is why it is reported as a sanity check and
+not used as a classifier.
+
+| Sampled delays, detectors, all trials | MCS | `psi_mu` | `psi_mu_x10` |
+|---|---|---|---|
+| Candidate delays | 6, from 0 to 500 ms | 27, from 80 to 600 ms | 27, from 80 to 600 ms |
+| Delays receiving at least 2 percent of trials | 6 | 18 | 19 |
+| Largest share at any one delay | 16.7 percent (every level) | 13.8 percent (80 ms) | 13.2 percent (80 ms) |
+| Share at 80 to 160 ms | 16.7 percent (the 100 ms level) | 26.6 percent | 26.8 percent |
+| Share at 520 to 600 ms | None (no level above 500 ms) | 3.3 percent | 5.0 percent |
+
+**Clustering.** Bayesian placement did not concentrate trials in a narrow
+band. Under `psi_mu`, 18 of the 27 candidate delays each receive at least
+2 percent of trials, with 5 to 7 percent per delay between 180 and 320 ms,
+against six levels at 16.7 percent each under MCS. The one concentration is at
+the 80 ms floor: 32 percent of trials for observers with a `mu` of 150 ms and
+3 percent for a `mu` of 350 ms. For early sensations the hardware floor cuts
+off the rising side of the envelope, so the lowest allowed delay is the most
+informative one left. The longest delays, 520 to 600 ms, receive 3 percent of
+trials without exploration and 5 percent with it.
+
+## What comes next
+
+| Phase | Content |
+|---|---|
+| B. Hardware | The task runner reuses `LSLRecorder` for stream resolution, `OnlineRDetector` for beats, and the audio scheduling from `bench/pat_dryrun.py`, rather than re-running the offline detector over a window. Realized delays measured from the offline recording; single-tone synthesis; predictive scheduling for delays below 80 ms. Shared with the PAT-ECG work |
+| C. Task runner | The task, its parameters and configuration, instructions, an autopilot observer, a headless test and a user guide |
+| D. Exteroceptive validation | The same adaptive procedure on a tone and vibration (or light) stimulus with a known delay, as a screening condition and as a ground-truth check of the engine |
+
+## References
+
+Full entries for the citations on this page are on the
+[references page](references.md).

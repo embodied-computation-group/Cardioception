@@ -84,6 +84,24 @@ Languages
     danish_children
     french
 
+Heartbeat Synchrony Discrimination task
+=======================================
+
+Experimental. Only the estimation engine exists so far; see the
+:doc:`design document <hsd_design>`.
+
+Engine
+******
+
+.. currentmodule:: cardioception.HSD.psi
+
+.. autosummary::
+   :toctree: generated/HSD.psi
+
+    SynchronyPsi
+    gaussian_envelope
+    default_grids
+
 Recording devices
 -----------------
 

@@ -86,6 +86,13 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   detector, each moved to the R peak, and the task's trigger codes are also
   sent to an LSL marker stream, so a LabRecorder file holds the physiology
   and the events on one clock. Needs `pip install cardioception-toolbox[lsl]`.
+- `cardioception.HSD.psi.SynchronyPsi`, the estimation engine for an
+  experimental Heartbeat Synchrony Discrimination task: an adaptive Bayesian
+  version of the Brener, Liu and Ring method of constant stimuli that chooses
+  each R-wave-to-tone delay by expected information gain and estimates where
+  in the cardiac cycle the heartbeat is felt, and how sharply. Plain NumPy, no
+  PsychoPy or device; the task runner comes later. The design is documented
+  in `docs/source/hsd_design.md`.
 
 ### Fixed
 
