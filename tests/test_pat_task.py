@@ -782,12 +782,12 @@ def test_rating_follows_the_wheel(fake_psychopy, tmp_path, direction, expected):
     assert parameters["win"].mouseVisible is False
 
 
-def test_keyboard_rating_wheel_steps_one_per_notch(fake_psychopy):
-    from cardioception._rating import keyboard_rating
+def test_wheel_rating_steps_one_per_notch(fake_psychopy):
+    from cardioception.PAT._rating import wheel_rating
 
     win = FakeWindow()
     fake_psychopy.policy = lambda keyList: ["space"] if keyList else []
-    confidence, _, provided = keyboard_rating(
+    confidence, _, provided = wheel_rating(
         win=win,
         message=FakeStim(),
         low=1,
@@ -800,23 +800,6 @@ def test_keyboard_rating_wheel_steps_one_per_notch(fake_psychopy):
     )
     # Accepted on the sixth or seventh frame: three whole notches either way
     assert provided and confidence == 8
-
-
-def test_keyboard_rating_ignores_the_wheel_by_default(fake_psychopy):
-    from cardioception._rating import keyboard_rating
-
-    fake_psychopy.policy = lambda keyList: ["space"] if keyList else []
-    confidence, _, provided = keyboard_rating(
-        win=FakeWindow(),
-        message=FakeStim(),
-        low=1,
-        high=10,
-        labels=["a", "b"],
-        marker_start=5,
-        min_time=0.5,
-        accept_keys=("space",),
-    )
-    assert provided and confidence == 5
 
 
 def test_text_screens_ignore_the_wheel(fake_psychopy, tmp_path):

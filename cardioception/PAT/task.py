@@ -833,13 +833,13 @@ def confidenceRatingTask(
     """
     from psychopy import core, event, visual
 
-    from .._rating import keyboard_rating
+    from ._rating import wheel_rating
 
     low, high = parameters["confScale"]
     message = _EscapableText(parameters, parameters["texts"]["Confidence"])
 
     if parameters["device"] == "keyboard":
-        confidence, confidenceRT, provided = keyboard_rating(
+        confidence, confidenceRT, provided = wheel_rating(
             win=parameters["win"],
             message=message,
             low=low,
