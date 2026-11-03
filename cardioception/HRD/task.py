@@ -14,6 +14,10 @@ from .._resources import resource_filename
 from .._screens import AskFingerNumber, Practice, Screen
 from .._screens import fixation as fixation_cross
 from .._screens import text
+from .._session import confidence_rating as confidenceRatingTask
+from .._session import drain_for as _drain_for
+from .._session import show_screen as _show_screen
+from .._session import waitInput
 from .._triggers import fire
 from ..devices._beats import detect_beats
 from ._constants import (
@@ -559,32 +563,6 @@ def trial(
     )
 
 
-def _drain_for(parameters: dict, duration: float, *stims) -> None:
-    """Record for ``duration`` seconds while the window keeps redrawing.
-
-    What `Oximeter.read(duration=...)` does, without blocking: it busy-waits
-    inside systole for the whole window, so the screen freezes, PsychoPy
-    records no frame intervals, and a keypress cannot be seen until it ends.
-
-    Escape is honoured here too. The listening window is the longest stretch
-    of a trial in which the participant is asked to do nothing, so it is where
-    an experimenter is most likely to want to stop.
-    """
-    from psychopy import core, event
-
-    recorder = parameters["oxiTask"]
-    clock = core.Clock()
-    while clock.getTime() < duration:
-        recorder.readInWaiting()
-        for stim in stims:
-            stim.draw()
-        parameters["win"].flip()
-        if "escape" in event.getKeys(keyList=["escape"]):
-            logger.warning("User abort")
-            parameters["win"].close()
-            core.quit()
-
-
 def listen_to_heart(parameters: dict) -> HeartRateReading:
     """Record the participant's pulse and derive the rate the tone will match.
 
@@ -756,61 +734,6 @@ def listen_to_tone(parameters: dict) -> HeartRateReading:
     return HeartRateReading(bpm=listenBPM, bpm_arithmetic=listenBPM, started=started)
 
 
-def waitInput(parameters: dict):
-    """Wait for participant input before continue"""
-
-    from psychopy import core, event
-
-    # A synthetic participant advances at once. Whatever was drawn before this
-    # call has already been drawn and flipped, so the screen is still exercised.
-    if parameters.get("autopilot") is not None:
-        parameters["autopilot"].advance()
-        return
-
-    # A break is the longest the task ever waits, and it does not flip, so the
-    # per-frame hook does not reach here. Undrained, the driver buffer holds
-    # about 10.9 seconds -- 4096 bytes at 5 bytes a packet and 75 Hz -- and a
-    # participant resting for longer loses whatever overflows.
-    drain = (
-        parameters["oxiTask"].readInWaiting
-        if parameters.get("continuousRecording")
-        else None
-    )
-
-    if parameters["device"] == "keyboard":
-        # Without this, a key pressed earlier is still buffered and dismisses
-        # this screen before it is read.
-        event.clearEvents(eventType="keyboard")
-        while True:
-            if drain is not None:
-                drain()
-            keys = event.getKeys()
-            if "escape" in keys:
-                logger.warning("User abort")
-                parameters["win"].close()
-                core.quit()
-            elif parameters["startKey"] in keys:
-                break
-    elif parameters["device"] == "mouse":
-        mouse = parameters["myMouse"]
-        mouse.clickReset()
-        # clickReset resets click times, not button state, so a button still
-        # held from the previous screen reads as a fresh press. Wait for a
-        # release, then for a press.
-        armed = not any(mouse.getPressed())
-        while True:
-            if drain is not None:
-                drain()
-            buttons, armed = accept_press(mouse.getPressed(), armed)
-            if any(buttons):
-                break
-            keys = event.getKeys()
-            if "escape" in keys:
-                logger.warning("User abort")
-                parameters["win"].close()
-                core.quit()
-
-
 #: The tutorial, phase by phase, in the order participants meet them.
 #:
 #: A tutorial is the experiment in miniature: instruction screens interleaved
@@ -872,22 +795,18 @@ TUTORIAL = (
 def show_screen(parameters: dict, screen, prompt=None) -> list:
     """Draw one instruction screen and, unless told otherwise, wait.
 
-    Returns the stimuli it built, so a caller that keeps the screen up can
-    redraw the same objects rather than constructing them again.
+    :func:`cardioception._session.show_screen`, with ``text``, ``hold`` and
+    ``waitInput`` looked up in this module when it is called, so a test that
+    stubs them here reaches the tutorial's screens as it did before the move.
     """
-    stims = [
-        text(parameters, parameters["texts"][key], pos=pos) for key, pos in screen.texts
-    ]
-    if screen.image:
-        image = parameters[screen.image]
-        stims = [image] + stims if screen.image_first else stims + [image]
-    if screen.prompt and prompt is not None:
-        stims.append(prompt)
-
-    hold(parameters["win"], screen.seconds, *stims)
-    if screen.wait:
-        waitInput(parameters)
-    return stims
+    return _show_screen(
+        parameters,
+        screen,
+        prompt,
+        text_fn=text,
+        hold_fn=hold,
+        wait_fn=waitInput,
+    )
 
 
 def ask_finger_number(parameters: dict, step) -> None:
@@ -1195,173 +1114,3 @@ def responseDecision(
         decisionRT,
         isCorrect,
     )
-
-
-def confidenceRatingTask(
-    parameters: dict,
-) -> Tuple[Optional[float], Optional[float], bool, Optional[float]]:
-    """Confidence rating scale, using keyboard or mouse inputs.
-
-    Parameters
-    ----------
-    parameters : dict
-        Parameters dictionary.
-
-    """
-
-    from psychopy import core, visual
-
-    from .._rating import keyboard_rating
-
-    logger.info("...starting confidence rating.")
-
-    # Both rating loops flip for themselves rather than through hold(), so the
-    # window's per-frame hook does not reach either of them.
-    rating_drain = (
-        parameters["oxiTask"].readInWaiting
-        if parameters.get("continuousRecording")
-        else None
-    )
-
-    # Initialise default values
-    confidence, confidenceRT = None, None
-
-    pilot = parameters.get("autopilot")
-    if pilot is not None:
-        # The rating widget itself is covered by its own tests; here we only
-        # need a value of the right shape so the session can run unattended.
-        answer = pilot.rate(
-            *parameters["confidenceScale"].bounds,
-            min_time=parameters["minRatingTime"],
-            max_wait=parameters["maxRatingTime"],
-        )
-        if answer is None:
-            return None, None, False, time.time()
-        confidence, confidenceRT = answer
-        return confidence, confidenceRT, True, time.time()
-
-    if parameters["device"] == "keyboard":
-        message = text(parameters, parameters["texts"]["Confidence"], pos=(0, 0.2))
-
-        # Arrow keys move the marker, the down key confirms. This was a
-        # visual.RatingScale until PsychoPy 2026 moved that class into the
-        # psychopy-legacy plugin, where constructing one raises
-        # PluginRequiredError. Slider is the supported replacement and is what
-        # the mouse branch below already used, so both devices now show the
-        # same widget.
-        scale = parameters["confidenceScale"]
-        confidence, confidenceRT, ratingProvided = keyboard_rating(
-            on_frame=rating_drain,
-            win=parameters["win"],
-            message=message,
-            low=scale.low,
-            high=scale.high,
-            labels=scale.labels,
-            granularity=scale.granularity,
-            min_time=parameters["minRatingTime"],
-            max_time=parameters["maxRatingTime"],
-            label_height=parameters["textSize"] * 0.6,
-            rng=parameters["rng"],
-        )
-        if ratingProvided and confidenceRT is not None:
-            logger.info(
-                f"... Confidence level: {confidence}"
-                + f" with response time {round(confidenceRT, 2)} seconds"
-            )
-
-    elif parameters["device"] == "mouse":
-        # Use the mouse position to update the slider position
-        # The mouse movement is limited to a rectangle above the Slider
-        # To avoid being dragged out of the screen (in case of multi screens)
-        # and to avoid interferences with the Slider when clicking.
-        parameters["win"].mouseVisible = False
-        parameters["myMouse"].setPos((parameters["rng"].uniform(-0.25, 0.25), 0.2))
-        parameters["myMouse"].clickReset()
-        message = text(parameters, parameters["texts"]["Confidence"], pos=(0, 0.2))
-        slider = visual.Slider(
-            win=parameters["win"],
-            name="slider",
-            pos=(0, -0.2),
-            size=(0.7, 0.1),
-            labels=parameters["confidenceScale"].labels,
-            granularity=parameters["confidenceScale"].granularity,
-            ticks=parameters["confidenceScale"].ticks,
-            style=("rating"),
-            color="LightGray",
-            flip=False,
-            labelHeight=0.1 * 0.6,
-        )
-        slider.marker.size = (0.03, 0.03)
-        clock = core.Clock()
-        parameters["myMouse"].clickReset()
-        buttons, confidenceRT = parameters["myMouse"].getPressed(getTime=True)
-        # The button used to answer the decision is often still down here, and
-        # would submit the rating on the first frame past minRatingTime with
-        # whatever value the marker happened to hold.
-        armed = not any(buttons)
-
-        while True:
-            parameters["win"].mouseVisible = False
-            trialdur = clock.getTime()
-            buttons, confidenceRT = parameters["myMouse"].getPressed(getTime=True)
-            buttons, armed = accept_press(buttons, armed)
-
-            # Mouse position (keep in in the rectangle)
-            newPos = parameters["myMouse"].getPos()
-            if newPos[0] < -0.5:
-                newX = -0.5
-            elif newPos[0] > 0.5:
-                newX = 0.5
-            else:
-                newX = newPos[0]
-            if newPos[1] < 0.1:
-                newY = 0.1
-            elif newPos[1] > 0.3:
-                newY = 0.3
-            else:
-                newY = newPos[1]
-            parameters["myMouse"].setPos((newX, newY))
-
-            # Marker position from the mouse, expressed on whichever scale
-            # the session is using rather than assuming 0-100.
-            p = newX / 0.5
-            slider.markerPos = parameters["confidenceScale"].from_unit((p + 1) / 2)
-
-            # Check if response provided
-            if (buttons == [1, 0, 0]) & (trialdur > parameters["minRatingTime"]):
-                confidence, confidenceRT, ratingProvided = (
-                    slider.markerPos,
-                    clock.getTime(),
-                    True,
-                )
-                if confidenceRT is not None:
-                    logger.info(
-                        f"... Confidence level: {confidence}"
-                        + f" with response time {round(confidenceRT, 2)} seconds"
-                    )
-                # Change marker color after response provided
-                slider.marker.color = "green"
-                hold(parameters["win"], 0.2, slider, message)
-                break
-            elif trialdur > parameters["maxRatingTime"]:  # if too long
-                ratingProvided = False
-                confidenceRT = parameters["myMouse"].clickReset()
-
-                # Text feedback if no rating provided
-                message = text(
-                    parameters,
-                    parameters["texts"]["tooLate"],
-                    pos=(0.0, -0.2),
-                    color="red",
-                )
-                hold(parameters["win"], 0.5, message)
-                break
-            if rating_drain is not None:
-                rating_drain()
-            slider.draw()
-            message.draw()
-            parameters["win"].flip()
-    ratingEndTrigger = time.time()
-    parameters["win"].flip()
-
-    return confidence, confidenceRT, ratingProvided, ratingEndTrigger

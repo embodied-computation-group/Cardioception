@@ -42,6 +42,34 @@ class TestTriggerRegistry(unittest.TestCase):
         self.assertIsNone(triggers["trialStop"])
 
 
+class TestCustomEvents(unittest.TestCase):
+    """A second task registers its own events, not HRD's."""
+
+    EVENTS = ("trialStart", "trainStart", "trainStop")
+
+    def test_defaults_cover_the_custom_events_only(self):
+        self.assertEqual(
+            default_triggers(events=self.EVENTS),
+            {"trialStart": None, "trainStart": None, "trainStop": None},
+        )
+
+    def test_a_partial_mapping_is_filled_in_from_the_custom_events(self):
+        start = lambda: None  # noqa: E731
+        triggers = validate({"trainStart": start}, events=self.EVENTS)
+        self.assertEqual(set(triggers), set(self.EVENTS))
+        self.assertIs(triggers["trainStart"], start)
+        self.assertIsNone(triggers["trainStop"])
+
+    def test_an_hrd_event_is_unknown_to_the_custom_set(self):
+        with self.assertRaises(ValueError) as ctx:
+            validate({"listeningStart": lambda: None}, events=self.EVENTS)
+        self.assertIn("listeningStart", str(ctx.exception))
+        self.assertIn("trainStart", str(ctx.exception))
+
+    def test_none_gives_the_custom_defaults(self):
+        self.assertEqual(set(validate(None, events=self.EVENTS)), set(self.EVENTS))
+
+
 class TestNoBareLookupsRemain(unittest.TestCase):
     def test_no_statement_in_the_package_evaluates_a_value_and_discards_it(self):
         """A regression guard against the original defect returning.
