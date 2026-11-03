@@ -84,6 +84,7 @@ hidden:
 Installation <installation.md>
 Guide <user_guide.md>
 Theory <measuring.md>
+PAT <pat.md>
 Tutorials <tutorials/index.md>
 API <api.rst>
 Cite <cite.md>
