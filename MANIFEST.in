@@ -12,3 +12,4 @@ include cardioception/HBC/Sounds/*
 # Participant-facing text. Without these the task starts and then fails at the
 # first instruction screen, so an installed wheel must carry them.
 include cardioception/HRD/texts/*.yaml
+include cardioception/HSD/texts/*.yaml

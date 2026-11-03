@@ -31,6 +31,18 @@ The rules, per beat:
 - A tone the device reports no onset for (NaN) does not count: another beat
   is tried in its place.
 
+Beats polled outside a train, by whoever keeps the source current between
+trials, are passed to :meth:`TrainScheduler.observe`. They then still count
+for the RR interval of the next beat, and are kept with the next train's
+beats, with status ``"between"``.
+
+Markers follow the field names of the PAT dry run, so
+``bench/pat_dryrun_report.py`` can read an HSD recording: every ``beat``
+carries ``commit_time`` (when it was polled), and the tones carry
+``anchor="real"`` (every HSD tone is locked to a detected R-wave),
+``phase_deg`` and ``delay_ms``, the intended position of the tone after its
+R-wave.
+
 The train ends when ``n_tones`` tones have played, after ``max_beats`` beats,
 or at the deadline. The deadline is ``timeout_s``, or, when the period is
 known at the start, long enough for ``max_beats + 1`` beats plus the delay if
@@ -188,10 +200,13 @@ class TrainResult:
     #: Clock times the train started and ended.
     started: Optional[float] = None
     ended: Optional[float] = None
-    #: Every beat polled during the train: ``r_time``, ``period``, ``seen``
-    #: (clock time it was polled) and ``status`` (``"tone"``, ``"skipped"``,
-    #: ``"stale"`` for an R-wave before the train started, ``"extra"`` for one
-    #: after the train had what it needed).
+    #: Every beat polled during the train, and before it since the previous
+    #: train: ``r_time``, ``period``, ``rr`` (seconds since the beat before,
+    #: ``None`` for the first), ``seen`` (clock time it was polled) and
+    #: ``status`` (``"tone"``, ``"skipped"``, ``"between"`` for one polled
+    #: between trains through :meth:`TrainScheduler.observe`, ``"stale"`` for
+    #: an R-wave before the train started, ``"extra"`` for one after the train
+    #: had what it needed).
     beats_seen: List[Dict[str, Any]] = field(default_factory=list)
 
     @property
@@ -205,6 +220,17 @@ class TrainResult:
 
 def _mean(values: Sequence[float]) -> float:
     return float(sum(values) / len(values))
+
+
+def _phase_deg(delay_s: Optional[float], period: Optional[float]) -> float:
+    """A delay after the R-wave as degrees of the period, NaN without one.
+
+    The intended position of the tone, as the PAT dry run reports it: the
+    report compares it with the phase measured against the offline R peaks.
+    """
+    if delay_s is None or not period:
+        return math.nan
+    return 360.0 * delay_s / period
 
 
 class TrainScheduler:
@@ -228,7 +254,7 @@ class TrainScheduler:
     marker :
         Optional ``marker(kind, stamp, **fields)`` for the JSON marker stream.
         Kinds are ``beat``, ``tone_scheduled``, ``tone_onset`` and
-        ``tone_skipped``. Bind the trial number into it if the stream needs
+        ``tone_skipped``, with the field names of the PAT dry run. Bind the trial number into it if the stream needs
         one.
     on_frame :
         Optional callable run once after each loop pass that scheduled a tone,
@@ -261,10 +287,51 @@ class TrainScheduler:
         self.on_frame = on_frame
         # Kept across trains so the first beat of a train still has an RR.
         self._last_r: Optional[float] = None
+        # Beats observed since the last train, for the next one's record.
+        self._between: List[Dict[str, Any]] = []
 
     def _mark(self, kind: str, stamp: float, **fields: Any) -> None:
         if self.marker is not None:
             self.marker(kind, stamp, **fields)
+
+    def _see(self, beat: BeatEvent, status: str) -> Dict[str, Any]:
+        """Record one polled beat, update the last R-wave and mark it."""
+        now = self.clock()
+        period = beat.period if beat.period is not None else self.source.period
+        rr = beat.r_time - self._last_r if self._last_r is not None else None
+        self._last_r = beat.r_time
+        seen: Dict[str, Any] = {
+            "r_time": beat.r_time,
+            "period": period,
+            "rr": rr,
+            "seen": now,
+            "status": status,
+        }
+        self._mark(
+            "beat", now, r_time=beat.r_time, rr=rr, period=period, commit_time=now
+        )
+        return seen
+
+    def observe(self, beats: Sequence[BeatEvent]) -> List[Dict[str, Any]]:
+        """Take beats polled from the source outside :meth:`run`.
+
+        Whoever keeps the source current between trains passes what it polls
+        here, so that the first beat of the next train has the RR interval to
+        the beat before it, and so that no beat is lost from the record. The
+        beats are marked, kept with status ``"between"``, and added to the
+        ``beats_seen`` of the next train. Returns their records.
+        """
+        records = [self._see(beat, "between") for beat in beats]
+        self._between.extend(records)
+        return records
+
+    def take_between(self) -> List[Dict[str, Any]]:
+        """Beats observed since the last train that no train has taken yet.
+
+        Clears them. For the end of a session, so the last beats are kept.
+        """
+        records, self._between = self._between, []
+        return records
 
     def run(
         self,
@@ -304,6 +371,7 @@ class TrainScheduler:
         self.source.start()
         started = self.clock()
         result = TrainResult(delay=float(delay), axis=axis, started=started)
+        result.beats_seen.extend(self.take_between())
 
         # Requests that cannot be met whatever the beats do.
         refused: Optional[str] = None
@@ -340,18 +408,9 @@ class TrainScheduler:
         while True:
             scheduled_now = False
             for beat in self.source.poll():
-                now = self.clock()
-                period = beat.period if beat.period is not None else self.source.period
-                rr = beat.r_time - self._last_r if self._last_r is not None else None
-                self._last_r = beat.r_time
-                seen: Dict[str, Any] = {
-                    "r_time": beat.r_time,
-                    "period": period,
-                    "seen": now,
-                    "status": "extra",
-                }
+                seen = self._see(beat, "extra")
+                now, period, rr = seen["seen"], seen["period"], seen["rr"]
                 result.beats_seen.append(seen)
-                self._mark("beat", now, r_time=beat.r_time, rr=rr, period=period)
 
                 if beat.r_time < started:
                     seen["status"] = "stale"
@@ -402,9 +461,10 @@ class TrainScheduler:
                     r_time=record.r_time,
                     period=period,
                     target=record.target,
-                    anchor="r",
+                    anchor="real",
                     lead=record.lead,
                     delay_ms=delay_s * 1000.0,
+                    phase_deg=_phase_deg(delay_s, period),
                     fraction=delay_s / period if period else None,
                 )
 
@@ -446,7 +506,7 @@ class TrainScheduler:
             r_time=record.r_time,
             period=record.period,
             target=record.target,
-            anchor="r",
+            anchor="real",
             reason=reason,
         )
 
@@ -467,6 +527,9 @@ class TrainScheduler:
             else:
                 record.onset = float(onset)
                 record.realized = record.onset - record.r_time
+            intended = (
+                record.target - record.r_time if record.target is not None else None
+            )
             self._mark(
                 "tone_onset",
                 record.onset if record.onset is not None else 0.0,
@@ -474,8 +537,10 @@ class TrainScheduler:
                 r_time=record.r_time,
                 target=record.target,
                 onset=record.onset,
-                anchor="r",
+                anchor="real",
                 realized=record.realized,
+                delay_ms=intended * 1000.0 if intended is not None else math.nan,
+                phase_deg=_phase_deg(intended, record.period),
             )
         return failed
 

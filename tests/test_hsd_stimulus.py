@@ -474,7 +474,7 @@ class TestHooks(unittest.TestCase):
             kinds, {"beat", "tone_scheduled", "tone_onset", "tone_skipped"}
         )
         expected = {
-            "beat": {"r_time", "rr", "period"},
+            "beat": {"r_time", "rr", "period", "commit_time"},
             "tone_scheduled": {
                 "r_time",
                 "period",
@@ -482,17 +482,33 @@ class TestHooks(unittest.TestCase):
                 "anchor",
                 "lead",
                 "delay_ms",
+                "phase_deg",
                 "fraction",
             },
-            "tone_onset": {"r_time", "target", "onset", "anchor"},
+            "tone_onset": {
+                "r_time",
+                "target",
+                "onset",
+                "anchor",
+                "delay_ms",
+                "phase_deg",
+            },
             "tone_skipped": {"r_time", "period", "target", "anchor", "reason"},
         }
         for kind, stamp, fields in markers:
             self.assertTrue(expected[kind] <= set(fields), kind)
             json.dumps(fields)
-            if kind == "tone_scheduled":
-                self.assertEqual(fields["anchor"], "r")
+            if "anchor" in fields:
+                # The report summarizes "real" and "predicted" anchors only.
+                self.assertEqual(fields["anchor"], "real")
+            if kind == "beat":
+                # The poll time, from which the report takes the detection lag.
+                self.assertEqual(fields["commit_time"], stamp)
+                self.assertGreaterEqual(fields["commit_time"], fields["r_time"])
+            if kind in ("tone_scheduled", "tone_onset"):
                 self.assertAlmostEqual(fields["delay_ms"], 80.0)
+                # The intended phase: 80 ms of a 1 s period.
+                self.assertAlmostEqual(fields["phase_deg"], 28.8)
             if kind == "tone_onset":
                 self.assertEqual(stamp, fields["onset"])
             if kind == "tone_skipped":
@@ -506,6 +522,21 @@ class TestHooks(unittest.TestCase):
         result = scheduler.run(200.0, "absolute", min_delay_s=0.08)
         self.assertLessEqual(len(calls), result.n_delivered)
         self.assertGreater(len(calls), 0)
+
+    def test_phase_deg_is_nan_without_a_period(self):
+        """A tone on a beat with no anticipated period has no intended phase."""
+        markers = []
+        _, _, _, scheduler = setup(
+            BEATS,
+            period=None,
+            marker=lambda kind, stamp, **f: markers.append((kind, f)),
+        )
+        scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        onsets = [f for kind, f in markers if kind == "tone_onset"]
+        self.assertGreater(len(onsets), 0)
+        for fields in onsets:
+            self.assertTrue(math.isnan(fields["phase_deg"]))
+            self.assertAlmostEqual(fields["delay_ms"], 200.0)
 
     def test_fakes_satisfy_the_protocols(self):
         """The fakes stand in for the real classes, so they meet the protocols."""
@@ -687,3 +718,55 @@ class TestOutcome(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestObserve(unittest.TestCase):
+    def test_beats_between_trains_keep_the_rr_and_the_record(self):
+        """Beats polled between trains are kept, and give the next beat its RR."""
+        markers = []
+        clock, source, _, scheduler = setup(
+            BEATS,
+            n_tones=2,
+            marker=lambda kind, stamp, **f: markers.append((kind, f)),
+        )
+        first = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        self.assertEqual(first.n_delivered, 2)
+        # A rating gap of three beats, during which the task polls the source.
+        clock.now += 3.0
+        between = scheduler.observe(source.poll())
+        self.assertEqual(len(between), 3)
+        self.assertEqual({b["status"] for b in between}, {"between"})
+        for b in between:
+            self.assertAlmostEqual(b["rr"], 1.0)
+        second = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        self.assertEqual(second.beats_seen[: len(between)], between)
+        first_of_train = next(
+            b for b in second.beats_seen if b["status"] in ("tone", "skipped")
+        )
+        self.assertAlmostEqual(first_of_train["rr"], 1.0)
+        beat_markers = [f for kind, f in markers if kind == "beat"]
+        self.assertEqual(
+            len(beat_markers), len(first.beats_seen) + len(second.beats_seen)
+        )
+
+    def test_without_observe_the_first_rr_spans_the_gap(self):
+        """The case observe exists for: discarded beats stretch the next RR."""
+        clock, source, _, scheduler = setup(BEATS, n_tones=2)
+        scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        clock.now += 3.0
+        source.poll()  # polled and thrown away
+        second = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        first_of_train = next(
+            b for b in second.beats_seen if b["status"] in ("tone", "skipped")
+        )
+        self.assertAlmostEqual(first_of_train["rr"], 4.0)
+
+    def test_take_between_returns_and_clears(self):
+        """Beats observed after the last train can still be collected."""
+        clock, source, _, scheduler = setup(BEATS, n_tones=1)
+        scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        clock.now += 2.0
+        scheduler.observe(source.poll())
+        left = scheduler.take_between()
+        self.assertEqual(len(left), 2)
+        self.assertEqual(scheduler.take_between(), [])
