@@ -109,3 +109,36 @@ as in `.context/pat-ecg/dryrun-contract.md`: `clock`, `beat`, `tone_scheduled`,
 `tone_onset`. One addition: `beat` also carries `commit_sample_time`, the
 timestamp of the sample the detector committed on, so the lag can be split into
 detector and transport.
+
+## Live PAT run
+
+Runs the real task (`cardioception.PAT`) on the hub's ECG and records the ECG
+with the task's `PAT` marker stream in one XDF. Hub on, ECG on, physio app
+closed:
+
+```
+.venv\Scripts\python.exe bench\pat_live_launch.py --participant P01 --session 1
+```
+
+It starts the hub bridge, opens the ECG (`--channel`, default `ECG1`), sets the
+task up, starts LabRecorderCLI on `PLUX` and `PAT`
+(`bench\data\pat_live_<participant>_<session>_<stamp>.xdf`), runs the task in
+this window, and on the way out (done, Esc, Ctrl+C or an error) stops the
+recorder and the bridge and prints the XDF path and the task's result folder
+(`data\<participant><session>\` under the current folder).
+
+Options: `--practice 2` and `--trials 6` (defaults), `--mode relative|absolute`,
+`--windowed`, `--screen 1`, `--no-tutorial`, `--language danish`, `--no-bridge`.
+
+The same report reads it:
+
+```
+.venv\Scripts\python.exe bench\pat_dryrun_report.py <xdf> --markers PAT --channel ECG1 --bridge-lag 0.05
+```
+
+The task aims every tone `latencyBias` (0.05 s) before the dial's phase, to make
+up for the delays the timestamps do not show; `--bridge-lag 0.05` scores it on
+the same footing. Without it, true phases read about 0.05 s early. The task's
+beat markers have no `commit_time`, so the lag is taken from the marker
+timestamp; it includes the wait for the next frame, about 8 ms more than in the
+dry run.

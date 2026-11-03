@@ -19,7 +19,16 @@ them the report gives:
 
 A figure is saved next to the XDF as ``<name>_report.png``.
 
-A file without ``PATdryrun`` markers (any recording with a ``PLUX`` ECG) gets
+The same works on a live run of the task (``bench/pat_live_launch.py``): its
+marker stream is ``PAT`` (``--markers PAT``, also picked up on its own when
+there is no ``PATdryrun``). Its beat markers carry no ``commit_time``, so the
+marker's timestamp is used; only tones (not vibrations) are scored; marker
+kinds the report does not use (``trial_start``, ``dial``, ``press``, ...) are
+counted and otherwise skipped. The task aims each tone ``latencyBias`` (0.05 s)
+before the phase on the dial, to make up for delays the timestamps cannot see;
+``--bridge-lag 0.05`` puts the report on the same footing.
+
+A file without markers (any recording with a ``PLUX`` ECG) gets
 the detector part only: the online detector is replayed over the recorded
 signal, and its lag is then the detector's own, without transport.
 
@@ -112,10 +121,14 @@ def match(online: np.ndarray, offline: np.ndarray, tolerance: float) -> dict:
 
 def tone_table(markers: List[dict], r_peaks: np.ndarray) -> List[dict]:
     """One row per reported onset, with the true phase from the offline R peaks."""
-    scheduled = {m["target"]: m for m in markers if m["kind"] == "tone_scheduled"}
+    scheduled = {
+        m.get("target"): m for m in markers if m.get("kind") == "tone_scheduled"
+    }
     rows = []
     for m in markers:
-        if m["kind"] != "tone_onset" or m.get("onset") is None:
+        if m.get("kind") != "tone_onset" or m.get("sound", "tone") != "tone":
+            continue
+        if m.get("onset") is None or m.get("phase_deg") is None:
             continue
         sched = scheduled.get(m["target"], {})
         onset = m["onset"]
@@ -126,7 +139,7 @@ def tone_table(markers: List[dict], r_peaks: np.ndarray) -> List[dict]:
         true_phase = 360.0 * (onset - prev_r) / (next_r - prev_r)
         rows.append(
             {
-                "anchor": sched.get("anchor", "unknown"),
+                "anchor": m.get("anchor") or sched.get("anchor", "unknown"),
                 "phase_deg": float(m["phase_deg"]),
                 "target": m["target"],
                 "onset": onset,
@@ -197,12 +210,27 @@ def report(args: argparse.Namespace) -> int:
 
     markers: List[dict] = []
     marker_stream = find_stream(streams, args.markers)
+    if marker_stream is None and args.markers == "PATdryrun":
+        marker_stream = find_stream(streams, "PAT")
     if marker_stream is not None:
-        for sample in marker_stream["time_series"]:
+        name = marker_stream["info"]["name"][0]
+        for sample, stamp in zip(
+            marker_stream["time_series"], marker_stream["time_stamps"]
+        ):
             try:
-                markers.append(json.loads(sample[0]))
+                marker = json.loads(sample[0])
             except (ValueError, TypeError):
                 continue
+            if isinstance(marker, dict) and "kind" in marker:
+                marker["_stamp"] = float(stamp)
+                markers.append(marker)
+        kinds: Dict[str, int] = {}
+        for marker in markers:
+            kinds[marker["kind"]] = kinds.get(marker["kind"], 0) + 1
+        print(
+            f"Markers ({name}): "
+            + ", ".join(f"{k} {n}" for k, n in sorted(kinds.items()))
+        )
     beats = [m for m in markers if m.get("kind") == "beat"]
     clock = [m for m in markers if m.get("kind") == "clock"]
     if clock:
@@ -211,7 +239,9 @@ def report(args: argparse.Namespace) -> int:
     if beats:
         source = "online, from the beat markers"
         r_online = np.array([b["r_time"] for b in beats])
-        commit = np.array([b["commit_time"] for b in beats])
+        # The task's beat markers have no commit_time: they are pushed, and
+        # stamped, when the beat is known.
+        commit = np.array([b.get("commit_time", b["_stamp"]) for b in beats])
         sample_commit = np.array(
             [b.get("commit_sample_time", np.nan) for b in beats], dtype=float
         )
