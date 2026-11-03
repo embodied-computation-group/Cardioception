@@ -18,9 +18,11 @@ sensation lies and how sharp it is.
 ```{note}
 This is a design document for an experimental task. The estimation engine,
 `cardioception.HSD.psi`, exists and is tested, and its
-[simulation study](#simulation-study) has run. The task runner, the hardware
-timing and the participant instructions do not exist yet; see
-[what comes next](#what-comes-next).
+[simulation study](#simulation-study) has run. The task runner
+(`cardioception.HSD.parameters` and `cardioception.HSD.task`), its English
+instructions and `wrappers/hsd_lsl.py` exist and run headlessly against a
+virtual heart and against a synthetic ECG over LSL. The hardware dry run has
+not been done yet; see [what comes next](#what-comes-next).
 ```
 
 ## Why a new task
@@ -238,15 +240,16 @@ be scheduled 50 ms ahead, so the shortest delay that can be realized
 reactively is about 80 ms. Shorter delays are possible only by scheduling
 predictively from the anticipated interbeat interval (the mean of the last
 three RR intervals). That adds the beat-to-beat variability of the heart
-period to the delay as jitter, and is left for phase B. A sensation earlier
+period to the delay as jitter, and is not implemented. A sensation earlier
 than 80 ms can still be located, but only from the falling side of the
 envelope.
 
 The PLUX Bluetooth transport adds a further 20 to 40 ms that does not appear
-in the LSL timestamps, because those are arrival times. It does not bias the
-realized delays once they are measured from the offline recording, which is
-how the posterior is updated, but it does mean the online timestamps are late
-by that amount.
+in the LSL timestamps, because those are arrival times. The runner measures
+each realized delay online against the stamped R-wave, so that lag would
+understate the true R-to-tone interval; the `bridgeLag` setting adds it back
+before the posterior is updated, and both the raw and corrected values are
+saved. The LabRecorder file remains the ground truth for checking it.
 
 **Stopping rule candidates.** Stop when the 95 percent credible interval on
 `mu` is at most a target width, with a minimum and a maximum number of trials.
@@ -280,7 +283,9 @@ with a per-person cap is a choice for the task, and is left open here.
 
 ## Trial structure and saved data
 
-This section describes the planned task. It is not implemented yet.
+This section describes the task as `cardioception.HSD.task` runs it. The
+[user guide](user_guide.md#heartbeat-synchrony-discrimination) lists the
+files a session writes.
 
 1. Five tones, each at the chosen delay after a detected R-wave.
 2. A "synchronous" or "not synchronous" judgement on the keyboard.
@@ -439,11 +444,11 @@ trials without exploration and 5 percent with it.
 
 ## What comes next
 
-| Phase | Content |
-|---|---|
-| B. Hardware | The task runner reuses `LSLRecorder` for stream resolution, `OnlineRDetector` for beats, and the audio scheduling from `bench/pat_dryrun.py`, rather than re-running the offline detector over a window. Realized delays measured from the offline recording; single-tone synthesis; predictive scheduling for delays below 80 ms. Shared with the PAT-ECG work |
-| C. Task runner | The task, its parameters and configuration, instructions, an autopilot observer, a headless test and a user guide |
-| D. Exteroceptive validation | The same adaptive procedure on a tone and vibration (or light) stimulus with a known delay, as a screening condition and as a ground-truth check of the engine |
+| Phase | Status | Content |
+|---|---|---|
+| B. Task runner | Implemented | The task, its parameters and configuration, English instructions, an autopilot observer, the train scheduler with both stimulus axes, a headless test on a virtual heart, an LSL test on a synthetic ECG through `LSLRecorder` and `OnlineRDetector`, the wrapper and a user guide section |
+| B. Hardware dry run | Pending | The LSL beat source and PsychPortAudio tone player moved from the PAT task into `cardioception.devices`; the Plux-to-LSL bridge installed on the test desktop; 15 trials on a real ECG, with realized minus requested delay within 5 ms (median) and 15 ms (95th percentile) against the stamped R-wave, and the measured transport lag entered as `bridgeLag` |
+| D. Exteroceptive validation | Not started | The same adaptive procedure on a tone and vibration (or light) stimulus with a known delay, as a screening condition and as a ground-truth check of the engine |
 
 ## References
 

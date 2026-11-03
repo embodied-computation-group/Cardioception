@@ -170,6 +170,56 @@ The two never matched, no published Cardioception data used it, and it could
 not estimate the slope. Use Psi.
 ```
 
+### Heartbeat Synchrony Discrimination
+
+```{admonition} Experimental
+:class: warning
+
+The Heartbeat Synchrony Discrimination task (HSD) is new and has not yet been
+run on hardware. Its timing on a real ECG stream is still to be checked, and
+its stopping rule is provisional. See the [design document](hsd_design.md).
+```
+
+The HSD is an adaptive version of the heartbeat detection task of Brener, Liu and Ring {cite:p}`1993:brener`. Each trial plays five tones, each a chosen delay after a detected R-wave, and the participant answers with the keyboard whether the tones felt synchronous with their heartbeat (UP) or not (DOWN), then rates their confidence. After each answer the next delay is chosen where it is most informative about where in the cardiac cycle the heartbeat is felt (`mu`) and how sharply (`sigma`). The session stops once the credible interval of `mu` is narrow enough, after at least `minTrials` trials, or after `nTrials`.
+
+The delay can be set on one of two axes, chosen per session with `axis`:
+
+- `axis="absolute"` (the default): milliseconds after the R-wave, from 80 to 600 ms. The longest delay on a given trial is limited to just under three quarters of the current interbeat interval, so a tone is not heard as belonging to the next beat.
+- `axis="phase"`: a fraction of the anticipated interbeat interval, so the delay scales with heart rate.
+
+The task reads the ECG from an LSL stream. `wrappers/hsd_lsl.py` asks for the participant, the session, the stream and channel (`PLUX`, `ECG2`), the axis and the language, then runs the tutorial and the task:
+
+```python
+from cardioception.devices import LSLRecorder
+from cardioception.HSD.parameters import getParameters
+from cardioception.HSD.task import run
+
+recorder = LSLRecorder(name="PLUX", channel="ECG2", marker_stream="HSD")
+parameters = getParameters(
+    participant="Subject_01", session="HSD", setup="behavioral",
+    axis="absolute", recorder=recorder)
+run(parameters, confidenceRating=True, runTutorial=True)
+```
+
+```{important}
+The beats are found online in the ECG and the tones are scheduled on the audio device by two classes, an LSL beat source and a PsychPortAudio tone player, that are shared with the phase adjustment task and are being moved into `cardioception.devices`. Until that move lands, `setup="behavioral"` raises an `ImportError` that says so. A script can still run the task by passing its own `beat_source=` and `tone_player=` to `getParameters`, which is what the headless tests do.
+```
+
+Every clock time the task records is on one clock, `pylsl.local_clock` when pylsl is installed, which the beat source, the tone player and the LSL marker stream share. The run directory holds:
+
+| File | Contents |
+|---|---|
+| `*_final.txt` | One row per trial: requested and realized delay, tones delivered and skipped, decision, confidence, the posterior summary after the trial and the clock times |
+| `*_tones.txt` | One row per beat a tone was tried on: R-wave time, target, onset and realized delay |
+| `*_beats.txt` | Every beat detected during the session, including those between trials |
+| `*_posterior.npy` | The posterior after each trial, trials by grid |
+| `*_engine.json` | The engine's state and trial history, enough to re-analyze the session |
+| `manifest.json` | The task, axis, configuration, clock and devices, written before the first trial |
+
+The run directory holds no ECG. The beat source is the only reader of the LSL stream, so the task keeps no copy of the signal: record the ECG stream and the `HSD` marker stream with LabRecorder, and the XDF is the session's recording. The HSD writes no trigger codes into a `Channel_0` as the HRD does. Its triggers go to the `HSD` marker stream as JSON instead, one string per marker (for example `{"kind": "trigger", "name": "TRIAL_START", "code": 1, "trial": 0}`), together with a marker for every beat, every tone scheduled, played or skipped, and every decision and rating. The beat and tone markers use the field names of the phase adjustment task's dry run.
+
+The realized delays are measured against the R-wave as stamped on the LSL stream, which trails the true R-wave by the transport lag of the device. Set `TaskConfig(bridgeLag=...)` once that lag has been measured, and the engine is updated with the corrected value. As for the HRD, the posterior summaries in `final.txt` are a monitoring aid, not an analysis.
+
 ### Creating a shortcut (Windows)
 
 Once you have adapted the scripts, you can create a shortcut (on the Desktop, say) so the task starts with a click, without any coding or command line interaction.

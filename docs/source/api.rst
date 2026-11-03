@@ -87,8 +87,30 @@ Languages
 Heartbeat Synchrony Discrimination task
 =======================================
 
-Experimental. Only the estimation engine exists so far; see the
+Experimental, not yet run on hardware; see the
 :doc:`design document <hsd_design>`.
+
+Parameters
+**********
+
+.. currentmodule:: cardioception.HSD.parameters
+
+.. autosummary::
+   :toctree: generated/HSD.parameters
+
+    getParameters
+
+Scripts
+*******
+
+.. currentmodule:: cardioception.HSD.task
+
+.. autosummary::
+   :toctree: generated/HSD.task
+
+    run
+    trial
+    tutorial
 
 Engine
 ******

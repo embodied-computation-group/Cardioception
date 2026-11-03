@@ -93,6 +93,17 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   in the cardiac cycle the heartbeat is felt, and how sharply. Plain NumPy, no
   PsychoPy or device; the task runner comes later. The design is documented
   in `docs/source/hsd_design.md`.
+- The Heartbeat Synchrony Discrimination task runner, experimental:
+  `cardioception.HSD.parameters.getParameters` and `cardioception.HSD.task.run`,
+  with English instructions, a tutorial with three practice trials, both
+  stimulus axes (ms after the R-wave, or a fraction of the interbeat
+  interval), an adaptive stopping rule, and `wrappers/hsd_lsl.py`. Each
+  trial's train is scheduled on the R-waves of an LSL ECG stream and the
+  engine is updated with the delay actually realized. A session writes
+  `final`, `tones`, `beats`, the posterior per trial and the engine state.
+  `setup="behavioral"` needs the LSL beat source and tone player that are
+  being moved into `cardioception.devices`, and raises until they land; the
+  task has not yet been run on hardware.
 
 ### Fixed
 
