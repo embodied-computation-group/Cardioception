@@ -1,10 +1,12 @@
 # Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
 """The PsychoPy side of the Phase Adjustment Task.
 
-During a trial the participant sees a fixation cross and nothing else. The
-mouse wheel moves the tones relative to the heartbeat through
-``parameters["engine"]`` (see :mod:`cardioception.PAT.engine`), which is polled
-on every frame and does all the timing. Space ends the trial, then comes the
+During a trial the participant sees a fixation cross inside a ring whose
+pointer turns with the mouse wheel, from twelve o'clock at every trial start,
+and flashes with each beep. The wheel moves the beeps relative to the
+heartbeat through ``parameters["engine"]`` (see
+:mod:`cardioception.PAT.engine`), which is polled on every frame and does all
+the timing. Space ends the trial, then comes the
 confidence rating. The experimenter gets one status line per second in the
 console.
 """
@@ -12,6 +14,7 @@ console.
 import json
 import os
 import time
+from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
@@ -355,14 +358,111 @@ def _fmt(value: Any) -> str:
         return str(value)
 
 
+@dataclass
+class Stage:
+    """One screen of the dial loop.
+
+    Parameters
+    ----------
+    text : str | None
+        Shown above the dial. `None` in real trials, which show only the dial.
+    wheel : bool
+        Whether the wheel moves the beeps in this stage.
+    ready : callable
+        Takes the loop state and says whether space may end the stage. The
+        state holds `elapsed` (seconds in this stage), `tones` (beeps played in
+        this stage) and `notches` (net notches in this stage, positive later).
+    footer : str | None
+        Shown below the dial once the stage is ready.
+    """
+
+    text: Optional[str] = None
+    wheel: bool = True
+    ready: Callable[[dict], bool] = field(default=lambda state: True)
+    footer: Optional[str] = None
+
+
+class _Dial:
+    """A ring with a pointer around the fixation cross.
+
+    The pointer starts at twelve o'clock and turns by the same angle as the
+    phase, so it shows the change since the trial began and nothing about the
+    phase itself. It brightens for `flashDuration` after each beep.
+    """
+
+    RING = "#a8a8a8"
+    POINTER = "#303030"
+    FLASH = "white"
+
+    def __init__(self, parameters: dict):
+        from psychopy import visual
+
+        win = parameters["win"]
+        self.show = parameters["showDial"]
+        self.radius = parameters["dialRadius"]
+        self.angle = 0.0
+        self.fixation = visual.GratingStim(
+            win=win, mask="cross", size=0.1, pos=[0, 0], sf=0
+        )
+        self.ring = visual.Circle(
+            win,
+            radius=self.radius,
+            edges=128,
+            lineColor=self.RING,
+            fillColor=None,
+            lineWidth=3,
+        )
+        self.pointer = visual.Rect(
+            win, width=0.012, height=0.07, fillColor=self.POINTER, lineColor=None
+        )
+        self.dot = visual.Circle(
+            win, radius=0.016, edges=32, fillColor=self.FLASH, lineColor=None
+        )
+
+    def turn(self, degrees: float) -> None:
+        self.angle = (self.angle + degrees) % 360.0
+
+    def _at(self, r: float) -> Tuple[float, float]:
+        theta = np.radians(self.angle)  # clockwise from twelve o'clock
+        return float(r * np.sin(theta)), float(r * np.cos(theta))
+
+    def draw(self, dial: bool = True, flash: bool = False) -> None:
+        if self.show and dial:
+            self.ring.draw()
+            self.pointer.pos = self._at(self.radius - 0.035)
+            self.pointer.ori = self.angle
+            self.pointer.fillColor = self.FLASH if flash else self.POINTER
+            self.pointer.draw()
+            if flash:
+                self.dot.pos = self._at(self.radius)
+                self.dot.draw()
+        self.fixation.draw()
+
+
+def _periodS(engine: Any, trialNumber: int) -> float:
+    """The latest period the engine used in this trial, 1 s before any."""
+    for tone in reversed(engine.tones):
+        if tone.get("Trial") != trialNumber:
+            break
+        if tone.get("PeriodS"):
+            return float(tone["PeriodS"])
+    return 1.0
+
+
 def dialLoop(
     parameters: dict,
     trialNumber: int,
     block: str,
     startPhase: float,
-    message: Optional[str] = None,
+    stages: Optional[List[Stage]] = None,
 ) -> Dict[str, Any]:
-    """Run the engine and the dial until the participant presses space.
+    """Run the engine and the dial until space ends the last stage.
+
+    A trial is one stage: the dial and the fixation cross, and space ends it
+    after `minTrialTime`. The tutorial is several stages on the same beeps.
+    Until the first beep has played, the screen says that the task is
+    listening for the heartbeat, the dial is hidden and the wheel does
+    nothing.
 
     Parameters
     ----------
@@ -373,9 +473,9 @@ def dialLoop(
     block : str
         Shown in the experimenter status line.
     startPhase : float
-        Start phase of the dial, in degrees.
-    message : str | None
-        Text shown instead of the fixation cross (for the tutorial).
+        Start phase of the beeps, in degrees.
+    stages : list of Stage | None
+        The screens to go through. Default is one trial screen.
 
     Returns
     -------
@@ -393,11 +493,30 @@ def dialLoop(
     now = _clock()
     dialKeys = list(parameters["dialKeys"])
     watched = [parameters["startKey"], "escape"] + dialKeys
+    if stages is None:
+        minTime = parameters["minTrialTime"]
+        stages = [Stage(ready=lambda state: state["elapsed"] >= minTime)]
 
-    if message is None:
-        stim = visual.GratingStim(win=win, mask="cross", size=0.1, pos=[0, 0], sf=0)
-    else:
-        stim = visual.TextStim(win, height=parameters["textSize"], text=message)
+    dial = _Dial(parameters)
+    textSize = parameters["textSize"]
+    waiting = visual.TextStim(
+        win,
+        height=textSize,
+        pos=(0, 0.3),
+        text=parameters["texts"]["waitingFirstTone"],
+    )
+    stageTexts = []
+    for s in stages:
+        text = footer = None
+        if s.text:
+            text = visual.TextStim(
+                win, height=textSize, pos=(0, 0.33), text=s.text, wrapWidth=1.2
+            )
+        if s.footer:
+            footer = visual.TextStim(
+                win, height=textSize, pos=(0, -0.35), text=s.footer
+            )
+        stageTexts.append((text, footer))
     win.mouseVisible = False
 
     # Forget the press that started the trial, and wheel turns made before it
@@ -410,11 +529,35 @@ def dialLoop(
     tStart = now()
     status = _Status(parameters, trialNumber, block, tStart)
 
+    # Target times of this trial's beeps, to know when one has played
+    seen = len(engine.tones)
+    pending: List[float] = []
+    nPlayed, lastPlayed = 0, -np.inf
+
+    stageIndex = 0
+    state: Dict[str, float] = {"elapsed": 0.0, "tones": 0, "notches": 0}
+    tStage = tStart
+
     while True:
         engine.poll()
+        t = now()
+
+        tones = engine.tones
+        for tone in tones[seen:]:
+            if tone.get("Trial") == trialNumber and tone.get("Kind", "tone") == "tone":
+                pending.append(float(tone["Target"]))
+        seen = len(tones)
+        for target in [p for p in pending if p <= t]:
+            pending.remove(target)
+            nPlayed += 1
+            state["tones"] += 1
+            lastPlayed = max(lastPlayed, target)
+        heard = nPlayed > 0
+        stage = stages[stageIndex]
+        state["elapsed"] = t - tStage
 
         notches = 0
-        wheel += float(mouse.getWheelRel()[1])
+        wheel += parameters["wheelDirection"] * float(mouse.getWheelRel()[1])
         if abs(wheel) >= 1:
             notches = int(wheel)  # whole notches, the rest carries over
             wheel -= notches
@@ -429,15 +572,26 @@ def dialLoop(
             elif len(dialKeys) == 2 and key == dialKeys[1]:
                 notches += 1
             elif key == parameters["startKey"]:
-                # Ignored early in the trial, so a double press does not end it
-                if now() - tStart >= parameters["minTrialTime"]:
-                    pressed = True
+                pressed = heard and stage.ready(state)
 
+        if not (heard and stage.wheel):
+            notches, wheel = 0, 0.0
         if notches != 0:
+            if parameters["mode"] == "relative":
+                turn = notches * parameters["dialGainDeg"]
+            else:
+                period = _periodS(engine, trialNumber)
+                turn = notches * parameters["dialGainMs"] / (period * 1000) * 360
             engine.nudge(notches, parameters["dialGainDeg"], parameters["dialGainMs"])
+            dial.turn(turn)
+            state["notches"] += notches
             nDialMoves += 1
 
-        if pressed:
+        if pressed and stageIndex < len(stages) - 1:
+            stageIndex += 1
+            tStage = t
+            state = {"elapsed": 0.0, "tones": 0, "notches": 0}
+        elif pressed:
             pressTime, wallTime = now(), time.time()
             engine.stop_tones()
             press = {
@@ -448,12 +602,21 @@ def dialLoop(
                 "duration": pressTime - tStart,
                 "n_dial_moves": nDialMoves,
             }
-            stim.draw()
+            dial.draw(dial=False)
             win.flip()
             return press
 
-        status.update(now())
-        stim.draw()
+        status.update(t)
+        if heard:
+            text, footer = stageTexts[stageIndex]
+            if text is not None:
+                text.draw()
+            if footer is not None and stages[stageIndex].ready(state):
+                footer.draw()
+            dial.draw(flash=t - lastPlayed < parameters["flashDuration"])
+        else:
+            waiting.draw()
+            dial.draw(dial=False)
         win.flip()
 
 
@@ -541,7 +704,11 @@ def waitInput(parameters: dict) -> None:
 
 
 def tutorial(parameters: dict) -> None:
-    """Let the participant try the dial on free beats. Nothing is saved.
+    """Guide the participant through the wheel on free beats. Nothing is saved.
+
+    Four screens on the same beeps: listen to one beep per heartbeat; roll the
+    wheel away (beeps later); roll it towards you (beeps earlier); then find
+    the position that matches the heartbeat and press space.
 
     Parameters
     ----------
@@ -550,17 +717,37 @@ def tutorial(parameters: dict) -> None:
 
     """
     texts = parameters["texts"]
-    showText(parameters, texts["tutorialDial"], footer=texts["textNext"])
+    nTones = parameters["tutorialListenTones"]
+    nNotches = parameters["tutorialNotches"]
+    minTime = parameters["minTrialTime"]
+
+    showText(parameters, texts["tutorialIntro"], footer=texts["textNext"])
     waitInput(parameters)
 
+    stages = [
+        Stage(
+            texts["tutorialListen"],
+            wheel=False,
+            ready=lambda state: state["tones"] >= nTones,
+            footer=texts["textNext"],
+        ),
+        Stage(
+            texts["tutorialLater"],
+            ready=lambda state: state["notches"] >= nNotches,
+            footer=texts["textNext"],
+        ),
+        Stage(
+            texts["tutorialEarlier"],
+            ready=lambda state: state["notches"] <= -nNotches,
+            footer=texts["textNext"],
+        ),
+        Stage(
+            texts["tutorialFree"],
+            ready=lambda state: state["elapsed"] >= minTime,
+        ),
+    ]
     startPhase = float(np.random.choice(parameters["startPhases"]))
-    dialLoop(
-        parameters,
-        TUTORIAL_TRIAL,
-        "tutorial",
-        startPhase,
-        message=texts["tutorialRunning"],
-    )
+    dialLoop(parameters, TUTORIAL_TRIAL, "tutorial", startPhase, stages=stages)
     parameters["engine"].end_trial()
 
     showText(parameters, texts["tutorialEnd"])

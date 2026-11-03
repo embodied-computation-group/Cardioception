@@ -23,9 +23,14 @@ from cardioception.PAT.task import (
     FINAL_COLUMNS,
     TONE_COLUMNS,
     TUTORIAL_TRIAL,
+    _clock,
     run,
     trial,
+    tutorial,
 )
+
+#: Every stimulus drawn, in order, by the fake PsychoPy below
+DRAWN: List["FakeStim"] = []
 
 ##############
 # Fake engine #
@@ -33,7 +38,11 @@ from cardioception.PAT.task import (
 
 
 class FakeEngine:
-    """Plays a 'tone' every third poll, at a fixed 1 s period."""
+    """Plays a 'tone' every third poll, at a fixed 1 s period.
+
+    Tones are timed on the task's clock and play at once, so the task sees the
+    first beep of a trial on the third poll.
+    """
 
     def __init__(self, period: float = 1.0):
         self.period = period
@@ -49,7 +58,9 @@ class FakeEngine:
         self.ended = 0
         self.closed = False
         self.marks: List[tuple] = []
-        self.t = 1000.0
+        self.clock = _clock()
+        self.t = self.clock()
+        self.nudgePolls: List[int] = []
 
     def start_trial(self, trial: int, start_phase_deg: float, block: str = "") -> None:
         self.trial, self.block = trial, block
@@ -61,6 +72,7 @@ class FakeEngine:
     def nudge(self, notches: float, gain_deg: float, gain_ms: float) -> None:
         self._phase = (self._phase + notches * gain_deg) % 360
         self.nudges.append(notches)
+        self.nudgePolls.append(self.polls)
 
     @property
     def phase_deg(self) -> float:
@@ -74,7 +86,7 @@ class FakeEngine:
         if not self.active:
             return
         self.polls += 1
-        self.t += 0.1
+        self.t = self.clock()
         if self.polls % 3 == 0:
             self._tones.append(
                 {
@@ -83,9 +95,9 @@ class FakeEngine:
                     "PeriodS": self.period,
                     "PhaseDeg": self._phase,
                     "DelayMs": self.delay_ms,
-                    "Target": self.t + self.delay_ms / 1000,
+                    "Target": self.t,
                     "Anchor": "real" if self.polls % 2 else "predicted",
-                    "Onset": self.t + self.delay_ms / 1000 + 0.001,
+                    "Onset": self.t + 0.001,
                     "Kind": "tone",
                 }
             )
@@ -137,12 +149,30 @@ class FakeClock:
 
 
 class FakeStim:
+    """Records how it looked each time it was drawn."""
+
     def __init__(self, *args, **kwargs):
         self.kwargs = kwargs
+        self.text = kwargs.get("text")
         self.color = kwargs.get("color", "white")
+        self.fillColor = kwargs.get("fillColor")
+        self.pos = kwargs.get("pos", (0, 0))
+        self.ori = 0.0
+        self.history: List[tuple] = []
 
     def draw(self) -> None:
-        pass
+        self.history.append((self.ori, self.fillColor, tuple(self.pos)))
+        DRAWN.append(self)
+
+
+class FakeRect(FakeStim):
+    """The dial's pointer: the only Rect the task draws."""
+
+    instances: List["FakeRect"] = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        FakeRect.instances.append(self)
 
 
 class FakeMarker:
@@ -212,6 +242,8 @@ class FakeKeyboard:
 
 @pytest.fixture
 def fake_psychopy(monkeypatch):
+    DRAWN.clear()
+    FakeRect.instances.clear()
     keyboard = FakeKeyboard()
     core = types.ModuleType("psychopy.core")
     core.Clock = FakeClock  # type: ignore[attr-defined]
@@ -225,6 +257,8 @@ def fake_psychopy(monkeypatch):
     visual.TextStim = FakeStim  # type: ignore[attr-defined]
     visual.GratingStim = FakeStim  # type: ignore[attr-defined]
     visual.Slider = FakeSlider  # type: ignore[attr-defined]
+    visual.Circle = FakeStim  # type: ignore[attr-defined]
+    visual.Rect = FakeRect  # type: ignore[attr-defined]
     psychopy = types.ModuleType("psychopy")
     for name, module in (("core", core), ("event", event), ("visual", visual)):
         setattr(psychopy, name, module)
@@ -247,10 +281,22 @@ def make_parameters(tmp_path, engine=None, **kwargs) -> dict:
     return parameters
 
 
-def space_after_polls(engine: FakeEngine, n: int = 7):
-    """Space ends a trial after n engine polls; every wait passes at once."""
+def lastText() -> Optional[str]:
+    texts = [stim.text for stim in DRAWN if stim.text]
+    return texts[-1] if texts else None
+
+
+def space_after_polls(engine: FakeEngine, n: int = 7, parameters=None):
+    """Space ends a trial after n engine polls; every wait passes at once.
+
+    With `parameters`, the wheel rolls towards the participant while the
+    tutorial asks for it, and away otherwise.
+    """
 
     def policy(keyList):
+        if parameters is not None:
+            earlier = lastText() == parameters["texts"]["tutorialEarlier"]
+            parameters["myMouse"].wheel = -0.5 if earlier else 0.5
         if not keyList or "space" not in keyList:
             return []
         if "left" in keyList and engine.active and engine.polls < n:
@@ -373,14 +419,26 @@ def test_parameters_open_a_real_window(tmp_path):
 def test_texts(language, extero, device):
     texts = language(device=device, extero=extero)
     assert set(texts) == set(english(device=device, extero=extero))
-    assert len(texts["instructions"]) == 5
+    assert len(texts["instructions"]) == 7
+    assert (
+        len(language(device=device, extero=extero, showDial=False)["instructions"]) == 7
+    )
     flat = " ".join(
         " ".join(v) if isinstance(v, list) else str(v) for v in texts.values()
     )
     assert "—" not in flat and "–" not in flat  # no em or en dashes
-    assert "10" in texts["instructions"][2]
+    assert "10" in texts["instructions"][5]
     vibration = "vibration" in flat
     assert vibration is extero
+    # The wheel is named, and the beeps never change speed
+    assert "scroll" in texts["instructions"][1]
+    assert any(word in texts["instructions"][0] for word in ("never", "aldrig"))
+
+
+def test_texts_describe_the_dial_only_when_shown():
+    with_dial = " ".join(english(showDial=True)["instructions"])
+    without = " ".join(english(showDial=False)["instructions"])
+    assert "pointer" in with_dial and "pointer" not in without
 
 
 #################
@@ -422,10 +480,111 @@ def test_trial_writes_a_row_and_saves(fake_psychopy, tmp_path):
     assert kinds == ["confidence", "confidence"]
 
 
+def pointer_angles(rect: "FakeRect") -> List[float]:
+    return [ori for ori, _, _ in rect.history]
+
+
+@pytest.mark.parametrize(
+    "mode, direction, step",
+    [("relative", 1, 10.0), ("relative", -1, -10.0), ("absolute", 1, 9.0)],
+)
+def test_pointer_starts_at_twelve_and_turns_with_the_wheel(
+    fake_psychopy, tmp_path, mode, direction, step
+):
+    engine = FakeEngine()  # period 1 s: 25 ms per notch is 9 degrees
+    parameters = make_parameters(
+        tmp_path, engine=engine, mode=mode, wheelDirection=direction
+    )
+    fake_psychopy.policy = space_after_polls(engine, n=12)
+
+    perTrial = []
+    for number, startPhase in ((1, 180.0), (2, 90.0)):
+        before = len(engine.nudges)
+        trial(parameters, number, "main", startPhase)
+        perTrial.append(engine.nudges[before:])
+
+    assert len(FakeRect.instances) == 2  # a new dial for every trial
+    for rect, nudges in zip(FakeRect.instances, perTrial):
+        angles = pointer_angles(rect)
+        assert angles[0] == 0  # twelve o'clock, whatever the start phase
+        assert nudges and all(np.sign(n) == direction for n in nudges)
+        # The last frame drawn shows every notch but those of the press frame
+        travel = np.cumsum(nudges) * abs(step)
+        assert any(
+            angles[-1] == pytest.approx(t % 360) for t in travel[-2:]
+        ), "the pointer turns by the same angle as the phase"
+
+
+def test_pointer_flashes_with_each_beep(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine)
+    parameters["flashDuration"] = 10.0  # every frame after a beep is lit
+    fake_psychopy.policy = space_after_polls(engine, n=12)
+
+    trial(parameters, 1, "main", 0.0)
+
+    colours = [colour for _, colour, _ in FakeRect.instances[0].history]
+    assert "white" in colours
+
+
+def test_nothing_moves_before_the_first_beep(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine)
+    # Space on every frame: it must wait for the first beep (third poll)
+    fake_psychopy.policy = lambda keyList: ["space"] if keyList else []
+
+    trial(parameters, 1, "main", 0.0)
+
+    waiting = parameters["texts"]["waitingFirstTone"]
+    assert waiting in [stim.text for stim in DRAWN]
+    assert engine.polls >= 3
+    assert all(polls >= 3 for polls in engine.nudgePolls)
+
+
+def test_no_dial_when_hidden(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, showDial=False)
+    fake_psychopy.policy = space_after_polls(engine)
+
+    row = trial(parameters, 1, "main", 0.0)
+
+    assert FakeRect.instances and not FakeRect.instances[0].history
+    assert row["nDialMoves"] > 0  # the wheel still works
+
+
+def test_tutorial_guides_through_the_wheel(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine)
+    fake_psychopy.policy = space_after_polls(engine, n=0, parameters=parameters)
+    texts = parameters["texts"]
+
+    tutorial(parameters)
+
+    assert [s[0] for s in engine.started] == [TUTORIAL_TRIAL]
+    shown = [stim.text for stim in DRAWN if stim.text]
+    order = [
+        texts["tutorialListen"],
+        texts["tutorialLater"],
+        texts["tutorialEarlier"],
+        texts["tutorialFree"],
+    ]
+    firsts = [shown.index(text) for text in order]
+    assert firsts == sorted(firsts)
+    # No wheel while listening; then at least 3 notches later, then 3 earlier
+    listenEnd = engine.nudgePolls[0]
+    assert listenEnd >= 3 * parameters["tutorialListenTones"]
+    signs = np.sign(engine.nudges)
+    firstEarlier = int(np.argmax(signs < 0))
+    assert sum(engine.nudges[:firstEarlier]) >= parameters["tutorialNotches"]
+    assert sum(n for n in engine.nudges[firstEarlier:] if n < 0) <= -3
+    assert texts["textNext"] in shown  # the footer once a step is done
+    assert not os.path.exists(tmp_path / "tones.txt")  # nothing saved
+
+
 def test_run_saves_everything(fake_psychopy, tmp_path):
     engine = FakeEngine()
     parameters = make_parameters(tmp_path, engine=engine, nTrials=12, nPractice=2)
-    fake_psychopy.policy = space_after_polls(engine)
+    fake_psychopy.policy = space_after_polls(engine, parameters=parameters)
 
     run(parameters, runTutorial=True, confidenceRating=True)
 

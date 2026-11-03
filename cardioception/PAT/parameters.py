@@ -83,6 +83,7 @@ def _validate(
     dialGainMs: float,
     minToneGap: float,
     confScale: Sequence[int],
+    wheelDirection: int = 1,
 ) -> None:
     """Raise a ValueError naming the first invalid setting."""
     if mode not in MODES:
@@ -140,6 +141,8 @@ def _validate(
         raise ValueError(f"toneVolume should be in (0, 1], got {toneVolume}.")
     if not 0 <= vibrationVolume <= 1:
         raise ValueError(f"vibrationVolume should be in [0, 1], got {vibrationVolume}.")
+    if wheelDirection not in (1, -1):
+        raise ValueError(f"wheelDirection should be 1 or -1, got {wheelDirection!r}.")
     if not minToneGap >= 0:
         raise ValueError(f"minToneGap should be 0 or more, got {minToneGap}.")
     if len(confScale) != 2 or not confScale[0] < confScale[1]:
@@ -184,6 +187,8 @@ def getParameters(
     vibrationVolume: float = 0.0,
     dialGainDeg: float = 10.0,
     dialGainMs: float = 25.0,
+    wheelDirection: int = 1,
+    showDial: bool = True,
     minToneGap: float = 0.3,
     confScale: Sequence[int] = (1, 10),
     markerStream: Optional[str] = "PAT",
@@ -249,6 +254,14 @@ def getParameters(
         Degrees per wheel notch in relative mode.
     dialGainMs : float
         Milliseconds per wheel notch in absolute mode.
+    wheelDirection : int
+        `1` or `-1`. With `1`, rolling the wheel away from you (a positive
+        wheel step in PsychoPy, which is Windows' forward rotation) moves the
+        beeps later. Use `-1` for a mouse or driver that reverses the wheel.
+    showDial : bool
+        If `True`, a ring with a pointer around the fixation cross shows how
+        far the wheel has turned since the trial began (never the phase
+        itself), and the pointer flashes with each beep.
     minToneGap : float
         A tone is skipped when its target is less than this many seconds after
         the previous target, so the participant never hears two tones in quick
@@ -302,6 +315,7 @@ def getParameters(
         dialGainMs=dialGainMs,
         minToneGap=minToneGap,
         confScale=confScale,
+        wheelDirection=wheelDirection,
     )
     if recorder is None and not extero and engine is None:
         raise ValueError(
@@ -349,6 +363,14 @@ def getParameters(
     parameters["noBeatWarning"] = 3.0  # warn the experimenter after this silence
     parameters["textSize"] = 0.04
 
+    # The dial on screen, and the guided tutorial
+    parameters["wheelDirection"] = int(wheelDirection)
+    parameters["showDial"] = bool(showDial)
+    parameters["dialRadius"] = 0.15  # height units, around the fixation cross
+    parameters["flashDuration"] = 0.1  # seconds the pointer brightens per beep
+    parameters["tutorialListenTones"] = 4  # beeps heard before going on
+    parameters["tutorialNotches"] = 3  # notches each way before going on
+
     # Start phases: one sequence for practice, one for the main trials
     parameters["startPhasePractice"] = startPhaseSequence(
         parameters["nPractice"], parameters["startPhases"]
@@ -380,7 +402,9 @@ def getParameters(
     # Load texts #
     ##############
     texts_fn = english if language == "english" else danish
-    parameters["texts"] = texts_fn(device=device, extero=extero, confScale=confScale)
+    parameters["texts"] = texts_fn(
+        device=device, extero=extero, confScale=confScale, showDial=showDial
+    )
     parameters["labelsRating"] = parameters["texts"]["VASlabels"]
 
     ###########################
