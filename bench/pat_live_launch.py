@@ -7,8 +7,8 @@ Usage, from the repository root (hub on, electrodes on)::
 1. Starts the hub bridge, ``plux-lsl\\plux_lsl.py``, with plux-lsl's own
    Python 3.13 venv, and waits for its ``PLUX`` stream.
 2. Opens the ECG stream and sets the task up (window, sound, the ``PAT``
-   marker stream), then starts ``LabRecorderCLI.exe`` recording ``PLUX`` and
-   ``PAT`` to ``bench\\data\\pat_live_<participant>_<session>_<stamp>.xdf``,
+   marker stream), then starts ``LabRecorderCLI.exe`` recording ``PLUX``,
+   ``PAT`` (and ``Nonin`` with ``--nonin``) to ``bench\\data\\pat_live_<participant>_<session>_<stamp>.xdf``,
    and waits for it to connect.
 3. Runs the task in this process (PsychoPy wants the main thread).
 4. However the task ends (done, Esc, Ctrl+C, an error), closes the task,
@@ -81,6 +81,15 @@ def parse_args(argv=None) -> argparse.Namespace:
     )
     ap.add_argument("--recorder", default=str(LABRECORDER), help="LabRecorderCLI.exe")
     ap.add_argument("--bridge-timeout", type=float, default=60.0)
+    ap.add_argument(
+        "--nonin",
+        nargs="?",
+        const="auto",
+        default=None,
+        metavar="PORT",
+        help="also record the Nonin pulse oximeter (bench/nonin_lsl.py) as the "
+        "Nonin stream; give its COM port, or none to search",
+    )
     return ap.parse_args(argv)
 
 
@@ -97,6 +106,22 @@ def start_bridge(args, log_path: Path) -> subprocess.Popen:
             stdout=log,
             stderr=subprocess.STDOUT,
             cwd=str(Path(cmd[1]).parent if len(cmd) > 1 else PLUX_DIR),
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
+            env=dict(os.environ, PYTHONUNBUFFERED="1"),
+        )
+
+
+def start_nonin(port: str, log_path: Path) -> subprocess.Popen:
+    """``nonin_lsl.py`` in its own process group, stopped by closing stdin."""
+    cmd = [sys.executable, str(Path(__file__).with_name("nonin_lsl.py"))]
+    cmd += ["--stop-on-eof", "--port", port]
+    print(f"Starting the Nonin bridge (log {log_path.name}) ...", flush=True)
+    with open(log_path, "w") as log:
+        return subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=log,
+            stderr=subprocess.STDOUT,
             creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
             env=dict(os.environ, PYTHONUNBUFFERED="1"),
         )
@@ -128,6 +153,7 @@ def main(argv=None) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     xdf = out_dir / f"pat_live_{args.participant}_{args.session}_{stamp}.xdf"
     bridge_log = xdf.with_suffix(".bridge.log")
+    nonin_log = xdf.with_suffix(".nonin.log")
     recorder_log = xdf.with_suffix(".labrecorder.log")
 
     if not Path(args.recorder).exists():
@@ -148,6 +174,8 @@ def main(argv=None) -> int:
         return 1
 
     bridge: Optional[subprocess.Popen] = None
+    nonin: Optional[subprocess.Popen] = None
+    streams = [args.stream, "PAT"]
     recorder: Optional[subprocess.Popen] = None
     lsl_recorder = None
     parameters = None
@@ -169,6 +197,19 @@ def main(argv=None) -> int:
                     print(tail(bridge_log))
                 return 1
             print(f"{args.stream} stream online.", flush=True)
+        if args.nonin is not None and not Stop.requested:
+            nonin = start_nonin(args.nonin, nonin_log)
+            if wait_for_stream("Nonin", 15.0, nonin):
+                print("Nonin stream online.", flush=True)
+                streams.append("Nonin")
+            elif not Stop.requested:
+                print(
+                    "WARNING: no Nonin stream in 15 s; continuing without the "
+                    f"oximeter. Last lines of its log:\n{tail(nonin_log)}",
+                    flush=True,
+                )
+                stop_by_eof(nonin, "The Nonin bridge", 5.0)
+                nonin = None
         if Stop.requested:
             return 1
         signal.signal(signal.SIGINT, signal.default_int_handler)
@@ -199,7 +240,7 @@ def main(argv=None) -> int:
 
         with open(recorder_log, "w") as log:
             recorder = subprocess.Popen(
-                [str(args.recorder), str(xdf), f"name='{args.stream}'", "name='PAT'"],
+                [str(args.recorder), str(xdf), *[f"name='{n}'" for n in streams]],
                 stdin=subprocess.PIPE,
                 stdout=log,
                 stderr=subprocess.STDOUT,
@@ -213,7 +254,13 @@ def main(argv=None) -> int:
         time.sleep(1.0)  # let it open the ECG inlet too
 
         procs = {"LabRecorderCLI": recorder}
-        logs = {"LabRecorderCLI": recorder_log, "The hub bridge": bridge_log}
+        logs = {
+            "LabRecorderCLI": recorder_log,
+            "The hub bridge": bridge_log,
+            "The Nonin bridge": nonin_log,
+        }
+        if nonin is not None:
+            procs["The Nonin bridge"] = nonin
         if bridge is not None:
             procs["The hub bridge"] = bridge
         threading.Thread(target=watch, args=(procs, logs, done), daemon=True).start()
@@ -243,6 +290,7 @@ def main(argv=None) -> int:
         steps += [
             lambda: stop_recorder(recorder),
             lambda: stop_by_eof(bridge, "The hub bridge", 10.0),
+            lambda: stop_by_eof(nonin, "The Nonin bridge", 10.0),
         ]
         for step in steps:
             try:
