@@ -21,20 +21,24 @@ Units: ``RequestedDelay``, ``RealizedDelay`` and ``RealizedCorrected`` are in
 engine units, ms on the absolute axis and fractions of the interbeat interval
 on the phase axis, as are the ``Mu`` and ``Sigma`` summaries. Both realized
 values are measured against the stamped R-wave. ``RealizedCorrected`` is the
-value the engine was updated with.
+value the engine was updated with: the physical delay, which adds the latency
+bias (``TaskConfig.latencyBias``, the transport and speaker delays the
+recordings cannot see) to the measured one. ``RequestedDelay`` is physical
+too: each tone was scheduled the latency bias early to realize it.
 
-On the absolute axis ``RealizedCorrected`` is ``RealizedDelay`` plus the
-bridge lag. On the phase axis they are different quantities:
+On the absolute axis ``RealizedDelay`` is the measured delay, the latency
+bias short of ``RequestedDelay``, and ``RealizedCorrected`` adds the bias
+back. On the phase axis both include the bias, and they are different
+quantities:
 
-- ``RealizedDelay`` is the realized delay as a fraction of the *observed*
+- ``RealizedDelay`` is the physical delay as a fraction of the *observed*
   interbeat interval, averaged over the tones whose next beat was seen during
   the train (usually not the last one). Empty if there were none.
-- ``RealizedCorrected`` is the mean realized delay plus the bridge lag, as a
-  fraction of the mean *anticipated* period: the same period the delay was
-  scheduled with, so it is on the scale the engine chose from.
+- ``RealizedCorrected`` is the mean physical delay as a fraction of the mean
+  *anticipated* period: the same period the delay was scheduled with, so it
+  is on the scale the engine chose from.
 
-When the heart speeds up or slows down during a train, the two differ by more
-than the lag. ``PeriodMean`` is seconds.
+When the heart speeds up or slows down during a train, the two differ. ``PeriodMean`` is seconds.
 Triggers are clock seconds. The posterior summaries are taken after the
 trial's update.
 """
@@ -54,9 +58,10 @@ class HSDTrialOutcome:
     axis: str
     #: The delay asked for, engine units.
     requestedDelay: float
-    #: Mean realized delay against the stamped R-wave, engine units.
+    #: Mean realized delay against the stamped R-wave, engine units (see the
+    #: module docstring for the phase axis).
     realizedDelay: Optional[float]
-    #: ``realizedDelay`` plus the bridge lag, engine units.
+    #: The physical delay the engine was updated with, engine units.
     realizedCorrected: Optional[float]
     nDelivered: int
     nSkipped: int

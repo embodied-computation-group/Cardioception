@@ -274,15 +274,22 @@ class TestAbsoluteSession(unittest.TestCase):
         self.assertTrue(rated.ConfidenceUnit.between(0, 1).all())
 
     def test_realized_delays_match_the_requested_ones(self):
-        """With onsets on target, realized equals requested within 5 ms."""
+        """With onsets on target, the physical delay is the requested one.
+
+        Each tone is scheduled the latency bias early, so the delay measured
+        against the stamped R-wave is the bias short of the request, and the
+        corrected value, which the engine sees, adds it back.
+        """
+        bias = self.params["latencyBias"] * 1000.0
+        self.assertEqual(bias, 50.0)
         delivered = self.df[self.df.nDelivered > 0]
-        error = (delivered.RealizedDelay - delivered.RequestedDelay).abs()
+        error = (delivered.RealizedCorrected - delivered.RequestedDelay).abs()
         self.assertTrue((error < 5.0).all(), error.tolist())
-        # Bridge lag is 0 by default, so the corrected value is the same.
         np.testing.assert_allclose(
-            delivered.RealizedCorrected, delivered.RealizedDelay, atol=1e-9
+            delivered.RealizedDelay, delivered.RequestedDelay - bias, atol=1e-6
         )
-        self.assertTrue(delivered.RequestedDelay.between(80, 600).all())
+        # The 130 ms physical floor and the 600 ms top candidate.
+        self.assertTrue(delivered.RequestedDelay.between(130, 600).all())
 
     def test_the_posterior_summary_is_written(self):
         """MuMean is present and finite on every row."""
@@ -745,11 +752,11 @@ class TestTutorial(unittest.TestCase):
 class TestSetup(unittest.TestCase):
     """getParameters refuses what cannot run, before it writes anything."""
 
-    def test_a_behavioral_launch_without_devices_leaves_nothing_behind(self):
+    def test_a_behavioral_launch_without_a_recorder_leaves_nothing_behind(self):
         """The device check runs before the run directory and the log exist."""
         tmp = tempfile.mkdtemp()
         try:
-            with self.assertRaisesRegex(ImportError, "pat-ecg"):
+            with self.assertRaisesRegex(ValueError, "recorder=LSLRecorder"):
                 getParameters(setup="behavioral", resultPath=tmp)
             self.assertEqual(list(Path(tmp).iterdir()), [])
         finally:
@@ -761,7 +768,7 @@ class TestSetup(unittest.TestCase):
             getParameters(setup="test", nTrials=2, config=TaskConfig(minTrials=5))
 
     def test_a_player_without_describe_is_still_described(self):
-        """The PAT tone player has no describe(); the manifest reads its fields."""
+        """The shared tone player has no describe(); the manifest reads its fields."""
         from cardioception.HSD.parameters import _describe_player
 
         class Player:

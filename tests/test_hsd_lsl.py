@@ -3,12 +3,13 @@
 
 The ECG of ``tests/test_lsl.py`` is streamed at 1000 Hz by its ``FakeHub``,
 read through :class:`~cardioception.devices.LSLRecorder`, and its R-waves are
-found online by the real
-:class:`~cardioception.devices._online_beats.OnlineRDetector`. The tone player
-is a fake that reports each tone as starting 2 ms after its target and plays
-nothing, so the test is silent. It checks what the hardware dry run will check, against a
-signal whose R-waves are known: that the realized delays, measured against
-the stamped R-waves, are the requested ones.
+found online by the shared
+:class:`~cardioception.devices.beat_source.LSLBeatSource`, the beat source a
+behavioral session uses. The tone player is a fake that reports each tone as
+starting 2 ms after its target and plays nothing, so the test is silent. It
+checks what the hardware dry run will check, against a signal whose R-waves
+are known: that the realized delays, measured against the stamped R-waves and
+corrected by the latency bias, are the requested ones.
 
 Needs pylsl, and skips without it. Runs in real time, about half a minute.
 """
@@ -31,7 +32,7 @@ from test_lsl import SFREQ, FakeHub  # noqa: E402
 
 import cardioception.HSD.task as hsd  # noqa: E402
 from cardioception.devices import LSLRecorder  # noqa: E402
-from cardioception.devices._online_beats import OnlineRDetector  # noqa: E402
+from cardioception.devices.beat_source import LSLBeatSource  # noqa: E402
 from cardioception.HSD._autopilot import HSDAutopilot  # noqa: E402
 from cardioception.HSD.config import TaskConfig  # noqa: E402
 from cardioception.HSD.parameters import getParameters  # noqa: E402
@@ -41,69 +42,46 @@ BPM = 72.0
 N_TRIALS = 4
 #: Where ``synthetic_ecg`` puts the R peak, as a fraction of the period.
 R_PHASE = 0.32
-PULL_CHUNK = 1024
 #: Seconds the fake player reports each onset after its target, so that the
 #: delivery check measures the onset rather than repeating the target.
 ONSET_ERROR = 0.002
 #: The tolerance of the hardware dry run, in ms.
 TOLERANCE_MS = 5.0
+#: Seconds by which LSL's dejitter may put a sample's stamp after the clock
+#: time it was pulled at.
+DEJITTER = 0.002
 
 
-class Beat:
-    def __init__(self, r_time, period):
-        self.r_time = r_time
-        self.period = period
+class TappedInlet:
+    """The recorder's inlet, keeping the ``nSeq`` and stamp of every sample.
 
-
-class InletBeatSource:
-    """A minimal LSL beat source: the recorder's inlet into OnlineRDetector.
-
-    Stands in for the LSL beat source that will live in
-    ``cardioception.devices`` once it is lifted out of the PAT task. It is the
-    only reader of the inlet, and it keeps the ``nSeq`` channel and the stamp
-    of every sample it fed to the detector, so the test can find the true R
-    peak behind each detected one.
+    So the test can find the true R peak behind each detected one, while the
+    shared beat source reads the stream exactly as it would in a session.
     """
 
-    def __init__(self, recorder):
-        self.recorder = recorder
-        self.detector = OnlineRDetector(sfreq=recorder.sfreq)
+    def __init__(self, inlet):
+        self.inlet = inlet
         self.seq = []
         self.stamps = []
-        self._started = False
 
-    @property
-    def period(self):
-        return self.detector.anticipated_period
-
-    def start(self):
-        if self._started:
-            return
-        self.recorder.inlet.flush()
-        self.detector.reset()
+    def flush(self):
         self.seq, self.stamps = [], []
-        self._started = True
+        return self.inlet.flush()
 
-    def stop(self):
-        self._started = False
+    def pull_chunk(self, *args, **kwargs):
+        samples, stamps = self.inlet.pull_chunk(*args, **kwargs)
+        self.seq.extend(int(s[0]) for s in samples)
+        self.stamps.extend(stamps)
+        return samples, stamps
 
-    def poll(self):
-        if not self._started:
-            self.start()
-        beats = []
-        inlet, channel = self.recorder.inlet, self.recorder.channel
-        while True:
-            samples, stamps = inlet.pull_chunk(timeout=0.0, max_samples=PULL_CHUNK)
-            if not stamps:
-                break
-            x = np.asarray(samples, dtype=float)
-            self.seq.extend(int(v) for v in x[:, 0])
-            self.stamps.extend(stamps)
-            for found in self.detector.process(x[:, channel], stamps):
-                beats.append(Beat(found.r_time, self.detector.anticipated_period))
-            if len(stamps) < PULL_CHUNK:
-                break
-        return beats
+
+class TappedRecorder:
+    """What LSLBeatSource reads of a recorder, with the inlet tapped."""
+
+    def __init__(self, recorder):
+        self.inlet = TappedInlet(recorder.inlet)
+        self.channel = recorder.channel
+        self.sfreq = recorder.sfreq
 
 
 class TestHSDOverLSL(unittest.TestCase):
@@ -134,7 +112,8 @@ class TestHSDOverLSL(unittest.TestCase):
         cls.marker_inlet.open_stream(timeout=10)
 
         clock = pylsl.local_clock
-        cls.source = InletBeatSource(recorder)
+        cls.tap = TappedRecorder(recorder)
+        cls.source = LSLBeatSource(cls.tap)
         params = getParameters(
             participant="LSL",
             session="1",
@@ -181,8 +160,8 @@ class TestHSDOverLSL(unittest.TestCase):
 
     def test_detected_r_waves_are_the_true_ones(self):
         """Each tone's R-wave is within 5 ms of a true R peak of the ECG."""
-        stamps = np.asarray(self.source.stamps)
-        seq = np.asarray(self.source.seq)
+        stamps = np.asarray(self.tap.inlet.stamps)
+        seq = np.asarray(self.tap.inlet.seq)
         samples_per_beat = 60.0 / BPM * SFREQ
         played = self.tones[~self.tones.skipped.astype(bool)]
         self.assertGreater(len(played), 0)
@@ -196,10 +175,12 @@ class TestHSDOverLSL(unittest.TestCase):
     def test_realized_delays_match_the_requested_ones(self):
         """Against the stamped true R peak, each tone lands within 5 ms.
 
-        Within 5 ms plus the 2 ms the fake player reports its onsets late.
+        Within 5 ms plus the 2 ms the fake player reports its onsets late,
+        once the latency bias the tone was scheduled early by is added back.
         """
-        stamps = np.asarray(self.source.stamps)
-        seq = np.asarray(self.source.seq)
+        bias_ms = self.params["latencyBias"] * 1000.0
+        stamps = np.asarray(self.tap.inlet.stamps)
+        seq = np.asarray(self.tap.inlet.seq)
         samples_per_beat = 60.0 / BPM * SFREQ
         requested = self.df.set_index("Trial").RequestedDelay
         played = self.tones[~self.tones.skipped.astype(bool)]
@@ -208,11 +189,12 @@ class TestHSDOverLSL(unittest.TestCase):
             k = round(seq[i] / samples_per_beat - R_PHASE)
             j = i + int(round((k + R_PHASE) * samples_per_beat)) - seq[i]
             allowed = TOLERANCE_MS + ONSET_ERROR * 1000.0
-            realized_ms = (tone.onset - stamps[j]) * 1000.0
+            realized_ms = (tone.onset - stamps[j]) * 1000.0 + bias_ms
             self.assertLess(abs(realized_ms - requested.loc[tone.Trial]), allowed)
             # And against the R-wave the detector stamped.
             self.assertLess(
-                abs(tone.realized * 1000.0 - requested.loc[tone.Trial]), allowed
+                abs(tone.realized * 1000.0 + bias_ms - requested.loc[tone.Trial]),
+                allowed,
             )
             self.assertAlmostEqual(tone.onset - tone.target, ONSET_ERROR, places=9)
 
@@ -247,7 +229,19 @@ class TestHSDOverLSL(unittest.TestCase):
         beats = [m for m in self.markers if m["kind"] == "beat"]
         self.assertGreater(len(beats), 0)
         for beat in beats:
+            # The stamp of the sample the detector committed on, which comes
+            # after the R peak and no later than the poll that returned it,
+            # give or take what LSL's dejitter moves a stamp (a fraction of a
+            # millisecond here).
             self.assertGreaterEqual(beat["commit_time"], beat["r_time"])
+            self.assertLessEqual(beat["commit_time"], beat["seen_time"] + DEJITTER)
+        scheduled = [m for m in self.markers if m["kind"] == "tone_scheduled"]
+        self.assertGreater(len(scheduled), 0)
+        for tone in scheduled:
+            # Beat known to tone scheduled: the poll and the loop, not the
+            # detector, so well under the 50 ms audio lead.
+            self.assertGreaterEqual(tone["latency"], -DEJITTER)
+            self.assertLess(tone["latency"], 0.05)
         onsets = [m for m in self.markers if m["kind"] == "tone_onset"]
         for onset in onsets:
             self.assertEqual(onset["anchor"], "real")

@@ -221,7 +221,7 @@ def _scheduler(parameters: dict) -> TrainScheduler:
             parameters["clock"],
             n_tones=config.nTones,
             audio_lead=config.audioLead,
-            bridge_lag=config.bridgeLag,
+            latency_bias=config.latencyBias,
         )
     return parameters["scheduler"]
 

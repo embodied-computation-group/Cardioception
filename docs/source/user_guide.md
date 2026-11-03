@@ -184,7 +184,7 @@ The HSD is an adaptive version of the heartbeat detection task of Brener, Liu an
 
 The delay can be set on one of two axes, chosen per session with `axis`:
 
-- `axis="absolute"` (the default): milliseconds after the R-wave, from 80 to 600 ms. The longest delay on a given trial is limited to just under three quarters of the current interbeat interval, so a tone is not heard as belonging to the next beat.
+- `axis="absolute"` (the default): milliseconds after the R-wave, from 130 to 600 ms (see the latency floor below). The longest delay on a given trial is limited to just under three quarters of the current interbeat interval, so a tone is not heard as belonging to the next beat.
 - `axis="phase"`: a fraction of the anticipated interbeat interval, so the delay scales with heart rate.
 
 The task reads the ECG from an LSL stream. `wrappers/hsd_lsl.py` asks for the participant, the session, the stream and channel (`PLUX`, `ECG2`), the axis and the language, then runs the tutorial and the task:
@@ -202,7 +202,7 @@ run(parameters, confidenceRating=True, runTutorial=True)
 ```
 
 ```{important}
-The beats are found online in the ECG and the tones are scheduled on the audio device by two classes, an LSL beat source and a PsychPortAudio tone player, that are shared with the phase adjustment task and are being moved into `cardioception.devices`. Until that move lands, `setup="behavioral"` raises an `ImportError` that says so. A script can still run the task by passing its own `beat_source=` and `tone_player=` to `getParameters`, which is what the headless tests do.
+With `setup="behavioral"` the beats are found online in the ECG by `cardioception.devices.beat_source.LSLBeatSource`, and the tones are scheduled on the audio device by `cardioception.devices.tone_player.TonePlayer` (PsychPortAudio, latency class 1). Both are shared with the phase adjustment task. A script can pass its own `beat_source=` and `tone_player=` to `getParameters` instead, which is what the headless tests do.
 ```
 
 Every clock time the task records is on one clock, `pylsl.local_clock` when pylsl is installed, which the beat source, the tone player and the LSL marker stream share. The run directory holds:
@@ -218,7 +218,9 @@ Every clock time the task records is on one clock, `pylsl.local_clock` when pyls
 
 The run directory holds no ECG. The beat source is the only reader of the LSL stream, so the task keeps no copy of the signal: record the ECG stream and the `HSD` marker stream with LabRecorder, and the XDF is the session's recording. The HSD writes no trigger codes into a `Channel_0` as the HRD does. Its triggers go to the `HSD` marker stream as JSON instead, one string per marker (for example `{"kind": "trigger", "name": "TRIAL_START", "code": 1, "trial": 0}`), together with a marker for every beat, every tone scheduled, played or skipped, and every decision and rating. The beat and tone markers use the field names of the phase adjustment task's dry run.
 
-The realized delays are measured against the R-wave as stamped on the LSL stream, which trails the true R-wave by the transport lag of the device. Set `TaskConfig(bridgeLag=...)` once that lag has been measured, and the engine is updated with the corrected value. As for the HRD, the posterior summaries in `final.txt` are a monitoring aid, not an analysis.
+The recordings cannot see two delays: the Bluetooth transport before the ECG is stamped, and the speaker after the onset the audio driver reports. Together they are a roughly constant 30 to 70 ms. As the phase adjustment task does, the HSD schedules every tone a latency bias early, `TaskConfig(latencyBias=0.05)` by default, so that the participant hears it at the requested delay after the true R-wave. `RealizedDelay` in `final.txt` is measured against the stamped R-wave and so is the bias short of the request; `RealizedCorrected` adds it back and is what the engine is updated with. The LabRecorder file is the ground truth for checking the bias.
+
+The bias sets the shortest delay the task can play. A beat is known up to 31 ms after its stamped R-wave and a tone must be scheduled 50 ms ahead, so with the 50 ms bias the shortest physical delay is 31 + 50 + 50 = 131 ms, and the task's floor is 130 ms (`TaskConfig.minDelay`). Candidate delays below it are left out on every trial. As for the HRD, the posterior summaries in `final.txt` are a monitoring aid, not an analysis.
 
 ### Creating a shortcut (Windows)
 

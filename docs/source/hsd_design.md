@@ -208,8 +208,9 @@ The HSD answers that in four ways:
 ## Realized delays and per-trial constraints
 
 **Realized delays.** The posterior is updated with the delay the participant
-actually heard (the mean over the five tones of a trial, measured offline),
-not the delay requested. The likelihood is recomputed from the envelope, so
+actually heard (the mean over the five tones of a trial, measured online
+against the stamped R-wave and corrected by the latency bias below), not the
+delay requested. The likelihood is recomputed from the envelope, so
 any real-valued delay can be used. This is a correction the HRD, built on
 PsychoPy's `PsiHandler`, could not make.
 
@@ -217,7 +218,7 @@ PsychoPy's `PsiHandler`, could not make.
 
 | Limit | Set by | Why |
 |---|---|---|
-| `min_delay` | The system's R-to-tone latency | No tone can be scheduled before the system knows about the R-wave. About 80 ms on current hardware (below); the simulations use 80 ms |
+| `min_delay` | The system's R-to-tone latency | No tone can be scheduled before the system knows about the R-wave. 130 ms of physical delay on current hardware (below); the simulations used 80 ms |
 | `max_delay` | 0.75 of the anticipated interbeat interval | Keeps the last tone clear of the next beat. The envelope is periodic in the cardiac cycle and the model ignores that, so delays near the next beat would be misread |
 
 If no candidate lies between the two limits, the engine raises an error
@@ -235,21 +236,45 @@ published result.
 | Tone scheduled with psychtoolbox audio, latency class 1, 50 ms lead | Lands within 1 ms of the scheduled time (latency class 3 was unusable on that laptop) |
 | Dry run, tones anchored on the real R-wave | Within 17 ms of the intended phase at the 95th percentile |
 
-A beat is known about up to about 31 ms after the R-wave, and the tone must
-be scheduled 50 ms ahead, so the shortest delay that can be realized
-reactively is about 80 ms. Shorter delays are possible only by scheduling
-predictively from the anticipated interbeat interval (the mean of the last
-three RR intervals). That adds the beat-to-beat variability of the heart
-period to the delay as jitter, and is not implemented. A sensation earlier
-than 80 ms can still be located, but only from the falling side of the
-envelope.
+**The latency bias.** Two delays do not appear in any recording. The PLUX
+Bluetooth transport delivers each sample 20 to 40 ms after the hub took it,
+and LSL stamps it on arrival, so the stamped R-wave is late. The sound leaves
+the speaker some milliseconds after the onset the audio driver reports.
+Together these come to a roughly constant 30 to 70 ms, which the PAT dry run
+measured. As the PAT task does, the runner subtracts a latency bias,
+`TaskConfig.latencyBias` (50 ms by default), from every tone's target, so
+that the tone reaches the participant at the requested delay after the true
+R-wave. A delay measured against the stamped R-wave is then 50 ms short of
+the physical one, and the runner adds the bias back before it updates the
+posterior. Both values are saved: `RealizedDelay` as measured,
+`RealizedCorrected` as the engine saw it. The phase axis applies the same
+subtraction to the target and the same addition to the realized fraction.
 
-The PLUX Bluetooth transport adds a further 20 to 40 ms that does not appear
-in the LSL timestamps, because those are arrival times. The runner measures
-each realized delay online against the stamped R-wave, so that lag would
-understate the true R-to-tone interval; the `bridgeLag` setting adds it back
-before the posterior is updated, and both the raw and corrected values are
-saved. The LabRecorder file remains the ground truth for checking it.
+**The latency floor.** A tone for a physical delay `d` is due at the stamped
+R-wave plus `d` less the 50 ms bias. It can be scheduled only if that is at
+least the 50 ms audio lead after the beat is known, which is up to 31 ms after
+the stamped R-wave. So
+
+```{math}
+d \geq 31 + 50 + 50 = 131 \text{ ms},
+```
+
+and the runner's floor, `TaskConfig.minDelay`, is 130 ms. The candidates
+still start at 80 ms; the per-trial bounds leave out those under the floor.
+Shorter delays are possible only by scheduling predictively from the
+anticipated interbeat interval (the mean of the last three RR intervals).
+That adds the beat-to-beat variability of the heart period to the delay as
+jitter, and is not implemented. A sensation earlier than 130 ms can still be
+located, but only from the falling side of the envelope.
+
+The simulations in the [results](#results) used an 80 ms floor, the reactive
+floor before the latency bias was accounted for. A rerun at 130 ms is in
+progress and will be added here.
+
+The latency bias is an estimate. The LabRecorder file remains the ground
+truth for checking it: with the ECG and the tone markers on one clock, the
+offline R-waves and the reported onsets show the delay actually delivered,
+less the speaker.
 
 **Stopping rule candidates.** Stop when the 95 percent credible interval on
 `mu` is at most a target width, with a minimum and a maximum number of trials.
@@ -333,8 +358,9 @@ anything.
 Each adaptive method runs with `explore` at 0 and at 0.1. Every run lasts 120
 trials so that estimates can be compared at every trial count. An
 inward-outward staircase arm after García-Pérez was optional and was not run.
-The adaptive methods use a `min_delay` of 80 ms, the hardware floor measured
-above, so their candidates run from 80 to 600 ms. The MCS keeps its published
+The adaptive methods use a `min_delay` of 80 ms, the reactive floor measured
+above before the latency bias was accounted for, so their candidates run from
+80 to 600 ms. The runner's floor is now 130 ms; the rerun is in progress. The MCS keeps its published
 levels from 0 to 500 ms as the classical benchmark, although 0 ms cannot be
 realized on current hardware.
 
@@ -446,8 +472,8 @@ trials without exploration and 5 percent with it.
 
 | Phase | Status | Content |
 |---|---|---|
-| B. Task runner | Implemented | The task, its parameters and configuration, English instructions, an autopilot observer, the train scheduler with both stimulus axes, a headless test on a virtual heart, an LSL test on a synthetic ECG through `LSLRecorder` and `OnlineRDetector`, the wrapper and a user guide section |
-| B. Hardware dry run | Pending | The LSL beat source and PsychPortAudio tone player moved from the PAT task into `cardioception.devices`; the Plux-to-LSL bridge installed on the test desktop; 15 trials on a real ECG, with realized minus requested delay within 5 ms (median) and 15 ms (95th percentile) against the stamped R-wave, and the measured transport lag entered as `bridgeLag` |
+| B. Task runner | Implemented | The task, its parameters and configuration, English instructions, an autopilot observer, the train scheduler with both stimulus axes, a headless test on a virtual heart, an LSL test on a synthetic ECG through `LSLRecorder` and the shared `LSLBeatSource`, the wrapper and a user guide section. `setup="behavioral"` uses the shared `LSLBeatSource` and `TonePlayer` in `cardioception.devices` |
+| B. Hardware dry run | Pending | The Plux-to-LSL bridge installed on the test desktop; 15 trials on a real ECG, with realized minus requested delay within 5 ms (median) and 15 ms (95th percentile) against the stamped R-wave once the latency bias is added back, and the bias checked against the LabRecorder file |
 | D. Exteroceptive validation | Not started | The same adaptive procedure on a tone and vibration (or light) stimulus with a known delay, as a screening condition and as a ground-truth check of the engine |
 
 ## References

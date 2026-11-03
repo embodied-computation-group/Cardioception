@@ -4,9 +4,10 @@
 Experimental. Start the device's streaming program first. Needs
 `pip install cardioception-toolbox[lsl]`.
 
-The LSL beat source and the PsychPortAudio tone player this script relies on
-come from `cardioception.devices` once they have been moved there from the
-PAT task. Until then `getParameters` raises an ImportError saying so.
+Beats are found online by `cardioception.devices.beat_source.LSLBeatSource`
+and tones played by `cardioception.devices.tone_player.TonePlayer`
+(PsychPortAudio). Record the ECG stream and the "HSD" marker stream with
+LabRecorder: the XDF is the session's recording.
 """
 
 from psychopy import gui

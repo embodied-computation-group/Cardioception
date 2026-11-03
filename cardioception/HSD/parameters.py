@@ -10,8 +10,13 @@ Two devices drive a session: a beat source, which reports R-waves as they are
 detected, and a tone player, which plays a tone at a given clock time (see
 :mod:`cardioception.HSD._stimulus` for the protocols they satisfy). Both, and
 the scheduler between them, must read the same clock, which is kept in
-``parameters["clock"]``: ``pylsl.local_clock`` when pylsl is installed, else
-``time.perf_counter``, unless ``clock=`` says otherwise.
+``parameters["clock"]``: :func:`cardioception.devices.beat_source.default_clock`
+(``pylsl.local_clock``, or PsychToolbox's ``GetSecs`` without pylsl) unless
+``clock=`` says otherwise.
+
+With ``setup="behavioral"`` the devices are the shared ones:
+:class:`cardioception.devices.beat_source.LSLBeatSource` over the recorder's
+stream and :class:`cardioception.devices.tone_player.TonePlayer`.
 """
 
 import datetime
@@ -23,54 +28,47 @@ from typing import Any, Callable, Dict, Optional, Tuple
 from .._log import get_logger, start_session_log
 from .._rng import make_rng
 from .._triggers import validate as validate_triggers
+from ..devices import beat_source as _beat_source
+from ..devices import tone_player as _tone_player
 from ..output import SessionPaths
 from ..scales import DISCRETE_1_10, ConfidenceScale
 from ._constants import EVENTS
+from ._stimulus import BeatSource, TonePlayer
 from .config import TaskConfig
 from .languages import get_texts
 
 logger = get_logger()
 
-#: What to tell a caller whose ``setup="behavioral"`` finds no devices.
-_HANDOFF = (
-    "The LSL beat source and the PsychPortAudio tone player are not in "
-    "cardioception.devices yet: they are being lifted out of "
-    "cardioception/PAT/engine.py on the pat-ecg branch (beat_source.py and "
-    "tone_player.py), and HSD takes them from there once they land. Until "
-    "then, pass beat_source= and tone_player= yourself."
-)
+
+def _clock_name(clock: Callable[[], float]) -> str:
+    module = getattr(clock, "__module__", None) or type(clock).__module__
+    name = getattr(clock, "__qualname__", None) or type(clock).__qualname__
+    if module.startswith("pylsl") and name == "local_clock":
+        return "pylsl.local_clock"
+    return f"{module}.{name}"
 
 
 def default_clock() -> Tuple[Callable[[], float], str]:
     """The session clock and its name.
 
-    ``pylsl.local_clock`` when pylsl imports, so that beat times, tone onsets
-    and the LSL marker stream share one clock; ``time.perf_counter``
-    otherwise. On Windows both read QueryPerformanceCounter.
+    :func:`cardioception.devices.beat_source.default_clock`, the clock the
+    shared beat sources and tone player use by default: ``pylsl.local_clock``,
+    so that beat times, tone onsets and the LSL marker stream share one
+    clock, or PsychToolbox's ``GetSecs`` without pylsl. On Windows both read
+    QueryPerformanceCounter.
     """
-    try:
-        import pylsl
-
-        return pylsl.local_clock, "pylsl.local_clock"
-    except ImportError:
-        return time.perf_counter, "time.perf_counter"
+    clock = _beat_source.default_clock()
+    return clock, _clock_name(clock)
 
 
-def _clock_name(clock: Callable[[], float]) -> str:
-    module = getattr(clock, "__module__", None) or type(clock).__module__
-    name = getattr(clock, "__qualname__", None) or type(clock).__qualname__
-    return f"{module}.{name}"
-
-
-def _device_classes(setup: str, recorder, beat_source, tone_player) -> Tuple:
-    """The classes that will build whichever device was not passed in.
+def _check_devices(setup: str, recorder, beat_source, tone_player) -> None:
+    """Refuse a session whose devices cannot be built.
 
     Checked before anything is written, so a launch that cannot run leaves no
-    run directory and no open log behind. Returns ``(LSLBeatSource,
-    TonePlayer)``, either of them ``None`` when not needed.
+    run directory and no open log behind.
     """
     if beat_source is not None and tone_player is not None:
-        return None, None
+        return
     if setup == "test":
         raise ValueError(
             "setup='test' has no beat source or tone player of its own. "
@@ -78,26 +76,17 @@ def _device_classes(setup: str, recorder, beat_source, tone_player) -> Tuple:
             "session clock (cardioception.HSD.parameters.default_clock, "
             "or the clock= you pass)."
         )
-    try:
-        from cardioception.devices.beat_source import LSLBeatSource  # type: ignore
-        from cardioception.devices.tone_player import TonePlayer  # type: ignore
-    except ImportError as error:
-        raise ImportError(_HANDOFF) from error
     if beat_source is None and recorder is None:
         raise ValueError(
             "setup='behavioral' reads the beats from an LSL stream: "
             "pass recorder=LSLRecorder(...)."
         )
-    return (
-        LSLBeatSource if beat_source is None else None,
-        TonePlayer if tone_player is None else None,
-    )
 
 
 def _describe_player(player) -> Dict[str, Any]:
     """The tone player's own description, or what can be read off it.
 
-    The PsychPortAudio player of the PAT task has no ``describe``.
+    The shared PsychPortAudio player has no ``describe``.
     """
     if hasattr(player, "describe"):
         return player.describe()
@@ -109,9 +98,30 @@ def _describe_player(player) -> Dict[str, Any]:
     }
 
 
+def _lsl_beat_source(recorder) -> BeatSource:
+    """The shared LSL beat source, typed as HSD's protocol so mypy checks it."""
+    source: BeatSource = _beat_source.LSLBeatSource(recorder)
+    return source
+
+
+def _ptb_tone_player(config: TaskConfig, clock: Callable[[], float]) -> TonePlayer:
+    """The shared PsychPortAudio tone player, typed as HSD's protocol.
+
+    Its vibration channel is silent: the HSD plays tones only.
+    """
+    player: TonePlayer = _tone_player.TonePlayer(
+        freq=config.toneFreq,
+        duration=config.toneSecs,
+        ramp=config.toneRamp,
+        volume=config.toneVolume,
+        vib_volume=0.0,
+        clock=clock,
+    )
+    return player
+
+
 def _open_devices(
     parameters: Dict[str, Any],
-    classes: Tuple,
     recorder,
     beat_source,
     tone_player,
@@ -120,20 +130,13 @@ def _open_devices(
     """Attach the beat source and the tone player.
 
     Explicit objects win over ``setup``. Otherwise ``"behavioral"`` builds
-    the LSL beat source over ``recorder`` and the PsychPortAudio tone player
-    from ``cardioception.devices`` (``classes``, from :func:`_device_classes`).
+    the shared LSL beat source over ``recorder`` and the PsychPortAudio tone
+    player on the session clock.
     """
-    source_class, player_class = classes
     if beat_source is None:
-        beat_source = source_class(recorder)
+        beat_source = _lsl_beat_source(recorder)
     if tone_player is None:
-        tone_player = player_class(
-            freq=config.toneFreq,
-            duration=config.toneSecs,
-            ramp=config.toneRamp,
-            volume=config.toneVolume,
-            clock=parameters["clock"],
-        )
+        tone_player = _ptb_tone_player(config, parameters["clock"])
     parameters["beatSource"] = beat_source
     parameters["tonePlayer"] = tone_player
     parameters["recorder"] = recorder
@@ -188,12 +191,12 @@ def getParameters(
     participant, session : str
         Identifiers, as for the HRD.
     setup : str
-        ``"behavioral"`` builds the LSL beat source over ``recorder`` and the
-        PsychPortAudio tone player, from ``cardioception.devices``. Those
-        classes are still being moved there from the PAT task, and until they
-        land this raises ``ImportError`` unless ``beat_source`` and
-        ``tone_player`` are given. ``"test"`` opens a small window and needs
-        both objects passed in.
+        ``"behavioral"`` builds
+        :class:`~cardioception.devices.beat_source.LSLBeatSource` over
+        ``recorder`` and :class:`~cardioception.devices.tone_player.TonePlayer`
+        (PsychPortAudio, the tone from ``config``), both on the session clock.
+        ``"test"`` opens a small window and needs ``beat_source`` and
+        ``tone_player`` passed in.
     axis : str | None
         ``"absolute"``: delays in ms after the R-wave. ``"phase"``: delays as
         a fraction of the anticipated interbeat interval. ``None`` keeps the
@@ -292,9 +295,8 @@ def getParameters(
     parameters["nTrials"] = config.maxTrials
     parameters["nBreaking"] = nBreaking
 
-    default, default_name = default_clock()
-    if clock is None or clock is default:
-        clock, clock_name = default, default_name
+    if clock is None:
+        clock, clock_name = default_clock()
     else:
         clock_name = _clock_name(clock)
     parameters["clock"] = clock
@@ -302,7 +304,7 @@ def getParameters(
 
     # Before the run directory and the log exist, so a launch that cannot
     # find its devices leaves nothing behind.
-    classes = _device_classes(setup, recorder, beat_source, tone_player)
+    _check_devices(setup, recorder, beat_source, tone_player)
 
     # Rows, tones, beats and posterior snapshots accumulate here and are
     # written by the task.
@@ -331,7 +333,7 @@ def getParameters(
 
     parameters["engine"] = config.engine(parameters["rng"])
 
-    _open_devices(parameters, classes, recorder, beat_source, tone_player, config)
+    _open_devices(parameters, recorder, beat_source, tone_player, config)
 
     _build_window(parameters, fullscr)
 

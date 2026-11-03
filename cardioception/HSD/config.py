@@ -31,6 +31,7 @@ import numpy as np
 from ._constants import (
     AUDIO_LEAD,
     AXES,
+    LATENCY_BIAS,
     MAX_PERIOD_FRACTION,
     MIN_DELAY_S,
     N_TONES,
@@ -100,7 +101,10 @@ class TaskConfig:
     ciWidthPhase: float = 0.17
 
     # --- timing --------------------------------------------------------------
-    #: Shortest R-to-tone delay requested, in seconds, on both axes.
+    #: Shortest physical R-to-tone delay requested, in seconds, on both axes:
+    #: the 31 ms (p95) it takes to know of a beat, plus ``audioLead``, plus
+    #: ``latencyBias`` (see :mod:`cardioception.HSD._constants`). Candidates
+    #: below it stay in the grid and are left out by :meth:`bounds`.
     minDelay: float = MIN_DELAY_S
     #: Longest delay, as a fraction of the current interbeat interval.
     maxPeriodFraction: float = MAX_PERIOD_FRACTION
@@ -112,10 +116,12 @@ class TaskConfig:
     ceilingMargin: float = 0.05
     #: Seconds a tone is scheduled ahead of its onset.
     audioLead: float = AUDIO_LEAD
-    #: Seconds by which the stamped R-wave trails the true one (the transport
-    #: lag of the device). Added to every realized delay before it reaches the
-    #: engine; 0 until it has been measured for the device in use.
-    bridgeLag: float = 0.0
+    #: Seconds of physical delay the recordings cannot see: the transport
+    #: before the ECG is stamped plus the speaker after the onset the audio
+    #: driver reports, 30 to 70 ms on the PAT dry run. Subtracted from every
+    #: tone target and added to every realized delay before it reaches the
+    #: engine, as the PAT task does.
+    latencyBias: float = LATENCY_BIAS
     #: Inter-stimulus interval, drawn uniformly between the two values.
     isi: Tuple[float, float] = (0.25, 0.25)
 

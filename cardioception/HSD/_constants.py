@@ -57,15 +57,30 @@ TONE_RAMP = 0.005
 # - the stamped R peak itself trails the true R peak by the Bluetooth
 #   transport, 20 to 40 ms, which no scheduling can recover.
 #
-# So the shortest delay that can be met on every beat is about 31 + 50 ms
-# after the stamped R, and realized delays measured against stamped R times
-# understate the true R-to-tone interval by the transport lag.
+# The recordings cannot see two delays: the transport before the ECG is
+# stamped, and the speaker after the onset the audio driver reports. Together
+# they are 30 to 70 ms (the PAT dry run), so every target is moved
+# LATENCY_BIAS earlier, as the PAT task does, and the realized delay measured
+# against the stamped R-wave is LATENCY_BIAS short of the physical one.
+#
+# A tone for a physical delay d after the true R-wave is therefore due at
+# r_time + d - LATENCY_BIAS on the clock, and can be scheduled only if that is
+# at least AUDIO_LEAD after the beat becomes known, 31 ms (p95) after r_time:
+#
+#     d >= 0.031 + AUDIO_LEAD + LATENCY_BIAS = 0.031 + 0.05 + 0.05 = 0.131 s
+#
+# MIN_DELAY_S is that floor, rounded. Shorter candidates stay in the grid;
+# the per-trial bounds leave them out.
 
 #: Seconds a tone must be scheduled ahead of its onset to land on time.
 AUDIO_LEAD = 0.05
 
-#: Shortest R-to-tone delay the task will request, in seconds.
-MIN_DELAY_S = 0.08
+#: Seconds of physical delay the recordings do not show (transport plus
+#: speaker), subtracted from every target and added to every realized delay.
+LATENCY_BIAS = 0.05
+
+#: Shortest physical R-to-tone delay the task will request, in seconds.
+MIN_DELAY_S = 0.13
 
 #: Longest delay, as a fraction of the interbeat interval. Beyond it the tone
 #: falls close enough to the next R-wave to be heard as belonging to it.

@@ -12,6 +12,7 @@ import numpy as np
 
 from cardioception._rng import make_rng
 from cardioception.HSD._autopilot import HSDAutopilot
+from cardioception.HSD._constants import LATENCY_BIAS, MIN_DELAY_S
 from cardioception.HSD._outcome import HSDTrialOutcome, posterior_fields, train_fields
 from cardioception.HSD._stimulus import BeatSource, TonePlayer, TrainScheduler
 from cardioception.HSD.config import TaskConfig
@@ -33,9 +34,10 @@ class FakeClock:
 
 
 class FakeBeat:
-    def __init__(self, r_time, period):
+    def __init__(self, r_time, period, commit_time=None):
         self.r_time = r_time
         self.period = period
+        self.commit_time = commit_time
 
 
 class FakeBeatSource:
@@ -152,13 +154,19 @@ BEATS = [1.0 + i for i in range(10)]
 
 class TestTargets(unittest.TestCase):
     def test_absolute_targets_are_r_time_plus_delay(self):
-        """On the absolute axis each tone is due ``delay`` ms after its R-wave."""
+        """On the absolute axis each tone is due ``delay`` ms after its R-wave.
+
+        Less the latency bias: the target is where the tone must start on the
+        clock for the participant to hear it ``delay`` after the true R-wave.
+        """
         _, _, player, scheduler = setup(BEATS)
-        result = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertFalse(result.aborted)
         self.assertEqual(result.end_reason, "complete")
         for tone in result.tones:
-            self.assertAlmostEqual(tone.target, tone.r_time + 0.2, places=12)
+            self.assertAlmostEqual(
+                tone.target, tone.r_time + 0.2 - LATENCY_BIAS, places=12
+            )
             self.assertAlmostEqual(player.scheduled[tone.handle], tone.target)
         self.assertEqual([t.r_time for t in result.tones], BEATS[:5])
 
@@ -166,11 +174,13 @@ class TestTargets(unittest.TestCase):
         """On the phase axis the delay is the fraction times the beat's period."""
         r_times = [1.0 + 0.8 * i for i in range(10)]
         _, _, _, scheduler = setup(r_times, period=0.8)
-        result = scheduler.run(0.4, "phase", min_delay_s=0.08)
+        result = scheduler.run(0.4, "phase", min_delay_s=MIN_DELAY_S)
         self.assertFalse(result.aborted)
         self.assertEqual(result.n_delivered, 5)
         for tone in result.tones:
-            self.assertAlmostEqual(tone.target, tone.r_time + 0.4 * 0.8, places=12)
+            self.assertAlmostEqual(
+                tone.target, tone.r_time + 0.4 * 0.8 - LATENCY_BIAS, places=12
+            )
         for tone in result.tones[:-1]:
             self.assertAlmostEqual(tone.realized_fraction, 0.4, places=9)
         self.assertAlmostEqual(result.realized_mean, 0.4, places=9)
@@ -178,7 +188,7 @@ class TestTargets(unittest.TestCase):
     def test_stale_beats_are_ignored(self):
         """An R-wave before the train started is neither used nor counted."""
         _, _, _, scheduler = setup(BEATS, start=1.5)
-        result = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertEqual(result.beats_seen[0]["status"], "stale")
         self.assertEqual(result.tones[0].r_time, 2.0)
         self.assertEqual(result.n_skipped, 0)
@@ -188,13 +198,14 @@ class TestRules(unittest.TestCase):
     def test_late_beat_is_skipped_counted_and_not_reanchored(self):
         """A beat known too late for the audio lead is skipped, not moved.
 
-        The second beat is reported 50 ms after its R-wave, so an 80 ms tone
-        is 30 ms away, under the 50 ms lead. The train completes from the
-        later beats, and no tone is scheduled off the predicted next beat.
+        The second beat is reported 50 ms after its R-wave. A 130 ms tone,
+        less the 50 ms latency bias, is due 80 ms after it, so 30 ms away,
+        under the 50 ms lead. The train completes from the later beats, and
+        no tone is scheduled off the predicted next beat.
         """
         latency = lambda i: 0.05 if i == 1 else 0.02  # noqa: E731
         _, _, player, scheduler = setup(BEATS, latency=latency)
-        result = scheduler.run(80.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(130.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertFalse(result.aborted)
         self.assertEqual(result.n_skipped, 1)
         self.assertEqual(result.n_delivered, 5)
@@ -211,7 +222,7 @@ class TestRules(unittest.TestCase):
     def test_every_beat_late_ends_after_max_beats(self):
         """With no beat usable the train gives up after ``n_tones + 3`` beats."""
         _, _, player, scheduler = setup(BEATS, latency=0.06)
-        result = scheduler.run(80.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(130.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertFalse(result.aborted)
         self.assertEqual(result.end_reason, "max_beats")
         self.assertEqual(result.n_skipped, 8)
@@ -224,7 +235,7 @@ class TestRules(unittest.TestCase):
         """A 600 ms delay on a 700 ms period is above 0.75 of it: abort."""
         r_times = [1.0 + 0.7 * i for i in range(10)]
         _, _, player, scheduler = setup(r_times, period=0.7)
-        result = scheduler.run(600.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(600.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertTrue(result.aborted)
         self.assertEqual(result.abort_reason, "ceiling")
         self.assertEqual(player.scheduled, {})
@@ -232,7 +243,7 @@ class TestRules(unittest.TestCase):
     def test_phase_axis_without_a_period_aborts(self):
         """The phase axis needs a period before the train can start."""
         _, _, player, scheduler = setup(BEATS, period=None)
-        result = scheduler.run(0.4, "phase", min_delay_s=0.08)
+        result = scheduler.run(0.4, "phase", min_delay_s=MIN_DELAY_S)
         self.assertTrue(result.aborted)
         self.assertEqual(result.abort_reason, "no_period")
         self.assertEqual(result.tones, [])
@@ -241,14 +252,16 @@ class TestRules(unittest.TestCase):
     def test_delay_below_the_floor_is_refused(self):
         """A request below ``min_delay_s`` is refused before any beat."""
         _, _, _, scheduler = setup(BEATS)
-        result = scheduler.run(50.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(100.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertTrue(result.aborted)
         self.assertEqual(result.abort_reason, "floor")
 
     def test_timeout_aborts(self):
         """Without beats the train ends at ``timeout_s``, flagged as aborted."""
         clock, _, _, scheduler = setup([])
-        result = scheduler.run(200.0, "absolute", min_delay_s=0.08, timeout_s=1.0)
+        result = scheduler.run(
+            200.0, "absolute", min_delay_s=MIN_DELAY_S, timeout_s=1.0
+        )
         self.assertTrue(result.aborted)
         self.assertEqual(result.abort_reason, "timeout")
         self.assertGreaterEqual(result.ended - result.started, 1.0)
@@ -257,28 +270,46 @@ class TestRules(unittest.TestCase):
         """Only the two axes exist."""
         _, _, _, scheduler = setup(BEATS)
         with self.assertRaises(ValueError):
-            scheduler.run(200.0, "degrees", min_delay_s=0.08)
+            scheduler.run(200.0, "degrees", min_delay_s=MIN_DELAY_S)
 
 
 class TestRealized(unittest.TestCase):
-    def test_absolute_corrected_adds_bridge_lag_in_ms(self):
-        """The engine value is mean realized delay plus the lag, in ms."""
-        _, _, _, scheduler = setup(BEATS, onset_error=0.002, bridge_lag=0.03)
-        result = scheduler.run(200.0, "absolute", min_delay_s=0.08)
-        self.assertAlmostEqual(result.realized_mean, 0.202, places=9)
-        self.assertAlmostEqual(result.realized_corrected, 232.0, places=6)
+    def test_absolute_corrected_adds_the_latency_bias_in_ms(self):
+        """Targets move earlier by the bias; the engine value adds it back.
+
+        With a 30 ms bias and onsets 2 ms late, the stamped delay is 172 ms
+        and the physical one 202 ms.
+        """
+        _, _, _, scheduler = setup(BEATS, onset_error=0.002, latency_bias=0.03)
+        result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
+        for tone in result.tones:
+            self.assertAlmostEqual(tone.target, tone.r_time + 0.17, places=12)
+        self.assertAlmostEqual(result.realized_mean, 0.172, places=9)
+        self.assertAlmostEqual(result.realized_corrected, 202.0, places=6)
 
     def test_phase_corrected_is_a_fraction_of_the_period(self):
-        """On the phase axis the lag-corrected delay is divided by the period."""
+        """On the phase axis the bias-corrected delay is divided by the period."""
         r_times = [1.0 + 0.8 * i for i in range(10)]
-        _, _, _, scheduler = setup(r_times, period=0.8, bridge_lag=0.03)
-        result = scheduler.run(0.4, "phase", min_delay_s=0.08)
-        self.assertAlmostEqual(result.realized_corrected, (0.32 + 0.03) / 0.8)
+        _, _, _, scheduler = setup(r_times, period=0.8, latency_bias=0.03)
+        result = scheduler.run(0.4, "phase", min_delay_s=MIN_DELAY_S)
+        self.assertAlmostEqual(result.realized_corrected, 0.4, places=9)
+        # The realized fraction carries the bias in its numerator too.
+        for tone in result.tones[:-1]:
+            self.assertAlmostEqual(tone.realized, 0.29, places=9)
+            self.assertAlmostEqual(tone.realized_fraction, 0.4, places=9)
+
+    def test_no_bias_targets_the_stamped_delay(self):
+        """``latency_bias=0`` schedules on the stamped R-wave plus the delay."""
+        _, _, _, scheduler = setup(BEATS, latency_bias=0.0)
+        result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
+        for tone in result.tones:
+            self.assertAlmostEqual(tone.target, tone.r_time + 0.2, places=12)
+        self.assertAlmostEqual(result.realized_corrected, 200.0, places=6)
 
     def test_tone_records_are_filled(self):
         """Every delivered tone has its onset, realized delay and lead."""
         _, _, _, scheduler = setup(BEATS, onset_error=0.001)
-        result = scheduler.run(300.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(300.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertEqual(result.n_delivered, scheduler.n_tones)
         self.assertEqual(len(result.tones), 5)
         for i, tone in enumerate(result.tones):
@@ -287,10 +318,12 @@ class TestRealized(unittest.TestCase):
             self.assertIsNone(tone.reason)
             self.assertEqual(tone.period, 1.0)
             self.assertAlmostEqual(tone.onset, tone.target + 0.001)
-            self.assertAlmostEqual(tone.realized, 0.301)
+            # Stamped: 300 ms less the bias, plus the 1 ms onset error.
+            self.assertAlmostEqual(tone.realized, 0.251)
             self.assertGreaterEqual(tone.lead, scheduler.audio_lead)
             self.assertIsNotNone(tone.handle)
         for tone in result.tones[:-1]:
+            # Physical, over the observed 1 s interval.
             self.assertAlmostEqual(tone.realized_fraction, 0.301)
         # The train ends before the beat after the last tone is seen.
         self.assertIsNone(result.tones[-1].realized_fraction)
@@ -299,8 +332,11 @@ class TestRealized(unittest.TestCase):
     def test_train_fields_put_every_delay_in_engine_units(self):
         """The results row has requested and realized delay in ms alike."""
         _, _, _, scheduler = setup(BEATS)
-        fields = train_fields(scheduler.run(200.0, "absolute", min_delay_s=0.08))
-        self.assertAlmostEqual(fields["realizedDelay"], 200.0, places=6)
+        fields = train_fields(scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S))
+        # Measured against the stamped R-wave, then with the bias added back.
+        self.assertAlmostEqual(
+            fields["realizedDelay"], 200.0 - LATENCY_BIAS * 1000.0, places=6
+        )
         self.assertAlmostEqual(fields["realizedCorrected"], 200.0, places=6)
         self.assertEqual(fields["requestedDelay"], 200.0)
         self.assertEqual(fields["periodMean"], 1.0)
@@ -319,7 +355,7 @@ class TestReview(unittest.TestCase):
         """
         r_times = [1.0 + 0.8 * i for i in range(10)]
         _, _, _, scheduler = setup(r_times, period=0.9)
-        result = scheduler.run(0.4, "phase", min_delay_s=0.08)
+        result = scheduler.run(0.4, "phase", min_delay_s=MIN_DELAY_S)
         self.assertEqual(result.n_delivered, 5)
         for tone in result.tones[:-1]:
             self.assertAlmostEqual(tone.realized_fraction, 0.45, places=9)
@@ -336,7 +372,7 @@ class TestReview(unittest.TestCase):
         r_times = [1.4 + 1.5 * i for i in range(12)]
         latency = lambda i: 0.2 if i in (1, 3) else 0.02  # noqa: E731
         _, _, player, scheduler = setup(r_times, period=1.5, latency=latency)
-        result = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertFalse(result.aborted)
         self.assertIn(result.end_reason, ("complete", "max_beats"))
         self.assertEqual(result.n_delivered, 5)
@@ -353,7 +389,7 @@ class TestReview(unittest.TestCase):
         """
         r_times = [1.0 + 0.5 * i for i in range(10)]
         _, _, player, scheduler = setup(r_times, period=None)
-        result = scheduler.run(600.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(600.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertEqual(player.scheduled, {})
         self.assertEqual(result.n_delivered, 0)
         self.assertEqual(result.tones[0].reason, "no_period")
@@ -363,7 +399,7 @@ class TestReview(unittest.TestCase):
     def test_absolute_without_period_uses_rr_when_it_fits(self):
         """A delay that fits the observed RR is played although no period is known."""
         _, _, _, scheduler = setup(BEATS, period=None)
-        result = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertEqual(result.end_reason, "complete")
         self.assertEqual(result.n_delivered, 5)
         self.assertEqual(result.n_skipped, 1)
@@ -371,7 +407,7 @@ class TestReview(unittest.TestCase):
     def test_tone_without_onset_is_replaced(self):
         """A NaN onset frees its place, and the train goes on to a sixth beat."""
         _, _, player, scheduler = setup(BEATS, player_kwargs={"nan_handles": {2}})
-        result = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertEqual(result.n_delivered, 5)
         self.assertEqual(result.end_reason, "complete")
         self.assertEqual(len(player.scheduled), 6)
@@ -384,7 +420,7 @@ class TestReview(unittest.TestCase):
         _, _, _, scheduler = setup(
             BEATS, player_kwargs={"nan_handles": set(range(1, 20))}
         )
-        result = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertEqual(result.n_delivered, 0)
         self.assertEqual(result.end_reason, "max_beats")
         self.assertFalse(result.aborted)
@@ -405,10 +441,11 @@ class TestReview(unittest.TestCase):
     def test_phase_floor_is_rounded_up(self):
         """A candidate inside the bounds is never refused as below the floor.
 
-        At this period 0.08 s is 0.1250000004 of it, which rounds to 0.125 at
-        six decimals; the floor must round up, past the 0.125 candidate.
+        At this period the 0.13 s floor is 0.1250000004 of it, which rounds to
+        0.125 at six decimals; the floor must round up, past the 0.125
+        candidate.
         """
-        period = 0.08 / 0.1250000004
+        period = MIN_DELAY_S / 0.1250000004
         config = TaskConfig(axis="phase")
         low, high = config.bounds(period)
         self.assertGreater(low, 0.125)
@@ -445,13 +482,13 @@ class TestReview(unittest.TestCase):
             periods=periods,
             player_kwargs={"report_delay": 2.0},
         )
-        result = scheduler.run(400.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(400.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertTrue(result.aborted)
         self.assertEqual(result.abort_reason, "ceiling")
         self.assertEqual(player.stopped, 1)
         self.assertFalse(player.busy)
         first, second = result.tones
-        self.assertAlmostEqual(first.onset, 1.4)
+        self.assertAlmostEqual(first.onset, 1.4 - LATENCY_BIAS)
         self.assertFalse(first.skipped)
         self.assertEqual(second.reason, "no_onset")
         self.assertIsNone(second.onset)
@@ -468,13 +505,13 @@ class TestHooks(unittest.TestCase):
             latency=latency,
             marker=lambda kind, stamp, **f: markers.append((kind, stamp, f)),
         )
-        scheduler.run(80.0, "absolute", min_delay_s=0.08)
+        scheduler.run(130.0, "absolute", min_delay_s=MIN_DELAY_S)
         kinds = {kind for kind, _, _ in markers}
         self.assertEqual(
             kinds, {"beat", "tone_scheduled", "tone_onset", "tone_skipped"}
         )
         expected = {
-            "beat": {"r_time", "rr", "period", "commit_time"},
+            "beat": {"r_time", "rr", "period", "commit_time", "seen_time"},
             "tone_scheduled": {
                 "r_time",
                 "period",
@@ -484,6 +521,7 @@ class TestHooks(unittest.TestCase):
                 "delay_ms",
                 "phase_deg",
                 "fraction",
+                "latency",
             },
             "tone_onset": {
                 "r_time",
@@ -502,13 +540,21 @@ class TestHooks(unittest.TestCase):
                 # The report summarizes "real" and "predicted" anchors only.
                 self.assertEqual(fields["anchor"], "real")
             if kind == "beat":
-                # The poll time, from which the report takes the detection lag.
+                # These fake beats give no commit time, so it is the poll time,
+                # from which the report takes the detection lag.
                 self.assertEqual(fields["commit_time"], stamp)
+                self.assertEqual(fields["seen_time"], stamp)
                 self.assertGreaterEqual(fields["commit_time"], fields["r_time"])
+            if kind == "tone_scheduled":
+                self.assertIsNone(fields["latency"])
+                self.assertAlmostEqual(
+                    fields["target"], fields["r_time"] + 0.13 - LATENCY_BIAS
+                )
             if kind in ("tone_scheduled", "tone_onset"):
-                self.assertAlmostEqual(fields["delay_ms"], 80.0)
-                # The intended phase: 80 ms of a 1 s period.
-                self.assertAlmostEqual(fields["phase_deg"], 28.8)
+                # The intended physical delay, not the biased target.
+                self.assertAlmostEqual(fields["delay_ms"], 130.0)
+                # The intended phase: 130 ms of a 1 s period.
+                self.assertAlmostEqual(fields["phase_deg"], 46.8)
             if kind == "tone_onset":
                 self.assertEqual(stamp, fields["onset"])
             if kind == "tone_skipped":
@@ -519,9 +565,38 @@ class TestHooks(unittest.TestCase):
         """The frame hook is not called on every loop pass."""
         calls = []
         _, _, _, scheduler = setup(BEATS, on_frame=lambda: calls.append(1))
-        result = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertLessEqual(len(calls), result.n_delivered)
         self.assertGreater(len(calls), 0)
+
+    def test_commit_time_from_the_source_is_kept(self):
+        """A beat's own commit time is marked, recorded and timed against."""
+
+        class CommittingSource(FakeBeatSource):
+            def poll(self):
+                beats = super().poll()
+                return [FakeBeat(b.r_time, b.period, b.r_time + 0.015) for b in beats]
+
+        markers = []
+        clock = FakeClock(now=0.5)
+        source = CommittingSource(clock, BEATS, period=1.0)
+        scheduler = TrainScheduler(
+            source,
+            FakePlayer(clock),
+            clock,
+            marker=lambda kind, stamp, **f: markers.append((kind, stamp, f)),
+        )
+        result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
+        for beat in result.beats_seen:
+            self.assertAlmostEqual(beat["commit_time"], beat["r_time"] + 0.015)
+        for kind, stamp, fields in markers:
+            if kind == "beat":
+                self.assertAlmostEqual(fields["commit_time"], fields["r_time"] + 0.015)
+                self.assertGreater(fields["seen_time"], fields["commit_time"])
+            if kind == "tone_scheduled":
+                # Polled 20 ms after the R-wave, committed 15 ms after it.
+                self.assertGreater(fields["latency"], 0.0)
+                self.assertLess(fields["latency"], 0.02)
 
     def test_phase_deg_is_nan_without_a_period(self):
         """A tone on a beat with no anticipated period has no intended phase."""
@@ -531,7 +606,7 @@ class TestHooks(unittest.TestCase):
             period=None,
             marker=lambda kind, stamp, **f: markers.append((kind, f)),
         )
-        scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         onsets = [f for kind, f in markers if kind == "tone_onset"]
         self.assertGreater(len(onsets), 0)
         for fields in onsets:
@@ -589,7 +664,10 @@ class TestConfig(unittest.TestCase):
         grids = config.grids()
         self.assertEqual(grids["mu"][-1], 600.0)
         self.assertEqual(config.ci_width(), 100.0)
-        self.assertEqual(config.bounds(0.8), (80.0, 570.0))
+        # The floor is the 130 ms physical floor; candidates below it stay in
+        # the grid and are left out per trial.
+        self.assertEqual(delays[0], 80.0)
+        self.assertEqual(config.bounds(0.8), (130.0, 570.0))
 
     def test_phase_candidates_and_grids(self):
         """Phase: 0.10 to 0.90 by 0.025, ``mu`` 0 to 1 and ``sigma`` in fractions."""
@@ -606,7 +684,7 @@ class TestConfig(unittest.TestCase):
         self.assertAlmostEqual(grids["sigma"][-1], 0.5)
         self.assertEqual(config.ci_width(), 0.17)
         low, high = config.bounds(0.8)
-        self.assertAlmostEqual(low, 0.1)
+        self.assertAlmostEqual(low, 0.1625)
         self.assertEqual(high, 0.75)
         psi = config.engine(make_rng(0)[0])
         delay, _ = psi.next_delay(low, high)
@@ -729,7 +807,7 @@ class TestObserve(unittest.TestCase):
             n_tones=2,
             marker=lambda kind, stamp, **f: markers.append((kind, f)),
         )
-        first = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        first = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertEqual(first.n_delivered, 2)
         # A rating gap of three beats, during which the task polls the source.
         clock.now += 3.0
@@ -738,7 +816,7 @@ class TestObserve(unittest.TestCase):
         self.assertEqual({b["status"] for b in between}, {"between"})
         for b in between:
             self.assertAlmostEqual(b["rr"], 1.0)
-        second = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        second = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertEqual(second.beats_seen[: len(between)], between)
         first_of_train = next(
             b for b in second.beats_seen if b["status"] in ("tone", "skipped")
@@ -752,10 +830,10 @@ class TestObserve(unittest.TestCase):
     def test_without_observe_the_first_rr_spans_the_gap(self):
         """The case observe exists for: discarded beats stretch the next RR."""
         clock, source, _, scheduler = setup(BEATS, n_tones=2)
-        scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         clock.now += 3.0
         source.poll()  # polled and thrown away
-        second = scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        second = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         first_of_train = next(
             b for b in second.beats_seen if b["status"] in ("tone", "skipped")
         )
@@ -764,7 +842,7 @@ class TestObserve(unittest.TestCase):
     def test_take_between_returns_and_clears(self):
         """Beats observed after the last train can still be collected."""
         clock, source, _, scheduler = setup(BEATS, n_tones=1)
-        scheduler.run(200.0, "absolute", min_delay_s=0.08)
+        scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         clock.now += 2.0
         scheduler.observe(source.poll())
         left = scheduler.take_between()

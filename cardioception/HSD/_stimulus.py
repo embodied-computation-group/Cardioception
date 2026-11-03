@@ -2,10 +2,13 @@
 """One trial's stimulus: a train of tones, each a set delay after its own R-wave.
 
 :class:`TrainScheduler` watches a beat source and, for each new beat, schedules
-a tone on the audio device at the R-wave time plus the trial's delay. It codes
-against two small protocols, :class:`BeatSource` and :class:`TonePlayer`, which
-the LSL beat source and the PsychPortAudio tone player of the PAT task satisfy
-unchanged, and which tests satisfy with fakes.
+a tone on the audio device at the R-wave time plus the trial's delay, less the
+latency bias. It codes against two small protocols, :class:`BeatSource` and
+:class:`TonePlayer`, which the shared
+:class:`cardioception.devices.beat_source.LSLBeatSource` and
+:class:`cardioception.devices.tone_player.TonePlayer` satisfy unchanged
+(``cardioception.HSD.parameters`` checks this statically), and which tests
+satisfy with fakes.
 
 Units: every time here is seconds on the beat source's clock (LSL
 ``local_clock`` in a real session), and the clock passed to the scheduler must
@@ -16,9 +19,14 @@ and a fraction of the anticipated interbeat interval on the phase axis; only
 
 The rules, per beat:
 
-- The target is ``r_time + delay`` (absolute) or ``r_time + fraction * period``
-  (phase), where ``period`` is the source's anticipated interbeat interval at
-  that beat.
+- The target is ``r_time + delay - latency_bias`` (absolute) or
+  ``r_time + fraction * period - latency_bias`` (phase), where ``period`` is
+  the source's anticipated interbeat interval at that beat. ``latency_bias``
+  stands for the delays the recordings cannot see, the transport before the
+  ECG is stamped and the speaker after the reported onset, so that the
+  delay is the one the participant hears. The realized delay measured
+  against the stamped R-wave is ``latency_bias`` short of it, and
+  :attr:`TrainResult.realized_corrected` adds it back.
 - If the target is less than ``audio_lead`` away, the tone cannot be scheduled
   in time. The beat is skipped and counted. It is never re-anchored on the
   predicted next beat, because that adds the error of the RR prediction to the
@@ -38,10 +46,13 @@ beats, with status ``"between"``.
 
 Markers follow the field names of the PAT dry run, so
 ``bench/pat_dryrun_report.py`` can read an HSD recording: every ``beat``
-carries ``commit_time`` (when it was polled), and the tones carry
-``anchor="real"`` (every HSD tone is locked to a detected R-wave),
-``phase_deg`` and ``delay_ms``, the intended position of the tone after its
-R-wave.
+carries ``commit_time`` (when the beat became known: the source's
+``commit_time`` when it gives one, else when it was polled) and
+``seen_time`` (when it was polled), and the tones carry ``anchor="real"``
+(every HSD tone is locked to a detected R-wave), ``phase_deg`` and
+``delay_ms``, the intended physical position of the tone after its R-wave.
+``tone_scheduled`` also carries ``latency``, the time from the beat becoming
+known to the tone being scheduled.
 
 The train ends when ``n_tones`` tones have played, after ``max_beats`` beats,
 or at the deadline. The deadline is ``timeout_s``, or, when the period is
@@ -63,7 +74,7 @@ from typing import (
     runtime_checkable,
 )
 
-from ._constants import AUDIO_LEAD, AXES, MAX_PERIOD_FRACTION, N_TONES
+from ._constants import AUDIO_LEAD, AXES, LATENCY_BIAS, MAX_PERIOD_FRACTION, N_TONES
 
 #: Seconds of float error forgiven in the floor and ceiling checks, so that a
 #: delay drawn exactly on a bound is not refused by rounding.
@@ -151,15 +162,18 @@ class ToneRecord:
     r_time: float
     #: Anticipated interbeat interval at that beat, or ``None``.
     period: Optional[float]
-    #: When the tone was due, or ``None`` if no target could be computed.
+    #: When the tone was scheduled to start on the clock (the R-wave plus the
+    #: delay, less the latency bias), or ``None`` if no target was computed.
     target: Optional[float]
     #: When the device reported the tone started, ``None`` if it did not play.
     onset: Optional[float] = None
-    #: ``onset - r_time``.
+    #: ``onset - r_time``, as the recordings show it: ``latency_bias`` short
+    #: of the physical delay.
     realized: Optional[float] = None
-    #: ``realized`` as a fraction of the observed interbeat interval, to the
-    #: next beat seen during the train. ``None`` when that beat was not seen,
-    #: which is usual for the last tone: the train ends before it arrives.
+    #: The physical delay, ``realized + latency_bias``, as a fraction of the
+    #: observed interbeat interval, to the next beat seen during the train.
+    #: ``None`` when that beat was not seen, which is usual for the last tone:
+    #: the train ends before it arrives.
     realized_fraction: Optional[float] = None
     #: True for a beat that got no tone.
     skipped: bool = False
@@ -187,23 +201,27 @@ class TrainResult:
     #: Why the train ended: ``"complete"``, ``"max_beats"``, or the abort
     #: reason.
     end_reason: Optional[str] = None
-    #: Mean realized delay over the delivered tones, in seconds (absolute), or
-    #: the mean ``realized_fraction`` over the tones whose next beat was seen
-    #: (phase). ``None`` if there is nothing to average.
+    #: Mean realized delay over the delivered tones, in seconds, as measured
+    #: against the stamped R-wave (absolute); or the mean
+    #: ``realized_fraction``, which includes the latency bias, over the tones
+    #: whose next beat was seen (phase). ``None`` if there is nothing to
+    #: average.
     realized_mean: Optional[float] = None
-    #: Mean realized delay plus the bridge lag, in engine units: ms (absolute)
-    #: or a fraction of the mean anticipated period of the delivered tones
-    #: (phase). This is the value to update the engine with. On the phase axis
-    #: it is not ``realized_mean`` plus the lag: one is relative to the
-    #: observed interbeat interval, the other to the anticipated one.
+    #: Mean realized delay plus the latency bias, the physical delay, in
+    #: engine units: ms (absolute) or a fraction of the mean anticipated
+    #: period of the delivered tones (phase). This is the value to update the
+    #: engine with. On the phase axis it differs from ``realized_mean``: one
+    #: is relative to the anticipated interbeat interval, the other to the
+    #: observed one.
     realized_corrected: Optional[float] = None
     #: Clock times the train started and ended.
     started: Optional[float] = None
     ended: Optional[float] = None
     #: Every beat polled during the train, and before it since the previous
     #: train: ``r_time``, ``period``, ``rr`` (seconds since the beat before,
-    #: ``None`` for the first), ``seen`` (clock time it was polled) and
-    #: ``status`` (``"tone"``, ``"skipped"``, ``"between"`` for one polled
+    #: ``None`` for the first), ``commit_time`` (when the source says the beat
+    #: became known, ``None`` if it does not say), ``seen`` (clock time it was
+    #: polled) and ``status`` (``"tone"``, ``"skipped"``, ``"between"`` for one polled
     #: between trains through :meth:`TrainScheduler.observe`, ``"stale"`` for
     #: an R-wave before the train started, ``"extra"`` for one after the train
     #: had what it needed).
@@ -248,14 +266,16 @@ class TrainScheduler:
         Tones per train.
     audio_lead :
         Seconds a tone must be scheduled ahead of its target.
-    bridge_lag :
-        Seconds by which the stamped R-wave trails the true one, added to the
-        realized delay before it is handed to the engine.
+    latency_bias :
+        Seconds of physical delay the recordings cannot see: the transport
+        before the ECG is stamped plus the speaker after the reported onset.
+        Subtracted from every target and added to the realized delay before
+        it is handed to the engine.
     marker :
         Optional ``marker(kind, stamp, **fields)`` for the JSON marker stream.
         Kinds are ``beat``, ``tone_scheduled``, ``tone_onset`` and
-        ``tone_skipped``, with the field names of the PAT dry run. Bind the trial number into it if the stream needs
-        one.
+        ``tone_skipped``, with the field names of the PAT dry run. Bind the
+        trial number into it if the stream needs one.
     on_frame :
         Optional callable run once after each loop pass that scheduled a tone,
         such as a ``win.flip`` wrapper. Called at most once per tone, so the
@@ -269,7 +289,7 @@ class TrainScheduler:
         clock: Clock,
         n_tones: int = N_TONES,
         audio_lead: float = AUDIO_LEAD,
-        bridge_lag: float = 0.0,
+        latency_bias: float = LATENCY_BIAS,
         marker: Optional[Marker] = None,
         on_frame: Optional[Callable[[], Any]] = None,
     ):
@@ -282,7 +302,7 @@ class TrainScheduler:
         self.clock = clock
         self.n_tones = int(n_tones)
         self.audio_lead = float(audio_lead)
-        self.bridge_lag = float(bridge_lag)
+        self.latency_bias = float(latency_bias)
         self.marker = marker
         self.on_frame = on_frame
         # Kept across trains so the first beat of a train still has an RR.
@@ -300,15 +320,25 @@ class TrainScheduler:
         period = beat.period if beat.period is not None else self.source.period
         rr = beat.r_time - self._last_r if self._last_r is not None else None
         self._last_r = beat.r_time
+        commit = getattr(beat, "commit_time", None)
         seen: Dict[str, Any] = {
             "r_time": beat.r_time,
             "period": period,
             "rr": rr,
+            "commit_time": commit,
             "seen": now,
             "status": status,
         }
+        # Stamped when the beat became known, not when it was pulled, as the
+        # PAT task stamps it; the poll time goes alongside.
         self._mark(
-            "beat", now, r_time=beat.r_time, rr=rr, period=period, commit_time=now
+            "beat",
+            now,
+            r_time=beat.r_time,
+            rr=rr,
+            period=period,
+            commit_time=commit if commit is not None else now,
+            seen_time=now,
         )
         return seen
 
@@ -442,7 +472,7 @@ class TrainScheduler:
                     abort = "ceiling"
                     continue
 
-                record.target = beat.r_time + delay_s
+                record.target = beat.r_time + delay_s - self.latency_bias
                 record.lead = record.target - now
                 if record.lead < self.audio_lead:
                     self._skip(result, record, seen, now, "late")
@@ -466,6 +496,11 @@ class TrainScheduler:
                     delay_ms=delay_s * 1000.0,
                     phase_deg=_phase_deg(delay_s, period),
                     fraction=delay_s / period if period else None,
+                    latency=(
+                        now - seen["commit_time"]
+                        if seen["commit_time"] is not None
+                        else None
+                    ),
                 )
 
             # A tone with no onset did not play: free its place in the train.
@@ -527,8 +562,11 @@ class TrainScheduler:
             else:
                 record.onset = float(onset)
                 record.realized = record.onset - record.r_time
+            # The physical delay the target was set for.
             intended = (
-                record.target - record.r_time if record.target is not None else None
+                record.target - record.r_time + self.latency_bias
+                if record.target is not None
+                else None
             )
             self._mark(
                 "tone_onset",
@@ -579,11 +617,12 @@ class TrainScheduler:
             following = [r for r in r_times if r > record.r_time]
             if following and record.realized is not None:
                 interval = following[0] - record.r_time
-                record.realized_fraction = record.realized / interval
+                physical = record.realized + self.latency_bias
+                record.realized_fraction = physical / interval
 
         if delivered:
             realized = _mean([t.realized for t in delivered if t.realized is not None])
-            corrected = realized + self.bridge_lag
+            corrected = realized + self.latency_bias
             if result.axis == "absolute":
                 result.realized_mean = realized
                 result.realized_corrected = corrected * 1000.0
