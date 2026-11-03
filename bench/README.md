@@ -142,3 +142,50 @@ the same footing. Without it, true phases read about 0.05 s early. The task's
 beat markers have no `commit_time`, so the lag is taken from the marker
 timestamp; it includes the wait for the next frame, about 8 ms more than in the
 dry run.
+
+## Setting up the PLUX bridge on another PC
+
+The launchers above start the hub bridge from the plux-lsl repository. To reproduce it:
+
+1. Clone github.com/embodied-computation-group/plux-lsl next to this repository, so that
+   `cannabodies\cardioception-src` and `cannabodies\plux-lsl` are sibling folders.
+2. Install Python 3.13, 64-bit, for the current user (it need not be on PATH). PLUX's API has no
+   3.11 build, so the bridge has its own venv. From the plux-lsl folder:
+   `py -3.13 -m venv .venv`, then `.venv\Scripts\python.exe -m pip install -r requirements.txt`.
+3. The PLUX API binaries (`plux.pyd` and the FTDI DLLs) ship in the repository, in `vendor\plux\`
+   (with PLUX's `LICENSE` and the source commit in `SOURCE_COMMIT`). Nothing to download.
+4. Download LabRecorder 1.18.0 for Windows (github.com/labstreaminglayer/App-LabRecorder,
+   releases) and unzip it into `plux-lsl\LabRecorder\`, so that
+   `plux-lsl\LabRecorder\LabRecorderCLI.exe` exists.
+5. Pair the biosignalsplux hub in Windows Bluetooth settings. `plux_lsl.py` defaults to this lab's
+   hub (`DEFAULT_MAC`, 00:07:80:4B:3F:25); for another hub pass `--mac <its MAC>`.
+6. Check it: `.venv\Scripts\python.exe plux_lsl.py --list` prints the battery and the sensors
+   found, one line per port.
+
+The stream: name `PLUX`, type `Biosignals`, 1000 Hz, int32 raw ADC counts. Channel 0 is `nSeq`
+(the hub's sample counter, so dropped samples show as gaps), then one channel per sensor,
+labelled by sensor type and hub port: an ECG on port 1 is `ECG1`, on port 2 `ECG2`. Pass the
+right one with `--channel` (the dry run defaults to `ECG2`, the live launcher to `ECG1`).
+
+The launchers look for plux-lsl as a sibling folder and there is no single flag to move it. To
+use a copy elsewhere, give both parts explicitly (paths without spaces):
+
+```
+.venv\Scripts\python.exe bench\pat_dryrun_launch.py ^
+  --bridge-cmd "D:\plux-lsl\.venv\Scripts\python.exe D:\plux-lsl\plux_lsl.py --stop-on-eof" ^
+  --recorder D:\plux-lsl\LabRecorder\LabRecorderCLI.exe
+```
+
+`pat_live_launch.py` takes the same two options. Add `--mac` inside `--bridge-cmd` for
+another hub.
+
+The Nonin pulse oximeter has its own bridge in this repository, run with the cardioception venv:
+`.venv\Scripts\python.exe bench\nonin_lsl.py --port COM12` (no `--port`: it tries each USB serial
+port). It publishes `Nonin` (PPG, 75 Hz); `pat_live_launch.py --nonin [PORT]` starts it and
+records it.
+
+## Reports on other marker streams
+
+`pat_dryrun_report.py` reads `PATdryrun` by default and `PAT` on its own. For another task's
+marker stream, name it: `--markers HSD`. Kinds it does not know are counted and skipped; the
+`beat`, `tone_scheduled` and `tone_onset` it scores must carry the dry run's fields (`r_time`, `target`, `onset`, `phase_deg`).
