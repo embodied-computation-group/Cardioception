@@ -72,6 +72,8 @@ from cardioception.devices.tone_player import (  # noqa: F401
 __all__ = [
     "MODES",
     "NEXT_BEAT_TIMEOUT",
+    "STALE_PERIODS",
+    "TRIAL_STATUSES",
     "DEFAULT_PERIOD",
     "MAX_RR",
     "PERIOD_BEATS",
@@ -94,6 +96,19 @@ MODES = ("relative", "absolute")
 
 #: Seconds :meth:`PhaseEngine.end_trial` waits for the R after the press.
 NEXT_BEAT_TIMEOUT = 3.0
+
+#: A press more than this many anticipated periods after the last R-wave is
+#: ``stale``: the ECG was lost, and the period on the row would be old.
+STALE_PERIODS = 1.5
+
+#: Values of ``TrialStatus`` on a trial row. ``ok``: the press came while beats
+#: were arriving. ``stale``: the last R-wave before the press is more than
+#: :data:`STALE_PERIODS` anticipated periods old. ``timeout``: the trial ended
+#: with no press (see ``maxTrialTime`` in the task).
+TRIAL_STATUSES = ("ok", "stale", "timeout")
+
+#: How a trial stops: the participant's press, or the task's time limit.
+STOP_REASONS = ("press", "timeout")
 
 
 def _json_safe(value: Any) -> Any:
@@ -190,6 +205,7 @@ class PhaseEngine:
         self._trial_start = math.nan
         self._press: Optional[float] = None
         self._press_wall = math.nan
+        self._stop_reason = "press"
         self._dial_at_press: Tuple[float, float] = (math.nan, math.nan)
         self._n_moves = 0
         #: Tones of the current trial: ``real``, ``predicted``, ``skipped``.
@@ -294,6 +310,7 @@ class PhaseEngine:
         self._n_moves = 0
         self._press = None
         self._press_wall = math.nan
+        self._stop_reason = "press"
         self._dial_at_press = (math.nan, math.nan)
         self.counts = {"real": 0, "predicted": 0, "skipped": 0}
         self._trial_start = self.clock()
@@ -342,16 +359,25 @@ class PhaseEngine:
         finally:
             self._scheduling = scheduling
 
-    def stop_tones(self) -> None:
-        """The press: no more tones are scheduled. Those already scheduled play."""
+    def stop_tones(self, reason: str = "press") -> None:
+        """The trial stops: no more tones are scheduled. Those already
+        scheduled play.
+
+        ``reason`` is ``"press"`` (the participant locked in a choice) or
+        ``"timeout"`` (the task's time limit ran out, with no choice), and is
+        the kind of the marker pushed. Only the first call of a trial counts.
+        """
+        if reason not in STOP_REASONS:
+            raise ValueError(f"reason should be one of {STOP_REASONS}, got {reason!r}")
         if self._press is not None:
             return
         self._press = self.clock()
         self._press_wall = time.time()
+        self._stop_reason = reason
         self._scheduling = False
         self._dial_at_press = (self.phase_deg, self.delay_ms)
         self.mark(
-            "press",
+            reason,
             self._press,
             trial=self.trial,
             phase_deg=self._dial_at_press[0],
@@ -371,6 +397,13 @@ class PhaseEngine:
         (``AnticipatedPeriodMs``); in absolute mode the delay is clamped to
         that period, as it would have been for the next tone.
         ``ObservedPeriodMs`` is the RR interval containing the press.
+
+        ``TrialStatus`` (see :data:`TRIAL_STATUSES`) is ``timeout`` when the
+        trial was stopped with ``stop_tones("timeout")``, and both chosen
+        columns are then NaN. It is ``stale`` when no R-wave came within
+        :data:`STALE_PERIODS` anticipated periods before the press: the
+        anticipated period is then NaN, and so is whichever chosen column
+        needs it (the delay in relative mode, the phase in absolute mode).
         """
         self.stop_tones()
         assert self._press is not None
@@ -401,6 +434,13 @@ class PhaseEngine:
             if nxt is not None and last is not None
             else math.nan
         )
+        stale = (
+            last is None
+            or anticipated is None
+            or press - last_r > STALE_PERIODS * anticipated
+        )
+        if stale:
+            anticipated = None
         phase, delay = self._dial_at_press
         if anticipated is not None:
             period_ms = anticipated * 1000.0
@@ -409,9 +449,18 @@ class PhaseEngine:
             else:
                 delay = min(self._delay_ms, period_ms)
                 phase = delay / period_ms * 360.0 % 360.0
+        elif self.mode == "relative":
+            delay = math.nan
+        else:
+            phase = math.nan
+        status = "stale" if stale else "ok"
+        if self._stop_reason == "timeout":
+            status = "timeout"
+            phase = delay = math.nan
         row = {
             "Trial": self.trial,
             "Block": self.block,
+            "TrialStatus": status,
             "Mode": self.mode,
             "Extero": self.extero,
             "StartPhaseDeg": self.start_phase_deg,

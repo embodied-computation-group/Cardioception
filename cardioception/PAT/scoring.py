@@ -18,8 +18,10 @@ computed eight ways, crossing three factors:
   intervals) or the *observed* R-R interval that contained the key press;
 - weighting: *none* or *confidence*.
 
-Before scoring, trials whose period lies more than 5 robust standard
-deviations (1.4826 times the median absolute deviation) from the
+Only main trials whose ``TrialStatus`` is ``ok`` are scored: a trial that
+timed out has no choice, and a stale one (the ECG lost before the press) has
+no trustworthy period. Before scoring, trials whose period lies more than 5
+robust standard deviations (1.4826 times the median absolute deviation) from the
 participant's median are removed, separately for each period type.
 
 Each score is compared with its own chance threshold: the 95th percentile of
@@ -53,6 +55,10 @@ FINAL_COLUMNS = (
     "Confidence",
 )
 
+#: Column of ``final.txt`` saying whether a trial can be scored. Files written
+#: before it existed have every trial scored.
+STATUS_COLUMN = "TrialStatus"
+
 #: Period type of the grid, and the ``final.txt`` column holding it.
 PERIOD_COLUMNS: Dict[str, str] = {
     "anticipated": "AnticipatedPeriodMs",
@@ -65,6 +71,7 @@ GRID_COLUMNS = [
     "period",
     "weighting",
     "n_trials",
+    "n_dropped",
     "score",
     "threshold",
     "interoceptive",
@@ -297,7 +304,9 @@ def consistency_grid(
     final_df : pd.DataFrame
         The task's ``final.txt``. Columns used: ``Block`` (only ``"main"``
         rows count), ``ChosenDelayMs``, ``AnticipatedPeriodMs``,
-        ``ObservedPeriodMs`` and ``Confidence``.
+        ``ObservedPeriodMs``, ``Confidence`` and, when present,
+        ``TrialStatus`` (only ``"ok"`` rows count; an empty status counts as
+        ``"ok"``).
     n_sim, q, seed :
         Passed to :func:`monte_carlo_threshold`. With an int seed (the default)
         the thresholds are reproducible.
@@ -309,15 +318,18 @@ def consistency_grid(
     grid : pd.DataFrame
         Eight rows with the columns ``mapping`` (``variable``/``fixed``),
         ``period`` (``anticipated``/``observed``), ``weighting``
-        (``none``/``confidence``), ``n_trials`` (trials scored), ``score``
-        (MRL), ``threshold`` and ``interoceptive`` (score above threshold).
+        (``none``/``confidence``), ``n_trials`` (trials scored),
+        ``n_dropped`` (main trials left out because their ``TrialStatus`` is
+        not ``ok``, the same on every row), ``score`` (MRL), ``threshold``
+        and ``interoceptive`` (score above threshold).
         A cell with no usable trial (no observed periods, or no confidence
         ratings for the weighted cells) has NaN score and threshold and is not
         interoceptive.
 
     Notes
     -----
-    Per period type, trials with a missing delay or period are dropped, then
+    Main trials whose status is not ``ok`` are dropped first. Then, per
+    period type, trials with a missing delay or period are dropped, then
     trials whose period is a :func:`mad_outliers` outlier. Fixed mapping uses
     the median of the remaining periods for every trial and drops trials whose
     delay exceeds it. Weighted cells drop trials without a confidence rating.
@@ -327,6 +339,11 @@ def consistency_grid(
         raise ValueError(f"final_df lacks the column(s) {', '.join(missing)}.")
 
     main = final_df[final_df["Block"].astype(str) == "main"]
+    n_dropped = 0
+    if STATUS_COLUMN in main.columns:
+        ok = main[STATUS_COLUMN].fillna("ok").astype(str) == "ok"
+        n_dropped = int((~ok).sum())
+        main = main[ok]
     delay = _numeric(main, "ChosenDelayMs")
     # The raw rating is the weight, as in the paper, not ConfidenceUnit: on
     # the 1 to 10 scale to_unit(1) is 0, which would drop every trial rated 1
@@ -372,6 +389,7 @@ def consistency_grid(
                         "period": period_name,
                         "weighting": weighting,
                         "n_trials": n,
+                        "n_dropped": n_dropped,
                         "score": score,
                         "threshold": threshold,
                         "interoceptive": bool(score > threshold),

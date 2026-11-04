@@ -222,6 +222,29 @@ def test_grid_columns_and_cells():
     assert grid["interoceptive"].dtype == bool
 
 
+def test_grid_drops_trials_that_are_not_ok():
+    rng = np.random.default_rng(4)
+    df = participant(0.3 + rng.normal(0, 0.01, 28))
+    main = df.index[df["Block"] == "main"]
+    df["TrialStatus"] = "ok"
+    df.loc[main[0], "TrialStatus"] = "stale"
+    df.loc[main[0], "AnticipatedPeriodMs"] = np.nan
+    df.loc[main[1], "TrialStatus"] = "timeout"
+    df.loc[main[1], "ChosenDelayMs"] = np.nan
+    # A stale trial with a plausible period would still be scored without the
+    # status: it is the status that drops it.
+    df.loc[main[2], "TrialStatus"] = "stale"
+    df.loc[df["Block"] == "practice", "TrialStatus"] = "timeout"  # not counted
+    grid = consistency_grid(df, n_sim=1_000)
+    assert (grid["n_dropped"] == 3).all()
+    assert (grid.loc[grid["weighting"] == "none", "n_trials"] == 25).all()
+    # An empty status counts as ok, and a file without the column drops none.
+    df["TrialStatus"] = np.nan
+    assert (consistency_grid(df, n_sim=100)["n_dropped"] == 0).all()
+    grid = consistency_grid(df.drop(columns="TrialStatus"), n_sim=100)
+    assert (grid["n_dropped"] == 0).all()
+
+
 def test_grid_requires_final_columns():
     df = participant([0.3] * 10)
     for column in FINAL_COLUMNS:

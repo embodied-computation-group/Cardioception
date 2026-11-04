@@ -64,6 +64,7 @@ class FakeEngine:
         self.started: List[tuple] = []
         self.nudges: List[float] = []
         self.stops = 0
+        self.stopReasons: List[str] = []
         self.ended = 0
         self.closed = False
         self.marks: List[tuple] = []
@@ -118,9 +119,10 @@ class FakeEngine:
         if self.active:
             self.idleDuringTrial += 1
 
-    def stop_tones(self) -> None:
+    def stop_tones(self, reason: str = "press") -> None:
         self.active = False
         self.stops += 1
+        self.stopReasons.append(reason)
 
     def end_trial(self) -> dict:
         self.ended += 1
@@ -714,6 +716,46 @@ def test_escape_in_a_trial_keeps_completed_trials(fake_psychopy, tmp_path):
     final = read(parameters["paths"].path("final"))
     assert list(final["Trial"]) == [1, 2]
     assert not engine.closed  # left to the caller
+
+
+class SilentEngine(FakeEngine):
+    """An engine whose ECG never gives a beat: no tone ever plays."""
+
+    def poll(self) -> None:
+        if self.active:
+            self.polls += 1
+
+
+def test_a_trial_with_no_beats_times_out(fake_psychopy, tmp_path):
+    engine = SilentEngine()
+    parameters = make_parameters(tmp_path, engine=engine, nTrials=2, nPractice=0)
+    parameters["maxTrialTime"] = 0.2
+    fake_psychopy.policy = space_after_polls(engine)  # space never works
+
+    run(parameters, runTutorial=False)
+
+    assert parameters["aborted"] is False
+    assert engine.stopReasons == ["timeout", "timeout"]
+    final = read(parameters["paths"].path("final"))
+    assert list(final.columns) == FINAL_COLUMNS
+    assert list(final["TrialStatus"]) == ["timeout", "timeout"]
+    assert final["ChosenPhaseDeg"].isna().all()
+    assert final["ChosenDelayMs"].isna().all()
+    # No choice, so no rating was asked
+    assert final["Confidence"].isna().all()
+    assert engine.marks == []
+    assert (final["TrialDuration"] >= 0.2).all()
+
+
+def test_a_normal_trial_is_ok(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine)
+    fake_psychopy.policy = space_after_polls(engine)
+
+    row = trial(parameters, 1, "main", 0.0)
+
+    assert row["TrialStatus"] == "ok"
+    assert engine.stopReasons == ["press"]
 
 
 def test_escape_in_the_rating_keeps_the_trial(fake_psychopy, tmp_path):

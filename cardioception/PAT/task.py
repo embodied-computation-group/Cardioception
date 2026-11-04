@@ -43,6 +43,7 @@ logger = get_logger()
 FINAL_COLUMNS = [
     "Trial",
     "Block",
+    "TrialStatus",
     "Mode",
     "Extero",
     "StartPhaseDeg",
@@ -335,11 +336,13 @@ def trial(
     fire(parameters, "trialStart")
     press = dialLoop(parameters, trialNumber, block, startPhase)
     fields = engine.end_trial()
+    timedOut = press["status"] == "timeout"
 
     confidence: Any = np.nan
     confidenceRT: Any = np.nan
     abort = False
-    if confidenceRating is True:
+    # A trial that timed out has no choice, so nothing to be confident about
+    if confidenceRating is True and not timedOut:
         fire(parameters, "confidenceStart")
         try:
             rating, ratingRT, provided = confidenceRatingTask(parameters)
@@ -362,6 +365,7 @@ def trial(
     row: Dict[str, Any] = {c: np.nan for c in FINAL_COLUMNS}
     row.update(
         {
+            "TrialStatus": press["status"],
             "ChosenPhaseDeg": press["phase_deg"],
             "ChosenDelayMs": press["delay_ms"],
             "PressTime": press["press_time"],
@@ -387,6 +391,9 @@ def trial(
             "WallTime": press["wall_time"],
         }
     )
+    if timedOut:
+        # Whatever the engine made of the dial, nobody chose it
+        row.update(TrialStatus="timeout", ChosenPhaseDeg=np.nan, ChosenDelayMs=np.nan)
 
     fire(parameters, "trialStop")
     parameters["results_df"] = pd.concat(
@@ -402,6 +409,11 @@ def trial(
         f"{_fmt(row['AnticipatedPeriodMs'])} ms, observed "
         f"{_fmt(row['ObservedPeriodMs'])} ms, confidence {_fmt(confidence)}"
     )
+    if row["TrialStatus"] != "ok":
+        logger.warning(
+            f"... trial {trialNumber} is {row['TrialStatus']}: the scores will "
+            "leave it out (check the ECG)"
+        )
     return row
 
 
@@ -536,7 +548,9 @@ def dialLoop(
     after `minTrialTime`. The tutorial is several stages on the same beeps.
     Until the first beep has played, the screen says that the task is
     listening for the heartbeat, the dial is hidden and the wheel does
-    nothing.
+    nothing. A stage still running after `maxTrialTime` seconds (a lost ECG,
+    say, when space would never work) ends the loop with no choice, status
+    `timeout`.
 
     Parameters
     ----------
@@ -554,9 +568,10 @@ def dialLoop(
     Returns
     -------
     press : dict
-        `phase_deg` and `delay_ms` (the dial at the press), `press_time` (LSL
-        seconds), `wall_time` (`time.time()`), `duration` (seconds from the
-        start of the trial) and `n_dial_moves`.
+        `phase_deg` and `delay_ms` (the dial at the press, NaN after a
+        timeout), `press_time` (LSL seconds), `wall_time` (`time.time()`),
+        `duration` (seconds from the start of the trial), `n_dial_moves` and
+        `status` (`ok`, or `timeout` when `maxTrialTime` ran out).
 
     """
     from psychopy import event
@@ -568,6 +583,7 @@ def dialLoop(
     now = _clock()
     dialKeys = list(parameters["dialKeys"])
     watched = [parameters["startKey"], "escape"] + dialKeys
+    maxTime = parameters.get("maxTrialTime")
     if stages is None:
         minTime = parameters["minTrialTime"]
         stages = [Stage(ready=lambda state: state["elapsed"] >= minTime)]
@@ -668,20 +684,29 @@ def dialLoop(
             state["later" if notches > 0 else "earlier"] += abs(notches)
             nDialMoves += 1
 
+        timedOut = maxTime is not None and state["elapsed"] >= maxTime
         if pressed and stageIndex < len(stages) - 1:
             stageIndex += 1
             tStage = t
             state = _newState()
-        elif pressed:
+        elif pressed or timedOut:
             pressTime, wallTime = now(), time.time()
-            engine.stop_tones()
+            outcome = "ok"
+            if timedOut and not pressed:
+                outcome = "timeout"
+                logger.warning(
+                    f"... {block} trial {trialNumber}: no press after {maxTime:g} s, "
+                    f"{nPlayed} beeps heard. The trial ends without a choice."
+                )
+            engine.stop_tones(reason="press" if outcome == "ok" else "timeout")
             press = {
-                "phase_deg": engine.phase_deg,
-                "delay_ms": engine.delay_ms,
+                "phase_deg": engine.phase_deg if outcome == "ok" else np.nan,
+                "delay_ms": engine.delay_ms if outcome == "ok" else np.nan,
                 "press_time": pressTime,
                 "wall_time": wallTime,
                 "duration": pressTime - tStart,
                 "n_dial_moves": nDialMoves,
+                "status": outcome,
             }
             dial.draw(dial=False)
             win.flip()

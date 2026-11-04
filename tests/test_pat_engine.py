@@ -358,6 +358,7 @@ def test_end_trial_fields():
     source.feed(Beat(102.85, 0.92))
     row = engine.end_trial()
     assert row["Trial"] == 7 and row["Block"] == "main"
+    assert row["TrialStatus"] == "ok"
     assert row["Mode"] == "relative" and row["Extero"] is False
     assert row["StartPhaseDeg"] == 90
     assert row["ChosenPhaseDeg"] == pytest.approx(180)
@@ -405,6 +406,79 @@ def test_end_trial_without_next_beat():
     row = engine.end_trial()
     assert math.isnan(row["ObservedPeriodMs"])
     assert np.isfinite(row["LastRTime"])
+
+
+def test_press_long_after_the_last_beat_is_stale():
+    """The ECG drops out: the press comes 2.5 periods after the last R."""
+    engine, source, player, clock, outlet = make_engine()
+    engine.start_trial(1, 90)
+    beat_now(engine, source, clock, 100.0, period=0.8)
+    clock.t = 102.0
+    engine.stop_tones()
+    clock.t = 103.0  # no next beat either; tones have played
+    clock.step = 0.05
+    row = engine.end_trial()
+    assert row["TrialStatus"] == "stale"
+    assert math.isnan(row["AnticipatedPeriodMs"])
+    # Relative mode: the phase is the dial, the delay needs a period.
+    assert row["ChosenPhaseDeg"] == pytest.approx(90)
+    assert math.isnan(row["ChosenDelayMs"])
+    end = [m for m, _ in outlet.samples if m["kind"] == "trial_end"][-1]
+    assert end["TrialStatus"] == "stale"
+
+
+def test_press_within_one_and_a_half_periods_is_ok():
+    engine, source, player, clock, _ = make_engine()
+    engine.start_trial(1, 90)
+    beat_now(engine, source, clock, 100.0, period=0.8)
+    clock.t = 101.19  # 1.49 periods after the R
+    engine.stop_tones()
+    source.feed(Beat(101.3, 0.8))
+    clock.t = 101.4
+    row = engine.end_trial()
+    assert row["TrialStatus"] == "ok"
+    assert row["AnticipatedPeriodMs"] == pytest.approx(800)
+
+
+def test_stale_in_absolute_mode_keeps_the_delay():
+    engine, source, player, clock, _ = make_engine("absolute", period=1.0)
+    engine.start_trial(1, 90)  # 250 ms
+    beat_now(engine, source, clock, 100.0, period=1.0)
+    clock.t = 103.0
+    engine.stop_tones()
+    clock.step = 0.05
+    row = engine.end_trial()
+    assert row["TrialStatus"] == "stale"
+    assert row["ChosenDelayMs"] == pytest.approx(250)
+    assert math.isnan(row["ChosenPhaseDeg"])
+
+
+def test_timeout_has_no_choice():
+    engine, source, player, clock, outlet = make_engine()
+    engine.start_trial(1, 90)
+    beat_now(engine, source, clock, 100.0)
+    engine.stop_tones("timeout")
+    source.feed(Beat(101.0, 1.0))
+    clock.t = 101.1
+    row = engine.end_trial()
+    assert row["TrialStatus"] == "timeout"
+    assert math.isnan(row["ChosenPhaseDeg"]) and math.isnan(row["ChosenDelayMs"])
+    kinds = outlet.kinds()
+    assert "timeout" in kinds and "press" not in kinds
+    # The next trial is a normal one again.
+    engine.start_trial(2, 90)
+    beat_now(engine, source, clock, 102.0)
+    engine.stop_tones()
+    source.feed(Beat(103.0, 1.0))
+    clock.t = 103.1
+    assert engine.end_trial()["TrialStatus"] == "ok"
+
+
+def test_stop_tones_rejects_an_unknown_reason():
+    engine, *_ = make_engine()
+    engine.start_trial(1, 0)
+    with pytest.raises(ValueError, match="reason"):
+        engine.stop_tones("lunch")
 
 
 def test_markers_are_valid_json_without_nan():

@@ -108,7 +108,7 @@ The defaults of `getParameters` are those of the paper, except where noted:
 | `triggers` | none | `{event: callable}` for `trialStart`, `confidenceStart`, `confidenceStop` and `trialStop` |
 | `markerStream` | `"PAT"` | The LSL marker stream the task opens |
 
-The confidence rating has no time limit (`parameters["maxRatingTime"]` is `None`), as in the paper.
+The confidence rating has no time limit (`parameters["maxRatingTime"]` is `None`), as in the paper. A trial does: if space has not ended it after `parameters["maxTrialTime"]` seconds (60 by default), it ends without a choice and its row is marked `timeout`. Space works only once a tone has been heard, so without this a lost ECG would leave Esc as the only way out. The console warns the experimenter after `parameters["noBeatWarning"]` seconds (3) without a beat.
 
 For the exteroceptive variant pass `extero=True` and no recorder is needed. The paper ran the exteroceptive task (8 + 28 trials, about 10 minutes) before the PAT (8 + 28 trials, about 30 minutes). Between 15 and 20 trials already separate consistent responders from chance; gains beyond 20 are small {cite:p}`2026:palmer`.
 
@@ -133,6 +133,7 @@ The wrapper appends `Extero` to the session label of the exteroceptive run, so b
 | Column | Meaning |
 |---|---|
 | `Trial`, `Block` | Trial number, and `practice` or `main` |
+| `TrialStatus` | `ok`; `stale` when the press came more than 1.5 anticipated periods after the last R-wave (the ECG was lost, so `AnticipatedPeriodMs` is NaN, and so is `ChosenDelayMs` in relative mode or `ChosenPhaseDeg` in absolute mode); `timeout` when `maxTrialTime` ran out with no press (both chosen columns NaN, no rating asked). The scores use `ok` trials only |
 | `Mode`, `Extero` | Scheduling mode, and whether this was the exteroceptive variant |
 | `StartPhaseDeg` | Where the dial started |
 | `ChosenPhaseDeg`, `ChosenDelayMs` | The choice at the space press, as a phase and as ms after the R-wave |
@@ -206,7 +207,7 @@ Only rows with `Block == "main"` count. `consistency_grid` returns eight rows, t
 | `period` | `anticipated`: the period the task used online. `observed`: the R-R interval that contained the press. |
 | `weighting` | `none`, or `confidence`: each trial weighted by its rating. |
 
-Each row gives `n_trials` (trials scored), `score` (the MRL), `threshold` and `interoceptive` (`score > threshold`). Before scoring, trials with a missing period are dropped, then trials whose period lies more than 5 robust standard deviations (1.4826 times the median absolute deviation) from the participant's median period, separately for each period type. In the paper this removed under 1 % of trials.
+Each row gives `n_trials` (trials scored), `n_dropped` (main trials left out because their `TrialStatus` is not `ok`), `score` (the MRL), `threshold` and `interoceptive` (`score > threshold`). Before scoring, trials that are `stale` or `timeout` are dropped, then trials with a missing period, then trials whose period lies more than 5 robust standard deviations (1.4826 times the median absolute deviation) from the participant's median period, separately for each period type. In the paper this removed under 1 % of trials.
 
 The threshold is the participant's own chance level: 100,000 simulated participants with the same number of valid trials and the same periods choose delays uniformly over the period, and the threshold is the 95th percentile of their MRL. Weighted cells keep the participant's confidence ratings as weights in the simulation, so unequal ratings raise the threshold a little. The simulations use a fixed seed (`seed=0`), so the same file always gives the same grid. `n_sim` and `seed` can be changed.
 

@@ -162,6 +162,11 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - The keyboard confidence rating uses `visual.Slider`. `visual.RatingScale`
   moved to the `psychopy-legacy` plugin in PsychoPy 2026 and now raises.
 - A crash or an abort still saves everything the session produced.
+- A PAT trial on a lost ECG no longer waits for Esc or scores as normal. A
+  trial ends after `maxTrialTime` (60 s) with no choice and `TrialStatus`
+  `timeout`; a press more than 1.5 anticipated periods after the last R-wave
+  is `stale`, with no anticipated period. The PAT scores drop both and report
+  how many in `n_dropped`.
 
 ### Internal
 
