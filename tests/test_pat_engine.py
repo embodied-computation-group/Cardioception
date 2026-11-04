@@ -270,6 +270,44 @@ def test_absolute_dial_wraps_at_period():
     assert engine.phase_deg == pytest.approx(25 / 800 * 360)
 
 
+def test_absolute_dial_clamps_before_wrapping():
+    """A dial at 950 ms, then the period shrinks to 900 ms."""
+    engine, source, player, clock, outlet = make_engine("absolute", period=1.0)
+    engine.start_trial(1, 0)
+    engine.nudge(38, 10.0, 25.0)
+    assert engine.delay_ms == pytest.approx(950)
+    source.period = 0.9
+    # It reads as what the scheduler plays: the full period, phase 0.
+    assert engine.delay_ms == pytest.approx(900)
+    assert engine.phase_deg == pytest.approx(0)
+    beat_now(engine, source, clock, 100.0, period=0.9)
+    tone = engine.tones[-1]
+    assert tone["Target"] == pytest.approx(100.0 + 0.9 - 0.05)
+    assert tone["PhaseDeg"] == pytest.approx(0) and tone["DelayMs"] == 900
+    # One notch on from there is 25 ms, not (950 + 25) % 900 = 75 ms.
+    engine.nudge(1, 10.0, 25.0)
+    assert engine.delay_ms == pytest.approx(25)
+    dial = [m for m, _ in outlet.samples if m["kind"] == "dial"][-1]
+    assert dial["delay_ms"] == pytest.approx(25)
+    assert dial["phase_deg"] == pytest.approx(10)
+    # Back at 950 and pressed while the period is 900: the press marker and
+    # the row agree with the scheduler.
+    source.period = 1.0
+    engine.nudge(37, 10.0, 25.0)
+    assert engine.delay_ms == pytest.approx(950)
+    source.period = 0.9
+    clock.t = 100.5
+    engine.stop_tones()
+    press = [m for m, _ in outlet.samples if m["kind"] == "press"][-1]
+    assert press["delay_ms"] == pytest.approx(900)
+    assert press["phase_deg"] == pytest.approx(0)
+    source.feed(Beat(100.9, 0.9))
+    clock.t = 101.0
+    row = engine.end_trial()
+    assert row["ChosenDelayMs"] == pytest.approx(900)
+    assert row["ChosenPhaseDeg"] == pytest.approx(0)
+
+
 def test_nudge_counts_moves_and_marks():
     engine, source, player, clock, outlet = make_engine()
     engine.start_trial(1, 0)

@@ -174,6 +174,10 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - Esc during a PAT trial pushes an `abort` marker instead of a `press`, and
   the aborted trial's tones are no longer written to `tones.txt` without a
   row in `final.txt`.
+- In the PAT's absolute mode, a dial left beyond a period that has since
+  shrunk is clamped to that period before it wraps. A notch from it no longer
+  jumps ahead, and the `dial` and `press` markers report the phase that is
+  played.
 
 ### Internal
 

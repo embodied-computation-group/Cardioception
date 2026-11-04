@@ -31,7 +31,7 @@ R_w = | sum_r w_r exp(i theta_r) | / sum_r w_r      (confidence-weighted)
 `mode` in `getParameters` sets what the dial controls. Both modes reset the dial to one of four start phases (0, 90, 180 or 270 degrees) at the start of each trial, drawn in shuffled blocks of four without an immediate repeat, so the participant cannot find the answer by remembering a dial position.
 
 - **Relative mode** (`mode="relative"`, the default). The dial is a phase, in degrees of the anticipated heart period, and wraps at 360. The anticipated period is the mean of the last three R-R intervals. On each beat the tone is played at `phase / 360 * anticipated period` after the R-wave, so the tone keeps its place in the cycle when the heart speeds up or slows down. This is the mode of the PAT-ECG demonstration study. One notch of the mouse wheel moves the phase by `dialGainDeg` (10 degrees by default).
-- **Absolute mode** (`mode="absolute"`). The dial is a delay in ms after the R-wave, as in the phone-based PAT. It wraps at the anticipated period and the delay is clamped to the current period. One notch moves it by `dialGainMs` (25 ms by default).
+- **Absolute mode** (`mode="absolute"`). The dial is a delay in ms after the R-wave, as in the phone-based PAT. It wraps at the anticipated period and the delay is clamped to the current period: a dial at 950 ms when the period shrinks to 900 ms plays at 900 ms (phase 0), the markers and the row say so, and the next notch moves on from 900 ms. One notch moves it by `dialGainMs` (25 ms by default).
 
 {cite:t}`2026:hodgetts` suggest running both modes when the heart period varies a lot between trials (during exercise or recovery, for instance), because they separate phase-locked from delay-locked perception.
 

@@ -136,6 +136,9 @@ class PhaseEngine:
     The dial is kept as a phase in degrees in relative mode (it wraps at
     360) and as a delay in ms in absolute mode (it wraps at the anticipated
     period, and the delay used for a beat is clamped to that beat's period).
+    In absolute mode a dial left beyond a period that has since shrunk reads,
+    in :attr:`phase_deg`, :attr:`delay_ms` and the markers, as the clamped
+    delay the scheduler plays, and the next turn starts from there.
     Each trial starts with the dial at the trial's start phase.
 
     With a virtual source (``source.virtual`` true, the exteroceptive task)
@@ -237,6 +240,13 @@ class PhaseEngine:
             self._known_period = period
         return self._known_period
 
+    def _clamped_delay_ms(self, period: Optional[float]) -> float:
+        """The absolute-mode dial, clamped to ``period`` (s) as the scheduler
+        clamps it; unclamped while no period is known."""
+        if period is None:
+            return self._delay_ms
+        return min(self._delay_ms, period * 1000.0)
+
     @property
     def phase_deg(self) -> float:
         """The dial as a phase, degrees in [0, 360); NaN in absolute mode
@@ -246,14 +256,15 @@ class PhaseEngine:
         period = self._period
         if period is None:
             return math.nan
-        return (self._delay_ms / (period * 1000.0) * 360.0) % 360.0
+        delay = self._clamped_delay_ms(period)
+        return (delay / (period * 1000.0) * 360.0) % 360.0
 
     @property
     def delay_ms(self) -> float:
-        """The dial as ms after the R-wave; NaN in relative mode while no
-        period is known."""
+        """The dial as ms after the R-wave, clamped to the anticipated period
+        in absolute mode; NaN in relative mode while no period is known."""
         if self.mode == "absolute":
-            return self._delay_ms
+            return self._clamped_delay_ms(self._period)
         period = self._period
         if period is None:
             return math.nan
@@ -272,7 +283,9 @@ class PhaseEngine:
 
         Relative mode moves ``notches * gain_deg`` degrees, wrapping at 360;
         absolute mode ``notches * gain_ms`` ms, wrapping at the anticipated
-        period.
+        period, from the dial clamped to that period: a dial at 950 ms when
+        the period has shrunk to 900 ms plays at 900 ms (phase 0), and one
+        notch on takes it to 25 ms, not 75.
         """
         if not notches:
             return
@@ -280,7 +293,8 @@ class PhaseEngine:
             self._phase = (self._phase + notches * gain_deg) % 360.0
         else:
             period_ms = (self._period or DEFAULT_PERIOD) * 1000.0
-            self._delay_ms = (self._delay_ms + notches * gain_ms) % period_ms
+            delay = min(self._delay_ms, period_ms)
+            self._delay_ms = (delay + notches * gain_ms) % period_ms
         self._n_moves += 1
         self.mark(
             "dial",
