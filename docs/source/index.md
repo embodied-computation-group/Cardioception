@@ -23,41 +23,18 @@ The tasks run with minimal equipment: a computer and a device that reads the par
 Install the package as **`cardioception-toolbox`**:
 
     pip install cardioception-toolbox
-
-This is the official package, maintained by the Embodied Computation Group at Aarhus University, and the one used in our publications. Make sure the package name you install is exactly `cardioception-toolbox`. Until the next release, PyPI has the 0.7 line; [Installation](getting-started/installation.md#3-install-cardioception) says how to install the version this documentation describes.
 ```
-
-The import name is still `cardioception`, so existing scripts do not need to be edited:
-
-```python
-from cardioception.HRD import task
-```
-
-See [Installation](getting-started/installation.md) for conda environments, dependencies and the development version.
 
 ## The tasks
 
-### Heart Rate Discrimination task
-
-The HRD {cite:p}`2022:legrand` is an adaptive psychophysical measure. Participants attend to their heartbeat sensations, then hear tones played faster or slower than their true heart rate and judge which. Staircase procedures adjust that difference from trial to trial, which gives the bias (threshold) and the precision (slope) of the psychometric function. Both can be estimated online during the task or offline afterwards.
-
-### Heartbeat Counting task
-
-The HBC {cite:p}`1978:dale,1981:schandry`, also known as the heartbeat tracking task, asks participants to count their heartbeats over a fixed period. An accuracy score compares the reported count against the true number of beats.
-
-The package keeps this task because much of the literature rests on it. Counting scores can reflect beliefs about heart rate as well as heartbeat sensations; the [theory page](tasks/index.md#what-heartbeat-counting-can-establish) sets out the evidence.
-
-### Heartbeat Synchrony Discrimination task
-
-**Experimental.** The HSD is an adaptive Bayesian version of the heartbeat detection task {cite:p}`1993:brener`. Participants hear tones a chosen delay after each R-wave and judge whether they were synchronous with their heartbeat, and the delays are placed to estimate where in the cardiac cycle the heartbeat is felt and how sharply. It needs an ECG over Lab Streaming Layer and has so far been run on hardware once. The [design page](tasks/hsd/design.md) describes the method and the evidence, and [Running the HSD](tasks/hsd/running.md) explains how to run it.
-
-### Phase Adjustment Task
-
-**Experimental.** The PAT {cite:p}`2021:plans` follows the ECG version of {cite:t}`2026:hodgetts`. Participants turn a dial that moves a tone earlier or later after each R-wave until tone and heartbeat feel simultaneous, and the score is how consistently their choices fall at one phase of the cardiac cycle, tested against chance. It needs an ECG over Lab Streaming Layer. The [PAT page](tasks/pat.md) explains how to run and score it.
-
-## Recording devices
-
-The default setup uses the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/), which plugs into the stimulus PC over USB and needs no extra code. Any ECG or PPG device that streams over [Lab Streaming Layer](https://labstreaminglayer.org/) also works, through `cardioception.devices.LSLRecorder`, and other devices can be added by supplying a recorder object to `getParameters`. [Recording devices](getting-started/recording-devices.md) has the details.
+| Task | What participants do | Main measures | Reference | Status |
+|---|---|---|---|---|
+| [Heart Rate Discrimination (HRD)](tasks/hrd/index.md) | Judge whether a sequence of tones is faster or slower than their own heart rate | Bias and precision of heart rate judgements, with optional confidence ratings | [Legrand et al., 2022](https://doi.org/10.1016/j.biopsycho.2021.108239) | Established |
+| [Heartbeat Counting (HBC)](tasks/hbc.md) | Count their heartbeats during intervals of different lengths | Reported heartbeat counts relative to recorded counts | [Schandry, 1981](https://doi.org/10.1111/j.1469-8986.1981.tb02486.x) | Established |
+| [Phase Adjustment Task (PAT)](tasks/pat.md) | Adjust the delay of tones until they match their perceived heartbeat | The delay chosen, and its consistency across trials | [Plans et al., 2021](https://doi.org/10.1016/j.biopsycho.2021.108171); ECG version after [Hodgetts et al., 2026](https://doi.org/10.1111/psyp.70415) | Beta |
+| [Heartbeat Synchrony Discrimination (HSD)](tasks/hsd/index.md) | Judge whether tones played at different delays after each heartbeat are synchronous with it | Perceived timing of the heartbeat, and its temporal precision | New in Cardioception; see the [design page](tasks/hsd/design.md) | Beta |
+| [Whitehead method](tasks/whitehead.md) | Judge which of two tone sequences, one at a short and one at a longer delay after each heartbeat, is simultaneous with it | Discrimination of synchronous from delayed tones | [Whitehead et al., 1977](https://doi.org/10.1007/BF00998623) | Coming soon |
+| [Method of constant stimuli (Brener)](tasks/constant-stimuli.md) | Judge whether tones at one of several fixed delays, from 0 to 500 ms after each heartbeat, are simultaneous with it | Proportion of tones judged simultaneous at each delay | [Brener, Liu & Ring, 1993](https://doi.org/10.1111/j.1469-8986.1993.tb02091.x) | Coming soon |
 
 ## Analysing your data
 
@@ -65,24 +42,21 @@ For HRD data we recommend the [Hierarchical Interoception toolbox](https://githu
 
 ## Where to go next
 
-- [Running a session](getting-started/running-a-session.md) for running a task
-- [The tasks](tasks/index.md) for the four tasks side by side, and which to choose
-- [Theory](tasks/hrd/theory.md) for what the HRD and the HBC measure and why
-- [HSD design](tasks/hsd/design.md) for the experimental Heartbeat Synchrony Discrimination task
-- [PAT](tasks/pat.md) for the experimental Phase Adjustment Task
-- [Tutorials](tasks/hrd/tutorials/index.md) for inspecting your data, then modelling it
+- [Installation](getting-started/installation.md), [Recording devices](getting-started/recording-devices.md) and [Running a session](getting-started/running-a-session.md) for setting up and running a task
+- [The tasks](tasks/index.md) for the tasks side by side, and what each can establish
+- [Heart Rate Discrimination](tasks/hrd/index.md) for running the HRD, its theory, the tutorials and the legacy reports
+- [Heartbeat Counting](tasks/hbc.md), [Phase Adjustment Task](tasks/pat.md) and [Heartbeat Synchrony Discrimination](tasks/hsd/index.md) for the other tasks
 - [API](reference/api.rst) for the parameters and task functions
 - [Cite](reference/cite.md) for the references to use in a publication
+- [Changelog](reference/changelog.md) for what changed in 1.0
 
 ## Getting help
 
 For questions about the tasks or about data analysis, contact Micah Allen directly. To report a bug, open an issue on the [GitHub page](https://github.com/embodied-computation-group/Cardioception/issues).
 
 ```{note}
-This is the original Cardioception, created by Micah Allen and the Embodied Computation Group at Aarhus University between 2019 and 2022, funded by a Lundbeckfonden Fellowship to Micah Allen. It is the version cited in the peer-reviewed publications listed on the [cite page](reference/cite.md). We cannot vouch for unofficial forks, so we recommend working from this repository for research, installation and citation.
+This is the original Cardioception, created by Micah Allen and the Embodied Computation Group at Aarhus University between 2019 and 2022, funded by a Lundbeckfonden Fellowship to Micah Allen. It is the version cited in the peer-reviewed publications listed on the [cite page](reference/cite.md).
 ```
-
-## Development
 
 Written and maintained by Micah Allen and the Embodied Computation Group, Aarhus University. Contact: micah@cfin.au.dk
 
