@@ -17,7 +17,9 @@ g.addField("session", initial="HRD")
 g.addField("Serial Port:", initial="COM5")
 g.addField("Setup:", initial="behavioral", choices=["behavioral", "test"])
 g.addField("Device:", initial="mouse", choices=["mouse", "keyboard"])
-g.addField("Language:", initial="english", choices=["english", "danish", "french"])
+g.addField(
+    "Language:", initial="english", choices=["english", "danish", "french", "german"]
+)
 g.show()
 
 # Set global task parameters herecd

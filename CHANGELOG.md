@@ -53,6 +53,10 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 
 ### Added
 
+- German instructions for the Heart Rate Discrimination task, `language="german"`,
+  addressing the participant formally. The texts shipped in 0.7.2 as a Python
+  function and move here to `HRD/texts/german.yaml`, checked against that
+  function in the language snapshot test.
 - `time` in `_signal.txt`: absolute epoch seconds for every sample. Without it
   the PPG recording could not be aligned with the trial triggers or with
   anything recorded alongside it.
