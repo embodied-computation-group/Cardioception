@@ -211,3 +211,55 @@ def test_flat_and_missing_signal():
     assert detector.process([], []) == []
     with pytest.raises(ValueError):
         detector.process([1, 2, 3], [0.0, 0.001])
+
+
+def steady_r_times(seconds, seed=0):
+    """R peaks at about 70 beats per minute, a little irregular."""
+    rr = 60 / 70 + np.random.default_rng(seed).uniform(-0.03, 0.03, int(seconds))
+    times = 0.5 + np.cumsum(rr)
+    return times[times < seconds - 0.5]
+
+
+@pytest.mark.parametrize("seed", [2, 3])
+def test_gap_in_the_timestamps(seed):
+    """Two seconds missing, and the signal comes back 3 R heights higher, as
+    after a dropped link: the filters start again instead of ringing, nothing
+    is reported for a period, and the beats after that are the right ones."""
+    r_times = steady_r_times(30.0, seed)
+    ecg, stamps = synthetic_ecg(r_times, 30.0, seed=seed)
+    lo, hi = 12.0 + seed * 0.13, 14.0 + seed * 0.13
+    ecg[stamps - 1000 >= hi] += 3 * 8000
+    keep = (stamps - 1000 < lo) | (stamps - 1000 >= hi)
+    ecg, stamps = ecg[keep], stamps[keep]
+
+    detector = OnlineRDetector(SFREQ)
+    beats = in_chunks(detector, ecg, stamps)
+    assert detector.n_gaps == 1
+    r = np.array([b.r_time for b in beats]) - 1000
+    period = 60 / 70
+    assert not np.any((r >= hi) & (r < hi + period))
+    after = r[(r >= hi + period) & (r < 29.0)]
+    truth = r_times[(r_times >= hi + period) & (r_times < 29.0)]
+    assert after.size == truth.size
+    assert np.abs(after - truth).max() < 0.005
+    before = r[(r > 2.5) & (r < lo - 0.5)]
+    truth = r_times[(r_times > 2.5) & (r_times < lo - 0.5)]
+    assert before.size == truth.size
+    # The same beats however the signal is cut into chunks.
+    assert OnlineRDetector(SFREQ).process(ecg, stamps) == beats
+
+
+@pytest.mark.parametrize("fraction", [0.1, 0.2])
+def test_noise_after_the_beats_is_not_taken_for_beats(fraction):
+    """An electrode coming off: 20 s of white noise, its standard deviation a
+    fraction of the R height, after 20 s of clean beats. The QRS estimate is
+    halved without a beat, but not so far that the noise becomes beats."""
+    r_times = steady_r_times(20.0)
+    ecg, stamps = synthetic_ecg(r_times, 20.0)
+    noise = np.random.default_rng(0).normal(32768, fraction * 8000, ecg.size)
+    signal = np.concatenate([ecg, noise])
+    stamps = np.concatenate([stamps, stamps + 20.0])
+    beats = OnlineRDetector(SFREQ).process(signal, stamps)
+    in_noise = [b for b in beats if b.r_index >= ecg.size]
+    assert len(in_noise) <= 1
+    assert len(beats) - len(in_noise) == np.sum(r_times > 2.0)

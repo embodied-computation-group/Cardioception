@@ -1,18 +1,27 @@
 # Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """TonePlayer on the real sound card, and the sound it makes.
 
-The live tests skip when PsychToolbox or pylsl is missing, or no audio
-device opens.
+The live tests are marked ``audio`` and run only with ``--run-audio``:
+PsychToolbox plays at the sound card's own volume, whatever the system mixer
+says. They also skip when PsychToolbox or pylsl is missing, or no audio
+device opens. The other tests are silent and always run.
 """
 
+import logging
 import math
 import subprocess
 import sys
+import types
 
 import numpy as np
 import pytest
 
-from cardioception.devices.tone_player import KINDS, make_tone
+from cardioception.devices.tone_player import (
+    KINDS,
+    TONE_CLEARANCE,
+    make_tone,
+    min_tone_spacing,
+)
 
 
 def test_import_does_not_need_hardware():
@@ -57,6 +66,86 @@ def test_make_tone():
     assert KINDS == ("tone", "vibration")
 
 
+class FakeSlave:
+    """A PsychPortAudio slave that never finishes: everything stays in flight."""
+
+    def __init__(self, *args, **kwargs):
+        self.status = {"StartTime": 0.0, "State": 1}
+        self.starts = []
+
+    def fill_buffer(self, data):
+        pass
+
+    def start(self, repetitions=1, when=0, wait_for_start=0):
+        self.starts.append(when)
+
+    def stop(self):
+        return (0.0, 0, 0, 0)
+
+    def close(self):
+        pass
+
+
+class FakeStream:
+    handle = 1
+
+    def __init__(self, *args, **kwargs):
+        self.status = {"SampleRate": 48000.0, "OutDeviceIndex": 0}
+
+    def start(self, **kwargs):
+        pass
+
+    def stop(self):
+        pass
+
+    def close(self):
+        pass
+
+
+@pytest.fixture
+def silent_player(monkeypatch):
+    """A TonePlayer on a fake PsychToolbox, whose clock is GetSecs itself."""
+    now = [100.0]
+    audio = types.SimpleNamespace(
+        verbosity=lambda level: None, Stream=FakeStream, Slave=FakeSlave
+    )
+    ptb = types.SimpleNamespace(GetSecs=lambda: now[0], audio=audio)
+    monkeypatch.setitem(sys.modules, "psychtoolbox", ptb)
+    monkeypatch.setitem(sys.modules, "psychtoolbox.audio", audio)
+    monkeypatch.setattr("time.sleep", lambda seconds: None)
+    from cardioception.devices.tone_player import TonePlayer
+
+    player = TonePlayer(duration=0.03, vib_duration=0.05, clock=lambda: now[0])
+    assert player.offset == 0.0
+    yield player, now
+    player.close()
+
+
+def test_player_refuses_a_tone_that_would_play_late(silent_player, caplog):
+    """A tone less than its duration plus 0.05 s from another in flight is
+    not played: it is logged and its onset is NaN. Other kinds are not
+    affected, and a tone far enough away is queued."""
+    player, now = silent_player
+    assert min_tone_spacing(0.03) == pytest.approx(0.03 + TONE_CLEARANCE)
+    first = player.schedule(101.0, "tone")
+    with caplog.at_level(logging.WARNING, logger="cardioception"):
+        late = player.schedule(101.05, "tone")
+        early = player.schedule(100.95, "tone")
+    assert sum("would play late" in r.getMessage() for r in caplog.records) == 2
+    # Vibration and tone are separate tracks, and may overlap.
+    vibration = player.schedule(101.0, "vibration")
+    queued = player.schedule(101.09, "tone")
+    # Spacing is checked against the queue too, not only the sound playing.
+    behind = player.schedule(101.12, "tone")
+    onsets = dict(player.poll_onsets())
+    assert set(onsets) == {late, early, behind}
+    assert all(math.isnan(v) for v in onsets.values())
+    tone = player._tracks["tone"]
+    assert tone.active is not None and tone.active[1] == first
+    assert [h for _, h in tone.queue] == [queued]
+    assert player._tracks["vibration"].active[1] == vibration
+
+
 @pytest.fixture(scope="module")
 def player():
     pytest.importorskip("psychtoolbox")
@@ -82,6 +171,7 @@ def wait_onsets(player, handles, seconds=3.0):
     return found
 
 
+@pytest.mark.audio
 def test_tone_player_onsets(player):
     import pylsl
 
@@ -96,6 +186,7 @@ def test_tone_player_onsets(player):
     assert np.all(np.abs(errors) < 0.005), errors
 
 
+@pytest.mark.audio
 def test_tone_player_stop_all(player):
     import pylsl
 

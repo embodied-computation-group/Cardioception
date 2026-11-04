@@ -122,12 +122,37 @@ def test_mad_outliers_hand_computed():
 def test_mad_outliers_edge_cases():
     # NaN is missing, not an outlier.
     assert mad_outliers([1000, np.nan, 1010, 990]).tolist() == [False] * 4
-    # Identical periods (MAD 0): nothing is flagged, anything else would be.
+    # Identical periods (MAD 0): the robust SD is floored at 1 ms, so float
+    # noise and small differences are not outliers, and more than 5 ms is.
     assert not mad_outliers([1000] * 5).any()
-    assert mad_outliers([1000] * 5 + [1001]).tolist() == [False] * 5 + [True]
+    assert not mad_outliers([1000] * 5 + [1000 + 1e-9]).any()
+    assert not mad_outliers([1000] * 5 + [1001]).any()
+    assert not mad_outliers([1000] * 5 + [1005]).any()
+    assert mad_outliers([1000] * 5 + [1005.1]).tolist() == [False] * 5 + [True]
+    # Without the floor the old rule comes back.
+    assert mad_outliers([1000] * 5 + [1001], min_sd=0).tolist() == [False] * 5 + [True]
+    with pytest.raises(ValueError):
+        mad_outliers([1, 2], min_sd=-1)
     assert not mad_outliers([np.nan, np.nan]).any()
     with pytest.raises(ValueError):
         mad_outliers([1, 2], k=0)
+
+
+def test_grid_keeps_a_fixed_period_with_float_noise():
+    # An exteroceptive run at a fixed 1000 ms, written through float sums.
+    n = 28
+    period = 1000.0 + np.random.default_rng(5).choice([0, 1e-10, -1e-10], n)
+    df = pd.DataFrame(
+        {
+            "Block": "main",
+            "ChosenDelayMs": 300.0,
+            "AnticipatedPeriodMs": period,
+            "ObservedPeriodMs": period,
+            "Confidence": 5,
+        }
+    )
+    grid = consistency_grid(df, n_sim=100)
+    assert (grid["n_trials"] == n).all()
 
 
 def test_grid_drops_outlying_and_missing_periods():
@@ -171,14 +196,18 @@ def test_threshold_falls_with_more_trials():
         assert threshold == pytest.approx(np.sqrt(-np.log(0.05) / n), rel=0.06)
 
 
-def test_variable_threshold_uses_own_periods():
-    # Uniform delays over each trial's own period give uniform angles, so the
-    # threshold does not depend on the periods, whichever way they are drawn.
+def test_threshold_does_not_depend_on_the_periods():
+    # Uniform delays over any period give uniform angles, so with the same
+    # seed the threshold is the same whatever the periods and the mapping.
     periods = np.linspace(700, 1200, 28)
-    variable = monte_carlo_threshold(periods, 28, n_sim=N_SIM)
-    resampled = monte_carlo_threshold(periods, 20, n_sim=N_SIM)
-    assert variable == pytest.approx(extero_threshold(28, n_sim=N_SIM), abs=0.01)
-    assert resampled == pytest.approx(extero_threshold(20, n_sim=N_SIM), abs=0.01)
+    for n in (28, 20):
+        reference = monte_carlo_threshold([1000], n, n_sim=N_SIM)
+        assert monte_carlo_threshold(periods, n, n_sim=N_SIM) == reference
+        assert monte_carlo_threshold(periods, n, n_sim=N_SIM, fixed=True) == reference
+        assert extero_threshold(n, period_ms=650, n_sim=N_SIM) == reference
+    assert monte_carlo_threshold(periods, 28, n_sim=N_SIM) == pytest.approx(
+        np.sqrt(-np.log(0.05) / 28), rel=0.06
+    )
 
 
 def test_weighted_threshold():
@@ -220,6 +249,29 @@ def test_grid_columns_and_cells():
         for w in ("none", "confidence")
     }
     assert grid["interoceptive"].dtype == bool
+
+
+def test_grid_drops_trials_that_are_not_ok():
+    rng = np.random.default_rng(4)
+    df = participant(0.3 + rng.normal(0, 0.01, 28))
+    main = df.index[df["Block"] == "main"]
+    df["TrialStatus"] = "ok"
+    df.loc[main[0], "TrialStatus"] = "stale"
+    df.loc[main[0], "AnticipatedPeriodMs"] = np.nan
+    df.loc[main[1], "TrialStatus"] = "timeout"
+    df.loc[main[1], "ChosenDelayMs"] = np.nan
+    # A stale trial with a plausible period would still be scored without the
+    # status: it is the status that drops it.
+    df.loc[main[2], "TrialStatus"] = "stale"
+    df.loc[df["Block"] == "practice", "TrialStatus"] = "timeout"  # not counted
+    grid = consistency_grid(df, n_sim=1_000)
+    assert (grid["n_dropped"] == 3).all()
+    assert (grid.loc[grid["weighting"] == "none", "n_trials"] == 25).all()
+    # An empty status counts as ok, and a file without the column drops none.
+    df["TrialStatus"] = np.nan
+    assert (consistency_grid(df, n_sim=100)["n_dropped"] == 0).all()
+    grid = consistency_grid(df.drop(columns="TrialStatus"), n_sim=100)
+    assert (grid["n_dropped"] == 0).all()
 
 
 def test_grid_requires_final_columns():

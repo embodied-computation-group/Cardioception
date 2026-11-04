@@ -654,6 +654,14 @@ class TestConfig(unittest.TestCase):
         with self.assertRaises(ValueError):
             TaskConfig(axis="degrees")
 
+    def test_tone_must_fit_between_two_r_waves(self):
+        """Tones can come one refractory period (0.25 s) apart, and the player
+        needs a tone's duration plus 0.05 s between starts."""
+        TaskConfig(toneSecs=0.2)
+        for bad in (0.0, 0.21, 0.5):
+            with self.assertRaisesRegex(ValueError, "toneSecs"):
+                TaskConfig(toneSecs=bad)
+
     def test_absolute_candidates_and_grids(self):
         """Absolute: 80 to 600 ms by 20, ``mu`` grid up to 600 ms."""
         config = TaskConfig()

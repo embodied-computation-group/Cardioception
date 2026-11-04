@@ -175,6 +175,41 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   responders now give -4.3 to -0.2, the detector +2.2 to +2.7. `FloorMean`
   and `PeakMean` keep their names; the grid is larger (98,820 points) and a
   stimulus selection takes about 20 ms.
+- A missed R peak or a T wave taken for one no longer skews the anticipated
+  period of the live beat source (PAT, HSD) by a third for three beats. An RR
+  interval outside 0.6 to 1.6 times the median of the last five accepted ones
+  is left out of the period and counted in `LSLBeatSource.n_rejected`.
+- The online R-peak detector restarts its filters after a gap in the ECG
+  timestamps and reports nothing for one period after it, instead of taking
+  the resume transient for a beat. Without beats, its QRS estimate is no
+  longer halved without limit, so electrode-off noise is not taken for beats.
+- Two tones closer than a tone's duration plus about 30 ms played the second
+  late, because the tone player starts a sound only after the previous one of
+  its kind has ended. `TonePlayer.schedule` now refuses such a tone (logged,
+  NaN onset), the PAT's `minToneGap` must be at least `toneDuration` plus
+  0.05 s (it allowed 0), and the HSD's `toneSecs` at most 0.2 s.
+- A PAT trial on a lost ECG no longer waits for Esc or scores as normal. A
+  trial ends after `maxTrialTime` (60 s) with no choice and `TrialStatus`
+  `timeout`; a press more than 1.5 anticipated periods after the last R-wave
+  is `stale`, with no anticipated period. The PAT scores drop both and report
+  how many in `n_dropped`.
+- A PAT trial row now records the delay of the last tone actually heard
+  (`LastToneDelayMs`, with its anchor, R-wave and `LastToneIndex`), which
+  differs from the dial for a tone timed from the predicted next beat.
+  `tones.txt` gains a `ToneIndex` to join on.
+- Esc during a PAT trial pushes an `abort` marker instead of a `press`, and
+  the aborted trial's tones are no longer written to `tones.txt` without a
+  row in `final.txt`.
+- In the PAT's absolute mode, a dial left beyond a period that has since
+  shrunk is clamped to that period before it wraps. A notch from it no longer
+  jumps ahead, and the `dial` and `press` markers report the phase that is
+  played.
+- The PAT period outlier rule floors the robust standard deviation at 1 ms.
+  With a fixed period (median absolute deviation 0) float noise used to turn
+  trials into outliers.
+- The PAT's wait after the press, for the next R-wave (up to 3 s), keeps
+  the window flipping and the frame hook running, and Esc ends it. It used to
+  busy-wait with the screen frozen and Esc ignored.
 
 ### Internal
 
@@ -230,6 +265,9 @@ code it replaced rather than read over.
   stopping defaults (`minTrials` 15, `maxTrials` 60, `ciWidth` 100 ms) are
   unchanged: the median detector reaches a 100 ms interval only at 75 to 89
   trials, but running to 90 would lower the RMSE of `mu` by about 2 ms.
+- The live tests of the beat-locked tone player, which play through the
+  sound card at its own volume, are marked `audio` and run only with
+  `pytest --run-audio`, as `blocking` tests run only with `--run-blocking`.
 
 **`responseDecision` returns five values, not six.** The second, a
 `responseTrigger` timestamp, was unpacked by its only caller and never read.

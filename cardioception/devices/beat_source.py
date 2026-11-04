@@ -10,6 +10,21 @@
 Both satisfy the :class:`BeatSource` protocol and report :class:`Beat`
 records on the LSL clock (``pylsl.local_clock``). This module imports neither
 pylsl nor PsychToolbox at import time.
+
+The anticipated period of :class:`LSLBeatSource` is the mean of the last
+:data:`PERIOD_BEATS` accepted RR intervals. An interval is accepted unless:
+
+- it is longer than :data:`MAX_RR`: a gap in the signal, after which the
+  period is learnt again from scratch;
+- once :data:`MIN_REFERENCE` intervals are known, it lies outside
+  :data:`RR_BAND` times the median of the last :data:`REFERENCE_BEATS`
+  accepted ones. Shorter, the beat is taken for an extra detection (a T wave,
+  an artefact): it is still reported, but the next interval is measured from
+  the beat before it. Longer, a beat was missed: the next interval is measured
+  from this beat. Either way the rejected interval is left out of the period,
+  which keeps its last value, and :attr:`LSLBeatSource.n_rejected` counts it.
+  After :data:`MAX_REJECTED` rejections in a row the reference is taken to be
+  stale (the heart rate really changed) and the period is learnt again.
 """
 
 import time
@@ -36,6 +51,21 @@ MAX_RR = 2.0
 
 #: RR intervals averaged into the anticipated period.
 PERIOD_BEATS = 3
+
+#: An RR interval outside these multiples of the median of the recent
+#: accepted ones is taken for a missed or an extra beat, and left out of the
+#: anticipated period.
+RR_BAND = (0.6, 1.6)
+
+#: Accepted RR intervals the median of :data:`RR_BAND` is taken over.
+REFERENCE_BEATS = 5
+
+#: Accepted RR intervals needed before any is rejected.
+MIN_REFERENCE = 3
+
+#: Rejections in a row after which the reference is dropped and the period
+#: learnt again, so that a real change of rate cannot lock the period out.
+MAX_REJECTED = 3
 
 #: Period, in seconds, assumed before one is known.
 DEFAULT_PERIOD = 1.0
@@ -94,9 +124,11 @@ class LSLBeatSource:
 
     Pulls the recorder's inlet and feeds the samples of its channel to an
     :class:`~cardioception.devices._online_beats.OnlineRDetector`. The
-    anticipated period is the mean of the last 3 RR intervals; an interval
-    longer than :data:`MAX_RR` is taken for a gap in the signal and starts the
-    count again.
+    anticipated period is the mean of the last 3 accepted RR intervals; an
+    interval longer than :data:`MAX_RR` is taken for a gap in the signal and
+    starts the count again, and one outside :data:`RR_BAND` times the median
+    of the recent ones for a missed or extra beat, which is left out (see the
+    module docstring).
 
     While this source is in use it is the only reader of the inlet: do not
     call the recorder's ``read``, ``readInWaiting`` or ``waitBeat`` at the
@@ -122,7 +154,14 @@ class LSLBeatSource:
         self.recorder = recorder
         self.detector = detector
         self.last_r_time: Optional[float] = None
-        self._rr: Deque[float] = deque(maxlen=PERIOD_BEATS)
+        self._rr: Deque[float] = deque(maxlen=REFERENCE_BEATS)
+        # R time the next interval is measured from: the last beat not taken
+        # for an extra detection.
+        self._anchor: Optional[float] = None
+        self._rejected_run = 0
+        #: RR intervals left out of the period as a missed or extra beat,
+        #: since :meth:`start`.
+        self.n_rejected = 0
         self._pending: List[Beat] = []
         self._started = False
         #: Samples fed to the detector since :meth:`start`.
@@ -134,7 +173,7 @@ class LSLBeatSource:
     def period(self) -> Optional[float]:
         if len(self._rr) < PERIOD_BEATS:
             return None
-        return sum(self._rr) / PERIOD_BEATS
+        return sum(list(self._rr)[-PERIOD_BEATS:]) / PERIOD_BEATS
 
     def start(self) -> None:
         """Drop what the inlet holds and start detecting from now.
@@ -148,6 +187,9 @@ class LSLBeatSource:
         self.recorder.inlet.flush()
         self.detector.reset()
         self._rr.clear()
+        self._anchor = None
+        self._rejected_run = 0
+        self.n_rejected = 0
         self._pending = []
         self.last_r_time = None
         self.n_samples = 0
@@ -205,12 +247,47 @@ class LSLBeatSource:
     def _on_beat(
         self, r_time: float, rr: Optional[float], commit_time: Optional[float] = None
     ) -> None:
-        if rr is None or rr > MAX_RR:
-            self._rr.clear()
-        else:
-            self._rr.append(rr)
+        self._accept(r_time, rr)
         self.last_r_time = r_time
         self._pending.append(Beat(r_time, self.period, commit_time))
+
+    def _accept(self, r_time: float, rr: Optional[float]) -> None:
+        """Add the interval ending at ``r_time`` to the period, or reject it.
+
+        ``rr`` is the detector's interval from the previous detection; the
+        interval used is measured from the last beat not taken for an extra
+        one, which is the same unless that beat was rejected as too early.
+        """
+        if rr is None or self._anchor is None or rr > MAX_RR:
+            # The first beat, or one after a gap: start again.
+            self._rr.clear()
+            self._anchor = r_time
+            self._rejected_run = 0
+            return
+        interval = r_time - self._anchor
+        if interval > MAX_RR:
+            self._rr.clear()
+            self._anchor = r_time
+            self._rejected_run = 0
+            return
+        if len(self._rr) >= MIN_REFERENCE:
+            median = float(np.median(self._rr))
+            low, high = RR_BAND[0] * median, RR_BAND[1] * median
+            if not low <= interval <= high:
+                self.n_rejected += 1
+                self._rejected_run += 1
+                if interval > high:
+                    # A beat was missed: this one is real, measure from it.
+                    self._anchor = r_time
+                if self._rejected_run >= MAX_REJECTED:
+                    # The rate has moved away from the reference: relearn.
+                    self._rr.clear()
+                    self._anchor = r_time
+                    self._rejected_run = 0
+                return
+        self._rr.append(interval)
+        self._anchor = r_time
+        self._rejected_run = 0
 
 
 def simulated_periods(seed: Optional[int] = None) -> Iterator[float]:
