@@ -175,6 +175,28 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   its kind has ended. `TonePlayer.schedule` now refuses such a tone (logged,
   NaN onset), the PAT's `minToneGap` must be at least `toneDuration` plus
   0.05 s (it allowed 0), and the HSD's `toneSecs` at most 0.2 s.
+- A PAT trial on a lost ECG no longer waits for Esc or scores as normal. A
+  trial ends after `maxTrialTime` (60 s) with no choice and `TrialStatus`
+  `timeout`; a press more than 1.5 anticipated periods after the last R-wave
+  is `stale`, with no anticipated period. The PAT scores drop both and report
+  how many in `n_dropped`.
+- A PAT trial row now records the delay of the last tone actually heard
+  (`LastToneDelayMs`, with its anchor, R-wave and `LastToneIndex`), which
+  differs from the dial for a tone timed from the predicted next beat.
+  `tones.txt` gains a `ToneIndex` to join on.
+- Esc during a PAT trial pushes an `abort` marker instead of a `press`, and
+  the aborted trial's tones are no longer written to `tones.txt` without a
+  row in `final.txt`.
+- In the PAT's absolute mode, a dial left beyond a period that has since
+  shrunk is clamped to that period before it wraps. A notch from it no longer
+  jumps ahead, and the `dial` and `press` markers report the phase that is
+  played.
+- The PAT period outlier rule floors the robust standard deviation at 1 ms.
+  With a fixed period (median absolute deviation 0) float noise used to turn
+  trials into outliers.
+- The PAT's wait after the press, for the next R-wave (up to 3 s), keeps
+  the window flipping and the frame hook running, and Esc ends it. It used to
+  busy-wait with the screen frozen and Esc ignored.
 
 ### Internal
 

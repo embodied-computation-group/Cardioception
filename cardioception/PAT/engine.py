@@ -43,7 +43,7 @@ import json
 import math
 import time
 from collections import deque
-from typing import Any, Deque, Dict, List, Optional, Tuple
+from typing import Any, Callable, Deque, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -72,6 +72,8 @@ from cardioception.devices.tone_player import (  # noqa: F401
 __all__ = [
     "MODES",
     "NEXT_BEAT_TIMEOUT",
+    "STALE_PERIODS",
+    "TRIAL_STATUSES",
     "DEFAULT_PERIOD",
     "MAX_RR",
     "PERIOD_BEATS",
@@ -94,6 +96,20 @@ MODES = ("relative", "absolute")
 
 #: Seconds :meth:`PhaseEngine.end_trial` waits for the R after the press.
 NEXT_BEAT_TIMEOUT = 3.0
+
+#: A press more than this many anticipated periods after the last R-wave is
+#: ``stale``: the ECG was lost, and the period on the row would be old.
+STALE_PERIODS = 1.5
+
+#: Values of ``TrialStatus`` on a trial row. ``ok``: the press came while beats
+#: were arriving. ``stale``: the last R-wave before the press is more than
+#: :data:`STALE_PERIODS` anticipated periods old. ``timeout``: the trial ended
+#: with no press (see ``maxTrialTime`` in the task).
+TRIAL_STATUSES = ("ok", "stale", "timeout")
+
+#: How a trial stops: the participant's press, the task's time limit, or the
+#: experimenter's Esc (``abort``, after which the trial gets no row).
+STOP_REASONS = ("press", "timeout", "abort")
 
 
 def _json_safe(value: Any) -> Any:
@@ -120,6 +136,9 @@ class PhaseEngine:
     The dial is kept as a phase in degrees in relative mode (it wraps at
     360) and as a delay in ms in absolute mode (it wraps at the anticipated
     period, and the delay used for a beat is clamped to that beat's period).
+    In absolute mode a dial left beyond a period that has since shrunk reads,
+    in :attr:`phase_deg`, :attr:`delay_ms` and the markers, as the clamped
+    delay the scheduler plays, and the next turn starts from there.
     Each trial starts with the dial at the trial's start phase.
 
     With a virtual source (``source.virtual`` true, the exteroceptive task)
@@ -190,6 +209,7 @@ class PhaseEngine:
         self._trial_start = math.nan
         self._press: Optional[float] = None
         self._press_wall = math.nan
+        self._stop_reason = "press"
         self._dial_at_press: Tuple[float, float] = (math.nan, math.nan)
         self._n_moves = 0
         #: Tones of the current trial: ``real``, ``predicted``, ``skipped``.
@@ -220,6 +240,13 @@ class PhaseEngine:
             self._known_period = period
         return self._known_period
 
+    def _clamped_delay_ms(self, period: Optional[float]) -> float:
+        """The absolute-mode dial, clamped to ``period`` (s) as the scheduler
+        clamps it; unclamped while no period is known."""
+        if period is None:
+            return self._delay_ms
+        return min(self._delay_ms, period * 1000.0)
+
     @property
     def phase_deg(self) -> float:
         """The dial as a phase, degrees in [0, 360); NaN in absolute mode
@@ -229,14 +256,15 @@ class PhaseEngine:
         period = self._period
         if period is None:
             return math.nan
-        return (self._delay_ms / (period * 1000.0) * 360.0) % 360.0
+        delay = self._clamped_delay_ms(period)
+        return (delay / (period * 1000.0) * 360.0) % 360.0
 
     @property
     def delay_ms(self) -> float:
-        """The dial as ms after the R-wave; NaN in relative mode while no
-        period is known."""
+        """The dial as ms after the R-wave, clamped to the anticipated period
+        in absolute mode; NaN in relative mode while no period is known."""
         if self.mode == "absolute":
-            return self._delay_ms
+            return self._clamped_delay_ms(self._period)
         period = self._period
         if period is None:
             return math.nan
@@ -255,7 +283,9 @@ class PhaseEngine:
 
         Relative mode moves ``notches * gain_deg`` degrees, wrapping at 360;
         absolute mode ``notches * gain_ms`` ms, wrapping at the anticipated
-        period.
+        period, from the dial clamped to that period: a dial at 950 ms when
+        the period has shrunk to 900 ms plays at 900 ms (phase 0), and one
+        notch on takes it to 25 ms, not 75.
         """
         if not notches:
             return
@@ -263,7 +293,8 @@ class PhaseEngine:
             self._phase = (self._phase + notches * gain_deg) % 360.0
         else:
             period_ms = (self._period or DEFAULT_PERIOD) * 1000.0
-            self._delay_ms = (self._delay_ms + notches * gain_ms) % period_ms
+            delay = min(self._delay_ms, period_ms)
+            self._delay_ms = (delay + notches * gain_ms) % period_ms
         self._n_moves += 1
         self.mark(
             "dial",
@@ -294,6 +325,7 @@ class PhaseEngine:
         self._n_moves = 0
         self._press = None
         self._press_wall = math.nan
+        self._stop_reason = "press"
         self._dial_at_press = (math.nan, math.nan)
         self.counts = {"real": 0, "predicted": 0, "skipped": 0}
         self._trial_start = self.clock()
@@ -342,23 +374,34 @@ class PhaseEngine:
         finally:
             self._scheduling = scheduling
 
-    def stop_tones(self) -> None:
-        """The press: no more tones are scheduled. Those already scheduled play."""
+    def stop_tones(self, reason: str = "press") -> None:
+        """The trial stops: no more tones are scheduled. Those already
+        scheduled play.
+
+        ``reason`` is ``"press"`` (the participant locked in a choice),
+        ``"timeout"`` (the task's time limit ran out, with no choice) or
+        ``"abort"`` (Esc: the trial is dropped and :meth:`end_trial` is not
+        called), and is the kind of the marker pushed. Only the first call of
+        a trial counts.
+        """
+        if reason not in STOP_REASONS:
+            raise ValueError(f"reason should be one of {STOP_REASONS}, got {reason!r}")
         if self._press is not None:
             return
         self._press = self.clock()
         self._press_wall = time.time()
+        self._stop_reason = reason
         self._scheduling = False
         self._dial_at_press = (self.phase_deg, self.delay_ms)
         self.mark(
-            "press",
+            reason,
             self._press,
             trial=self.trial,
             phase_deg=self._dial_at_press[0],
             delay_ms=self._dial_at_press[1],
         )
 
-    def end_trial(self) -> dict:
+    def end_trial(self, on_wait: Optional[Callable[[], bool]] = None) -> dict:
         """The trial's row of ``final.txt`` (all but the confidence columns).
 
         Calls :meth:`stop_tones` if that has not been done, then keeps
@@ -366,11 +409,35 @@ class PhaseEngine:
         :data:`NEXT_BEAT_TIMEOUT` s after the press) and every tone scheduled
         has reported its onset, so the tone rows are complete on return.
 
+        ``on_wait`` is called between two polls of that wait in place of a
+        short sleep; the task flips the window and looks for Esc there. When
+        it returns true the wait stops at once and the row is made from what
+        has arrived (``ObservedPeriodMs`` is NaN if the next R-wave has not).
+
         ``ChosenDelayMs`` and ``ChosenPhaseDeg`` are the dial at the press,
         converted with the anticipated period of the last beat before it
         (``AnticipatedPeriodMs``); in absolute mode the delay is clamped to
         that period, as it would have been for the next tone.
         ``ObservedPeriodMs`` is the RR interval containing the press.
+
+        The ``LastTone*`` columns describe the last tone of the trial whose
+        target came before the press, the tone the participant was matching:
+        its ``ToneIndex`` in :attr:`tones`, its ``Anchor``, the R-wave it was
+        timed from (``LastToneRTime``) and ``LastToneDelayMs``, the delay it
+        was actually played at after the R-wave of its own cycle, with the
+        latency bias added back so it reads like ``ChosenDelayMs``. For a
+        ``real`` tone that R-wave is the one it was timed from and the delay is
+        the dial's. A ``predicted`` tone was timed from the R-wave before, one
+        anticipated period ahead, so its delay is measured from the next R-wave
+        and differs from the dial's by the error of that prediction; NaN if
+        that R-wave never came.
+
+        ``TrialStatus`` (see :data:`TRIAL_STATUSES`) is ``timeout`` when the
+        trial was stopped with ``stop_tones("timeout")``, and both chosen
+        columns are then NaN. It is ``stale`` when no R-wave came within
+        :data:`STALE_PERIODS` anticipated periods before the press: the
+        anticipated period is then NaN, and so is whichever chosen column
+        needs it (the delay in relative mode, the phase in absolute mode).
         """
         self.stop_tones()
         assert self._press is not None
@@ -386,7 +453,10 @@ class PhaseEngine:
                 tones_done or now > tone_deadline
             ):
                 break
-            time.sleep(0.002)
+            if on_wait is None:
+                time.sleep(0.002)
+            elif on_wait():
+                break
 
         last = self._last_beat_before(press)
         nxt = self._next_beat_after(press)
@@ -401,6 +471,13 @@ class PhaseEngine:
             if nxt is not None and last is not None
             else math.nan
         )
+        stale = (
+            last is None
+            or anticipated is None
+            or press - last_r > STALE_PERIODS * anticipated
+        )
+        if stale:
+            anticipated = None
         phase, delay = self._dial_at_press
         if anticipated is not None:
             period_ms = anticipated * 1000.0
@@ -409,9 +486,18 @@ class PhaseEngine:
             else:
                 delay = min(self._delay_ms, period_ms)
                 phase = delay / period_ms * 360.0 % 360.0
+        elif self.mode == "relative":
+            delay = math.nan
+        else:
+            phase = math.nan
+        status = "stale" if stale else "ok"
+        if self._stop_reason == "timeout":
+            status = "timeout"
+            phase = delay = math.nan
         row = {
             "Trial": self.trial,
             "Block": self.block,
+            "TrialStatus": status,
             "Mode": self.mode,
             "Extero": self.extero,
             "StartPhaseDeg": self.start_phase_deg,
@@ -423,6 +509,7 @@ class PhaseEngine:
             "ObservedPeriodMs": observed,
             "LastRTime": last_r,
             "PressTime": press,
+            **self._last_tone(press),
             "WallTime": self._press_wall,
             "nTonesReal": self.counts["real"],
             "nTonesPredicted": self.counts["predicted"],
@@ -435,7 +522,11 @@ class PhaseEngine:
 
     @property
     def tones(self) -> List[dict]:
-        """Every tone and vibration scheduled so far, as ``tones.txt`` rows."""
+        """Every tone and vibration scheduled so far, as ``tones.txt`` rows.
+
+        ``ToneIndex`` numbers them from 1 in the order they were scheduled,
+        across trials; ``LastToneIndex`` on a trial row refers to it.
+        """
         return self._tones
 
     def close(self) -> None:
@@ -524,6 +615,38 @@ class PhaseEngine:
         self.counts[anchor] += 1
         self._schedule(beat, target, anchor, "tone", phase, delay_ms, now)
 
+    def _last_tone(self, press: float) -> Dict[str, Any]:
+        """The ``LastTone*`` columns of the trial row (see :meth:`end_trial`)."""
+        fields: Dict[str, Any] = {
+            "LastToneIndex": math.nan,
+            "LastToneAnchor": "",
+            "LastToneRTime": math.nan,
+            "LastToneDelayMs": math.nan,
+        }
+        tone = None
+        for row in reversed(self._tones):
+            if row["Trial"] != self.trial:
+                break
+            if row["Kind"] == "tone" and row["Target"] <= press:
+                tone = row
+                break
+        if tone is None:
+            return fields
+        r_cycle: Optional[float] = tone["RTime"]
+        if tone["Anchor"] == "predicted":
+            nxt = self._next_beat_after(tone["RTime"])
+            r_cycle = nxt.r_time if nxt is not None else None
+        fields.update(
+            LastToneIndex=tone["ToneIndex"],
+            LastToneAnchor=tone["Anchor"],
+            LastToneRTime=tone["RTime"],
+        )
+        if r_cycle is not None:
+            fields["LastToneDelayMs"] = (
+                tone["Target"] + self.latency_bias - r_cycle
+            ) * 1000.0
+        return fields
+
     def _schedule(
         self,
         beat: Beat,
@@ -535,7 +658,9 @@ class PhaseEngine:
         now: float,
     ) -> None:
         handle = self.player.schedule(target, kind)
+        index = len(self._tones) + 1
         row = {
+            "ToneIndex": index,
             "Trial": self.trial,
             "Block": self.block,
             "RTime": beat.r_time,
@@ -553,6 +678,7 @@ class PhaseEngine:
             "tone_scheduled",
             now,
             trial=self.trial,
+            tone=index,
             sound=kind,
             r_time=beat.r_time,
             period=beat.period,

@@ -64,7 +64,9 @@ class FakeEngine:
         self.started: List[tuple] = []
         self.nudges: List[float] = []
         self.stops = 0
+        self.stopReasons: List[str] = []
         self.ended = 0
+        self.waits = 0
         self.closed = False
         self.marks: List[tuple] = []
         self.clock = _clock()
@@ -118,11 +120,15 @@ class FakeEngine:
         if self.active:
             self.idleDuringTrial += 1
 
-    def stop_tones(self) -> None:
+    def stop_tones(self, reason: str = "press") -> None:
         self.active = False
         self.stops += 1
+        self.stopReasons.append(reason)
 
-    def end_trial(self) -> dict:
+    def end_trial(self, on_wait=None) -> dict:
+        if on_wait is not None:
+            self.waits += 1
+            on_wait()  # one frame of the wait for the next R-wave
         self.ended += 1
         mine = [t for t in self._tones if t["Trial"] == self.trial]
         # Leaves out PressTime and TrialDuration: the task fills them in
@@ -730,10 +736,97 @@ def test_escape_in_a_trial_keeps_completed_trials(fake_psychopy, tmp_path):
     run(parameters, runTutorial=False)
 
     assert parameters["aborted"] is True
-    assert engine.stops >= 3  # the tones of the aborted trial were stopped
+    # The tones of the aborted trial were stopped, as an abort, not a press
+    assert engine.stopReasons == ["press", "press", "abort"]
     final = read(parameters["paths"].path("final"))
     assert list(final["Trial"]) == [1, 2]
+    # Its tones are not saved either: no row, no tones
+    assert set(read(parameters["paths"].path("tones"))["Trial"]) == {1, 2}
+    assert 3 not in parameters["trialBlocks"]
     assert not engine.closed  # left to the caller
+
+
+class SilentEngine(FakeEngine):
+    """An engine whose ECG never gives a beat: no tone ever plays."""
+
+    def poll(self) -> None:
+        if self.active:
+            self.polls += 1
+
+
+def test_a_trial_with_no_beats_times_out(fake_psychopy, tmp_path):
+    engine = SilentEngine()
+    parameters = make_parameters(tmp_path, engine=engine, nTrials=2, nPractice=0)
+    parameters["maxTrialTime"] = 0.2
+    fake_psychopy.policy = space_after_polls(engine)  # space never works
+
+    run(parameters, runTutorial=False)
+
+    assert parameters["aborted"] is False
+    assert engine.stopReasons == ["timeout", "timeout"]
+    final = read(parameters["paths"].path("final"))
+    assert list(final.columns) == FINAL_COLUMNS
+    assert list(final["TrialStatus"]) == ["timeout", "timeout"]
+    assert final["ChosenPhaseDeg"].isna().all()
+    assert final["ChosenDelayMs"].isna().all()
+    # No choice, so no rating was asked
+    assert final["Confidence"].isna().all()
+    assert engine.marks == []
+    assert (final["TrialDuration"] >= 0.2).all()
+
+
+def test_a_normal_trial_is_ok(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine)
+    fake_psychopy.policy = space_after_polls(engine)
+
+    row = trial(parameters, 1, "main", 0.0)
+
+    assert row["TrialStatus"] == "ok"
+    assert engine.stopReasons == ["press"]
+
+
+def test_escape_after_the_press_keeps_the_trial(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, nPractice=0)
+    normal = space_after_polls(engine)
+
+    def policy(keyList):
+        if keyList == ["escape"] and engine.stops == 1 and engine.ended == 0:
+            return ["escape"]  # while waiting for the R-wave after the press
+        return normal(keyList)
+
+    fake_psychopy.policy = policy
+    run(parameters, runTutorial=False)
+
+    assert parameters["aborted"] is True
+    assert engine.waits == 1
+    final = read(parameters["paths"].path("final"))
+    assert len(final) == 1 and final.loc[0, "TrialStatus"] == "ok"
+    # The choice is kept; no rating was asked
+    assert np.isfinite(final.loc[0, "ChosenPhaseDeg"])
+    assert final["Confidence"].isna().all()
+    assert engine.marks == []
+
+
+def test_the_wait_after_the_press_flips_the_window(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine)
+    fake_psychopy.policy = space_after_polls(engine)
+    win = parameters["win"]
+    original = engine.end_trial
+    flips = []
+
+    def end_trial(on_wait=None):
+        before = win.flips
+        assert on_wait() is False  # one pass of the wait, no Esc
+        flips.append(win.flips - before)
+        return original()
+
+    engine.end_trial = end_trial  # type: ignore[method-assign]
+    trial(parameters, 1, "main", 0.0, confidenceRating=False)
+
+    assert flips == [1]
 
 
 def test_escape_in_the_rating_keeps_the_trial(fake_psychopy, tmp_path):
@@ -869,7 +962,71 @@ def test_trial_with_the_real_engine(fake_psychopy, tmp_path):
     assert set(tones["Kind"]) == {"tone", "vibration"}
     assert set(tones.loc[tones["Kind"] == "vibration", "Anchor"]) == {"virtual"}
     assert tones["Onset"].notna().all()
-    assert list(read(parameters["paths"].path("final")).columns) == FINAL_COLUMNS
+    final = read(parameters["paths"].path("final"))
+    assert list(final.columns) == FINAL_COLUMNS
+    assert list(tones.columns) == TONE_COLUMNS
+    # The last tone heard joins tones.txt on its index
+    assert tones["ToneIndex"].is_unique
+    (last,) = tones[tones["ToneIndex"] == final.loc[0, "LastToneIndex"]].itertuples()
+    assert last.Kind == "tone" and last.Anchor == final.loc[0, "LastToneAnchor"]
+    assert last.RTime == pytest.approx(final.loc[0, "LastToneRTime"])
+    assert last.Target <= final.loc[0, "PressTime"]
+    # A virtual heart is never late, so the delay heard is the dial's then
+    assert final.loc[0, "LastToneDelayMs"] == pytest.approx(last.DelayMs)
+
+
+class RecordingOutlet:
+    """A marker outlet that keeps every marker, decoded."""
+
+    def __init__(self):
+        self.markers: List[dict] = []
+
+    def push_sample(self, sample, stamp=0.0) -> None:
+        self.markers.append(json.loads(sample[0]))
+
+
+def test_escape_mid_trial_with_the_real_engine(fake_psychopy, tmp_path):
+    """Markers and tone table after Esc in the second trial."""
+    engine_module = pytest.importorskip("cardioception.PAT.engine")
+    pylsl = pytest.importorskip("pylsl")
+    clock = pylsl.local_clock
+
+    source = engine_module.VirtualBeatSource(0.6, clock=clock, lead_in=0.1)
+    outlet = RecordingOutlet()
+    engine = engine_module.PhaseEngine(
+        source, FakePlayer(clock), "relative", clock=clock, outlet=outlet
+    )
+    parameters = make_parameters(
+        tmp_path, engine=engine, extero=True, nTrials=3, nPractice=0
+    )
+    started: dict = {}
+
+    def policy(keyList):
+        if not keyList or "space" not in keyList:
+            return []
+        if "left" in keyList:  # in a trial: 1.5 s, then space or Esc
+            t0 = started.setdefault(engine.trial, clock())
+            if clock() - t0 < 1.5:
+                return []
+            return ["escape"] if engine.trial == 2 else ["space"]
+        return ["space"]
+
+    fake_psychopy.policy = policy
+    run(parameters, runTutorial=False)
+
+    assert parameters["aborted"] is True
+    stops = [
+        (m["kind"], m["trial"])
+        for m in outlet.markers
+        if m["kind"] in ("press", "abort", "timeout")
+    ]
+    assert stops == [("press", 1), ("abort", 2)]
+    ends = [m["Trial"] for m in outlet.markers if m["kind"] == "trial_end"]
+    assert ends == [1]
+    assert any(t["Trial"] == 2 for t in engine.tones)
+    tones = read(parameters["paths"].path("tones"))
+    assert set(tones["Trial"]) == {1}
+    assert list(read(parameters["paths"].path("final"))["Trial"]) == [1]
 
 
 ##################################

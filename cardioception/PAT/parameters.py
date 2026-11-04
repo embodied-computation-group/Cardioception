@@ -431,6 +431,8 @@ def getParameters(
     parameters["startKey"] = "space"  # starts a trial, and ends it
     parameters["dialKeys"] = ["left", "right"]  # a second dial; [] to disable
     parameters["minTrialTime"] = 3.0  # space is ignored this long into a trial
+    # A trial still running this long (a lost ECG, say) ends with no choice
+    parameters["maxTrialTime"] = 60.0
     parameters["minRatingTime"] = 0.5
     parameters["maxRatingTime"] = None  # wait for the rating, as the paper did
     parameters["statusEvery"] = 1.0  # seconds between experimenter status lines
