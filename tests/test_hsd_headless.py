@@ -360,8 +360,10 @@ class TestAbsoluteSession(unittest.TestCase):
 
         with open(self.paths.path("parameters", ext="pickle"), "rb") as handle:
             saved = pickle.load(handle)
-        for key in ("win", "engine", "beatSource", "tonePlayer", "clock"):
+        for key in ("win", "engine", "beatSource", "tonePlayer", "clock", "drain"):
             self.assertNotIn(key, saved)
+        # The beat source's drain is the session's only: it goes with it.
+        self.assertNotIn("drain", self.params)
         self.assertEqual(saved["axis"], "absolute")
 
 

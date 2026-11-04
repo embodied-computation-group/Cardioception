@@ -57,6 +57,7 @@ _NOT_PICKLED = (
     "recorder",
     "triggers",
     "clock",
+    "drain",
     "results_rows",
     "results_df",
     "tone_rows",
@@ -610,10 +611,13 @@ def run(
 
     # The detector needs a few seconds of signal and three beats before it
     # knows the period, so the source runs for the whole session; draining it
-    # on every held frame keeps it current between trains.
+    # on every held frame keeps it current between trains. The waits that do
+    # not flip through hold(), the confidence rating and the breaks, drain it
+    # through parameters["drain"] (see cardioception._session).
     source.start()
     _scheduler(parameters)
     on_every_frame(win, lambda: _poll_source(parameters))
+    parameters["drain"] = lambda: _poll_source(parameters)
 
     nTrial = 0
     try:
@@ -669,6 +673,7 @@ def run(
                 _break(parameters, nTrial)
     finally:
         on_every_frame(win, None)
+        parameters.pop("drain", None)
         player = parameters["tonePlayer"]
         if hasattr(player, "stop_all"):
             player.stop_all()

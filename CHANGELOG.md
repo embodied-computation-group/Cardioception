@@ -209,6 +209,10 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   and Esc wait for the train's deadline, 10 s or more. A status line is
   logged every second and says `NO BEATS` from the first second the source
   is quiet for 1.5 periods, as the PAT's does.
+- The HSD beat source is polled during the confidence rating and the breaks.
+  The shared rating and wait drained only the HRD recorder, so HSD beats
+  reached the record up to 7 s late after a rating. They now also call
+  `parameters["drain"]` when a task sets it; the HRD leaves it unset.
 
 ### Internal
 
