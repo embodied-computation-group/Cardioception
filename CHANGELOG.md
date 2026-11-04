@@ -146,6 +146,9 @@ code it replaced rather than read over.
   language, validated against a required key set when the session starts. A
   language missing a key, or a `language` that does not exist, used to fail
   mid-session with a `KeyError`; both are now errors at launch.
+- The YAML text loader moves from `HRD/languages.py` to `cardioception._texts`,
+  shared by all three tasks. Each task's `languages` module names its own
+  directory and required keys; the HRD's keeps its signatures.
 - The 64 `visual.TextStim` constructions become one `text()` helper, 370 lines
   to 95.
 - The trigger codes and signal constants are named. Worth knowing: **the two

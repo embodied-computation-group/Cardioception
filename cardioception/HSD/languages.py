@@ -3,7 +3,8 @@
 
 The strings live in ``texts/<language>.yaml`` beside this module, in the same
 format as the HRD's (:mod:`cardioception.HRD.languages`), and are loaded and
-checked by the same code. Only the directory and the required keys differ.
+checked by the same code, :mod:`cardioception._texts`. Only the directory and
+the required keys differ.
 
 English is the only language so far. To add one, copy ``texts/english.yaml``,
 translate the values, and pass its filename stem as ``language``.
@@ -12,7 +13,7 @@ translate the values, and pass its filename stem as ``language``.
 import os
 from typing import Any, Dict, List
 
-from cardioception.HRD import languages as _shared
+from .. import _texts
 
 TEXTS_DIR = os.path.join(os.path.dirname(__file__), "texts")
 
@@ -39,7 +40,7 @@ REQUIRED_KEYS = frozenset(
 
 def available() -> List[str]:
     """Languages that can be passed as ``language``."""
-    return _shared.available(TEXTS_DIR)
+    return _texts.available(TEXTS_DIR)
 
 
 def get_texts(language: str, device: str) -> Dict[str, Any]:
@@ -59,10 +60,10 @@ def get_texts(language: str, device: str) -> Dict[str, Any]:
         If the language does not exist, or its file is missing a key.
 
     """
-    return _shared.get_texts(
+    return _texts.get_texts(
         language,
-        device,
-        exteroception=False,
         texts_dir=TEXTS_DIR,
         required=REQUIRED_KEYS,
+        device=device,
+        exteroception=False,
     )
