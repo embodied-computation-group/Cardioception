@@ -24,6 +24,7 @@ import pandas as pd
 
 from .._log import get_logger, start_session_log
 from .._rng import make_rng
+from .._triggers import validate as validate_triggers
 from ..output import SessionPaths
 from ..scales import DISCRETE_1_10, ConfidenceScale
 from .languages import available as available_languages
@@ -33,6 +34,11 @@ logger = get_logger()
 
 MODES = ("relative", "absolute")
 DEVICES = ("keyboard", "mouse")
+
+#: Events a trigger callback can be registered for, in the order a trial
+#: fires them. ``confidenceStart`` and ``confidenceStop`` fire only when a
+#: rating is asked for.
+EVENTS = ("trialStart", "confidenceStart", "confidenceStop", "trialStop")
 
 
 def startPhaseSequence(
@@ -212,6 +218,10 @@ def getParameters(
     minToneGap: float = 0.3,
     confidenceScale: Optional[ConfidenceScale] = None,
     markerStream: Optional[str] = "PAT",
+    triggers: Optional[Dict[str, Any]] = None,
+    autopilot=None,
+    beat_source=None,
+    tone_player=None,
     engine=None,
 ) -> Dict[str, Any]:
     """Create Phase Adjustment Task parameters.
@@ -305,6 +315,20 @@ def getParameters(
         move, press and rating is pushed to it as one JSON string, so a
         LabRecorder file holds the ECG and the task together. `None` falls back
         on the recorder's own marker outlet, if it has one.
+    triggers : dict | None
+        `{event: callable}` for the events in :data:`EVENTS`, for a parallel
+        port or another marker of your own. Checked here, so a misspelt event
+        fails before the window opens.
+    autopilot : PATAutopilot | None
+        A simulated participant
+        (:class:`cardioception.PAT._autopilot.PATAutopilot`), for headless
+        runs. It can also be set as `parameters["autopilot"]` afterwards, built
+        on `parameters["rng"]`.
+    beat_source, tone_player :
+        Replace the beat source (the ECG, or the virtual heart with
+        `extero=True`) and the PsychPortAudio tone player, for tests and
+        headless runs. Both must report times on the LSL clock. With
+        `beat_source` no recorder is needed.
 
     Returns
     -------
@@ -354,7 +378,7 @@ def getParameters(
         confidenceScale=confidenceScale,
         wheelDirection=wheelDirection,
     )
-    if recorder is None and not extero and engine is None:
+    if recorder is None and not extero and engine is None and beat_source is None:
         raise ValueError(
             "The PAT needs an ECG recorder, e.g. "
             "recorder=LSLRecorder(name='PLUX', channel='ECG2'), unless extero=True."
@@ -364,6 +388,8 @@ def getParameters(
 
     parameters: Dict[str, Any] = {}
     parameters["rng"], parameters["seed"] = make_rng(seed)
+    parameters["autopilot"] = autopilot
+    parameters["triggers"] = validate_triggers(triggers, events=EVENTS)
     parameters["participant"] = participant
     parameters["session"] = session
     parameters["mode"] = mode
@@ -473,21 +499,23 @@ def getParameters(
     if engine is None:
         from .engine import LSLBeatSource, PhaseEngine, TonePlayer, VirtualBeatSource
 
-        source: Any
-        if extero:
+        source: Any = beat_source
+        if source is None and extero:
             # The simulated heart draws its own series from a seed, taken from
             # the session generator so the seed in the manifest decides it.
             source = VirtualBeatSource(
                 exteroPeriod, seed=int(parameters["rng"].integers(2**32))
             )
-        else:
+        elif source is None:
             source = LSLBeatSource(recorder)
-        player = TonePlayer(
-            freq=parameters["toneFreq"],
-            duration=parameters["toneDuration"],
-            volume=parameters["toneVolume"],
-            vib_volume=parameters["vibrationVolume"],
-        )
+        player: Any = tone_player
+        if player is None:
+            player = TonePlayer(
+                freq=parameters["toneFreq"],
+                duration=parameters["toneDuration"],
+                volume=parameters["toneVolume"],
+                vib_volume=parameters["vibrationVolume"],
+            )
         engine = PhaseEngine(
             source,
             player,
@@ -535,6 +563,9 @@ def getParameters(
             if recorder is not None and hasattr(recorder, "describe")
             else None
         ),
+        beat_source=type(getattr(engine, "source", None)).__name__,
+        tone_player=type(getattr(engine, "player", None)).__name__,
+        autopilot=None if autopilot is None else type(autopilot).__name__,
     )
     logger.info(
         f"PAT session {participant}/{session}: {mode} mode"

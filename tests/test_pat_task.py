@@ -21,9 +21,11 @@ import pandas as pd
 import pytest
 
 from cardioception._log import start_session_log
+from cardioception._present import on_every_frame
 from cardioception.output import SessionPaths
 from cardioception.PAT import parameters as pat_parameters
-from cardioception.PAT.parameters import getParameters, startPhaseSequence
+from cardioception.PAT._autopilot import PATAutopilot
+from cardioception.PAT.parameters import EVENTS, getParameters, startPhaseSequence
 from cardioception.PAT.task import (
     FINAL_COLUMNS,
     TONE_COLUMNS,
@@ -902,11 +904,24 @@ def test_text_screens_ignore_the_wheel(fake_psychopy, tmp_path):
         return ["space"] if len(calls) > 5 else []
 
     fake_psychopy.policy = policy
-    waitInput(parameters)
+    # run() installs the engine's idle poll as the per-frame hook
+    on_every_frame(parameters["win"], engine.idle_poll)
+    waitInput(parameters, FakeStim(text="a screen"))
 
     assert len(calls) == 6  # only space moved on
     assert engine.nudges == []
     assert engine.idlePolls == 6  # beats are still detected on text screens
+    assert TEXTS.count("a screen") == 6  # and the screen is redrawn
+
+
+def test_run_removes_the_frame_hook(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, nPractice=0)
+    fake_psychopy.policy = space_after_polls(engine)
+
+    run(parameters, runTutorial=False)
+
+    assert getattr(parameters["win"], "_cardioception_frame_hook", None) is None
 
 
 def test_idle_poll_between_trials_only(fake_psychopy, tmp_path):
@@ -1016,3 +1031,114 @@ def test_tutorial_timeout_lets_space_through(fake_psychopy, tmp_path):
     texts = parameters["texts"]
     assert texts["tutorialProgress"].format(done=0, total=3) in TEXTS
     assert texts["tutorialFree"] in TEXTS  # got through both wheel pages
+
+
+############
+# Triggers #
+############
+
+
+def test_triggers_fire_once_per_trial(fake_psychopy, tmp_path):
+    counts = {event: 0 for event in EVENTS}
+
+    def counter(event):
+        def callback():
+            counts[event] += 1
+
+        return callback
+
+    engine = FakeEngine()
+    parameters = make_parameters(
+        tmp_path,
+        engine=engine,
+        nPractice=1,
+        triggers={event: counter(event) for event in EVENTS},
+    )
+    fake_psychopy.policy = space_after_polls(engine, parameters=parameters)
+
+    run(parameters, runTutorial=True)
+
+    assert counts == {event: 5 for event in EVENTS}  # 1 practice, 4 main
+
+
+def test_triggers_without_a_rating(fake_psychopy, tmp_path):
+    counts = {event: 0 for event in EVENTS}
+    triggers = {e: (lambda e=e: counts.__setitem__(e, counts[e] + 1)) for e in EVENTS}
+    engine = FakeEngine()
+    parameters = make_parameters(
+        tmp_path, engine=engine, nPractice=0, triggers=triggers
+    )
+    fake_psychopy.policy = space_after_polls(engine)
+
+    run(parameters, runTutorial=False, confidenceRating=False)
+
+    assert counts["trialStart"] == counts["trialStop"] == 4
+    assert counts["confidenceStart"] == counts["confidenceStop"] == 0
+
+
+@pytest.mark.parametrize(
+    "triggers, error",
+    [({"listeningStart": print}, ValueError), ({"trialStart": 1}, TypeError)],
+)
+def test_bad_triggers_are_refused(fake_psychopy, tmp_path, triggers, error):
+    with pytest.raises(error):
+        make_parameters(tmp_path, triggers=triggers)
+
+
+#############
+# Autopilot #
+#############
+
+
+def test_the_autopilot_turns_towards_its_aim_and_presses():
+    pilot = PATAutopilot(
+        np.random.default_rng(0), target=40.0, spread=0.0, notch_interval=0.1
+    )
+    pilot.start_trial(1)
+    assert pilot.aim == 40.0
+    # From 0 degrees, later; one notch per interval at most
+    assert pilot.frame(0.0, 0.0, 10.0) == (1, False)
+    assert pilot.frame(0.05, 10.0, 10.0) == (0, False)
+    assert pilot.frame(0.1, 10.0, 10.0) == (1, False)
+    # From 350 degrees the short way is later, through 0
+    assert pilot.frame(0.25, 350.0, 10.0)[0] == 1
+    # From 60 degrees, earlier
+    assert pilot.frame(0.5, 60.0, 10.0)[0] == -1
+    # Within half a notch: no turn, and the press once it has settled
+    assert pilot.frame(1.0, 44.0, 10.0) == (0, False)
+    assert pilot.frame(1.1, 44.0, 10.0) == (0, False)
+    assert pilot.frame(1.25, 44.0, 10.0) == (0, True)
+    # Tutorial screens: roll the way asked, or only press
+    assert pilot.frame(2.0, 44.0, 10.0, roll=-1) == (-1, True)
+    assert pilot.frame(3.0, 44.0, 10.0, wheel=False) == (0, True)
+    # No phase yet, nothing to aim at
+    assert pilot.frame(4.0, math.nan, 10.0) == (0, False)
+    assert [e["event"] for e in pilot.log] == ["trial"]
+
+
+def test_the_autopilot_runs_a_session(fake_psychopy, tmp_path):
+    """Tutorial, practice and main trials with nobody at the keyboard."""
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, nTrials=4, nPractice=2)
+    pilot = PATAutopilot(
+        parameters["rng"], target=95.0, spread=0.0, notch_interval=0.0, settle=0.0
+    )
+    parameters["autopilot"] = pilot
+    fake_psychopy.policy = lambda keyList: []  # no key is ever pressed
+
+    run(parameters, runTutorial=True)
+
+    assert parameters["aborted"] is False
+    assert [s[0] for s in engine.started] == [TUTORIAL_TRIAL] + list(range(1, 7))
+    final = read(parameters["paths"].path("final"))
+    assert len(final) == 6
+    # The dial stops within half a notch of the aim, whatever the start phase
+    assert (final["ChosenPhaseDeg"] - 95.0).abs().max() <= 5.0
+    assert final["Confidence"].between(1, 10).all()
+    assert (final["Confidence"] == final["Confidence"].round()).all()  # on a step
+    np.testing.assert_allclose(final["ConfidenceUnit"], (final["Confidence"] - 1) / 9)
+    rated = [e for e in pilot.log if e["event"] == "rate"]
+    assert len(rated) == 6
+    # The tutorial screens rolled the way they asked, three notches each
+    assert sum(n > 0 for n in engine.nudges) >= 3
+    assert sum(n < 0 for n in engine.nudges) >= 3
