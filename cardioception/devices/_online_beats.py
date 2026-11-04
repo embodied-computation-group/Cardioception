@@ -26,6 +26,22 @@ How it works, per sample:
 
 The signal is raw ADC counts, with whatever offset and gain the device has:
 the thresholds are relative, and the peak is measured from a local baseline.
+
+Two guards keep a bad signal from being reported as beats:
+
+- A step in the timestamps longer than :data:`GAP` sample intervals is a gap
+  in the signal (a dropped Bluetooth link, say). The filters and the moving
+  average start again after it from the new samples, the QRS being followed
+  is dropped, and nothing is learnt or detected for one anticipated period
+  (:data:`RESUME_HOLD` seconds at least, 1.2 s while the period is unknown),
+  while the filters settle and the buffer fills with signal from after the
+  gap. The thresholds learnt before the gap are kept. An inlet that dejitters
+  its timestamps can hide much of a gap; only the part it shows is seen.
+- Without a beat for :data:`SEARCH_LIMIT` periods the QRS energy estimate is
+  halved, so that a large artefact cannot silence the detector, but never
+  below :data:`ENERGY_FLOOR` of the median energy of the last
+  :data:`ENERGY_BEATS` beats. Sustained noise, an electrode coming off, then
+  cannot lower the threshold until the noise itself is taken for beats.
 """
 
 import math
@@ -47,6 +63,9 @@ INTEGRATION = 0.15
 #: QRS is detected.
 THRESHOLD = 0.25
 
+#: Seconds after an R peak during which no other is accepted, by default.
+REFRACTORY = 0.25
+
 #: Weight of the newest peak in the running QRS and noise estimates.
 LEARNING_RATE = 0.125
 
@@ -66,6 +85,22 @@ T_WAVE_RATIO = 0.5
 #: Without a beat for this many mean RR intervals, the QRS estimate is
 #: halved, so one large artefact cannot silence the detector.
 SEARCH_LIMIT = 1.66
+
+#: The QRS energy estimate is never halved below this fraction of the median
+#: QRS energy of the last :data:`ENERGY_BEATS` beats: two halvings. On a
+#: synthetic ECG, white noise up to a fifth of the R height is then not taken
+#: for beats, and a QRS that drops to half its height is still followed; one
+#: that drops to a quarter at once is not, until the detector is reset.
+ENERGY_FLOOR = 0.25
+ENERGY_BEATS = 8
+
+#: A step between consecutive timestamps longer than this many sample
+#: intervals is a gap in the signal.
+GAP = 3
+
+#: Seconds, at least, after a gap during which nothing is learnt or detected.
+#: It is one anticipated period if that is longer (1.2 s while unknown).
+RESUME_HOLD = 0.5
 
 #: Seconds of signal kept in memory.
 BUFFER = 1.0
@@ -128,7 +163,9 @@ class OnlineRDetector:
     The beats returned do not depend on how the signal is cut into chunks.
     """
 
-    def __init__(self, sfreq: float, refractory: float = 0.25, warmup: float = 2.0):
+    def __init__(
+        self, sfreq: float, refractory: float = REFRACTORY, warmup: float = 2.0
+    ):
         if sfreq < 2.5 * BAND[1]:
             raise ValueError(f"sfreq should be at least {2.5 * BAND[1]:g} Hz.")
         if warmup <= 0 or refractory < 0:
@@ -141,7 +178,7 @@ class OnlineRDetector:
             return max(int(round(seconds * self.sfreq)), 1)
 
         self._refractory_n = int(round(refractory * self.sfreq))
-        self._warmup_n = samples(warmup)
+        self._warmup_samples = samples(warmup)
         self._pre_n, self._post_n = (samples(s) for s in QRS_SEARCH)
         self._base_n = (samples(BASELINE[0]), samples(BASELINE[1]))
         self._mwi_n = samples(INTEGRATION)
@@ -155,21 +192,20 @@ class OnlineRDetector:
     def reset(self) -> None:
         """Forget everything, as if no sample had been fed."""
         self._n = 0
+        self._warmup_n = self._warmup_samples
+        self._last_t: Optional[float] = None
+        self._hold_until = 0
+        #: Gaps in the timestamps seen since the last reset.
+        self.n_gaps = 0
         self._x = np.zeros(self._buffer_n)
         self._t = np.zeros(self._buffer_n)
-        self._energy = np.zeros(self._mwi_n)
         self._last_x = 0.0
-        self._primed = False
-        # Filter state: input and output history of each biquad.
-        self._hx1 = self._hx2 = self._hy1 = self._hy2 = 0.0
-        self._ly1 = self._ly2 = self._lx1 = self._lx2 = 0.0
-        self._f1 = 0.0
-        self._mwi_sum = 0.0
-        self._mwi1 = self._mwi2 = 0.0
+        self._reset_filters()
         # Thresholds, set at the end of the warmup.
         self._warm_max = 0.0
         self._warm_sum = 0.0
         self._spk = self._npk = self._thr = 0.0
+        self._energies: Deque[float] = deque(maxlen=ENERGY_BEATS)
         self._armed = False
         self._event_max = 0.0
         self._event_is_beat = False
@@ -187,6 +223,17 @@ class OnlineRDetector:
         self._last_r = -(10**9)
         self._last_r_time: Optional[float] = None
         self._rr: List[float] = []
+
+    def _reset_filters(self) -> None:
+        """Clear the filters and the moving average, as before the first sample."""
+        self._primed = False
+        # Filter state: input and output history of each biquad.
+        self._hx1 = self._hx2 = self._hy1 = self._hy2 = 0.0
+        self._ly1 = self._ly2 = self._lx1 = self._lx2 = 0.0
+        self._f1 = 0.0
+        self._energy = np.zeros(self._mwi_n)
+        self._mwi_sum = 0.0
+        self._mwi1 = self._mwi2 = 0.0
 
     def process(
         self, samples: Sequence[Number], timestamps: Sequence[float]
@@ -231,6 +278,9 @@ class OnlineRDetector:
 
     def _step(self, x: float, t: float) -> Optional[Beat]:
         n = self._n
+        if self._last_t is not None and t - self._last_t > GAP / self.sfreq:
+            self._resume(n)
+        self._last_t = t
         if not math.isfinite(x):
             x = self._last_x
         elif not self._primed:
@@ -261,9 +311,13 @@ class OnlineRDetector:
         mwi = max(self._mwi_sum, 0.0) / self._mwi_n
 
         beat = None
-        if n < self._warmup_n:
+        if n < self._hold_until:
+            pass  # settling after a gap
+        elif n < self._warmup_n:
             self._learn(n, mwi)
         else:
+            if n == self._hold_until and n > self._warmup_n:
+                self._rearm(n, mwi)
             beat = self._detect(n, x, mwi)
         self._mwi2, self._mwi1 = self._mwi1, mwi
 
@@ -285,12 +339,31 @@ class OnlineRDetector:
             self._warm_vote_at = n + self._post_n
         if n == self._warmup_n - 1:
             self._spk = self._warm_max
-            self._npk = self._warm_sum / self._warmup_n
+            self._energies.append(self._spk)
+            self._npk = self._warm_sum / (self._warmup_n - self._hold_until)
             self._update_threshold()
-            # Still above threshold: in a QRS, whose energy is learnt.
-            self._armed = mwi < self._thr
-            self._event_is_beat = True
-            self._last_detect = n
+            self._rearm(n, mwi)
+
+    def _rearm(self, n: int, mwi: float) -> None:
+        """Start detecting, after the warmup or after a gap."""
+        # Still above threshold: in a QRS, whose energy is learnt.
+        self._armed = mwi < self._thr
+        self._event_max = 0.0
+        self._event_is_beat = True
+        self._last_detect = n
+
+    def _resume(self, n: int) -> None:
+        """A gap in the signal ends at sample ``n``: let the filters start again."""
+        self.n_gaps += 1
+        self._reset_filters()
+        self._active = False
+        hold = max(RESUME_HOLD, self.anticipated_period or 1.2)
+        self._hold_until = n + int(round(hold * self.sfreq))
+        if n < self._warmup_n:
+            # Learn the scale again, from the signal after the gap.
+            self._warmup_n = self._hold_until + self._warmup_samples
+            self._warm_max = self._warm_sum = 0.0
+            self._warm_vote_at = -1
 
     def _detect(self, n: int, x: float, mwi: float) -> Optional[Beat]:
         # Noise peaks: local maxima of the energy outside any QRS.
@@ -311,6 +384,7 @@ class OnlineRDetector:
             if mwi < self._thr or n - self._last_detect > self.sfreq:
                 if self._event_is_beat:
                     self._spk += LEARNING_RATE * (self._event_max - self._spk)
+                    self._energies.append(self._event_max)
                 else:
                     self._npk += LEARNING_RATE * (self._event_max - self._npk)
                 self._update_threshold()
@@ -325,7 +399,8 @@ class OnlineRDetector:
         if not self._active:
             limit = SEARCH_LIMIT * self.sfreq * (self.anticipated_period or 1.2)
             if n - self._last_detect > limit:
-                self._spk *= 0.5
+                floor = ENERGY_FLOOR * float(np.median(self._energies))
+                self._spk = max(self._spk * 0.5, floor)
                 self._update_threshold()
                 self._last_detect = n
             return None

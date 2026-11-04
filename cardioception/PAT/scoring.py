@@ -18,14 +18,18 @@ computed eight ways, crossing three factors:
   intervals) or the *observed* R-R interval that contained the key press;
 - weighting: *none* or *confidence*.
 
-Before scoring, trials whose period lies more than 5 robust standard
-deviations (1.4826 times the median absolute deviation) from the
-participant's median are removed, separately for each period type.
+Only main trials whose ``TrialStatus`` is ``ok`` are scored: a trial that
+timed out has no choice, and a stale one (the ECG lost before the press) has
+no trustworthy period. Before scoring, trials whose period lies more than 5
+robust standard deviations (1.4826 times the median absolute deviation, but at least 1 ms)
+from the participant's median are removed, separately for each period type.
 
 Each score is compared with its own chance threshold: the 95th percentile of
 the MRL of the same number of trials with delays drawn uniformly over the
-period, by Monte Carlo. A score above the threshold is labelled
-*interoceptive*. The label is descriptive.
+period, by Monte Carlo. A delay uniform over a period is a phase uniform over
+the cycle, whatever the period, so the threshold depends only on the number
+of trials and, in weighted cells, the weights. A score above the threshold is
+labelled *interoceptive*. The label is descriptive.
 
 Everything here is plain numpy and pandas, so it runs without PsychoPy.
 """
@@ -40,6 +44,11 @@ import pandas as pd
 #: deviation for normally distributed data.
 ROBUST_SD = 1.4826
 
+#: Smallest robust standard deviation, in ms, the outlier rule uses. Without
+#: it a run with a fixed period (MAD 0, the exteroceptive task) would flag any
+#: trial whose period differs by float noise.
+MIN_ROBUST_SD_MS = 1.0
+
 #: Default seed for the Monte Carlo thresholds, so that the same file always
 #: gives the same thresholds. Pass ``seed=None`` for fresh randomness.
 DEFAULT_SEED = 0
@@ -53,6 +62,10 @@ FINAL_COLUMNS = (
     "Confidence",
 )
 
+#: Column of ``final.txt`` saying whether a trial can be scored. Files written
+#: before it existed have every trial scored.
+STATUS_COLUMN = "TrialStatus"
+
 #: Period type of the grid, and the ``final.txt`` column holding it.
 PERIOD_COLUMNS: Dict[str, str] = {
     "anticipated": "AnticipatedPeriodMs",
@@ -65,6 +78,7 @@ GRID_COLUMNS = [
     "period",
     "weighting",
     "n_trials",
+    "n_dropped",
     "score",
     "threshold",
     "interoceptive",
@@ -141,11 +155,15 @@ def mean_resultant_length(
     return float(resultant / total)
 
 
-def mad_outliers(x: npt.ArrayLike, k: float = 5.0) -> npt.NDArray[np.bool_]:
+def mad_outliers(
+    x: npt.ArrayLike, k: float = 5.0, min_sd: float = MIN_ROBUST_SD_MS
+) -> npt.NDArray[np.bool_]:
     """Flag values more than ``k`` robust standard deviations from the median.
 
     The robust standard deviation is 1.4826 times the median absolute
-    deviation (Leys et al., 2013).
+    deviation (Leys et al., 2013), floored at ``min_sd``. Without the floor a
+    MAD of 0 (a fixed period, as in an exteroceptive run) would make any
+    difference at all, float noise included, an outlier.
 
     Parameters
     ----------
@@ -153,6 +171,10 @@ def mad_outliers(x: npt.ArrayLike, k: float = 5.0) -> npt.NDArray[np.bool_]:
         Values, typically one participant's heart periods in ms.
     k : float
         Cut-off in robust standard deviations. Hodgetts et al. (2026) use 5.
+    min_sd : float
+        Smallest robust standard deviation, in the units of ``x``: 1 ms by
+        default, so with identical periods only a trial more than ``k`` ms
+        away is flagged. 0 turns the floor off.
 
     Returns
     -------
@@ -162,13 +184,15 @@ def mad_outliers(x: npt.ArrayLike, k: float = 5.0) -> npt.NDArray[np.bool_]:
     """
     if not k > 0:
         raise ValueError(f"k must be positive, got {k}.")
+    if not min_sd >= 0:
+        raise ValueError(f"min_sd must not be negative, got {min_sd}.")
     values = np.asarray(x, dtype=float)
     finite = np.isfinite(values)
     mask = np.zeros(values.shape, dtype=bool)
     if not finite.any():
         return mask
     median = np.median(values[finite])
-    robust_sd = ROBUST_SD * np.median(np.abs(values[finite] - median))
+    robust_sd = max(ROBUST_SD * np.median(np.abs(values[finite] - median)), min_sd)
     mask[finite] = np.abs(values[finite] - median) > k * robust_sd
     return mask
 
@@ -188,14 +212,18 @@ def monte_carlo_threshold(
     uniformly on [0, p), turned into angles with the same period ``p``, and the
     MRL is computed. The threshold is the ``q`` quantile of ``n_sim`` such MRLs.
 
+    Since ``2 pi U p / p = 2 pi U`` for ``U`` uniform on [0, 1), the angles
+    are uniform on the circle whatever the periods, and the threshold depends
+    only on ``n_trials``, ``weights``, ``n_sim``, ``q`` and ``seed``. The
+    angles are drawn directly. ``periods_ms`` and ``fixed`` are checked and
+    accepted, so callers can say which participant and mapping a threshold is
+    for, but they do not change it.
+
     Parameters
     ----------
     periods_ms : array-like
-        The participant's heart periods in ms (NaN ignored). With
-        ``fixed=False`` each trial uses its own period: when there are exactly
-        ``n_trials`` of them they are used as they are, otherwise each
-        simulated trial draws one at random. With ``fixed=True`` every trial
-        uses their median.
+        The participant's heart periods in ms (NaN ignored). They must hold
+        at least one finite positive value; they do not change the threshold.
     n_trials : int
         Number of trials in each simulated participant.
     n_sim : int
@@ -204,7 +232,8 @@ def monte_carlo_threshold(
     q : float
         Quantile of the simulated MRLs, 0.95 in the paper.
     fixed : bool
-        Fixed mapping (one period for all trials) rather than variable mapping.
+        Fixed mapping (one period for all trials) rather than variable
+        mapping. It does not change the threshold either.
     seed : int, np.random.Generator or None
         Seed of the random generator. The default is fixed, so thresholds are
         reproducible; None draws fresh entropy.
@@ -246,14 +275,8 @@ def monte_carlo_threshold(
     done = 0
     while done < n_sim:
         size = min(chunk, n_sim - done)
-        if fixed:
-            p: FloatArray = np.full((size, n_trials), np.median(periods))
-        elif periods.size == n_trials:
-            p = np.broadcast_to(periods, (size, n_trials))
-        else:
-            p = rng.choice(periods, size=(size, n_trials))
-        delays = rng.uniform(0.0, 1.0, size=(size, n_trials)) * p
-        theta = phase_angles(delays, p)
+        # A uniform delay over any period is a uniform phase.
+        theta = 2 * np.pi * rng.uniform(0.0, 1.0, size=(size, n_trials))
         resultant = np.hypot(np.cos(theta) @ w, np.sin(theta) @ w)
         end = done + size
         scores[done:end] = resultant / w.sum()
@@ -272,7 +295,9 @@ def extero_threshold(
 
     Hodgetts et al. (2026) simulate 28 trials at a fixed 1000 ms period and get
     R = 0.33. Participants below it on the exteroceptive task are screened out
-    before the PAT analysis.
+    before the PAT analysis. ``period_ms`` is kept for that description; like
+    the periods of :func:`monte_carlo_threshold`, it does not change the
+    threshold.
     """
     return monte_carlo_threshold(
         [period_ms], n_trials, n_sim=n_sim, q=q, fixed=True, seed=seed
@@ -297,7 +322,9 @@ def consistency_grid(
     final_df : pd.DataFrame
         The task's ``final.txt``. Columns used: ``Block`` (only ``"main"``
         rows count), ``ChosenDelayMs``, ``AnticipatedPeriodMs``,
-        ``ObservedPeriodMs`` and ``Confidence``.
+        ``ObservedPeriodMs``, ``Confidence`` and, when present,
+        ``TrialStatus`` (only ``"ok"`` rows count; an empty status counts as
+        ``"ok"``).
     n_sim, q, seed :
         Passed to :func:`monte_carlo_threshold`. With an int seed (the default)
         the thresholds are reproducible.
@@ -309,15 +336,18 @@ def consistency_grid(
     grid : pd.DataFrame
         Eight rows with the columns ``mapping`` (``variable``/``fixed``),
         ``period`` (``anticipated``/``observed``), ``weighting``
-        (``none``/``confidence``), ``n_trials`` (trials scored), ``score``
-        (MRL), ``threshold`` and ``interoceptive`` (score above threshold).
+        (``none``/``confidence``), ``n_trials`` (trials scored),
+        ``n_dropped`` (main trials left out because their ``TrialStatus`` is
+        not ``ok``, the same on every row), ``score`` (MRL), ``threshold``
+        and ``interoceptive`` (score above threshold).
         A cell with no usable trial (no observed periods, or no confidence
         ratings for the weighted cells) has NaN score and threshold and is not
         interoceptive.
 
     Notes
     -----
-    Per period type, trials with a missing delay or period are dropped, then
+    Main trials whose status is not ``ok`` are dropped first. Then, per
+    period type, trials with a missing delay or period are dropped, then
     trials whose period is a :func:`mad_outliers` outlier. Fixed mapping uses
     the median of the remaining periods for every trial and drops trials whose
     delay exceeds it. Weighted cells drop trials without a confidence rating.
@@ -327,6 +357,11 @@ def consistency_grid(
         raise ValueError(f"final_df lacks the column(s) {', '.join(missing)}.")
 
     main = final_df[final_df["Block"].astype(str) == "main"]
+    n_dropped = 0
+    if STATUS_COLUMN in main.columns:
+        ok = main[STATUS_COLUMN].fillna("ok").astype(str) == "ok"
+        n_dropped = int((~ok).sum())
+        main = main[ok]
     delay = _numeric(main, "ChosenDelayMs")
     # The raw rating is the weight, as in the paper, not ConfidenceUnit: on
     # the 1 to 10 scale to_unit(1) is 0, which would drop every trial rated 1
@@ -372,6 +407,7 @@ def consistency_grid(
                         "period": period_name,
                         "weighting": weighting,
                         "n_trials": n,
+                        "n_dropped": n_dropped,
                         "score": score,
                         "threshold": threshold,
                         "interoceptive": bool(score > threshold),

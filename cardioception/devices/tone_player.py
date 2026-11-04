@@ -6,6 +6,14 @@ one stereo output at latency class 1 that runs for the whole session, the
 tone on the left channel and a vibration burst (for a tactor) on the right.
 Times in and out are on the LSL clock. PsychToolbox is imported only when a
 player is made, so this module imports without it.
+
+Sounds of one kind play strictly one after the other: the next is handed to
+PsychPortAudio only once the current one has finished and the player has
+been polled again, a frame or so later. A sound scheduled less than its
+duration plus :data:`TONE_CLEARANCE` from another of its kind would play late,
+so :meth:`TonePlayer.schedule` refuses it (it is logged, and reported with a
+NaN onset), and the tasks check their settings against
+:func:`min_tone_spacing`.
 """
 
 import math
@@ -14,10 +22,26 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
+from .._log import get_logger
 from .beat_source import Clock, default_clock
+
+logger = get_logger()
 
 #: Sound kinds :class:`TonePlayer` can play.
 KINDS = ("tone", "vibration")
+
+#: Seconds between the end of one sound and the start of the next of the same
+#: kind, for the player to see the first one finish (a poll, about a frame)
+#: and PsychPortAudio to start the next (about 30 ms more).
+TONE_CLEARANCE = 0.05
+
+
+def min_tone_spacing(duration: float) -> float:
+    """Shortest time, in seconds, from one sound's start to the next of its kind.
+
+    The sound's ``duration`` plus :data:`TONE_CLEARANCE`.
+    """
+    return duration + TONE_CLEARANCE
 
 
 def make_tone(
@@ -169,13 +193,35 @@ class TonePlayer:
         of one kind play one after the other in time order; a sound whose
         time has passed by the time its turn comes plays at once (and its
         onset says so).
+
+        A sound less than :func:`min_tone_spacing` from another of its kind
+        already playing or waiting could not start on time, so it is not
+        played: a warning is logged and its onset is reported as NaN.
         """
         if kind not in self._tracks:
             raise ValueError(f"kind should be one of {KINDS}, got {kind!r}")
         handle = self._next_handle
         self._next_handle += 1
         track = self._tracks[kind]
-        track.queue.append((when + self.offset, handle))
+        target = when + self.offset
+        spacing = min_tone_spacing(track.duration)
+        others = [w for w, _ in track.queue]
+        if track.active is not None:
+            others.append(track.active[0])
+        clash = [w for w in others if abs(target - w) < spacing]
+        if clash:
+            logger.warning(
+                "Not playing a %s at %.4f: %.0f ms from another, less than its "
+                "duration plus %.0f ms (%.0f ms), so it would play late.",
+                kind,
+                when,
+                1000 * min(abs(target - w) for w in clash),
+                1000 * TONE_CLEARANCE,
+                1000 * spacing,
+            )
+            self._done.append((handle, math.nan))
+            return handle
+        track.queue.append((target, handle))
         track.queue.sort()
         self._advance(track)
         return handle

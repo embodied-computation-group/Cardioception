@@ -25,6 +25,7 @@ import pandas as pd
 from .._log import get_logger, start_session_log
 from .._rng import make_rng
 from .._triggers import validate as validate_triggers
+from ..devices.tone_player import TONE_CLEARANCE, min_tone_spacing
 from ..output import SessionPaths
 from ..scales import DISCRETE_1_10, ConfidenceScale
 from .languages import available as available_languages
@@ -166,6 +167,13 @@ def _validate(
         raise ValueError(f"wheelDirection should be 1 or -1, got {wheelDirection!r}.")
     if not minToneGap >= 0:
         raise ValueError(f"minToneGap should be 0 or more, got {minToneGap}.")
+    if minToneGap < min_tone_spacing(toneDuration):
+        raise ValueError(
+            f"minToneGap should be at least toneDuration plus {TONE_CLEARANCE:g} "
+            f"s ({min_tone_spacing(toneDuration):g} s), got {minToneGap}. The "
+            "tone player starts a tone only once the previous one has ended and "
+            "it has been polled again, so a tone sooner than that plays late."
+        )
     if confidenceScale is not None and not isinstance(confidenceScale, ConfidenceScale):
         raise ValueError(
             "confidenceScale should be a cardioception.scales.ConfidenceScale "
@@ -304,7 +312,8 @@ def getParameters(
     minToneGap : float
         A tone is skipped when its target is less than this many seconds after
         the previous target, so the participant never hears two tones in quick
-        succession while turning the dial.
+        succession while turning the dial. At least `toneDuration` plus
+        0.05 s, or a tone could play late.
     confidenceScale : ConfidenceScale | None
         How confidence is collected. `None` takes
         :data:`cardioception.scales.DISCRETE_1_10`, the 1 to 10 of the paper,
@@ -422,6 +431,8 @@ def getParameters(
     parameters["startKey"] = "space"  # starts a trial, and ends it
     parameters["dialKeys"] = ["left", "right"]  # a second dial; [] to disable
     parameters["minTrialTime"] = 3.0  # space is ignored this long into a trial
+    # A trial still running this long (a lost ECG, say) ends with no choice
+    parameters["maxTrialTime"] = 60.0
     parameters["minRatingTime"] = 0.5
     parameters["maxRatingTime"] = None  # wait for the rating, as the paper did
     parameters["statusEvery"] = 1.0  # seconds between experimenter status lines
