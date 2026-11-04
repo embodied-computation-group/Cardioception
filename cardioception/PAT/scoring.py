@@ -30,7 +30,7 @@ period, by Monte Carlo. A score above the threshold is labelled
 Everything here is plain numpy and pandas, so it runs without PsychoPy.
 """
 
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, TypeAlias, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -74,7 +74,7 @@ GRID_COLUMNS = [
 _CHUNK_VALUES = 2_000_000
 
 Seed = Union[int, np.random.Generator, None]
-FloatArray = npt.NDArray[np.float64]
+FloatArray: TypeAlias = npt.NDArray[np.float64]
 
 
 def phase_angles(delay_ms: npt.ArrayLike, period_ms: npt.ArrayLike) -> FloatArray:
