@@ -57,6 +57,12 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   addressing the participant formally. The texts shipped in 0.7.2 as a Python
   function and move here to `HRD/texts/german.yaml`, checked against that
   function in the language snapshot test.
+- A `language` parameter for the Heartbeat Counting task, `"english"` (the
+  default) or `"german"`, also offered by `wrappers/hbc.py` and recorded in
+  `manifest.json`. 0.7.2 added it with the texts as Python functions; here
+  they are `HBC/texts/english.yaml` and `german.yaml`, checked against those
+  functions by a snapshot test, and an unknown language fails before a window
+  opens. The German confidence scale reads "Geraten" to "Sicher".
 - `time` in `_signal.txt`: absolute epoch seconds for every sample. Without it
   the PPG recording could not be aligned with the trial triggers or with
   anything recorded alongside it.
@@ -125,6 +131,12 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   than state, so a held button was read as a fresh click on the next screen —
   observed in real data as 17 trials with a decision response time of exactly
   zero.
+- The mouse confidence rating no longer warps the cursor on every frame
+  (issue 103). On macOS each warp suppresses mouse events for 0.25 s, so the
+  slider froze and could be neither moved nor clicked. The cursor is now
+  warped once to the random start and brought back only near the edge of the
+  screen. The fix is in the shared rating, so it applies to every task that
+  uses it.
 - The heart-rate acquisition loop is bounded and can be escaped. A single
   artefactual interbeat interval could previously hold a participant on the
   listening screen indefinitely.
@@ -146,6 +158,9 @@ code it replaced rather than read over.
   language, validated against a required key set when the session starts. A
   language missing a key, or a `language` that does not exist, used to fail
   mid-session with a `KeyError`; both are now errors at launch.
+- The YAML text loader moves from `HRD/languages.py` to `cardioception._texts`,
+  shared by all three tasks. Each task's `languages` module names its own
+  directory and required keys; the HRD's keeps its signatures.
 - The 64 `visual.TextStim` constructions become one `text()` helper, 370 lines
   to 95.
 - The trigger codes and signal constants are named. Worth knowing: **the two

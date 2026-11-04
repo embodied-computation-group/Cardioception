@@ -138,6 +138,8 @@ This minimal example runs the Heart Rate Discrimination task with 10 trials and 
 
 Standard scripts are available in the [wrappers](https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers) folder. Copy the one you need into your local task folder and edit it there. A task can then be run by executing its wrapper file, for example from a terminal.
 
+The instructions are shown in the language passed as `language`. The Heart Rate Discrimination task accepts `"english"` (the default), `"danish"`, `"danish_children"`, `"french"` or `"german"`, and the Heartbeat Counting task accepts `"english"` (the default) or `"german"`. The confidence scale's end labels follow the language unless you pass your own `confidenceScale`. An unknown language stops the task before a window opens, with an error that lists the languages there are.
+
 ### The tasks
 
 **The Heart Rate Discrimination task** {cite:p}`2022:legrand` is an adaptive psychophysical measure in which participants estimate the frequency of their heart rate by comparing it to tones that can be faster or slower. Manipulating the difference between the true heart rate and the presented tone gives the bias (threshold) and precision (slope) of the psychometric function, estimated either online or offline, together with metacognitive performance. See [Theory](measuring.md) for what these quantities mean.
