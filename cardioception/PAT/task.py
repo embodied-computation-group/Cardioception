@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """The PsychoPy side of the Phase Adjustment Task.
 
 During a trial the participant sees a fixation cross inside a ring whose
@@ -19,6 +19,10 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
+
+from .._log import get_logger
+
+logger = get_logger()
 
 #: Columns of final.txt, in order. Extra fields from the engine follow them.
 FINAL_COLUMNS = [
@@ -126,7 +130,7 @@ def saveParameters(parameters: dict) -> None:
     ]
     _write(
         pd.DataFrame(rows, columns=["Parameter", "Value"]),
-        os.path.join(parameters["resultPath"], "parameters.txt"),
+        parameters["paths"].path("parameters"),
     )
 
 
@@ -147,10 +151,10 @@ def toneTable(parameters: dict) -> pd.DataFrame:
 
 
 def saveResults(parameters: dict) -> None:
-    """Write final.txt and tones.txt. Called after every trial.
+    """Write the final and tones files. Called after every trial.
 
     Nothing is written before the first trial is complete, so a run stopped
-    during the instructions can be started again under the same session.
+    during the instructions leaves no empty results behind.
     """
     results = parameters["results_df"]
     if len(results) == 0:
@@ -158,9 +162,9 @@ def saveResults(parameters: dict) -> None:
     extra = [c for c in results.columns if c not in FINAL_COLUMNS]
     _write(
         results.reindex(columns=FINAL_COLUMNS + extra),
-        os.path.join(parameters["resultPath"], "final.txt"),
+        parameters["paths"].path("final"),
     )
-    _write(toneTable(parameters), os.path.join(parameters["resultPath"], "tones.txt"))
+    _write(toneTable(parameters), parameters["paths"].path("tones"))
 
 
 def run(
@@ -227,7 +231,9 @@ def run(
                         parameters["texts"]["textBreaks"],
                         header=f" ---- {remain} % ---- ",
                     )
-                    print(f"... break after main trial {i} of {parameters['nTrials']}")
+                    logger.info(
+                        f"... break after main trial {i} of {parameters['nTrials']}"
+                    )
                 else:
                     showText(parameters, parameters["texts"]["textNextTrial"])
                 waitInput(parameters)
@@ -242,11 +248,13 @@ def run(
 
     except TaskAbort:
         parameters["aborted"] = True
-        print("... Esc pressed: the task stops here. Completed trials are saved.")
+        logger.warning(
+            "... Esc pressed: the task stops here. Completed trials are saved."
+        )
 
     finally:
         saveResults(parameters)
-        print(
+        logger.info(
             f"... {len(parameters['results_df'])} trials saved in "
             f"{parameters['resultPath']}"
         )
@@ -293,7 +301,7 @@ def trial(
     """
     engine = parameters["engine"]
     parameters["trialBlocks"][trialNumber] = block
-    print(
+    logger.info(
         f"Starting {block} trial {trialNumber} - start phase {startPhase:g} deg "
         f"- mode {parameters['mode']}{' - extero' if parameters['extero'] else ''}"
     )
@@ -353,7 +361,7 @@ def trial(
     if abort:
         raise TaskAbort()
 
-    print(
+    logger.info(
         f"... trial {trialNumber} ({block}): phase {_fmt(row['ChosenPhaseDeg'])} deg, "
         f"delay {_fmt(row['ChosenDelayMs'])} ms, anticipated "
         f"{_fmt(row['AnticipatedPeriodMs'])} ms, observed "
@@ -694,7 +702,7 @@ class _Status:
                 "vibrations" if self.parameters["extero"] else "beats (check the ECG)"
             )
             line += f" | NO {what.upper()} FOR {silent:.0f} s"
-        print(line)
+        logger.info(line)
 
 
 def showText(
@@ -808,7 +816,7 @@ def tutorial(parameters: dict) -> None:
             ready=lambda state: state["elapsed"] >= min(minTime, timeout),
         ),
     ]
-    startPhase = float(np.random.choice(parameters["startPhases"]))
+    startPhase = float(parameters["rng"].choice(parameters["startPhases"]))
     dialLoop(parameters, TUTORIAL_TRIAL, "tutorial", startPhase, stages=stages)
     parameters["engine"].end_trial()
 
@@ -889,6 +897,8 @@ def confidenceRatingTask(
             accept_keys=(parameters["startKey"],),
             label_height=parameters["textSize"] * 0.6,
             wheel=_wheelNotches(parameters),
+            # Drawn from the session generator, so it is reproducible
+            marker_start=int(parameters["rng"].choice(np.arange(low, high))),
         )
     else:
         # As the HRD mouse slider: the cursor is hidden, warped once to a random
@@ -896,7 +906,7 @@ def confidenceRatingTask(
         # on every frame freezes the mouse on macOS, issue #103).
         win, mouse = parameters["win"], parameters["myMouse"]
         win.mouseVisible = False
-        mouse.setPos((np.random.uniform(-0.25, 0.25), 0.2))
+        mouse.setPos((parameters["rng"].uniform(-0.25, 0.25), 0.2))
         slider = visual.Slider(
             win=win,
             name="slider",
@@ -939,9 +949,9 @@ def confidenceRatingTask(
             win.flip()
 
     if provided:
-        print(f"... confidence {confidence} after {confidenceRT:.2f} s")
+        logger.info(f"... confidence {confidence} after {confidenceRT:.2f} s")
     else:
-        print("... no confidence rating")
+        logger.info("... no confidence rating")
         if parameters["maxRatingTime"] is not None:
             visual.TextStim(
                 parameters["win"],

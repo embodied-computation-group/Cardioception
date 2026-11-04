@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Consistency scores for the phase adjustment task (PAT).
 
 A PAT trial has no correct answer. What is scored is how consistently a

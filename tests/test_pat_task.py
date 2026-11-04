@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """The PsychoPy side of the Phase Adjustment Task, without hardware.
 
 A fake engine stands in for :class:`cardioception.PAT.engine.PhaseEngine`
@@ -7,17 +7,22 @@ and wheel turns, so these tests need no ECG, no sound card and no display.
 One test opens a small real window, and is skipped where that is impossible.
 """
 
+import json
 import math
 import os
 import sys
 import time
 import types
+from pathlib import Path
 from typing import Callable, List, Optional
 
 import numpy as np
 import pandas as pd
 import pytest
 
+from cardioception._log import start_session_log
+from cardioception.output import SessionPaths
+from cardioception.PAT import parameters as pat_parameters
 from cardioception.PAT.languages import danish, english
 from cardioception.PAT.parameters import getParameters, startPhaseSequence
 from cardioception.PAT.task import (
@@ -277,7 +282,9 @@ def fake_psychopy(monkeypatch):
         setattr(psychopy, name, module)
         monkeypatch.setitem(sys.modules, f"psychopy.{name}", module)
     monkeypatch.setitem(sys.modules, "psychopy", psychopy)
-    return keyboard
+    yield keyboard
+    # Release the session log, so the run directory can be removed on Windows.
+    start_session_log(None)
 
 
 def make_parameters(tmp_path, engine=None, **kwargs) -> dict:
@@ -406,10 +413,51 @@ def test_parameters_need_a_recorder(fake_psychopy, tmp_path):
         getParameters(resultPath=str(tmp_path))
 
 
-def test_parameters_refuse_to_overwrite_a_run(fake_psychopy, tmp_path):
-    (tmp_path / "final.txt").write_text("Trial\n1\n")
-    with pytest.raises(ValueError, match="already holds"):
+def test_parameters_refuse_to_overwrite_a_run(fake_psychopy, tmp_path, monkeypatch):
+    """A run directory that already holds results is not written into."""
+    monkeypatch.setattr(
+        pat_parameters,
+        "SessionPaths",
+        lambda **kwargs: SessionPaths(run_id="fixed", **kwargs),
+    )
+    first = make_parameters(tmp_path)
+    with open(first["paths"].path("final"), "w") as handle:
+        handle.write("Trial\n1\n")
+    with pytest.raises(FileExistsError, match="already holds"):
         make_parameters(tmp_path)
+    again = make_parameters(tmp_path, overwrite=True)
+    assert again["paths"].directory == first["paths"].directory
+
+
+def test_results_go_to_a_run_directory(fake_psychopy, tmp_path):
+    """sub-<participant>/ses-<session>/run-<timestamp>, with a manifest."""
+    parameters = make_parameters(tmp_path, session="002", seed=11)
+    directory = Path(parameters["paths"].directory)
+    assert directory.parent == tmp_path / "sub-test" / "ses-002"
+    assert directory.name.startswith("run-")
+    assert parameters["resultPath"] == str(directory)
+    assert Path(parameters["paths"].path("final")).name.startswith(
+        "sub-test_ses-002_run-"
+    )
+    manifest = json.loads((directory / "manifest.json").read_text())
+    assert manifest["task"] == "PAT"
+    assert manifest["participant"] == "test" and manifest["session"] == "002"
+    assert manifest["seed"] == 11
+    assert manifest["nTrials"] == 4 and manifest["nPractice"] == 2
+    assert manifest["mode"] == "relative" and manifest["extero"] is False
+    assert (directory / "session.log").exists()
+
+
+def test_the_seed_decides_the_start_phases(fake_psychopy, tmp_path):
+    a = make_parameters(tmp_path / "a", nTrials=28, nPractice=8, seed=5)
+    b = make_parameters(tmp_path / "b", nTrials=28, nPractice=8, seed=5)
+    c = make_parameters(tmp_path / "c", nTrials=28, nPractice=8, seed=6)
+    assert a["seed"] == 5
+    assert a["startPhaseMain"] == b["startPhaseMain"]
+    assert a["startPhasePractice"] == b["startPhasePractice"]
+    assert a["startPhaseMain"] != c["startPhaseMain"]
+    unseeded = make_parameters(tmp_path / "d")
+    assert isinstance(unseeded["seed"], int)  # drawn, and recorded
 
 
 def test_parameters_open_a_real_window(tmp_path):
@@ -481,7 +529,7 @@ def test_trial_writes_a_row_and_saves(fake_psychopy, tmp_path):
     assert 1 <= row["Confidence"] <= 10 and row["ConfidenceRT"] > 0.5
     assert row["PressTime"] > 0 and row["TrialDuration"] >= 0  # task fallback
 
-    final = read(tmp_path / "final.txt")
+    final = read(parameters["paths"].path("final"))
     assert list(final.columns) == FINAL_COLUMNS
     assert len(final) == 1
     assert final.loc[0, "Block"] == "practice"
@@ -489,9 +537,9 @@ def test_trial_writes_a_row_and_saves(fake_psychopy, tmp_path):
     assert bool(final.loc[0, "Extero"]) is False
 
     trial(parameters, 2, "practice", 180.0)
-    assert len(read(tmp_path / "final.txt")) == 2  # saved after every trial
+    assert len(read(parameters["paths"].path("final"))) == 2  # saved after every trial
 
-    tones = read(tmp_path / "tones.txt")
+    tones = read(parameters["paths"].path("tones"))
     assert list(tones.columns) == TONE_COLUMNS
     assert set(tones["Trial"]) == {1, 2}
     assert set(tones["Block"]) == {"practice"}
@@ -598,7 +646,7 @@ def test_tutorial_guides_through_the_wheel(fake_psychopy, tmp_path):
     assert sum(engine.nudges[:firstEarlier]) >= parameters["tutorialNotches"]
     assert sum(n for n in engine.nudges[firstEarlier:] if n < 0) <= -3
     assert texts["textNext"] in shown  # the footer once a step is done
-    assert not os.path.exists(tmp_path / "tones.txt")  # nothing saved
+    assert not os.path.exists(parameters["paths"].path("tones"))  # nothing saved
 
 
 def test_run_saves_everything(fake_psychopy, tmp_path):
@@ -611,7 +659,7 @@ def test_run_saves_everything(fake_psychopy, tmp_path):
     assert parameters["aborted"] is False
     # Tutorial, then 2 practice and 12 main trials, numbered across blocks
     assert [s[0] for s in engine.started] == [TUTORIAL_TRIAL] + list(range(1, 15))
-    final = read(tmp_path / "final.txt")
+    final = read(parameters["paths"].path("final"))
     assert list(final["Trial"]) == list(range(1, 15))
     assert list(final["Block"]) == ["practice"] * 2 + ["main"] * 12
     assert list(final["StartPhaseDeg"]) == (
@@ -619,14 +667,14 @@ def test_run_saves_everything(fake_psychopy, tmp_path):
     )
     assert final["Confidence"].between(1, 10).all()
 
-    tones = read(tmp_path / "tones.txt")
+    tones = read(parameters["paths"].path("tones"))
     assert TUTORIAL_TRIAL not in set(tones["Trial"])  # the tutorial is not saved
     assert set(tones["Trial"]) == set(range(1, 15))
     assert (
         tones.groupby("Trial")["Block"].first() == final.set_index("Trial")["Block"]
     ).all()
 
-    saved = read(tmp_path / "parameters.txt").set_index("Parameter")["Value"]
+    saved = read(parameters["paths"].path("parameters")).set_index("Parameter")["Value"]
     assert saved["mode"] == '"relative"'
     assert saved["nTrials"] == "12"
     assert "engine" not in saved.index and "win" not in saved.index
@@ -639,7 +687,7 @@ def test_run_without_rating(fake_psychopy, tmp_path):
 
     run(parameters, runTutorial=False, confidenceRating=False)
 
-    final = read(tmp_path / "final.txt")
+    final = read(parameters["paths"].path("final"))
     assert len(final) == 4 and final["Confidence"].isna().all()
     assert engine.marks == []
 
@@ -659,7 +707,7 @@ def test_escape_in_a_trial_keeps_completed_trials(fake_psychopy, tmp_path):
 
     assert parameters["aborted"] is True
     assert engine.stops >= 3  # the tones of the aborted trial were stopped
-    final = read(tmp_path / "final.txt")
+    final = read(parameters["paths"].path("final"))
     assert list(final["Trial"]) == [1, 2]
     assert not engine.closed  # left to the caller
 
@@ -678,7 +726,7 @@ def test_escape_in_the_rating_keeps_the_trial(fake_psychopy, tmp_path):
     run(parameters, runTutorial=False)
 
     assert parameters["aborted"] is True
-    final = read(tmp_path / "final.txt")
+    final = read(parameters["paths"].path("final"))
     assert len(final) == 1 and final["Confidence"].isna().all()
 
 
@@ -689,9 +737,8 @@ def test_escape_before_any_trial_writes_no_results(fake_psychopy, tmp_path):
     run(parameters)
 
     assert parameters["aborted"] is True
-    assert not os.path.exists(tmp_path / "final.txt")
-    # So the same session can be started again
-    make_parameters(tmp_path)
+    assert not os.path.exists(parameters["paths"].path("final"))
+    assert not os.path.exists(parameters["paths"].path("tones"))
 
 
 def test_mouse_rating(fake_psychopy, tmp_path):
@@ -769,11 +816,11 @@ def test_trial_with_the_real_engine(fake_psychopy, tmp_path):
     assert row["nTonesReal"] + row["nTonesPredicted"] >= 2
     assert row["nDialMoves"] > 0
 
-    tones = read(tmp_path / "tones.txt")
+    tones = read(parameters["paths"].path("tones"))
     assert set(tones["Kind"]) == {"tone", "vibration"}
     assert set(tones.loc[tones["Kind"] == "vibration", "Anchor"]) == {"virtual"}
     assert tones["Onset"].notna().all()
-    assert list(read(tmp_path / "final.txt").columns) == FINAL_COLUMNS
+    assert list(read(parameters["paths"].path("final")).columns) == FINAL_COLUMNS
 
 
 ##################################

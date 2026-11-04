@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """The PAT engine: scheduling rule, dial, trial rows and markers.
 
 Everything runs on fakes (a clock set by hand, a beat source fed by hand, a

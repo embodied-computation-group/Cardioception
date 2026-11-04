@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Parameters of the Phase Adjustment Task (PAT).
 
 The task follows the ECG version of Hodgetts et al. (2026), Psychophysiology
@@ -6,15 +6,28 @@ The task follows the ECG version of Hodgetts et al. (2026), Psychophysiology
 participant moves with the mouse wheel until tones and heartbeats feel
 simultaneous. The exteroceptive control task replaces the heartbeat with a
 vibration on the hand.
+
+As for the other tasks, one random generator, built from ``seed`` by
+:func:`cardioception._rng.make_rng`, draws everything random in a session:
+the start phases, the simulated heart of the exteroceptive task, the tutorial
+start phase and the starting position of every confidence marker. The seed is
+recorded in ``manifest.json``, so a session can be drawn again.
 """
 
+import datetime
 import os
+import time
 from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
 
+from .._log import get_logger, start_session_log
+from .._rng import make_rng
+from ..output import SessionPaths
 from .languages import danish, english
+
+logger = get_logger()
 
 LANGUAGES = ("english", "danish")
 MODES = ("relative", "absolute")
@@ -176,6 +189,8 @@ def getParameters(
     screenNb: int = 0,
     fullscr: bool = True,
     resultPath: Optional[str] = None,
+    overwrite: bool = False,
+    seed: Optional[int] = None,
     language: str = "english",
     extero: bool = False,
     exteroPeriod: Union[str, float, Sequence[float]] = "simulated",
@@ -201,8 +216,7 @@ def getParameters(
     participant : str
         Participant ID.
     session : str
-        Session label. Results go to `data/<participant><session>/` unless
-        `resultPath` is given.
+        Session label.
     recorder : :class:`cardioception.devices.LSLRecorder` | None
         The ECG stream. Required unless `extero=True`. The task reads its inlet
         through the beat detector, so do not read from it yourself.
@@ -225,7 +239,16 @@ def getParameters(
     fullscr : bool
         If `True`, the window is full screen.
     resultPath : str | None
-        Where to save the results. Default is `<cwd>/data/<participant><session>/`.
+        Root directory holding every participant; results go to
+        `<resultPath>/sub-<participant>/ses-<session>/run-<timestamp>/`.
+        Defaults to `<cwd>/data`.
+    overwrite : bool
+        Allow writing into a run directory that already holds results.
+    seed : int | None
+        Seeds the session generator, which draws the start phases, the
+        simulated heart of the exteroceptive task, the tutorial start phase
+        and the starting position of the confidence marker. Drawn from
+        entropy when `None`, and recorded either way.
     language : str
         `"english"` or `"danish"`.
     extero : bool
@@ -287,14 +310,19 @@ def getParameters(
         * `startPhasePractice`, `startPhaseMain`: the start phase of each trial.
         * `results_df`: the trial results, filled during the task.
         * `tones`: the tone rows, filled during the task.
-        * `path`, `resultPath`: working and result directories.
+        * `rng`, `seed`: the session generator and its seed.
+        * `paths`: the :class:`cardioception.output.SessionPaths` of the run.
+        * `path`, `resultPath`: working and run directories.
 
     Notes
     -----
-    Three files are written to `resultPath`, after every trial: `final.txt`
-    (one row per trial), `tones.txt` (one row per tone) and `parameters.txt`
-    (the settings). All times are LSL seconds (`pylsl.local_clock`), except
-    `WallTime` in `final.txt`, which is `time.time()` at the press.
+    `manifest.json` (the session's settings) and `session.log` are written to
+    the run directory at once. Three tab-separated files follow, each named
+    `sub-<participant>_ses-<session>_run-<timestamp>_<kind>.txt`: `final`
+    (one row per trial) and `tones` (one row per tone), rewritten after every
+    trial, and `parameters` (the settings), written when the task starts. All
+    times are LSL seconds (`pylsl.local_clock`), except `WallTime` in
+    `final`, which is `time.time()` at the press.
 
     """
     _validate(
@@ -323,7 +351,10 @@ def getParameters(
             "recorder=LSLRecorder(name='PLUX', channel='ECG2'), unless extero=True."
         )
 
+    from .. import __version__
+
     parameters: Dict[str, Any] = {}
+    parameters["rng"], parameters["seed"] = make_rng(seed)
     parameters["participant"] = participant
     parameters["session"] = session
     parameters["mode"] = mode
@@ -374,30 +405,30 @@ def getParameters(
 
     # Start phases: one sequence for practice, one for the main trials
     parameters["startPhasePractice"] = startPhaseSequence(
-        parameters["nPractice"], parameters["startPhases"]
+        parameters["nPractice"], parameters["startPhases"], rng=parameters["rng"]
     )
     parameters["startPhaseMain"] = startPhaseSequence(
-        parameters["nTrials"], parameters["startPhases"]
+        parameters["nTrials"], parameters["startPhases"], rng=parameters["rng"]
     )
 
     parameters["results_df"] = pd.DataFrame([])
     parameters["tones"] = []
     parameters["trialBlocks"] = {}  # trial number -> block, for tones.txt
 
-    # Result directory, default /data/<participant><session>/
+    # Run directory: <resultPath>/sub-<participant>/ses-<session>/run-<time>/
     parameters["path"] = os.getcwd()
-    if resultPath is None:
-        parameters["resultPath"] = os.path.join(
-            parameters["path"], "data", participant + session
-        )
-    else:
-        parameters["resultPath"] = resultPath
-    if os.path.exists(os.path.join(parameters["resultPath"], "final.txt")):
-        raise ValueError(
-            f"{parameters['resultPath']} already holds a PAT run (final.txt). "
-            "Use another session name, or move the old files away first."
-        )
-    os.makedirs(parameters["resultPath"], exist_ok=True)
+    parameters["paths"] = SessionPaths(
+        root=(
+            resultPath
+            if resultPath is not None
+            else os.path.join(parameters["path"], "data")
+        ),
+        participant=participant,
+        session=session,
+        overwrite=overwrite,
+    )
+    parameters["resultPath"] = parameters["paths"].directory
+    parameters["logFile"] = start_session_log(parameters["paths"].directory)
 
     ##############
     # Load texts #
@@ -426,7 +457,11 @@ def getParameters(
 
         source: Any
         if extero:
-            source = VirtualBeatSource(exteroPeriod)
+            # The simulated heart draws its own series from a seed, taken from
+            # the session generator so the seed in the manifest decides it.
+            source = VirtualBeatSource(
+                exteroPeriod, seed=int(parameters["rng"].integers(2**32))
+            )
         else:
             source = LSLBeatSource(recorder)
         player = TonePlayer(
@@ -460,5 +495,33 @@ def getParameters(
     parameters["win"].mouseVisible = False
     # The wheel is the dial, so the mouse is needed whatever the rating device
     parameters["myMouse"] = event.Mouse(win=parameters["win"])
+
+    parameters["startTime"] = time.time()
+    parameters["paths"].write_manifest(
+        task="PAT",
+        version=__version__,
+        start_epoch=parameters["startTime"],
+        start_local=datetime.datetime.now().isoformat(timespec="seconds"),
+        seed=parameters["seed"],
+        device=device,
+        language=language,
+        mode=mode,
+        extero=extero,
+        exteroPeriod=parameters["exteroPeriod"],
+        nTrials=parameters["nTrials"],
+        nPractice=parameters["nPractice"],
+        startPhases=parameters["startPhases"],
+        confScale=parameters["confScale"],
+        recording=(
+            recorder.describe()
+            if recorder is not None and hasattr(recorder, "describe")
+            else None
+        ),
+    )
+    logger.info(
+        f"PAT session {participant}/{session}: {mode} mode"
+        f"{', exteroceptive' if extero else ''}, seed {parameters['seed']}, "
+        f"results in {parameters['resultPath']}"
+    )
 
     return parameters

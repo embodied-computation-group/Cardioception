@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Phase Adjustment Task, with ECG read from an LSL stream.
 
 Start the device's streaming program first. Needs `pip install cardioception-toolbox[lsl]`.

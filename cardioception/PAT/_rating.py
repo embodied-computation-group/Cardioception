@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Confidence rating for the Phase Adjustment Task, with the scroll wheel.
 
 A copy of :func:`cardioception._rating.keyboard_rating` that also follows the

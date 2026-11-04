@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Where the heart beats come from, for tasks that time stimuli on them.
 
 - :class:`LSLBeatSource` finds R peaks online in an ECG arriving over LSL

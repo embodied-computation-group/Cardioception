@@ -79,7 +79,17 @@ Instructions to the participant matter. Ask them to focus on one consistent body
 
 ## Output files
 
-The task writes to `data/<participant><session>/` (or `resultPath`). `final.txt` and `tones.txt` are tab separated and rewritten after every trial. `parameters.txt` holds the settings.
+Each run gets its own directory, `data/sub-<participant>/ses-<session>/run-<YYYYMMDD-HHMMSS>/` (under `resultPath` instead of `data` when it is given), so a second run of the same session never overwrites the first. Every results file carries the three identifiers in its name, `sub-<participant>_ses-<session>_run-<timestamp>_<kind>.txt`:
+
+| File | Written | Content |
+|---|---|---|
+| `manifest.json` | when the session is set up | participant, session, run, seed, version, device, language, mode, exteroceptive or not, trial counts and the confidence scale |
+| `session.log` | as the task runs | the console messages, with timestamps |
+| `..._parameters.txt` | when the task starts | the settings, one per line |
+| `..._final.txt` | after every trial | one row per trial, tab separated |
+| `..._tones.txt` | after every trial | one row per tone or vibration, tab separated |
+
+The wrapper appends `Extero` to the session label of the exteroceptive run, so both runs of a session sit side by side. The seed of the session's random generator, which draws the start phases, the simulated heart of the exteroceptive task and the starting position of the confidence marker, is in the manifest; pass it back as `seed` to draw the same session again.
 
 `final.txt`, one row per trial:
 
@@ -104,10 +114,13 @@ The task writes to `data/<participant><session>/` (or `resultPath`). `final.txt`
 `cardioception.PAT.scoring` holds the scores. It needs only numpy and pandas:
 
 ```python
+from glob import glob
+
 import pandas as pd
 from cardioception.PAT.scoring import consistency_grid, extero_threshold
 
-final = pd.read_csv("data/sub01001/final.txt", sep="\t")
+(path,) = glob("data/sub-sub01/ses-001/run-*/*_final.txt")
+final = pd.read_csv(path, sep="\t")
 grid = consistency_grid(final)
 print(grid)
 ```
