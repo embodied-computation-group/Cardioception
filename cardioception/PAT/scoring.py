@@ -26,8 +26,10 @@ from the participant's median are removed, separately for each period type.
 
 Each score is compared with its own chance threshold: the 95th percentile of
 the MRL of the same number of trials with delays drawn uniformly over the
-period, by Monte Carlo. A score above the threshold is labelled
-*interoceptive*. The label is descriptive.
+period, by Monte Carlo. A delay uniform over a period is a phase uniform over
+the cycle, whatever the period, so the threshold depends only on the number
+of trials and, in weighted cells, the weights. A score above the threshold is
+labelled *interoceptive*. The label is descriptive.
 
 Everything here is plain numpy and pandas, so it runs without PsychoPy.
 """
@@ -210,14 +212,18 @@ def monte_carlo_threshold(
     uniformly on [0, p), turned into angles with the same period ``p``, and the
     MRL is computed. The threshold is the ``q`` quantile of ``n_sim`` such MRLs.
 
+    Since ``2 pi U p / p = 2 pi U`` for ``U`` uniform on [0, 1), the angles
+    are uniform on the circle whatever the periods, and the threshold depends
+    only on ``n_trials``, ``weights``, ``n_sim``, ``q`` and ``seed``. The
+    angles are drawn directly. ``periods_ms`` and ``fixed`` are checked and
+    accepted, so callers can say which participant and mapping a threshold is
+    for, but they do not change it.
+
     Parameters
     ----------
     periods_ms : array-like
-        The participant's heart periods in ms (NaN ignored). With
-        ``fixed=False`` each trial uses its own period: when there are exactly
-        ``n_trials`` of them they are used as they are, otherwise each
-        simulated trial draws one at random. With ``fixed=True`` every trial
-        uses their median.
+        The participant's heart periods in ms (NaN ignored). They must hold
+        at least one finite positive value; they do not change the threshold.
     n_trials : int
         Number of trials in each simulated participant.
     n_sim : int
@@ -226,7 +232,8 @@ def monte_carlo_threshold(
     q : float
         Quantile of the simulated MRLs, 0.95 in the paper.
     fixed : bool
-        Fixed mapping (one period for all trials) rather than variable mapping.
+        Fixed mapping (one period for all trials) rather than variable
+        mapping. It does not change the threshold either.
     seed : int, np.random.Generator or None
         Seed of the random generator. The default is fixed, so thresholds are
         reproducible; None draws fresh entropy.
@@ -268,14 +275,8 @@ def monte_carlo_threshold(
     done = 0
     while done < n_sim:
         size = min(chunk, n_sim - done)
-        if fixed:
-            p: FloatArray = np.full((size, n_trials), np.median(periods))
-        elif periods.size == n_trials:
-            p = np.broadcast_to(periods, (size, n_trials))
-        else:
-            p = rng.choice(periods, size=(size, n_trials))
-        delays = rng.uniform(0.0, 1.0, size=(size, n_trials)) * p
-        theta = phase_angles(delays, p)
+        # A uniform delay over any period is a uniform phase.
+        theta = 2 * np.pi * rng.uniform(0.0, 1.0, size=(size, n_trials))
         resultant = np.hypot(np.cos(theta) @ w, np.sin(theta) @ w)
         end = done + size
         scores[done:end] = resultant / w.sum()
@@ -294,7 +295,9 @@ def extero_threshold(
 
     Hodgetts et al. (2026) simulate 28 trials at a fixed 1000 ms period and get
     R = 0.33. Participants below it on the exteroceptive task are screened out
-    before the PAT analysis.
+    before the PAT analysis. ``period_ms`` is kept for that description; like
+    the periods of :func:`monte_carlo_threshold`, it does not change the
+    threshold.
     """
     return monte_carlo_threshold(
         [period_ms], n_trials, n_sim=n_sim, q=q, fixed=True, seed=seed

@@ -196,14 +196,18 @@ def test_threshold_falls_with_more_trials():
         assert threshold == pytest.approx(np.sqrt(-np.log(0.05) / n), rel=0.06)
 
 
-def test_variable_threshold_uses_own_periods():
-    # Uniform delays over each trial's own period give uniform angles, so the
-    # threshold does not depend on the periods, whichever way they are drawn.
+def test_threshold_does_not_depend_on_the_periods():
+    # Uniform delays over any period give uniform angles, so with the same
+    # seed the threshold is the same whatever the periods and the mapping.
     periods = np.linspace(700, 1200, 28)
-    variable = monte_carlo_threshold(periods, 28, n_sim=N_SIM)
-    resampled = monte_carlo_threshold(periods, 20, n_sim=N_SIM)
-    assert variable == pytest.approx(extero_threshold(28, n_sim=N_SIM), abs=0.01)
-    assert resampled == pytest.approx(extero_threshold(20, n_sim=N_SIM), abs=0.01)
+    for n in (28, 20):
+        reference = monte_carlo_threshold([1000], n, n_sim=N_SIM)
+        assert monte_carlo_threshold(periods, n, n_sim=N_SIM) == reference
+        assert monte_carlo_threshold(periods, n, n_sim=N_SIM, fixed=True) == reference
+        assert extero_threshold(n, period_ms=650, n_sim=N_SIM) == reference
+    assert monte_carlo_threshold(periods, 28, n_sim=N_SIM) == pytest.approx(
+        np.sqrt(-np.log(0.05) / 28), rel=0.06
+    )
 
 
 def test_weighted_threshold():
