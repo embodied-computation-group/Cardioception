@@ -59,6 +59,32 @@ def find_stream(streams: List[dict], name: str) -> Optional[dict]:
     return None
 
 
+def arrival_timeline(stamps: np.ndarray, sfreq: float, block: float = 5.0):
+    """Sample times that follow the arrival timestamps, smoothed over ``block`` s.
+
+    pyxdf's dejitter fits one straight line through a stream's timestamps,
+    which assumes the device clock runs at a constant rate against the PC.
+    The PLUX hub's does not: on a 26 min recording the arrival times wandered
+    from 90 ms before to 150 ms after that line, and the pulse transit time
+    to the Nonin (a separate device) stayed constant on the arrival timeline
+    but drifted by 110 ms on the straight one. The online detector stamps
+    beats on the arrival timeline too, so the offline R peaks are put there:
+    the straight line, plus the median of the raw timestamps' departure from
+    it in each ``block``, interpolated between blocks.
+    """
+    stamps = np.asarray(stamps, dtype=float)
+    n = np.arange(len(stamps), dtype=float)
+    t0 = stamps[0]
+    slope, intercept = np.polyfit(n, stamps - t0, 1)
+    line = t0 + intercept + slope * n
+    resid = stamps - line
+    size = max(int(block * sfreq), 1)
+    starts = np.arange(0, len(stamps), size)
+    centres = np.minimum(starts + size / 2, len(stamps) - 1)
+    medians = [np.median(resid[i:][:size]) for i in starts]
+    return line + np.interp(n, centres, medians)
+
+
 def channel_labels(stream: dict) -> List[str]:
     try:
         channels = stream["info"]["desc"][0]["channels"][0]["channel"]
@@ -174,7 +200,8 @@ def report(args: argparse.Namespace) -> int:
     from cardioception.devices._beats import detect_beats
 
     path = Path(args.xdf)
-    streams, _ = pyxdf.load_xdf(str(path))
+    # Raw timestamps: see arrival_timeline for why not pyxdf's dejitter.
+    streams, _ = pyxdf.load_xdf(str(path), dejitter_timestamps=args.linear_timestamps)
     plux = find_stream(streams, args.stream)
     if plux is None:
         names = ", ".join(s["info"]["name"][0] for s in streams)
@@ -184,6 +211,8 @@ def report(args: argparse.Namespace) -> int:
         sys.exit(f"No channel {args.channel!r} in {args.stream!r}: {labels}")
     sfreq = float(plux["info"]["nominal_srate"][0])
     times = np.asarray(plux["time_stamps"], dtype=float)
+    if not args.linear_timestamps:
+        times = arrival_timeline(times, sfreq)
     data = np.asarray(plux["time_series"])
     signal = data[:, labels.index(args.channel)].astype(float)
     print(
@@ -430,6 +459,12 @@ def main(argv=None) -> int:
         type=float,
         default=0.0,
         help="seconds the bridge timestamps trail the hub; shifts R peaks back",
+    )
+    ap.add_argument(
+        "--linear-timestamps",
+        action="store_true",
+        help="use pyxdf's straight-line dejitter for the ECG timestamps, as "
+        "before 2026-11-03 (wrong on long recordings)",
     )
     ap.add_argument("--out", help="figure path (default next to the XDF)")
     return report(ap.parse_args(argv))

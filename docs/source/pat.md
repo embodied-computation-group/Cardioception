@@ -1,0 +1,155 @@
+---
+myst:
+  html_meta:
+    description: "The phase adjustment task (PAT) in Cardioception: an ECG-triggered heartbeat synchrony task over LSL, its output files, and how to score phase consistency."
+    keywords: "phase adjustment task, PAT, PAT-ECG, heartbeat perception, cardiac interoception, mean resultant length, ECG, LSL, cardioception"
+---
+
+# Phase adjustment task
+
+The phase adjustment task (PAT) {cite:p}`2021:plans` measures how consistently a person can place a tone at the same point of their own cardiac cycle. Participants hear one tone per heartbeat. They turn a dial that moves the tone earlier or later after each heartbeat until tone and heartbeat feel simultaneous, then press space to lock in their choice. There is no correct answer on a single trial: what is scored is whether the choices cluster at one phase of the cycle across trials, more than they would by chance.
+
+Cardioception's version follows the ECG-based implementation of {cite:t}`2026:hodgetts` (PAT-ECG), which triggers the tones from the R-wave of the electrocardiogram rather than from a finger pulse, adds an online relative-delay (phase) mode and an exteroceptive control task, and scores every participant on a grid of eight consistency measures. The PAT 2.0 refinements of {cite:t}`2026:palmer` provide the fixed-mapping score and the Monte Carlo thresholds.
+
+```{note}
+The PAT module is new and runs only with an ECG streamed over Lab Streaming Layer (LSL). The original PAT-ECG uses a hardware R-wave trigger and a Teensy microcontroller; this port detects the R-wave in software, which changes the timing budget. Read the [timing section](#timing-and-latency) before you plan a study.
+```
+
+## What the task measures
+
+Each trial yields a chosen delay `d` (ms from the R-wave to the tone), a heart period `p` (ms) and a confidence rating `w` (1 to 10). The delay becomes a phase angle `theta = 2 pi d / p`, and consistency is the mean resultant length (MRL) of the angles over trials:
+
+```
+R   = | (1/n) sum_r exp(i theta_r) |
+R_w = | sum_r w_r exp(i theta_r) | / sum_r w_r      (confidence-weighted)
+```
+
+`R` runs from 0 (choices spread evenly round the cycle) to 1 (every trial at exactly the same phase). Someone who feels their heartbeat at a stable moment, and can match a tone to it, should score high. Someone guessing should score near the chance level for their number of trials, about 0.33 for 28 trials.
+
+## Two scheduling modes
+
+`mode` in `getParameters` sets what the dial controls. Both modes reset the dial to one of four start phases (0, 90, 180 or 270 degrees) at the start of each trial, drawn in shuffled blocks of four without an immediate repeat, so the participant cannot find the answer by remembering a dial position.
+
+- **Relative mode** (`mode="relative"`, the default). The dial is a phase, in degrees of the anticipated heart period, and wraps at 360. The anticipated period is the mean of the last three R-R intervals. On each beat the tone is played at `phase / 360 * anticipated period` after the R-wave, so the tone keeps its place in the cycle when the heart speeds up or slows down. This is the mode of the PAT-ECG demonstration study. One notch of the mouse wheel moves the phase by `dialGainDeg` (10 degrees by default).
+- **Absolute mode** (`mode="absolute"`). The dial is a delay in ms after the R-wave, as in the phone-based PAT. It wraps at the anticipated period and the delay is clamped to the current period. One notch moves it by `dialGainMs` (25 ms by default).
+
+{cite:t}`2026:hodgetts` suggest running both modes when the heart period varies a lot between trials (during exercise or recovery, for instance), because they separate phase-locked from delay-locked perception.
+
+## Exteroceptive control task
+
+With `extero=True` the "heartbeat" is a 50 Hz vibration burst on the back of the non-dominant hand, and the participant matches the tone to the vibration with the same dial and procedure. It is a familiarization task and a screener: someone who cannot synchronize two plain external signals has probably not understood the task or is not engaging with it. {cite:t}`2026:hodgetts` excluded the 7 of 91 participants who scored below the chance threshold here.
+
+The vibration period is set by `exteroPeriod`: `"simulated"` (the default) gives a variable series like a resting heart (base period 0.9 to 1.1 s with respiratory, slow and noise components, clamped to 0.55 to 1.5 s, smoothed over three beats), a number gives a fixed period in seconds (the paper used 1 s), and a sequence of periods replays it, for example a participant's own R-R intervals from the PAT. No ECG is needed for this variant.
+
+## Hardware on our setup
+
+- **ECG**: the PLUX hub with a chest ECG lead (channel `ECG2`), streamed to LSL as `PLUX` by the hub bridge (`plux_lsl.py`). Start the bridge before the task. Electrodes as in the paper: right clavicle, lowest left rib, reference on the left clavicle or hip. With the PLUX lead set, upright R-waves came from black on the lowest left rib and red on the right clavicle; swap them if the trace is inverted.
+- **Audio**: headphones or speakers on the stimulus PC. Tones are 1000 Hz, 30 ms, with 5 ms ramps, on the left channel. The task plays them through PsychPortAudio (`psychtoolbox.audio`) directly, at latency class 1, which reports the true onset of every tone.
+- **Tactor** (exteroceptive variant only): a vibrotactile transducer (Dayton Audio TT25-16 or similar) driven from the **right** audio channel through a small amplifier. Tone and vibration come from the same stereo stream, so they are locked to the sample. The burst is silent unless `vibrationVolume` is set above its default of 0, so ordinary speakers or headphones never carry it. The tactor also buzzes faintly; that is expected.
+- **Dial**: the mouse wheel, held in the dominant hand. The left and right arrow keys move it too. Space, with the other hand, ends the trial.
+- **Recording**: [LabRecorder](https://github.com/labstreaminglayer/App-LabRecorder) with the `PLUX` stream and the task's marker stream (`PAT`, set by `markerStream`), so the ECG and every beat, tone and key press land on one clock in one XDF file.
+
+## Running the task
+
+Install with the LSL extra, `pip install cardioception-toolbox[lsl]`. Start the PLUX bridge and LabRecorder, then run the wrapper from the repository root:
+
+```
+python wrappers/pat_lsl.py
+```
+
+It asks for the participant, session, stream, channel, mode and whether to run the exteroceptive variant, then runs the tutorial, 8 practice trials and 28 main trials, with a break every 10 trials. The same in a script:
+
+```python
+from cardioception.devices import LSLRecorder
+from cardioception.PAT.parameters import getParameters
+from cardioception.PAT.task import run
+
+recorder = LSLRecorder(name="PLUX", channel="ECG2", signal_type="ecg")
+parameters = getParameters(
+    participant="sub01", session="001", recorder=recorder, mode="relative"
+)
+run(parameters, runTutorial=True, confidenceRating=True)
+parameters["win"].close()
+recorder.close()
+```
+
+For the exteroceptive variant pass `extero=True` and no recorder is needed. The paper ran the exteroceptive task (8 + 28 trials, about 10 minutes) before the PAT (8 + 28 trials, about 30 minutes). Between 15 and 20 trials already separate consistent responders from chance; gains beyond 20 are small {cite:p}`2026:palmer`.
+
+Instructions to the participant matter. Ask them to focus on one consistent body location, to sit still, breathe normally and not tense their muscles, which would amplify the heartbeat sensation. The experimenter sees a one-line status every second in the console (trial, heart rate, phase, tones anchored on real and predicted beats). Press Esc at any prompt to stop; what has been collected is saved.
+
+## Output files
+
+The task writes to `data/<participant><session>/` (or `resultPath`). `final.txt` and `tones.txt` are tab separated and rewritten after every trial. `parameters.txt` holds the settings.
+
+`final.txt`, one row per trial:
+
+| Column | Meaning |
+|---|---|
+| `Trial`, `Block` | Trial number, and `practice` or `main` |
+| `Mode`, `Extero` | Scheduling mode, and whether this was the exteroceptive variant |
+| `StartPhaseDeg` | Where the dial started |
+| `ChosenPhaseDeg`, `ChosenDelayMs` | The choice at the space press, as a phase and as ms after the R-wave |
+| `AnticipatedPeriodMs` | The anticipated period (mean of the last three R-R intervals) at the last beat before the press |
+| `ObservedPeriodMs` | The R-R interval containing the press, known once the next R-wave arrives; NaN if it did not arrive within 3 s |
+| `LastRTime`, `PressTime` | The last R-wave before the press and the press itself, in LSL seconds |
+| `Confidence`, `ConfidenceRT` | Rating from 1 (not at all) to 10 (extremely), and its response time |
+| `nTonesReal`, `nTonesPredicted`, `nTonesSkipped` | Tones anchored on the detected beat, on the predicted next beat, and skipped by the double-tone guard |
+| `TrialDuration`, `nDialMoves` | Seconds from trial start to press, and number of dial movements |
+| `WallTime` | Computer clock time of the press |
+
+`tones.txt`, one row per tone or vibration: `Trial`, `Block`, `RTime` (the R-wave it was timed from, LSL seconds), `PeriodS` (anticipated period), `PhaseDeg` and `DelayMs` (the dial), `Target` (when it was meant to sound), `Anchor` (`real`, `predicted` or `virtual`), `Onset` (the onset PsychPortAudio reported, NaN if none) and `Kind` (`tone` or `vibration`). Together with the ECG in the XDF file this gives the true R-to-tone interval of every tone, which the original PAT-ECG did not log.
+
+## Scoring
+
+`cardioception.PAT.scoring` holds the scores. It needs only numpy and pandas:
+
+```python
+import pandas as pd
+from cardioception.PAT.scoring import consistency_grid, extero_threshold
+
+final = pd.read_csv("data/sub01001/final.txt", sep="\t")
+grid = consistency_grid(final)
+print(grid)
+```
+
+Only rows with `Block == "main"` count. `consistency_grid` returns eight rows, the 2 x 2 x 2 grid of {cite:t}`2026:hodgetts`:
+
+| Factor | Levels |
+|---|---|
+| `mapping` | `variable`: each trial's angle uses its own period (phase-based consistency). `fixed`: every trial uses the participant's median period (delay-based consistency); trials whose delay exceeds that median are dropped. |
+| `period` | `anticipated`: the period the task used online. `observed`: the R-R interval that contained the press. |
+| `weighting` | `none`, or `confidence`: each trial weighted by its rating. |
+
+Each row gives `n_trials` (trials scored), `score` (the MRL), `threshold` and `interoceptive` (`score > threshold`). Before scoring, trials with a missing period are dropped, then trials whose period lies more than 5 robust standard deviations (1.4826 times the median absolute deviation) from the participant's median period, separately for each period type. In the paper this removed under 1 % of trials.
+
+The threshold is the participant's own chance level: 100,000 simulated participants with the same number of valid trials and the same periods choose delays uniformly over the period, and the threshold is the 95th percentile of their MRL. Weighted cells keep the participant's confidence ratings as weights in the simulation, so unequal ratings raise the threshold a little. The simulations use a fixed seed (`seed=0`), so the same file always gives the same grid. `n_sim` and `seed` can be changed.
+
+How to read the grid:
+
+- **Interoceptive** is a descriptive label: the choices were more consistent than 95 % of random responders with the same trials would be. The score itself can be used as a continuous measure.
+- **Variable and fixed mapping** ask different questions. A high variable-mapping score means the tone was kept at a stable phase of the cycle; a high fixed-mapping score means it was kept at a stable delay after the R-wave. At rest, with stable heart periods, the two mostly agree. Report both.
+- **Anticipated and observed period** rarely disagree. In the paper the anticipated period was a few ms longer than the observed one, and the choice changed the classification of two borderline participants.
+- **Confidence weighting** changes little, because confidence varies mostly between people rather than between trials.
+
+For comparison, {cite:t}`2026:hodgetts` classified 14 of 84 participants (16.7 %) as interoceptive on at least one of the eight routes and 10 on all eight, in line with the 17 % found with the phone-based PAT.
+
+For the exteroceptive screen, score the exteroceptive `final.txt` with the same function. `extero_threshold(28)` gives the threshold for 28 trials at a fixed 1000 ms period: 0.326 with 100,000 runs, the R = 0.33 of the paper.
+
+## Timing and latency
+
+In the original PAT-ECG an analogue R-wave detector triggers the microcontroller, so the tone is microseconds behind the R-wave. Here the ECG travels from the PLUX hub over Bluetooth to LSL, and Python finds the R-wave online. Measured on our stimulus PC:
+
+- **The beat is known about 20 ms after the R-peak** (95th percentile 31 ms).
+- **Audio onsets** reported by PsychPortAudio are within about 1 ms of the target, provided the tone is scheduled at least `audioLead` (50 ms) ahead.
+
+Each tone's target is `R + delay - latencyBias`. If that is at least `audioLead` after the moment the beat is known, the tone is timed from that beat (anchor `real`). Otherwise it is too late for this cycle, and the tone is timed from the *predicted* next R-wave, one anticipated period later (anchor `predicted`). With the defaults the boundary sits about 120 ms after the R-wave: roughly the first 35 degrees of the cycle at 50 beats per minute and nearly 60 at 80. Predicted tones scatter more than real ones, because the true next cycle differs from the three-beat mean. `tones.txt` records which anchor each tone used.
+
+`latencyBias` (default 0.05 s) is a constant subtracted from every target. It stands for the physical delay that LSL timestamps cannot see: the Bluetooth transfer before the samples are stamped (20 to 40 ms) and the path from the reported audio onset to the sound reaching the ear. Together these come to roughly 30 to 70 ms on our setup. A constant bias shifts every tone by the same amount, so it leaves fixed-mapping consistency unchanged and variable-mapping consistency almost unchanged. It does matter for the *mean* phase a participant chooses; report the bias whenever you report that.
+
+Further checks of the timing chain are in `bench/README.md` in the repository.
+
+## References
+
+- Hodgetts, J., Gallicchio, G., Mckiernan, S., Ring, C., Murphy, J., & Cooke, A. (2026). The electrocardiogram-based phase adjustment task (PAT-ECG): An open-access laboratory test of cardiac interoceptive accuracy. *Psychophysiology*, 63, e70415. <https://doi.org/10.1111/psyp.70415>
+- Plans, D., Ponzo, S., Morelli, D., et al. (2021). Measuring interoception: The phase adjustment task. *Biological Psychology*, 165, 108171. <https://doi.org/10.1016/j.biopsycho.2021.108171>
+- Palmer, R., Murphy, J., Bird, J. M., et al. (2026). Refinements of the phase adjustment task (PAT 2.0). *Frontiers in Psychology*, 17, 1677186. <https://doi.org/10.3389/fpsyg.2026.1677186>

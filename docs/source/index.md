@@ -90,6 +90,7 @@ Installation <installation.md>
 Guide <user_guide.md>
 Theory <measuring.md>
 HSD design <hsd_design.md>
+PAT <pat.md>
 Tutorials <tutorials/index.md>
 API <api.rst>
 Cite <cite.md>
