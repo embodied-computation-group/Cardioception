@@ -12,13 +12,13 @@ task (HRD) and the Heartbeat Counting task (HBC), and two experimental, the
 Heartbeat Synchrony Discrimination task (HSD) and the Phase Adjustment Task
 (PAT). This page puts them side by side.
 
-| Task | HRD | HBC | HSD | PAT |
-|---|---|---|---|---|
-| Measure | Bias (threshold) and precision (slope) of judgements of one's own heart rate, with confidence | Reported against recorded heartbeats over fixed windows, with confidence | Where in the cardiac cycle the heartbeat is felt (`mu`), how sharply (`sigma`), and how strongly, with confidence | Consistency of the chosen tone delay or phase across trials, with confidence |
-| Adaptive | Yes: a Psi staircase sets the tone rate | No | Yes: Bayesian placement of the tone delay | No: the participant adjusts the delay |
-| Hardware | Pulse oximeter, or ECG or PPG over LSL; headphones; mouse or keyboard | Pulse oximeter, or ECG or PPG over LSL; keyboard | ECG over LSL; sound card; keyboard | ECG over LSL; sound card; mouse wheel; a tactor for the control task |
-| Trials and minutes | 120 trials, about 20 minutes plus the tutorial | 6 counting windows, about 4 minutes | 15 to 60 trials; 60 took 7 minutes | 28 trials and 8 practice, about 30 minutes |
-| Status | Established | Established | [Experimental](hsd/design.md) | [Experimental](pat.md) |
+| Task | HRD | HBC | HSD | PAT | Whitehead | Brener |
+|---|---|---|---|---|---|---|
+| Measure | Bias (threshold) and precision (slope) of judgements of one's own heart rate, with confidence | Reported against recorded heartbeats over fixed windows, with confidence | Where in the cardiac cycle the heartbeat is felt (`mu`), how sharply (`sigma`), and how strongly, with confidence | Consistency of the chosen tone delay or phase across trials, with confidence | Discrimination of synchronous from delayed tones {cite:p}`1977:whitehead` | Proportion of tones judged simultaneous at each delay {cite:p}`1993:brener` |
+| Adaptive | Yes: a Psi staircase sets the tone rate | No | Yes: Bayesian placement of the tone delay | No: the participant adjusts the delay | No | No |
+| Hardware | Pulse oximeter, or ECG or PPG over LSL; headphones; mouse or keyboard | Pulse oximeter, or ECG or PPG over LSL; keyboard | ECG over LSL; sound card; keyboard | ECG over LSL; sound card; mouse wheel; a tactor for the control task |  |  |
+| Trials and minutes | 120 trials, about 20 minutes plus the tutorial | 6 counting windows, about 4 minutes | 15 to 60 trials; 60 took 7 minutes | 28 trials and 8 practice, about 30 minutes |  |  |
+| Status | Established | Established | [Experimental](hsd/design.md) | [Experimental](pat.md) | [Coming soon](whitehead.md) | [Coming soon](constant-stimuli.md) |
 
 Every task writes to the same layout,
 `data/sub-<participant>/ses-<session>/run-<YYYYMMDD-HHMMSS>/` under the current
@@ -376,4 +376,6 @@ Heart Rate Discrimination task <hrd/index.md>
 Heartbeat Counting task <hbc.md>
 Phase Adjustment Task <pat.md>
 Heartbeat Synchrony Discrimination task <hsd/index.md>
+Whitehead method <whitehead.md>
+Method of constant stimuli <constant-stimuli.md>
 ```
