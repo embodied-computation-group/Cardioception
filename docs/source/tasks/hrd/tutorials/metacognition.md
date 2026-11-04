@@ -44,7 +44,7 @@ select either endpoint, and those observations are meaningful. In the example
 data, 15.0% of ratings fall exactly on a bound, with 3.9% at zero and 11.1% at
 100.
 
-![Observed confidence ratings and posterior predictions at the scale bounds](../images/tutorials/fig_confidence_distribution.png)
+![Observed confidence ratings and posterior predictions at the scale bounds](../../../images/tutorials/fig_confidence_distribution.png)
 
 Several familiar likelihoods are poorly suited to these data.
 
@@ -263,7 +263,7 @@ shows selected population coefficients on the latent scale.
 
 The response-scale predictions make these coefficients easier to interpret.
 
-![Predicted confidence by accuracy, modality, and gender](../images/tutorials/fig_confidence_accuracy.png)
+![Predicted confidence by accuracy, modality, and gender](../../../images/tutorials/fig_confidence_accuracy.png)
 
 For women at the mean age and BMI, expected confidence on Extero trials was
 0.67 after correct responses and 0.38 after incorrect responses. The calibration
@@ -281,7 +281,7 @@ provides little evidence that calibration differed by gender.
 
 ### Age and confidence bias
 
-![Confidence bias and metacognitive calibration across age](../images/tutorials/fig_confidence_age.png)
+![Confidence bias and metacognitive calibration across age](../../../images/tutorials/fig_confidence_age.png)
 
 Expected confidence increased with age for both correct and incorrect trials.
 The two lines remained approximately parallel, and the interval for
@@ -327,5 +327,5 @@ The two hierarchical tutorials now provide complementary descriptions of HRD
 performance. The [psychophysical model](hierarchical.md) estimates cardiac bias,
 precision, and lapse rate from choices. The ordered beta model estimates
 confidence bias and metacognitive calibration from ratings. The [theory
-page](../measuring.md) explains how these measurements fit into the broader
+page](../../../measuring.md) explains how these measurements fit into the broader
 account of cardiac interoception.

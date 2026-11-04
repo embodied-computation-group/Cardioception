@@ -59,7 +59,7 @@ The methods apply unchanged to a sample of thirty.
 
 Cite [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3) for the
 models and the priors, and Cardioception for the data collection. See the
-[cite page](../cite.md) for the full references.
+[cite page](../../../reference/cite.md) for the full references.
 
 ```{toctree}
 ---

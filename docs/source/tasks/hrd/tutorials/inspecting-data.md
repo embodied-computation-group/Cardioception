@@ -14,7 +14,7 @@ exclusion rule should be decided for the study, documented, and applied without
 reference to the result one hopes to obtain.
 
 The figures use a deidentified participant from the VMP2 study who completed the
-current Psi-only design. You can [download the example session](../examples/templates/data/HRD/vmp2_example_final.txt)
+current Psi-only design. You can [download the example session](../../../examples/templates/data/HRD/vmp2_example_final.txt)
 and run the code against it.
 
 ## Files in a participant folder
@@ -310,7 +310,7 @@ ggplot(trace, aes(adaptive_trial, Alpha)) +
 :::
 ::::
 
-![Stimulus sequences and response choices for one Psi-only HRD session](../images/tutorials/fig_inspection_stimulus_trace.png)
+![Stimulus sequences and response choices for one Psi-only HRD session](../../../images/tutorials/fig_inspection_stimulus_trace.png)
 
 This participant's choices change with ΔBPM in both conditions. The cardiac
 staircase explores mostly negative values early and alternates between positive
@@ -393,7 +393,7 @@ ggplot(response_plot, aes(intensity, proportion_faster, colour = Modality)) +
 :::
 ::::
 
-![Response proportions across stimulus intensity for the example session](../images/tutorials/fig_inspection_responses.png)
+![Response proportions across stimulus intensity for the example session](../../../images/tutorials/fig_inspection_responses.png)
 
 The two response curves rise from left to right in the worked session. Their
 horizontal displacement is scientifically meaningful. A participant can use
@@ -500,7 +500,7 @@ ggplot(rt, aes(response, seconds, fill = Modality)) +
 :::
 ::::
 
-![Decision and confidence response-time distributions for the example session](../images/tutorials/fig_inspection_timing.png)
+![Decision and confidence response-time distributions for the example session](../../../images/tutorials/fig_inspection_timing.png)
 
 Look for a pile-up near the response limit, many missing responses, or a sharp
 change after a break. Very short response times can indicate anticipatory key
@@ -563,7 +563,7 @@ accuracy_plot <- ggplot(valid, aes(accuracy, Confidence)) +
 :::
 ::::
 
-![Confidence separated by response choice and response accuracy](../images/tutorials/fig_inspection_confidence.png)
+![Confidence separated by response choice and response accuracy](../../../images/tutorials/fig_inspection_confidence.png)
 
 In this session, median confidence was 61 after "slower" choices and 67 after
 "faster" choices. The larger difference is between incorrect and correct trials,
@@ -638,7 +638,7 @@ data |>
 :::
 ::::
 
-![Heart rate measured during each cardiac listening interval](../images/tutorials/fig_inspection_heart_rate.png)
+![Heart rate measured during each cardiac listening interval](../../../images/tutorials/fig_inspection_heart_rate.png)
 
 Sudden jumps, repeated boundary values, or an implausibly flat trace justify a
 closer look at `*_signal.txt` and the saved PPG segments. Trial-level heart rate
@@ -720,7 +720,7 @@ data |>
 :::
 ::::
 
-![Threshold and slope uncertainty across the example session](../images/tutorials/fig_inspection_psi.png)
+![Threshold and slope uncertainty across the example session](../../../images/tutorials/fig_inspection_psi.png)
 
 The shaded intervals in the tutorial figure come from the `.npy` arrays. The
 reproducible code is in [`tutorials/plot_inspecting_data.py`](https://github.com/embodied-computation-group/Cardioception/blob/tutorial-dev/tutorials/plot_inspecting_data.py).
@@ -742,7 +742,7 @@ Quality-control plots are most useful when we know what would count as unusual.
 The examples below are schematic, so that the pattern is easier to see than it
 would be in a noisy single session.
 
-![Response, timing, and confidence patterns that deserve follow-up](../images/tutorials/fig_inspection_warning_patterns.png)
+![Response, timing, and confidence patterns that deserve follow-up](../../../images/tutorials/fig_inspection_warning_patterns.png)
 
 The expected response curve rises with ΔBPM. If it falls consistently, first
 check that `More` and `Less` were decoded correctly in the analysis. If the code
@@ -866,7 +866,7 @@ ggplot(summary_long, aes(Modality, value, colour = Modality)) +
 :::
 ::::
 
-![Session checks across 161 completed VMP2 sessions](../images/tutorials/fig_inspection_sessions.png)
+![Session checks across 161 completed VMP2 sessions](../../../images/tutorials/fig_inspection_sessions.png)
 
 This figure contains 161 completed, Psi-only VMP2 sessions. Each point represents
 one participant and modality. Most sessions have few missed decisions, while a

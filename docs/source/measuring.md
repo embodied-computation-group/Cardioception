@@ -245,7 +245,7 @@ for d-prime and meta-d-prime becomes increasingly unbalanced. The resulting
 ratio is least stable for participants with the largest cardiac biases. Our
 current analysis models the 0 to 100 ratings directly with ordered beta regression,
 retaining responses at both bounds {cite:p}`2023:kubinec`. The
-[metacognition tutorial](tutorials/metacognition.md) develops this analysis.
+[metacognition tutorial](tasks/hrd/tutorials/metacognition.md) develops this analysis.
 
 ### The exteroceptive condition provides a within-person comparison
 
@@ -291,13 +291,13 @@ variables for a group analysis.
 
 The tutorials follow the analysis from one session to a group model:
 
-- [Inspecting and plotting data](tutorials/inspecting-data.md) explains the trial
+- [Inspecting and plotting data](tasks/hrd/tutorials/inspecting-data.md) explains the trial
   files and the checks we use during data collection.
-- [The psychophysical model](tutorials/psychophysics.md) introduces threshold,
+- [The psychophysical model](tasks/hrd/tutorials/psychophysics.md) introduces threshold,
   slope, lapse rate, and a single-participant fit.
-- [Hierarchical modelling](tutorials/hierarchical.md) estimates participant and
+- [Hierarchical modelling](tasks/hrd/tutorials/hierarchical.md) estimates participant and
   population effects in one model.
-- [Metacognition](tutorials/metacognition.md) models confidence bias and
+- [Metacognition](tasks/hrd/tutorials/metacognition.md) models confidence bias and
   metacognitive calibration.
 
 For task administration and staircase settings, see the

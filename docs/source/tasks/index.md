@@ -18,7 +18,7 @@ Heartbeat Synchrony Discrimination task (HSD) and the Phase Adjustment Task
 | Adaptive | Yes: a Psi staircase sets the tone rate | No | Yes: Bayesian placement of the tone delay | No: the participant adjusts the delay |
 | Hardware | Pulse oximeter, or ECG or PPG over LSL; headphones; mouse or keyboard | Pulse oximeter, or ECG or PPG over LSL; keyboard | ECG over LSL; sound card; keyboard | ECG over LSL; sound card; mouse wheel; a tactor for the control task |
 | Trials and minutes | 120 trials, about 20 minutes plus the tutorial | 6 counting windows, about 4 minutes | 15 to 60 trials; 60 took 7 minutes | 28 trials and 8 practice, about 30 minutes |
-| Status | Established | Established | [Experimental](hsd_design.md) | [Experimental](pat.md) |
+| Status | Established | Established | [Experimental](hsd/design.md) | [Experimental](pat.md) |
 
 Every task writes to the same layout,
 `data/sub-<participant>/ses-<session>/run-<YYYYMMDD-HHMMSS>/` under the current
@@ -33,7 +33,7 @@ records the settings before the first trial. The trial table is always
 precision of a person's judgements of their own heart rate, as the threshold
 and slope of a psychometric function, and with confidence ratings their
 metacognition. It indexes the accuracy and precision of beliefs about one's
-heart rate; the [theory page](measuring.md) sets out what it can establish.
+heart rate; the [theory page](../measuring.md) sets out what it can establish.
 
 **Procedure.** On each trial the participant attends to their heartbeat for
 five seconds while the pulse is recorded. They then hear tones at their
@@ -62,7 +62,7 @@ in the documentation ran in 20 to 22 minutes, not counting the tutorial.
 
 **Analysis.** Fit the trials with the
 [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception)
-{cite:p}`2026:courtin`; the [tutorials](tutorials/index.md) walk through it.
+{cite:p}`2026:courtin`; the [tutorials](hrd/tutorials/index.md) walk through it.
 `EstimatedThreshold` and `EstimatedSlope` are a sanity check, not a dependent
 variable.
 
@@ -94,7 +94,7 @@ count is typed, and confidence rated, on the keyboard.
 **Length.** About 4 minutes with the default settings.
 
 **Analysis.** The accuracy score of {cite:t}`2013:hart`, given in the
-[user guide](user_guide.md#the-tasks) and computed by the HBC report notebook.
+[user guide](../user_guide.md#the-tasks) and computed by the HBC report notebook.
 
 ## Heartbeat Synchrony Discrimination task
 
@@ -129,8 +129,8 @@ posterior after each trial (`MuMean`, `MuCILow`, `MuCIHigh`, `SigmaMean`,
 run reached the 60 trial maximum in 7 minutes.
 
 **Status.** Experimental: run on hardware once, not validated, with a
-provisional stopping rule. See the [design page](hsd_design.md) and the
-[user guide](user_guide.md#heartbeat-synchrony-discrimination).
+provisional stopping rule. See the [design page](hsd/design.md) and the
+[user guide](../user_guide.md#heartbeat-synchrony-discrimination).
 
 **Analysis.** The online posterior is a monitoring aid. No offline model has
 been published yet: the Hierarchical Interoception toolbox covers the HRD so
@@ -185,7 +185,7 @@ with normative priors are available for its data. It measures judgements of
 heart rate, which combine beliefs about one's heart rate with whatever is
 sensed in the listening window. It does not show whether or when a person feels
 individual heartbeats; see
-[what you may conclude](measuring.md#what-you-may-conclude-from-the-hrd). A
+[what you may conclude](../measuring.md#what-you-may-conclude-from-the-hrd). A
 full session takes about 20 minutes plus the tutorial.
 
 **The HBC.** It is short, needs only a pulse oximeter, and connects directly to
@@ -200,13 +200,22 @@ heartbeat and how sharply. It keeps the multi-interval logic of the method of
 constant stimuli, which takes about 35 minutes {cite:p}`2016:brener`, and
 spends the trials where they are informative. It is in beta: not yet
 validated, unable to probe delays below 130 ms, and sensitive to jitter in a
-Bluetooth ECG, which widens `sigma`. Read the [design page](hsd_design.md)
+Bluetooth ECG, which widens `sigma`. Read the [design page](hsd/design.md)
 before using it.
 
 **The PAT.** It connects to the phase adjustment literature and classifies
 participants against chance with a fixed number of trials. It cannot separate
 where the sensation lies from how precise it is, and a participant can be
 consistent through a habit of search rather than a sensation; the
-[HSD design page](hsd_design.md#relation-to-the-phase-adjustment-task) compares
+[HSD design page](hsd/design.md#relation-to-the-phase-adjustment-task) compares
 the two. This port is in beta, and its timing differs from the hardware
 original.
+
+```{toctree}
+---
+hidden:
+---
+Heart Rate Discrimination tutorials <hrd/tutorials/index.md>
+Phase Adjustment Task <pat.md>
+HSD design <hsd/design.md>
+```

@@ -44,7 +44,7 @@ all 512 participant curves from the worked dataset together with the population
 curve. The four lower panels were selected to span the posterior uncertainty in
 individual thresholds.
 
-![Every participant, the population curve, and four participants with different levels of uncertainty](../images/tutorials/fig_pooling.png)
+![Every participant, the population curve, and four participants with different levels of uncertainty](../../../images/tutorials/fig_pooling.png)
 
 The values above the lower panels are posterior standard deviations of the
 threshold. They range from 1.4 ΔBPM for the first participant to 5.2 ΔBPM for
@@ -78,7 +78,7 @@ the heterogeneity in the sample. It is not a substitute for the posterior of
 the population standard deviations, which should be reported from the model
 itself.
 
-![Posterior means of individual thresholds and slopes](../images/tutorials/fig_subject_spread.png)
+![Posterior means of individual thresholds and slopes](../../../images/tutorials/fig_subject_spread.png)
 
 ## Translate the design into a formula
 
@@ -264,7 +264,7 @@ Plot fitted curves against the observations for a range of participants. The
 panels below span the fitted threshold distribution rather than showing only
 the cleanest examples.
 
-![Sixteen participant-level fits](../images/tutorials/fig_subject_fits.png)
+![Sixteen participant-level fits](../../../images/tutorials/fig_subject_fits.png)
 
 Look for systematic departures between the curve and the responses. Some
 participants will have wide posterior uncertainty because the staircase did
@@ -275,7 +275,7 @@ not obtain enough informative trials. That is expected and should be visible.
 The pooled check bins the observed responses and compares them with predictions
 for the same participants and trials.
 
-![Posterior predictive check by modality and gender](../images/tutorials/fig_ppc_modality_gender.png)
+![Posterior predictive check by modality and gender](../../../images/tutorials/fig_ppc_modality_gender.png)
 
 The points are observed response proportions. The line and intervals are model
 predictions. This is a graphical check of where the model reproduces the data;
@@ -292,7 +292,7 @@ different participants to different parts of the intensity range.
 The fitted curves below show population-level predictions at the sample mean of
 age and BMI, separately for gender and modality.
 
-![Psychometric functions by modality and gender](../images/tutorials/fig_modality_gender.png)
+![Psychometric functions by modality and gender](../../../images/tutorials/fig_modality_gender.png)
 
 Selected coefficients from the worked model are shown below. The auditory
 condition and women are the reference levels.
@@ -326,7 +326,7 @@ The next figure standardizes each coefficient by the corresponding
 between-participant standard deviation. The native-scale estimates remain
 printed beside the intervals.
 
-![Effects on threshold and slope](../images/tutorials/fig_effects.png)
+![Effects on threshold and slope](../../../images/tutorials/fig_effects.png)
 
 ## Read interactions through simple effects
 
@@ -359,7 +359,7 @@ own, establish that either simple effect differs from zero.
 The age figure shows the same calculation on the parameter scales, averaged
 over the observed gender composition of the sample.
 
-![Age associations with threshold and slope](../images/tutorials/fig_age.png)
+![Age associations with threshold and slope](../../../images/tutorials/fig_age.png)
 
 The auditory threshold decreases with age in this dataset. The cardiac trend is
 flatter because the modality interaction offsets much of that association. On
@@ -412,7 +412,7 @@ These quantities differ because the psychometric function is nonlinear.
 Averaging curves with different thresholds produces a shallower function than
 evaluating one curve at the average parameters.
 
-![A population curve and the average of participant curves](../images/tutorials/fig_two_averages.png)
+![A population curve and the average of participant curves](../../../images/tutorials/fig_two_averages.png)
 
 The difference is small in the auditory condition and larger in the cardiac
 condition, where participants vary more in threshold:

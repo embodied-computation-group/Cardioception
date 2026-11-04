@@ -46,10 +46,10 @@ spends the trials where they are informative.
 
 ## What the classical task established
 
-The [theory page](measuring.md) already covers
-[what fixed-delay synchrony tasks can establish](measuring.md#what-fixed-delay-synchrony-tasks-can-establish)
+The [theory page](../../measuring.md) already covers
+[what fixed-delay synchrony tasks can establish](../../measuring.md#what-fixed-delay-synchrony-tasks-can-establish)
 and why the MCS is
-[a stronger measure of heartbeat timing](measuring.md#a-stronger-measure-of-heartbeat-timing).
+[a stronger measure of heartbeat timing](../../measuring.md#a-stronger-measure-of-heartbeat-timing).
 This section adds the findings that shaped the HSD design. It follows the
 review by Brener and Ring {cite:p}`2016:brener`.
 
@@ -394,7 +394,7 @@ posterior spreads `mu` over the whole grid.
 ## Trial structure and saved data
 
 This section describes the task as `cardioception.HSD.task` runs it. The
-[user guide](user_guide.md#heartbeat-synchrony-discrimination) lists the
+[user guide](../../user_guide.md#heartbeat-synchrony-discrimination) lists the
 files a session writes.
 
 1. Five tones, each at the chosen delay after a detected R-wave.
@@ -479,7 +479,7 @@ credible-interval width against trial count by method, and a table at 15, 20,
 Error and interval width are over the 30 detectors (300 runs per method)
 unless stated otherwise.
 
-```{figure} images/hsd_simulation.png
+```{figure} ../../images/hsd_simulation.png
 :alt: Two panels against trial number, 1 to 120, with 26 ms of jitter. Left, RMSE of the posterior mean of mu falls from about 80 ms; the adaptive methods are below MCS until about trial 60, after which MCS keeps falling to 24 ms while the adaptive methods level off between 27 and 32 ms. Right, mean 95 percent credible-interval width falls from about 580 ms to between 106 and 116 ms, with MCS widest until about trial 80.
 
 RMSE of the posterior mean of `mu` (left) and mean width of its 95 percent
@@ -655,7 +655,7 @@ each sample, the tones therefore scattered more widely (44 ms) than against
 its raw ones (23 ms). Jitter of this size widens the measured `sigma`, which is
 what roadmap items C2 and C3 address.
 
-```{figure} images/hsd_dryrun_session.png
+```{figure} ../../images/hsd_dryrun_session.png
 :alt: Three panels from the 60-trial dry run. Left, each answer (1 synchronous, 0 not) against the realized delay from 140 to 540 ms, coloured by confidence, with the proportion of synchronous answers per 50 ms bin as squares and the posterior-mean envelope, which rises from a floor of about 0.32 to a peak of about 0.75 near 270 ms. Middle, the posterior mean of mu settles near 270 ms over trials while its 95 percent credible interval narrows from 0 to 600 ms to 150 to 400 ms. Right, the log10 Bayes factor for detection wanders between -0.6 and +0.3 and ends near 0.
 
 The dry run session. Left: each answer against the realized delay, coloured by
@@ -712,4 +712,4 @@ than the old interval said.
 ## References
 
 Full entries for the citations on this page are on the
-[references page](references.md).
+[references page](../../reference/references.md).

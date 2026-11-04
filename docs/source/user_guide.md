@@ -16,7 +16,7 @@ Install the package as **`cardioception-toolbox`**:
 
     pip install cardioception-toolbox
 
-This is the official package, maintained by the Embodied Computation Group at Aarhus University, and the one used in our publications. Make sure the package name you install is exactly `cardioception-toolbox`. Until the next release, PyPI has the 0.7 line; [Installation](installation.md#3-install-cardioception) says how to install the version this documentation describes.
+This is the official package, maintained by the Embodied Computation Group at Aarhus University, and the one used in our publications. Make sure the package name you install is exactly `cardioception-toolbox`. Until the next release, PyPI has the 0.7 line; [Installation](getting-started/installation.md#3-install-cardioception) says how to install the version this documentation describes.
 ```
 
 The import name is still `cardioception`, so existing scripts do not need to be edited:
@@ -49,7 +49,7 @@ If you are using the shortcut method described below, activate the *cardioceptio
 
 ## Dependencies
 
-Cardioception requires **Python 3.10 or 3.11**. The upper bound is `pywinhook`, which publishes wheels only up to 3.11; PsychoPy itself allows 3.12. See the [installation guide](installation.md) for step-by-step instructions.
+Cardioception requires **Python 3.10 or 3.11**. The upper bound is `pywinhook`, which publishes wheels only up to 3.11; PsychoPy itself allows 3.12. See the [installation guide](getting-started/installation.md) for step-by-step instructions.
 
 Make sure that you have the following packages installed and up to date before running cardioception:
 
@@ -152,7 +152,7 @@ The instructions are shown in the language passed as `language`. The Heart Rate 
 
 By default the task runs 6 counting trials (25, 30, 35, 40, 45 and 50 s) in randomised order; the `'Training'` condition exists in the parameters but is not scheduled by default. Trial length, condition (`'Rest'`, `'Count'`, `'Training'`) and randomisation are set in the parameters dictionary; the version is selected with `"taskVersion"`. With the default settings the task takes about 4 minutes. We keep this task because much of the literature rests on it. [Theory](measuring.md) explains what a counting score can and cannot establish.
 
-**The Heartbeat Synchrony Discrimination task** is experimental. It is an adaptive Bayesian version of the heartbeat detection task {cite:p}`1993:brener`: participants hear tones a chosen delay after each R-wave and judge whether they were synchronous with their heartbeat, and the delays are placed to estimate where in the cardiac cycle the heartbeat is felt and how sharply. It needs an ECG over LSL. [How to run it](#heartbeat-synchrony-discrimination) is below, and the [design page](hsd_design.md) describes the method and the evidence so far.
+**The Heartbeat Synchrony Discrimination task** is experimental. It is an adaptive Bayesian version of the heartbeat detection task {cite:p}`1993:brener`: participants hear tones a chosen delay after each R-wave and judge whether they were synchronous with their heartbeat, and the delays are placed to estimate where in the cardiac cycle the heartbeat is felt and how sharply. It needs an ECG over LSL. [How to run it](#heartbeat-synchrony-discrimination) is below, and the [design page](tasks/hsd/design.md) describes the method and the evidence so far.
 
 ### Staircase procedures
 
@@ -163,7 +163,7 @@ If you run the task in behavioural mode, the Nonin pulse oximeter is read from t
 The only staircase. This uses Kontsevich and Tyler's {cite:p}`1999:kontsevich` psi-method to estimate the point of subjective equality for faster versus slower cardiac feedback, based on a cumulative Gaussian psychometric function. Tones are presented at the relative $\Delta$-BPM and this stimulus intensity is adjusted between $\Delta$-BPM = [-40 40]. The staircase is response-coded, so the function converges on the point of subjective equality between faster and slower stimuli. The threshold is then an estimate of subjective cardiac bias, and the slope an estimate of interoceptive precision. Nuisance parameters (guess and lapse rate) are fixed at values corresponding to a standard 1-alternative forced choice paradigm.
 
 ```{important}
-Psi converges on the participant's point of subjective equality, their bias, not on a target level of accuracy. That is what the task is designed to measure, but it has consequences for any measure scored against the true heart rate. See the [metacognition tutorial](tutorials/metacognition.md).
+Psi converges on the participant's point of subjective equality, their bias, not on a target level of accuracy. That is what the task is designed to measure, but it has consequences for any measure scored against the true heart rate. See the [metacognition tutorial](tasks/hrd/tutorials/metacognition.md).
 ```
 
 ```{admonition} The nUp/nDown staircase was removed in 1.0.0
@@ -182,9 +182,9 @@ not estimate the slope. Use Psi.
 :class: warning
 
 The Heartbeat Synchrony Discrimination task (HSD) is new. It has been run on
-hardware once, in a 60-trial [dry run](hsd_design.md#hardware-dry-run) with one
+hardware once, in a 60-trial [dry run](tasks/hsd/design.md#hardware-dry-run) with one
 participant, and has not been validated in a study. Its stopping rule is
-provisional. The [design page](hsd_design.md) sets out the method and the
+provisional. The [design page](tasks/hsd/design.md) sets out the method and the
 evidence so far.
 ```
 
@@ -272,11 +272,11 @@ The run directory holds no ECG. The beat source is the only reader of the LSL st
 
 #### The latency bias and the 130 ms floor
 
-The ECG transport and the speaker add a roughly constant 30 to 70 ms that no recording can see, so the task schedules every tone a latency bias early, 50 ms by default (`TaskConfig.latencyBias`), so that the participant hears it at the requested delay after the true R-wave. On the bench a beat was known up to 31 ms (95th percentile) after its stamped R-wave, and a tone must be scheduled 50 ms ahead, so the shortest delay the task can play is 31 + 50 + 50 = 131 ms, and no delay below the 130 ms floor (`TaskConfig.minDelay`) is presented. The hardware dry run measured a longer lag: the beats of a train were polled 48 ms (95th percentile) and 63 ms (99th) after their stamped R-wave, and 107 of 506 beats before it, because the LSL inlet's dejitter smooths the stamps. Set `minDelay` from the lag your setup shows; the [design page](hsd_design.md#realized-delays-and-per-trial-constraints) has the measurements, and [what the floor costs](hsd_design.md#results-as-the-task-runs) in accuracy.
+The ECG transport and the speaker add a roughly constant 30 to 70 ms that no recording can see, so the task schedules every tone a latency bias early, 50 ms by default (`TaskConfig.latencyBias`), so that the participant hears it at the requested delay after the true R-wave. On the bench a beat was known up to 31 ms (95th percentile) after its stamped R-wave, and a tone must be scheduled 50 ms ahead, so the shortest delay the task can play is 31 + 50 + 50 = 131 ms, and no delay below the 130 ms floor (`TaskConfig.minDelay`) is presented. The hardware dry run measured a longer lag: the beats of a train were polled 48 ms (95th percentile) and 63 ms (99th) after their stamped R-wave, and 107 of 506 beats before it, because the LSL inlet's dejitter smooths the stamps. Set `minDelay` from the lag your setup shows; the [design page](tasks/hsd/design.md#realized-delays-and-per-trial-constraints) has the measurements, and [what the floor costs](tasks/hsd/design.md#results-as-the-task-runs) in accuracy.
 
 #### The stopping rule
 
-A session stops at the first of two points: once the 95 percent credible interval of `mu` is no wider than `TaskConfig.ciWidth` (100 ms on the absolute axis; `ciWidthPhase`, 0.17 of the period, on the phase axis), provided at least `minTrials` trials (15) have updated the estimate; or after `maxTrials` trials in all (60, which `nTrials` sets). These values are provisional. In the simulations of the task as it runs (130 ms floor, 26 ms of timing jitter, 7 percent of trains lost), a 100 ms interval took 61 trials in median for observers who answer consistently and was not reached by 120 for noisy ones, so expect most sessions to run to the maximum, as the dry run did. Running to 90 trials instead would lower the error of `mu` by only about 2 ms; the [design page](hsd_design.md#realized-delays-and-per-trial-constraints) has the figures. To change them, pass a configuration:
+A session stops at the first of two points: once the 95 percent credible interval of `mu` is no wider than `TaskConfig.ciWidth` (100 ms on the absolute axis; `ciWidthPhase`, 0.17 of the period, on the phase axis), provided at least `minTrials` trials (15) have updated the estimate; or after `maxTrials` trials in all (60, which `nTrials` sets). These values are provisional. In the simulations of the task as it runs (130 ms floor, 26 ms of timing jitter, 7 percent of trains lost), a 100 ms interval took 61 trials in median for observers who answer consistently and was not reached by 120 for noisy ones, so expect most sessions to run to the maximum, as the dry run did. Running to 90 trials instead would lower the error of `mu` by only about 2 ms; the [design page](tasks/hsd/design.md#realized-delays-and-per-trial-constraints) has the figures. To change them, pass a configuration:
 
 ```python
 from cardioception.HSD.config import TaskConfig
