@@ -111,7 +111,7 @@ synchronous with their heartbeat and rates their confidence. The next delay is
 placed where it is most informative about `mu` and `sigma`, and the session
 stops once `mu` is known to within 100 ms, after at least 15 trials, or at 60.
 
-**Stimulus and response.** Delays from 130 to 600 ms after the R-wave, or a
+**Stimulus and response.** Delays from 140 to 600 ms after the R-wave, or a
 fraction of the interbeat interval (`axis="phase"`). UP for synchronous, DOWN
 for not; confidence in ten steps.
 

@@ -159,8 +159,8 @@ The grids cover the published range of observers with room to spare
 location is not to assume it. The simulations offer candidate delays from 0
 to 600 ms in 20 ms steps and the task runner from 80 to 600 ms. With the
 130 ms floor of the current hardware the shortest delay presented is 140 ms,
-the first candidate above it, and the ceiling of about 0.71 of the heart
-period allows 600 ms only at periods over 0.84 s (see
+the first candidate above it, and the ceiling of about 0.68 of the heart
+period allows 600 ms only at periods over 0.89 s (see
 [delay limits](#realized-delays-and-per-trial-constraints)). The posterior is discrete on the outer product of the four grids,
 98,820 points, of which the 54,900 with the peak at or above the floor carry
 prior mass; one stimulus selection takes about 20 ms.
@@ -278,7 +278,7 @@ from the LabRecorder file (`bench/pat_dryrun_report.py --markers HSD`).
 | Limit | Set by | Why |
 |---|---|---|
 | `min_delay` | The system's R-to-tone latency | No tone can be scheduled before the system knows about the R-wave. 130 ms of physical delay on current hardware (below), so 140 ms is the shortest candidate presented |
-| `max_delay` | 0.75 of the anticipated interbeat interval, less a 5 percent margin: about 0.71 of it on the absolute axis | Keeps the last tone clear of the next beat. The envelope is periodic in the cardiac cycle and the model ignores that, so delays near the next beat would be misread. 600 ms is allowed only at periods over 0.84 s |
+| `max_delay` | 0.75 of the anticipated interbeat interval, less a 10 percent margin: about 0.68 of it on the absolute axis | Keeps the last tone clear of the next beat. The envelope is periodic in the cardiac cycle and the model ignores that, so delays near the next beat would be misread. 600 ms is allowed only at periods over 0.89 s |
 
 If no candidate lies between the two limits, the engine raises an error
 rather than presenting a delay outside them.

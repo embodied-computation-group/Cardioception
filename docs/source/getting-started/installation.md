@@ -185,8 +185,12 @@ one when several are attached, and `--duration` changes the recording length.
 Continue to [Running a session](running-a-session.md) to run a session, and to the
 [tutorials](../tasks/hrd/tutorials/index.md) for what to do with the data afterwards.
 
-To run without any hardware, both tasks accept `setup="test"`, which skips the
-oximeter and opens a windowed rather than fullscreen display.
+To run without any hardware, the Heart Rate Discrimination and Heartbeat
+Counting tasks accept `setup="test"`, which skips the oximeter and opens a
+windowed rather than fullscreen display. The Heartbeat Synchrony
+Discrimination task accepts `setup="test"` only when `beat_source=` and
+`tone_player=` are passed, and the Phase Adjustment Task has no `setup`
+argument.
 
 (the-conda-route)=
 ## The conda route

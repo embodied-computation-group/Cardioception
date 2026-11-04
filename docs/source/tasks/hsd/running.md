@@ -21,7 +21,7 @@ The HSD is an adaptive version of the heartbeat detection task of Brener, Liu an
 
 The delay can be set on one of two axes, chosen per session with `axis`:
 
-- `axis="absolute"` (the default): milliseconds after the R-wave. The candidates run from 80 to 600 ms in 20 ms steps, and the shortest presented is 140 ms, the first above the 130 ms floor (see the latency floor below). The longest delay on a given trial is limited to about 0.71 of the current interbeat interval, so that a tone is not heard as belonging to the next beat; 600 ms is allowed only when the period is over 0.84 s.
+- `axis="absolute"` (the default): milliseconds after the R-wave. The candidates run from 80 to 600 ms in 20 ms steps, and the shortest presented is 140 ms, the first above the 130 ms floor (see the latency floor below). The longest delay on a given trial is limited to about 0.68 of the current interbeat interval (0.75 less a 10 percent margin), so that a tone is not heard as belonging to the next beat; 600 ms is allowed only when the period is over 0.89 s.
 - `axis="phase"`: a fraction of the anticipated interbeat interval, so the delay scales with heart rate.
 
 ## What you need
