@@ -27,7 +27,7 @@ Tasks in beta are close to feature complete and are still being rigorously valid
 
 The HRD and the HBC run with a USB pulse oximeter or with an ECG or PPG device over LSL. The synchrony tasks time each tone from the R-wave, so they need an ECG over LSL.
 
-[The tasks](https://www.the-ecg.org/Cardioception/tasks/index.html) page compares the four available tasks in detail and helps you choose one. The [theory](https://www.the-ecg.org/Cardioception/tasks/index.html#theory) page explains what each can and cannot establish.
+[The tasks](https://www.the-ecg.org/Cardioception/tasks/index.html) page compares the four available tasks in detail. The [theory](https://www.the-ecg.org/Cardioception/tasks/index.html#theory) page explains what each can and cannot establish.
 
 ## Installation
 

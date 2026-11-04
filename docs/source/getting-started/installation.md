@@ -82,7 +82,7 @@ almost all of it the 370 pre-generated tone files the Heart Rate Discrimination
 task plays: they compress well in the wheel and do not on disk.
 
 ```text
-Successfully installed cardioception-toolbox-0.7.0 psychopy-2026.2.2 systole-core-0.3.1 ...
+Successfully installed cardioception-toolbox-1.0.0 psychopy-2026.2.2 systole-core-0.3.1 ...
 ```
 
 ```{note}

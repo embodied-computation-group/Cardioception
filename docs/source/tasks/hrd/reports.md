@@ -7,7 +7,7 @@ myst:
 
 # HTML reports (legacy)
 
-Results are saved in the `'resultPath'` folder defined in the parameters dictionary. Each task comes with a notebook covering the main results, quality checks, and basic preprocessing steps. To generate the HTML report:
+Results are saved in the `'resultPath'` folder defined in the parameters dictionary. The HRD and the HBC each come with a notebook covering the main results, quality checks, and basic preprocessing steps. To generate the HTML report:
 
 ```python
 from cardioception.reports import report

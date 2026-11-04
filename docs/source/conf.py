@@ -32,7 +32,7 @@ def get_version():
 
 # -- Project information -----------------------------------------------------
 project = "cardioception"
-copyright = "2020–2025, Micah Allen, Embodied Computation Group, Aarhus University"
+copyright = "2019-2026, Micah Allen and the Embodied Computation Group, Aarhus University"
 author = "Micah Allen"
 release = get_version()
 

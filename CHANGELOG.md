@@ -117,7 +117,8 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   `setup="behavioral"` uses the shared `LSLBeatSource` and `TonePlayer` in
   `cardioception.devices`. Every tone is scheduled a 50 ms latency bias early
   (`TaskConfig.latencyBias`), for the transport and speaker delays the
-  recordings cannot see, so the shortest delay played is 130 ms. One hardware
+  recordings cannot see, so no delay below 130 ms is played and the
+  shortest on the default grid is 140 ms. One hardware
   dry run, 60 trials on a PLUX ECG over Bluetooth, is recorded in the design
   document, with a simulation rerun at the 130 ms floor. Running the HSD
   (`docs/source/tasks/hsd/running.md`) is a how-to for running a session and

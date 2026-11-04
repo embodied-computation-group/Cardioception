@@ -9,7 +9,7 @@ myst:
 
 If you use [Cardioception](https://github.com/embodied-computation-group/Cardioception) in your research, please cite this paper in your publication:
 
-* Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., &amp; Allen, M. (2021). The Heart Rate Discrimination Task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 108239. <https://doi.org/10.1016/j.biopsycho.2021.108239>
+* Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., &amp; Allen, M. (2022). The heart rate discrimination task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168, 108239. <https://doi.org/10.1016/j.biopsycho.2021.108239>
 
 *In BibTeX format:*
 
