@@ -1,5 +1,13 @@
 # Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
-from .languages import available, danish, danish_children, english, french, get_texts
+from .languages import (
+    available,
+    danish,
+    danish_children,
+    english,
+    french,
+    german,
+    get_texts,
+)
 from .parameters import getParameters
 from .task import (
     confidenceRatingTask,
@@ -24,4 +32,5 @@ __all__ = [
     "danish",
     "danish_children",
     "french",
+    "german",
 ]

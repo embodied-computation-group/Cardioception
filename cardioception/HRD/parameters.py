@@ -292,8 +292,9 @@ def getParameters(
     fullscr : bool
         If `True`, activate full screen mode.
     language : str
-        The language used for the instruction. Can be `"english"`, `"danish"` or
-        `"danish_children"` (a slightly simplified danish version), or `"french"`.
+        The language used for the instruction. Can be `"english"`, `"danish"`,
+        `"danish_children"` (a slightly simplified danish version), `"french"` or
+        `"german"`.
     nBreaking : int
         Number of trials to run before the break.
     nStaircase : int

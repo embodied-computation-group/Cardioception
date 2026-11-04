@@ -19,12 +19,14 @@ SNAPSHOT = json.loads(
 
 class TestLanguages(unittest.TestCase):
     def test_every_language_survived_the_move_to_yaml(self):
-        """All 16 combinations, against a snapshot of the code being replaced.
+        """All 20 combinations, against a snapshot of the code being replaced.
 
         Taken before the Python functions were deleted, so a mistranslation or
-        an encoding fault in the Danish or French strings shows up here.
+        an encoding fault in the Danish, French or German strings shows up
+        here. The German entries come from the function 0.7.2 carried, taken
+        when it was converted after the other four had moved.
         """
-        self.assertEqual(len(SNAPSHOT), 16)
+        self.assertEqual(len(SNAPSHOT), 20)
         for combination, expected in SNAPSHOT.items():
             language, device, exteroception = combination.split("|")
             with self.subTest(combination):
@@ -32,9 +34,9 @@ class TestLanguages(unittest.TestCase):
                     get_texts(language, device, exteroception == "True"), expected
                 )
 
-    def test_the_four_languages_are_all_there(self):
+    def test_the_five_languages_are_all_there(self):
         self.assertEqual(
-            available(), ["danish", "danish_children", "english", "french"]
+            available(), ["danish", "danish_children", "english", "french", "german"]
         )
 
     def test_an_unknown_language_fails_at_setup(self):

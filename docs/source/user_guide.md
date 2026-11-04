@@ -97,7 +97,7 @@ recorder = LSLRecorder(name="PLUX", channel="ECG2", signal_type="ecg")
 parameters = getParameters(..., recorder=recorder)
 ```
 
-`channel` is an index or a label from the stream's channel metadata. With `signal_type="ecg"` the heart rate comes from systole's `ecg_peaks` (sleepecg detector) at the stream's own rate, and the tutorial skips the pulse oximeter and finger instructions.
+`channel` is an index or a label from the stream's channel metadata. With `signal_type="ecg"` the beats come from systole's `ecg_peaks` (sleepecg detector), each moved to the R peak, at the stream's own rate, and the tutorial skips the pulse oximeter and finger instructions. The heart rate is then computed from the beats exactly as for the oximeter.
 
 The trigger codes the task writes are also sent to an LSL marker stream, `Cardioception` by default (`marker_stream=` to rename, `None` to turn off), labelled by name (`TRIAL_START`, `LISTENING_START`, ...). Record that stream and the device's with [LabRecorder](https://github.com/labstreaminglayer/App-LabRecorder) to get the physiology and the task events on one clock. Cardioception's own signal files are written as before, with each sample's LSL timestamp added.
 
