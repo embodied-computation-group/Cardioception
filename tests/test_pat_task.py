@@ -66,6 +66,7 @@ class FakeEngine:
         self.stops = 0
         self.stopReasons: List[str] = []
         self.ended = 0
+        self.waits = 0
         self.closed = False
         self.marks: List[tuple] = []
         self.clock = _clock()
@@ -124,7 +125,10 @@ class FakeEngine:
         self.stops += 1
         self.stopReasons.append(reason)
 
-    def end_trial(self) -> dict:
+    def end_trial(self, on_wait=None) -> dict:
+        if on_wait is not None:
+            self.waits += 1
+            on_wait()  # one frame of the wait for the next R-wave
         self.ended += 1
         mine = [t for t in self._tones if t["Trial"] == self.trial]
         # Leaves out PressTime and TrialDuration: the task fills them in
@@ -760,6 +764,49 @@ def test_a_normal_trial_is_ok(fake_psychopy, tmp_path):
 
     assert row["TrialStatus"] == "ok"
     assert engine.stopReasons == ["press"]
+
+
+def test_escape_after_the_press_keeps_the_trial(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, nPractice=0)
+    normal = space_after_polls(engine)
+
+    def policy(keyList):
+        if keyList == ["escape"] and engine.stops == 1 and engine.ended == 0:
+            return ["escape"]  # while waiting for the R-wave after the press
+        return normal(keyList)
+
+    fake_psychopy.policy = policy
+    run(parameters, runTutorial=False)
+
+    assert parameters["aborted"] is True
+    assert engine.waits == 1
+    final = read(parameters["paths"].path("final"))
+    assert len(final) == 1 and final.loc[0, "TrialStatus"] == "ok"
+    # The choice is kept; no rating was asked
+    assert np.isfinite(final.loc[0, "ChosenPhaseDeg"])
+    assert final["Confidence"].isna().all()
+    assert engine.marks == []
+
+
+def test_the_wait_after_the_press_flips_the_window(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine)
+    fake_psychopy.policy = space_after_polls(engine)
+    win = parameters["win"]
+    original = engine.end_trial
+    flips = []
+
+    def end_trial(on_wait=None):
+        before = win.flips
+        assert on_wait() is False  # one pass of the wait, no Esc
+        flips.append(win.flips - before)
+        return original()
+
+    engine.end_trial = end_trial  # type: ignore[method-assign]
+    trial(parameters, 1, "main", 0.0, confidenceRating=False)
+
+    assert flips == [1]
 
 
 def test_escape_in_the_rating_keeps_the_trial(fake_psychopy, tmp_path):

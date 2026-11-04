@@ -589,6 +589,36 @@ def test_stop_tones_rejects_an_unknown_reason():
         engine.stop_tones("lunch")
 
 
+def test_end_trial_waits_through_on_wait():
+    """Each pass of the wait calls on_wait (the task flips there); True from
+    it (Esc) ends the wait before the next R-wave."""
+    engine, source, player, clock, _ = make_engine()
+    clock.step = 0.01
+    engine.start_trial(1, 270)
+    beat_now(engine, source, clock, 100.0)  # tone at 100.70
+    engine.stop_tones()
+    calls = []
+
+    def on_wait():
+        calls.append(clock.t)
+        return len(calls) >= 50
+
+    row = engine.end_trial(on_wait=on_wait)
+    assert len(calls) == 50
+    assert clock.t < 100.0 + 2.0  # well before the 3 s deadline
+    assert math.isnan(row["ObservedPeriodMs"])
+    assert row["TrialStatus"] == "ok"
+    # Without Esc, on_wait runs until the next R-wave is in.
+    engine.start_trial(2, 270)
+    beat_now(engine, source, clock, 101.0)
+    engine.stop_tones()
+    source.feed(Beat(102.0, 1.0))
+    n = len(calls)
+    row = engine.end_trial(on_wait=lambda: calls.append(clock.t) or False)
+    assert row["ObservedPeriodMs"] == pytest.approx(1000)
+    assert len(calls) > n  # it waited for the tone at 101.70
+
+
 def test_markers_are_valid_json_without_nan():
     engine, source, player, clock, outlet = make_engine(period=None)
     engine.start_trial(1, 90)

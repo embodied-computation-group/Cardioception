@@ -330,7 +330,6 @@ def trial(
         The row added to final.txt.
 
     """
-    engine = parameters["engine"]
     scale = parameters["confidenceScale"]
     parameters["trialBlocks"][trialNumber] = block
     logger.info(
@@ -346,14 +345,14 @@ def trial(
         # out of tones.txt too (the marker stream still has them).
         parameters["trialBlocks"].pop(trialNumber, None)
         raise
-    fields = engine.end_trial()
+    # Esc after the press keeps the trial, as in the rating, but asks no rating
+    fields, abort = endTrial(parameters)
     timedOut = press["status"] == "timeout"
 
     confidence: Any = np.nan
     confidenceRT: Any = np.nan
-    abort = False
     # A trial that timed out has no choice, so nothing to be confident about
-    if confidenceRating is True and not timedOut:
+    if confidenceRating is True and not timedOut and not abort:
         fire(parameters, "confidenceStart")
         try:
             rating, ratingRT, provided = confidenceRatingTask(parameters)
@@ -426,6 +425,39 @@ def trial(
             "leave it out (check the ECG)"
         )
     return row
+
+
+def endTrial(parameters: dict) -> Tuple[Dict[str, Any], bool]:
+    """The engine's row of the trial, waiting on screen with Esc watched.
+
+    :meth:`cardioception.PAT.engine.PhaseEngine.end_trial` waits after the
+    press for the next R-wave and the last onsets, up to 3 s. Each pass of
+    that wait holds the fixation cross for one frame through
+    :func:`cardioception._present.hold`, so the window keeps flipping and
+    the per-frame hook keeps running, and looks for Esc, which stops the
+    wait at once.
+
+    Returns
+    -------
+    fields : dict
+        The engine's row.
+    escaped : bool
+        Whether Esc was pressed during the wait.
+    """
+    from psychopy import event, visual
+
+    win = parameters["win"]
+    fixation = visual.GratingStim(win=win, mask="cross", size=0.1, pos=[0, 0], sf=0)
+    escaped = False
+
+    def on_wait() -> bool:
+        nonlocal escaped
+        hold(win, 0, fixation)
+        escaped = escaped or "escape" in event.getKeys(keyList=["escape"])
+        return escaped
+
+    fields = parameters["engine"].end_trial(on_wait=on_wait)
+    return fields, escaped
 
 
 def _fmt(value: Any) -> str:
@@ -940,7 +972,9 @@ def tutorial(parameters: dict) -> None:
     ]
     startPhase = float(parameters["rng"].choice(parameters["startPhases"]))
     dialLoop(parameters, TUTORIAL_TRIAL, "tutorial", startPhase, stages=stages)
-    parameters["engine"].end_trial()
+    _, escaped = endTrial(parameters)
+    if escaped:
+        raise TaskAbort()
 
     show_screen(parameters, TUTORIAL_END)
 

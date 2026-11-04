@@ -181,6 +181,9 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - The PAT period outlier rule floors the robust standard deviation at 1 ms.
   With a fixed period (median absolute deviation 0) float noise used to turn
   trials into outliers.
+- The PAT's wait after the press, for the next R-wave (up to 3 s), keeps
+  the window flipping and the frame hook running, and Esc ends it. It used to
+  busy-wait with the screen frozen and Esc ignored.
 
 ### Internal
 

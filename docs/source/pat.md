@@ -237,6 +237,8 @@ Each tone's target is `R + delay - latencyBias`. If that is at least `audioLead`
 
 `latencyBias` (default 0.05 s) is a constant subtracted from every target. It stands for the physical delay that LSL timestamps cannot see: the Bluetooth transfer before the samples are stamped (20 to 40 ms) and the path from the reported audio onset to the sound reaching the ear. Together these come to roughly 30 to 70 ms on our setup. A constant bias shifts every tone by the same amount, so it leaves fixed-mapping consistency unchanged and variable-mapping consistency almost unchanged. It does matter for the *mean* phase a participant chooses; report the bias whenever you report that.
 
+Space stops new tones, not the ones already handed to the sound card, so up to about 1.1 s of tones (at most one period plus `audioLead`) can follow the press. This is a design choice: the choice is the dial at the press, whatever is heard after it, and those tones are logged in `tones.txt` like any other. After the press the task waits for the next R-wave, which gives `ObservedPeriodMs`, and for the onsets of those last tones, at most 3 s. The fixation cross stays on screen during that wait, the window keeps refreshing, and Esc ends it at once; the trial is then kept, without a rating, and the task stops.
+
 Further checks of the timing chain are in `bench/README.md` in the repository.
 
 ## References

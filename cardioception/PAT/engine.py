@@ -43,7 +43,7 @@ import json
 import math
 import time
 from collections import deque
-from typing import Any, Deque, Dict, List, Optional, Tuple
+from typing import Any, Callable, Deque, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -401,13 +401,18 @@ class PhaseEngine:
             delay_ms=self._dial_at_press[1],
         )
 
-    def end_trial(self) -> dict:
+    def end_trial(self, on_wait: Optional[Callable[[], bool]] = None) -> dict:
         """The trial's row of ``final.txt`` (all but the confidence columns).
 
         Calls :meth:`stop_tones` if that has not been done, then keeps
         polling until the R-wave after the press has arrived (at most
         :data:`NEXT_BEAT_TIMEOUT` s after the press) and every tone scheduled
         has reported its onset, so the tone rows are complete on return.
+
+        ``on_wait`` is called between two polls of that wait in place of a
+        short sleep; the task flips the window and looks for Esc there. When
+        it returns true the wait stops at once and the row is made from what
+        has arrived (``ObservedPeriodMs`` is NaN if the next R-wave has not).
 
         ``ChosenDelayMs`` and ``ChosenPhaseDeg`` are the dial at the press,
         converted with the anticipated period of the last beat before it
@@ -448,7 +453,10 @@ class PhaseEngine:
                 tones_done or now > tone_deadline
             ):
                 break
-            time.sleep(0.002)
+            if on_wait is None:
+                time.sleep(0.002)
+            elif on_wait():
+                break
 
         last = self._last_beat_before(press)
         nxt = self._next_beat_after(press)
