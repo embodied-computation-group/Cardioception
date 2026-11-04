@@ -3,6 +3,10 @@
 
 Start the device's streaming program first. Needs `pip install cardioception-toolbox[lsl]`.
 
+The ECG channel has no default: its label is not the same on every hub (the
+PLUX bridge has given `ECG1` on one and `ECG2` on another), so it must be
+typed in, and the task does not start without it.
+
 The exteroceptive task (a vibration on the hand instead of the heartbeat) needs
 no ECG, so the stream and channel are ignored when it is ticked. It is saved
 under the session name with `Extero` appended, so both runs of one session
@@ -21,7 +25,7 @@ g = gui.Dlg(title="Phase Adjustment Task")
 g.addField("participant", initial="Participant")
 g.addField("session", initial="PAT")
 g.addField("LSL stream:", initial="PLUX")
-g.addField("Channel:", initial="ECG2")
+g.addField("Channel:", initial="")
 g.addField("Mode:", initial="relative", choices=["relative", "absolute"])
 g.addField("Extero (vibration):", initial=False)
 g.addField("Language:", initial="english", choices=available())
@@ -35,6 +39,9 @@ participant, session, stream, channel, mode, language = (
 extero = bool(g.data[5])
 if extero:
     session += "Extero"
+elif not str(channel).strip():
+    gui.criticalDlg("No ECG channel", "Type the label of the ECG channel, e.g. ECG1.")
+    sys.exit("No ECG channel given.")
 
 recorder = None
 if not extero:
