@@ -315,7 +315,7 @@ Two practical consequences return in notebook 2:
 ### Follow the posterior trial by trial
 
 At this point we pause the notebook and open the
-[psychophysical model tutorial](https://www.the-ecg.org/Cardioception/tutorials/psychophysics.html#part-ii-adaptive-measurement-with-psi).
+[psychophysical model tutorial](https://www.the-ecg.org/Cardioception/tasks/hrd/tutorials/psychophysics.html#part-ii-adaptive-measurement-with-psi).
 Its animation follows the joint Psi posterior and the implied psychometric function
 after every adaptive trial in a completed HRD session. The animation also shows why an
 unexpected response can move or widen the posterior without indicating a software
