@@ -3,6 +3,7 @@
 
 from psychopy import gui
 
+from cardioception.HBC.languages import available
 from cardioception.HBC.parameters import getParameters
 from cardioception.HBC.task import run
 
@@ -12,6 +13,7 @@ g.addField("participant", initial="Participant")
 g.addField("session", initial="HBC")
 g.addField("Serial Port:", initial=None)
 g.addField("Setup:", initial="behavioral")
+g.addField("Language:", initial="english", choices=available())
 g.show()
 
 # Set global task parameters here
@@ -20,6 +22,7 @@ parameters = getParameters(
     session=g.data[1],
     serialPort=g.data[2],
     setup=g.data[3],
+    language=g.data[4],
     screenNb=0,
 )
 

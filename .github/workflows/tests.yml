@@ -44,7 +44,7 @@ jobs:
           pip install -e . pytest pytest-cov
       # These touch no window and no device, so they are the fast feedback loop.
       - name: Run
-        run: pytest tests/test_rng.py tests/test_stimuli.py -v
+        run: pytest tests/test_rng.py tests/test_stimuli.py tests/test_hsd_psi.py -v
 
   session:
     name: full sessions under a virtual display

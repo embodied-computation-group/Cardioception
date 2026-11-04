@@ -13,12 +13,18 @@ A missing or misspelled key is an error at launch.
 
 To add a language, copy ``texts/english.yaml``, translate the values, and pass
 its filename stem as ``language``. Keys are not translated.
+
+The loader itself started here and was later moved to
+:mod:`cardioception._texts`, once the Heartbeat Synchrony and Heartbeat
+Counting tasks kept their texts the same way. This module now only names the
+HRD's directory and keys, and keeps the HRD's signatures and the deprecated
+per-language functions.
 """
 
 import os
-from typing import Any, Dict, List
+from typing import AbstractSet, Any, Dict, List, Optional
 
-import yaml
+from .. import _texts
 
 TEXTS_DIR = os.path.join(os.path.dirname(__file__), "texts")
 
@@ -61,33 +67,21 @@ REQUIRED_KEYS = frozenset(
 )
 
 
-def available() -> List[str]:
-    """Languages that can be passed as ``language``."""
-    if not os.path.isdir(TEXTS_DIR):
-        return []
-    return sorted(
-        f[: -len(".yaml")] for f in os.listdir(TEXTS_DIR) if f.endswith(".yaml")
-    )
+def available(texts_dir: Optional[str] = None) -> List[str]:
+    """Languages that can be passed as ``language``.
+
+    ``texts_dir`` defaults to :data:`TEXTS_DIR`, read when this is called.
+    """
+    return _texts.available(TEXTS_DIR if texts_dir is None else texts_dir)
 
 
-def _resolve(key: str, variant: Dict[str, Any], device: str, exteroception: bool):
-    """Pick one value from a key that depends on how the session is configured."""
-    axis, values = variant["axis"], variant["values"]
-    if axis == "device":
-        selector = device
-    elif axis == "exteroception":
-        selector = str(exteroception).lower()
-    elif axis == "device+exteroception":
-        selector = f"{device}/{str(exteroception).lower()}"
-    else:
-        raise ValueError(f"{key}: unknown variant axis {axis!r}")
-
-    if selector not in values:
-        raise ValueError(f"{key}: no text for {selector!r}. Defined: {sorted(values)}.")
-    return values[selector]
-
-
-def get_texts(language: str, device: str, exteroception: bool) -> Dict[str, Any]:
+def get_texts(
+    language: str,
+    device: str,
+    exteroception: bool,
+    texts_dir: Optional[str] = None,
+    required: Optional[AbstractSet[str]] = None,
+) -> Dict[str, Any]:
     """Every string this session will show the participant.
 
     Parameters
@@ -100,6 +94,12 @@ def get_texts(language: str, device: str, exteroception: bool) -> Dict[str, Any]
     exteroception :
         Whether the session includes the exteroceptive condition, which changes
         what the tutorial says is coming.
+    texts_dir :
+        The directory holding the language files. Defaults to
+        :data:`TEXTS_DIR`, read when this is called.
+    required :
+        The keys every language must define. Defaults to
+        :data:`REQUIRED_KEYS`, read when this is called.
 
     Raises
     ------
@@ -108,37 +108,15 @@ def get_texts(language: str, device: str, exteroception: bool) -> Dict[str, Any]
         raised here, at setup, rather than at the screen that needed the text.
 
     """
-    path = os.path.join(TEXTS_DIR, f"{language}.yaml")
-    if not os.path.isfile(path):
-        raise ValueError(
-            f"No texts for language {language!r}. Available: {available()}. "
-            f"Add {language}.yaml to {TEXTS_DIR} to define it."
-        )
-
-    with open(path, encoding="utf-8") as handle:
-        document = yaml.safe_load(handle)
-
-    plain = document.get("texts") or {}
-    variants = document.get("variants") or {}
-
-    # Completeness is checked against the file, not against what this session
-    # resolves to, so a language missing a key fails at launch whatever the
-    # session was configured to do.
-    missing = REQUIRED_KEYS - (set(plain) | set(variants))
-    if missing:
-        raise ValueError(
-            f"{path} is missing {sorted(missing)}. Every language must define "
-            f"all {len(REQUIRED_KEYS)} keys; see texts/english.yaml."
-        )
-
-    texts: Dict[str, Any] = dict(plain)
-    for key, variant in variants.items():
-        value = _resolve(key, variant, device, exteroception)
-        # A null means the key does not apply here. The exteroceptive tutorial
-        # screens are simply absent from a session that has no such condition.
-        if value is not None:
-            texts[key] = value
-    return texts
+    # The module attributes are read here, at call time, not bound as default
+    # arguments, so that a caller (or a test) that reassigns TEXTS_DIR is heard.
+    return _texts.get_texts(
+        language,
+        texts_dir=TEXTS_DIR if texts_dir is None else texts_dir,
+        required=REQUIRED_KEYS if required is None else required,
+        device=device,
+        exteroception=exteroception,
+    )
 
 
 def _shim(language: str):

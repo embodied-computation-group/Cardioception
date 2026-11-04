@@ -62,6 +62,45 @@ class TestLanguages(unittest.TestCase):
             get_texts("broken", "mouse", True)
         self.assertIn("tooLate", str(raised.exception))
 
+    def test_another_directory_and_required_set_can_be_passed(self):
+        """How a second task loads its own texts with the same loader."""
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
+        Path(tmp, "english.yaml").write_text(
+            "texts:\n  textNext: Next\n  done: Done\n", encoding="utf-8"
+        )
+        Path(tmp, "short.yaml").write_text(
+            "texts:\n  textNext: Next\n", encoding="utf-8"
+        )
+
+        self.assertEqual(available(texts_dir=tmp), ["english", "short"])
+        texts = get_texts(
+            "english",
+            "mouse",
+            True,
+            texts_dir=tmp,
+            required=frozenset({"textNext", "done"}),
+        )
+        self.assertEqual(texts, {"textNext": "Next", "done": "Done"})
+
+        with self.assertRaises(ValueError) as raised:
+            get_texts(
+                "short",
+                "mouse",
+                True,
+                texts_dir=tmp,
+                required=frozenset({"textNext", "done"}),
+            )
+        message = str(raised.exception)
+        self.assertIn("'done'", message)
+        self.assertIn(str(Path(tmp, "english.yaml")), message)
+        self.assertNotIn("texts/english.yaml", message)
+
+        with self.assertRaises(ValueError) as raised:
+            get_texts("swedish", "mouse", True, texts_dir=tmp)
+        self.assertIn("['english', 'short']", str(raised.exception))
+        self.assertIn(tmp, str(raised.exception))
+
     def test_the_required_keys_match_what_english_defines(self):
         self.assertEqual(set(get_texts("english", "mouse", True)), set(REQUIRED_KEYS))
 
