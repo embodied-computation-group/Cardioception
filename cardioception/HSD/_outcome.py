@@ -44,15 +44,19 @@ summaries are taken after the trial's update.
 
 ``Aborted`` and ``AbortReason`` describe the train: ``"ceiling"`` or
 ``"floor"`` for a delay refused before any tone (the task then draws again
-once), ``"no_period"`` for a phase-axis trial with no period known, and
-``"timeout"`` for a train that ran out of time, whose tones still count.
+once), ``"no_period"`` for a phase-axis trial with no period known,
+``"no_candidate"`` for a period at which no candidate fits between the floor
+and the ceiling, and ``"timeout"`` for a train that ran out of time, whose
+tones still count.
 A beat skipped within a train is counted in ``nSkipped`` and does not abort
 it. ``Used`` says whether the trial updated the posterior, and
 ``UnusedReason`` why not, the first that applies of:
 
 - ``"no_tone"``: the train delivered no tone, so nothing was asked;
 - ``"few_tones"``: fewer than ``TaskConfig.minTones`` tones were delivered;
-- ``"no_decision"``: no key was pressed in time.
+- ``"no_decision"``: no key was pressed in time;
+- ``"update_failed"``: the posterior could not take the judgement (it had
+  collapsed), and was left as it was.
 
 Analyses should keep the rows with ``Used`` true, which are the trials in
 the engine's history; ``nTrials`` counts them.

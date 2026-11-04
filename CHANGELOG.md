@@ -213,6 +213,14 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   The shared rating and wait drained only the HRD recorder, so HSD beats
   reached the record up to 7 s late after a rating. They now also call
   `parameters["drain"]` when a task sets it; the HRD leaves it unset.
+- Smaller HSD fixes. A period with no candidate between the floor and the
+  ceiling skips the trial (`AbortReason` `no_candidate`) instead of crashing
+  the session, and so does a collapsed posterior, which is logged and leaves
+  the trial written with `UnusedReason` `update_failed`. The train and the
+  decision loops sleep 1 ms when idle instead of pinning a core. Beats polled
+  after a train are filed in `beats.txt` under that trial, as the marker
+  stream has them, not under the next one. `posterior.npy` is float32, half
+  the size (about 10 MB for 60 trials).
 
 ### Internal
 

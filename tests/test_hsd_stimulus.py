@@ -20,9 +20,15 @@ from cardioception.HSD._outcome import (
     train_fields,
     unused_reason,
 )
-from cardioception.HSD._stimulus import BeatSource, TonePlayer, TrainScheduler
+from cardioception.HSD._stimulus import (
+    IDLE_SLEEP,
+    BeatSource,
+    TonePlayer,
+    TrainScheduler,
+)
 from cardioception.HSD.config import TaskConfig
 from cardioception.HSD.simulate import Observer
+from cardioception.HSD.task import _file_between
 from cardioception.scales import VAS_0_100
 
 
@@ -37,6 +43,10 @@ class FakeClock:
         value = self.now
         self.now += self.step
         return value
+
+    def sleep(self, seconds):
+        """Sleep on this clock, for the scheduler's idle pause."""
+        self.now += seconds
 
 
 class FakeBeat:
@@ -151,6 +161,7 @@ def setup(
         clock, r_times, period=period, latency=latency, periods=periods
     )
     player = FakePlayer(clock, onset_error=onset_error, **(player_kwargs or {}))
+    kwargs.setdefault("sleep", clock.sleep)
     scheduler = TrainScheduler(source, player, clock, **kwargs)
     return clock, source, player, scheduler
 
@@ -611,12 +622,30 @@ class TestHooks(unittest.TestCase):
         times = []
         source = FakeBeatSource(clock, BEATS, period=1.0)
         scheduler = TrainScheduler(
-            source, FakePlayer(clock), clock, on_frame=lambda: times.append(clock.now)
+            source,
+            FakePlayer(clock),
+            clock,
+            on_frame=lambda: times.append(clock.now),
+            sleep=clock.sleep,
         )
         result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertEqual(result.n_delivered, 5)
         self.assertGreater(len(times), 5 * 15)
         self.assertLess(max(np.diff(times)), 0.06)
+
+    def test_an_idle_pass_sleeps(self):
+        """Waiting for a beat yields the core instead of spinning."""
+        clock, _, _, scheduler = setup([], period=None)
+        pauses = []
+
+        def sleep(seconds):
+            pauses.append(seconds)
+            clock.sleep(seconds)
+
+        scheduler.sleep = sleep
+        scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S, timeout_s=1.0)
+        self.assertGreater(len(pauses), 100)
+        self.assertEqual(set(pauses), {IDLE_SLEEP})
 
     def test_escape_ends_a_silent_train_at_once(self):
         """An exception from the hook, as Escape raises, is not held to the deadline."""
@@ -672,6 +701,7 @@ class TestHooks(unittest.TestCase):
             FakePlayer(clock),
             clock,
             marker=lambda kind, stamp, **f: markers.append((kind, stamp, f)),
+            sleep=clock.sleep,
         )
         result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         for beat in result.beats_seen:
@@ -952,6 +982,32 @@ class TestObserve(unittest.TestCase):
             b for b in second.beats_seen if b["status"] in ("tone", "skipped")
         )
         self.assertAlmostEqual(first_of_train["rr"], 4.0)
+
+    def test_beats_are_filed_under_the_trial_of_their_markers(self):
+        """Beats after a train are filed with that trial, as they were marked.
+
+        They were polled during its decision and rating, under its markers,
+        so they belong to it rather than to the train that comes next.
+        """
+        clock, source, _, scheduler = setup(BEATS, n_tones=1)
+        parameters = {"scheduler": scheduler, "beat_rows": [], "markerTrial": 3}
+        scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
+        clock.now += 2.0
+        scheduler.observe(source.poll())
+        _file_between(parameters)
+        self.assertEqual(len(parameters["beat_rows"]), 2)
+        for row in parameters["beat_rows"]:
+            self.assertEqual(row["Trial"], 3)
+            self.assertIsNone(row["Attempt"])
+            self.assertEqual(row["status"], "between")
+        # Nothing is left for the next train to take.
+        self.assertEqual(scheduler.take_between(), [])
+        # Before any main trial, or after a practice one, there is no trial.
+        clock.now += 1.0
+        scheduler.observe(source.poll())
+        parameters["markerTrial"] = None
+        _file_between(parameters)
+        self.assertIsNone(parameters["beat_rows"][-1]["Trial"])
 
     def test_take_between_returns_and_clears(self):
         """Beats observed after the last train can still be collected."""

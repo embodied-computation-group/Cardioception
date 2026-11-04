@@ -262,8 +262,8 @@ Results go to `data/sub-<participant>/ses-<session>/run-<timestamp>/` under the 
 |---|---|
 | `*_final.txt` | One row per trial: requested and realized delay, tones delivered and skipped, decision, confidence, the posterior summary after the trial and the clock times |
 | `*_tones.txt` | One row per beat a tone was tried on: R-wave time, target, onset and realized delay |
-| `*_beats.txt` | Every beat detected during the session, including those between trials |
-| `*_posterior.npy` | The posterior after each trial, trials by grid |
+| `*_beats.txt` | Every beat detected during the session, including those between trains, filed under the trial whose markers carry it |
+| `*_posterior.npy` | The posterior after each trial, trials by grid, in single precision (float32) |
 | `*_engine.json` | The engine's state and trial history, enough to re-analyze the session |
 | `manifest.json` | The task, axis, configuration, clock and devices, written before the first trial |
 | `*_behaviour.txt`, `*_parameters.pickle`, `session.log` | The rows written after every trial, the parameters at the end, and the session's log |

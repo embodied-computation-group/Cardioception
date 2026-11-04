@@ -73,6 +73,7 @@ that is later, so that a slow heart is not taken for a timeout.
 """
 
 import math
+import time
 from dataclasses import dataclass, field
 from typing import (
     Any,
@@ -99,6 +100,15 @@ TOLERANCE = 1e-9
 #: do, so that the screen keeps flipping and Escape is read with no beat
 #: coming in.
 FRAME_INTERVAL = 0.05
+
+#: Seconds a loop pass that found nothing to do sleeps, so that waiting for
+#: a beat does not pin a core. It adds up to this much to the time a beat is
+#: seen, well inside the audio lead, provided the sleep is that short. On
+#: Windows with Python 3.10 a sleep lasts the system timer period, 15.6 ms
+#: by default; importing ``psychopy.core`` loads PsychToolbox, which sets it
+#: to 1 ms (measured: 15.5 ms before the import, 1.04 ms after), and every
+#: session imports it.
+IDLE_SLEEP = 0.001
 
 #: Seconds between the experimenter's status lines during a train.
 STATUS_INTERVAL = 1.0
@@ -312,6 +322,10 @@ class TrainScheduler:
     frame_interval :
         Seconds between calls of ``on_frame``, at most (give or take one loop
         pass and the hook's own duration).
+    sleep :
+        Called with :data:`IDLE_SLEEP` on a loop pass that polled no beat and
+        did not call ``on_frame``. ``time.sleep`` by default; tests on a fake
+        clock pass one that moves that clock.
     """
 
     def __init__(
@@ -325,6 +339,7 @@ class TrainScheduler:
         marker: Optional[Marker] = None,
         on_frame: Optional[Callable[[], Any]] = None,
         frame_interval: float = FRAME_INTERVAL,
+        sleep: Callable[[float], Any] = time.sleep,
     ):
         if n_tones < 1:
             raise ValueError("n_tones should be at least 1")
@@ -339,6 +354,7 @@ class TrainScheduler:
         self.marker = marker
         self.on_frame = on_frame
         self.frame_interval = float(frame_interval)
+        self.sleep = sleep
         #: Names the train in the status line, such as ``"trial 3"``.
         self.label = ""
         # Kept across trains so the first beat of a train still has an RR.
@@ -479,7 +495,8 @@ class TrainScheduler:
 
         while True:
             scheduled_now = False
-            for beat in self.source.poll():
+            beats = self.source.poll()
+            for beat in beats:
                 seen = self._see(beat, "extra")
                 now, period, rr = seen["seen"], seen["period"], seen["rr"]
                 result.beats_seen.append(seen)
@@ -557,9 +574,11 @@ class TrainScheduler:
             # when the next beat is furthest away.
             now = self.clock()
             frame_due = now - last_frame >= self.frame_interval
+            hooked = False
             if self.on_frame is not None and (scheduled_now or frame_due):
                 self.on_frame()
                 last_frame = self.clock()
+                hooked = True
             if now >= next_status:
                 n_skipped = sum(t.skipped for t in result.tones)
                 self._status(now, started, n_scheduled, n_skipped)
@@ -572,6 +591,8 @@ class TrainScheduler:
             if self.clock() >= deadline:
                 abort = "timeout"
                 break
+            if not beats and not hooked:
+                self.sleep(IDLE_SLEEP)
 
         if abort is not None:
             return self._finish(result, pending, abort, aborted=True)

@@ -15,6 +15,7 @@ Every clock time written by this module is on the session clock,
 import json
 import math
 import pickle
+import time
 from dataclasses import asdict, dataclass
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
@@ -32,7 +33,7 @@ from .._session import waitInput
 from .._triggers import fire
 from ._constants import Trigger
 from ._outcome import HSDTrialOutcome, posterior_fields, train_fields, unused_reason
-from ._stimulus import TrainResult, TrainScheduler
+from ._stimulus import IDLE_SLEEP, TrainResult, TrainScheduler
 
 logger = get_logger()
 
@@ -208,6 +209,18 @@ def _redraw_period(result: TrainResult, source) -> Optional[float]:
     return None
 
 
+def _file_between(parameters: dict) -> None:
+    """File the beats polled since the last train, as the markers have them.
+
+    Under the trial whose markers they carry, ``parameters["markerTrial"]``:
+    the main trial during or after which they were polled. Beats polled
+    before the first main trial, or around a practice trial, have no trial.
+    """
+    trial = parameters.get("markerTrial")
+    for beat in _scheduler(parameters).take_between():
+        parameters["beat_rows"].append({"Trial": trial, "Attempt": None, **beat})
+
+
 def _scheduler(parameters: dict) -> TrainScheduler:
     """The session's scheduler, made on first use.
 
@@ -269,6 +282,10 @@ def responseDecision(
             if pressed:
                 responseKey = pressed
                 break
+            # Without a pause the loop pins a core for up to respMax. A key
+            # is stamped when it is read, so this sets the resolution of the
+            # response time.
+            time.sleep(IDLE_SLEEP)
         if responseKey and responseKey[0][0] == "escape":
             logger.warning("User abort")
             parameters["win"].close()
@@ -327,8 +344,12 @@ def trial(
     texts = parameters["texts"]
     mark = _marker(parameters, nTrial, practice)
     scheduler = _scheduler(parameters)
+    # Beats polled since the last train, during the previous trial's decision
+    # and rating or a break, carry that trial's markers: file them there.
+    _file_between(parameters)
     # Set now, so the beats observed before the train are marked with it.
     scheduler.marker = mark
+    parameters["markerTrial"] = None if practice else nTrial
     scheduler.label = f"{'practice ' if practice else 'trial '}{nTrial}"
 
     logger.info(f"Starting trial {nTrial}{' (practice)' if practice else ''}")
@@ -350,28 +371,41 @@ def trial(
 
     results: List[TrainResult] = []
     explored = False
+    refusal: Optional[str] = None
     if period is None and config.axis == "phase":
         logger.warning(
             f"... the beat source reported no interbeat interval within "
             f"{PERIOD_WAIT:g} s; a phase-axis delay cannot be set, so the "
             "trial is skipped."
         )
+        refusal = "no_period"
+    else:
+        # On the absolute axis the period only sets the ceiling, and a 1 s
+        # period allows every default candidate.
+        try:
+            delay, explored = engine.next_delay(
+                *config.bounds(period if period is not None else 1.0)
+            )
+        except ValueError as error:
+            # A heart so fast that the ceiling falls below the floor, or a
+            # period the source should never report: as for a redraw below.
+            logger.warning(
+                f"... no candidate for an interbeat interval of {period} s "
+                f"({error}); the trial is skipped."
+            )
+            refusal = "no_candidate"
+    if refusal is not None:
         now = parameters["clock"]()
         result = TrainResult(
             delay=math.nan,
             axis=config.axis,
             aborted=True,
-            abort_reason="no_period",
-            end_reason="no_period",
+            abort_reason=refusal,
+            end_reason=refusal,
             started=now,
             ended=now,
         )
     else:
-        # On the absolute axis the period only sets the ceiling, and a 1 s
-        # period allows every default candidate.
-        delay, explored = engine.next_delay(
-            *config.bounds(period if period is not None else 1.0)
-        )
 
         def on_frame() -> None:
             prompt.draw()
@@ -473,8 +507,18 @@ def trial(
         )
     used = False
     if not practice and unusedReason is None and realized is not None:
-        engine.update(realized, decision == "Synchronous", explored)
-        used = True
+        try:
+            engine.update(realized, decision == "Synchronous", explored)
+        except FloatingPointError as error:
+            # The engine leaves the posterior as it was. Losing one trial is
+            # better than losing the rest of the session.
+            logger.error(
+                f"... the posterior could not take this trial ({error}); it is "
+                "written, and the posterior is left as it was."
+            )
+            unusedReason = "update_failed"
+        else:
+            used = True
 
     endTrigger = _trigger(parameters, Trigger.TRIAL_STOP, "trialStop", mark)
 
@@ -488,8 +532,10 @@ def trial(
                 parameters["beat_rows"].append(
                     {"Trial": nTrial, "Attempt": attempt, **beat}
                 )
+        # Single precision halves the file (21 MB to 10 MB for 60 trials);
+        # the engine itself keeps double precision.
         parameters["posteriors"].append(
-            np.asarray(engine.posterior).reshape(engine.shape).copy()
+            np.asarray(engine.posterior, dtype=np.float32).reshape(engine.shape)
         )
 
     return HSDTrialOutcome(
@@ -540,7 +586,11 @@ def _save_session(parameters: dict) -> None:
     posteriors = parameters["posteriors"]
     np.save(
         paths.path("posterior", ext="npy"),
-        np.array(posteriors) if posteriors else np.empty((0, *engine.shape)),
+        (
+            np.array(posteriors, dtype=np.float32)
+            if posteriors
+            else np.empty((0, *engine.shape), dtype=np.float32)
+        ),
     )
     with open(paths.path("engine", ext="json"), "w") as handle:
         json.dump(engine.state(), handle)
@@ -589,13 +639,16 @@ def run(
     Writes ``final`` (one row per trial, see
     :class:`cardioception.HSD._outcome.HSDTrialOutcome`), ``tones`` (one row
     per beat a tone was tried on), ``beats`` (every beat polled),
-    ``posterior`` (``.npy``, one posterior per trial), ``engine`` (JSON, the
-    engine's state) and the parameters pickle. The ``nTrials`` column counts
+    ``posterior`` (``.npy``, float32, the posterior after every trial),
+    ``engine`` (JSON, the engine's state) and the parameters pickle. The ``nTrials`` column counts
     the trials that had reached the posterior when the row was written.
 
-    ``beats`` holds every beat polled during the session. Those polled
-    between trains have status ``"between"`` and are filed with the trial
-    whose train followed them; those after the last train have no trial.
+    ``beats`` holds every beat polled during the session, filed under the
+    trial whose markers carry it. Those polled between trains have status
+    ``"between"``: polled before a train, they are filed with its trial and
+    attempt; polled after it, during the decision, the rating or a break,
+    with that trial and no attempt. Beats polled before the first trial, or
+    around the practice trials, have no trial.
 
     Raises
     ------
@@ -678,8 +731,7 @@ def run(
         if hasattr(player, "stop_all"):
             player.stop_all()
         source.stop()
-        for beat in _scheduler(parameters).take_between():
-            parameters["beat_rows"].append({"Trial": None, "Attempt": None, **beat})
+        _file_between(parameters)
         _save_session(parameters)
 
     end = text(parameters, parameters["texts"]["done"])
