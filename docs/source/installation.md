@@ -90,6 +90,21 @@ The distribution is named `cardioception-toolbox`. The import name is still
 `cardioception`, so existing scripts do not change.
 ```
 
+````{important}
+Until the next release, PyPI has the 0.7 line (0.7.2), and that is what the
+command above installs. This documentation describes the rewritten package,
+with the new output layout and the experimental Heartbeat Synchrony
+Discrimination and Phase Adjustment tasks. It reaches PyPI with the next
+release; until then, install it from the `dev` branch:
+
+```bash
+pip install git+https://github.com/embodied-computation-group/Cardioception.git@dev
+```
+
+The [changelog](https://github.com/embodied-computation-group/Cardioception/blob/HEAD/CHANGELOG.md) lists what changes from 0.7.x and how to migrate analysis
+scripts.
+````
+
 To read ECG or PPG from a [Lab Streaming Layer](https://labstreaminglayer.org/)
 stream instead of the Nonin oximeter, install the optional dependency as well:
 
@@ -225,7 +240,7 @@ These versions write their output to the old flat layout,
 `data/<participant><session>/`, with participant and session joined together,
 rather than to `data/sub-<participant>/ses-<session>/run-<timestamp>/`. The
 migration notes in the
-[changelog](https://github.com/embodied-computation-group/Cardioception/blob/master/CHANGELOG.md)
+[changelog](https://github.com/embodied-computation-group/Cardioception/blob/HEAD/CHANGELOG.md)
 describe the change and what it means for analysis scripts.
 
 (troubleshooting)=

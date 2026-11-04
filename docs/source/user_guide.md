@@ -16,7 +16,7 @@ Install the package as **`cardioception-toolbox`**:
 
     pip install cardioception-toolbox
 
-This is the official package, maintained by the Embodied Computation Group at Aarhus University. It is the version described in this documentation and used in our publications. Make sure the package name you install is exactly `cardioception-toolbox`.
+This is the official package, maintained by the Embodied Computation Group at Aarhus University, and the one used in our publications. Make sure the package name you install is exactly `cardioception-toolbox`. Until the next release, PyPI has the 0.7 line; [Installation](installation.md#3-install-cardioception) says how to install the version this documentation describes.
 ```
 
 The import name is still `cardioception`, so existing scripts do not need to be edited:
@@ -29,7 +29,7 @@ from cardioception.HRD import task
 
 The current development branch can be installed using:
 
-  `pip install git+https://github.com/embodied-computation-group/Cardioception.git`
+  `pip install git+https://github.com/embodied-computation-group/Cardioception.git@dev`
 
 This will install the official version maintained by the Embodied Computation Group.
 
@@ -166,7 +166,7 @@ The only staircase. This uses Kontsevich and Tyler's {cite:p}`1999:kontsevich` p
 Psi converges on the participant's point of subjective equality, their bias, not on a target level of accuracy. That is what the task is designed to measure, but it has consequences for any measure scored against the true heart rate. See the [metacognition tutorial](tutorials/metacognition.md).
 ```
 
-```{admonition} The nUp/nDown staircase was removed in 0.8.0
+```{admonition} The nUp/nDown staircase was removed in 1.0.0
 :class: warning
 
 `stairType="updown"` now raises. It described itself as a 1-down 2-up

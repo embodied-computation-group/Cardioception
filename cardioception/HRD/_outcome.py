@@ -117,7 +117,7 @@ class HeartRateReading:
 
     #: The rate the tone is matched against: 60000 / mean(IBI).
     bpm: float
-    #: mean(60000 / IBI), the pre-0.8.0 definition. Always the larger of the two.
+    #: mean(60000 / IBI), the pre-1.0.0 definition. Always the larger of the two.
     bpm_arithmetic: float
     #: When the listening window opened, seconds since the epoch.
     started: Optional[float] = None
