@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - master
+      - dev
   pull_request:
     branches:
       - master
+      - dev
 permissions:
   contents: write
 
@@ -35,11 +37,14 @@ jobs:
         run: |
           sphinx-build -b html docs/source docs/build/html
 
-      # Build on every pull request, publish only from master. Without this
-      # guard a pull request deployed straight to gh-pages, so any PR could
-      # replace the live documentation before anyone reviewed it.
+      # Build on every push and pull request to master or dev, publish only
+      # from a push to master. Without this guard a pull request deployed
+      # straight to gh-pages, so any PR could replace the live documentation
+      # before anyone reviewed it, and a push to dev would publish unreleased
+      # documentation. After the 1.0.0 release the default branch becomes
+      # main: replace master with main here and in the triggers above.
       - name: Deploy 🚀
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs/build/html
