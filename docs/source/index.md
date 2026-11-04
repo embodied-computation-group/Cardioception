@@ -45,7 +45,7 @@ The HRD {cite:p}`2022:legrand` is an adaptive psychophysical measure. Participan
 
 The HBC {cite:p}`1978:dale,1981:schandry`, also known as the heartbeat tracking task, asks participants to count their heartbeats over a fixed period. An accuracy score compares the reported count against the true number of beats.
 
-The package keeps this task because much of the literature rests on it. For new studies we would point you to the HRD, which separates interoceptive bias from precision and is less confounded by beliefs about heart rate. The [theory page](measuring.md) sets out that argument in full.
+The package keeps this task because much of the literature rests on it. Counting scores can reflect beliefs about heart rate as well as heartbeat sensations; the [theory page](measuring.md) sets out the evidence.
 
 ### Heartbeat Synchrony Discrimination task
 

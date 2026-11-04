@@ -10,7 +10,7 @@ myst:
 Cardioception runs four tasks: two established, the Heart Rate Discrimination
 task (HRD) and the Heartbeat Counting task (HBC), and two experimental, the
 Heartbeat Synchrony Discrimination task (HSD) and the Phase Adjustment Task
-(PAT). This page puts them side by side so you can choose.
+(PAT). This page puts them side by side.
 
 | Task | HRD | HBC | HSD | PAT |
 |---|---|---|---|---|
@@ -18,7 +18,7 @@ Heartbeat Synchrony Discrimination task (HSD) and the Phase Adjustment Task
 | Adaptive | Yes: a Psi staircase sets the tone rate | No | Yes: Bayesian placement of the tone delay | No: the participant adjusts the delay |
 | Hardware | Pulse oximeter, or ECG or PPG over LSL; headphones; mouse or keyboard | Pulse oximeter, or ECG or PPG over LSL; keyboard | ECG over LSL; sound card; keyboard | ECG over LSL; sound card; mouse wheel; a tactor for the control task |
 | Trials and minutes | 120 trials, about 20 minutes plus the tutorial | 6 counting windows, about 4 minutes | 15 to 60 trials; 60 took 7 minutes | 28 trials and 8 practice, about 30 minutes |
-| Status | Established | Established, not recommended for new studies | [Experimental](hsd_design.md) | [Experimental](pat.md) |
+| Status | Established | Established | [Experimental](hsd_design.md) | [Experimental](pat.md) |
 
 Every task writes to the same layout,
 `data/sub-<participant>/ses-<session>/run-<YYYYMMDD-HHMMSS>/` under the current
@@ -173,33 +173,40 @@ hardware, which changes the timing; see the [PAT page](pat.md).
 consistency measures of Hodgetts et al., each against a Monte Carlo chance
 threshold. See [scoring](pat.md#scoring).
 
-## Which task
+## Strengths and limitations
 
-**The HRD** is the task for a new study of cardiac interoception. It separates
-bias from precision, has a within-person exteroceptive comparison, and runs on
-a pulse oximeter. It measures judgements of heart rate, not whether or when a
-person feels individual heartbeats; see
-[what you may conclude](measuring.md#what-you-may-conclude-from-the-hrd).
+Each task answers a different question, and each has costs. This section sets
+them side by side; which one fits depends on the question you are asking.
 
-**The HBC** is for comparability with earlier work. The package keeps this
-task because much of the literature rests on it. For new studies we would point
-you to the HRD, which separates interoceptive bias from precision and is less
-confounded by beliefs about heart rate. A plausible estimate of heart rate can
-produce a good counting score without detecting any beats
+**The HRD.** It separates the bias of heart rate judgements from their
+precision, includes a within-person exteroceptive comparison, adapts the
+stimulus with a staircase, and runs on a pulse oximeter. Hierarchical models
+with normative priors are available for its data. It measures judgements of
+heart rate, which combine beliefs about one's heart rate with whatever is
+sensed in the listening window. It does not show whether or when a person feels
+individual heartbeats; see
+[what you may conclude](measuring.md#what-you-may-conclude-from-the-hrd). A
+full session takes about 20 minutes plus the tutorial.
+
+**The HBC.** It is short, needs only a pulse oximeter, and connects directly to
+a large literature, which is why the package keeps it. A plausible estimate of
+heart rate can produce a good counting score without detecting any beats
 {cite:p}`1999:windmann,2016:brener`, and counting scores are unrelated to
-heartbeat detection {cite:p}`2018:ring`.
+heartbeat detection {cite:p}`2018:ring`, so a score is hard to read as
+sensitivity on its own.
 
-**The HSD** is for the timing of the heartbeat sensation: where in the cycle a
-person feels it and how sharply. It keeps the multi-interval logic of the method
-of constant stimuli, which takes about 35 minutes {cite:p}`2016:brener`, and
-spends the trials where they are informative. It is not yet validated, cannot
-probe delays below 130 ms, and jitter in a Bluetooth ECG widens `sigma`. Use it
-for method work, and read the [design page](hsd_design.md) first.
+**The HSD.** It estimates where in the cardiac cycle a person feels the
+heartbeat and how sharply. It keeps the multi-interval logic of the method of
+constant stimuli, which takes about 35 minutes {cite:p}`2016:brener`, and
+spends the trials where they are informative. It is in beta: not yet
+validated, unable to probe delays below 130 ms, and sensitive to jitter in a
+Bluetooth ECG, which widens `sigma`. Read the [design page](hsd_design.md)
+before using it.
 
-**The PAT** is for comparability with the phase adjustment literature and for
-classifying participants against chance with a fixed trial count. It cannot
-separate where the sensation lies from how precise it is, and a participant can
-be consistent through a habit of search rather than a sensation; the
+**The PAT.** It connects to the phase adjustment literature and classifies
+participants against chance with a fixed number of trials. It cannot separate
+where the sensation lies from how precise it is, and a participant can be
+consistent through a habit of search rather than a sensation; the
 [HSD design page](hsd_design.md#relation-to-the-phase-adjustment-task) compares
-the two. This port is experimental, and its timing differs from the hardware
+the two. This port is in beta, and its timing differs from the hardware
 original.
