@@ -1142,3 +1142,47 @@ def test_the_autopilot_runs_a_session(fake_psychopy, tmp_path):
     # The tutorial screens rolled the way they asked, three notches each
     assert sum(n > 0 for n in engine.nudges) >= 3
     assert sum(n < 0 for n in engine.nudges) >= 3
+
+
+def test_the_autopilot_tutorial_on_a_clock_of_another_origin(fake_psychopy, tmp_path):
+    """The dial loop reads the engine's clock, not one of its own.
+
+    On Linux without pylsl the task's fallback clock and the beat source's
+    (PsychToolbox's epoch-based ``GetSecs``) differ by decades, and a loop
+    timing beeps on the wrong one never heard one: the tutorial hung.
+    """
+    engine = FakeEngine()
+    base = engine.clock
+    engine.clock = lambda: base() + 1.0e9
+    parameters = make_parameters(tmp_path, engine=engine, nTrials=1, nPractice=0)
+    parameters["tutorialStageTimeout"] = 5.0
+    parameters["autopilot"] = PATAutopilot(
+        parameters["rng"], target=95.0, spread=0.0, notch_interval=0.0, settle=0.0
+    )
+
+    tutorial(parameters)
+
+    assert engine.ended == 1
+    assert sum(n > 0 for n in engine.nudges) >= parameters["tutorialNotches"]
+    assert sum(n < 0 for n in engine.nudges) >= parameters["tutorialNotches"]
+
+
+class SilentEngine(FakeEngine):
+    """Polled, but never plays a beep: an ECG that finds no beat."""
+
+    def poll(self) -> None:
+        self.polls += 1
+
+
+def test_a_tutorial_without_beeps_ends_on_its_timeout(fake_psychopy, tmp_path, caplog):
+    engine = SilentEngine()
+    parameters = make_parameters(tmp_path, engine=engine, nTrials=1, nPractice=0)
+    parameters["tutorialStageTimeout"] = 0.2
+    parameters["autopilot"] = PATAutopilot(parameters["rng"], target=95.0)
+
+    tutorial(parameters)
+
+    assert engine.ended == 1
+    assert engine.stops == 1
+    assert engine.nudges == []
+    assert "tutorial was skipped" in caplog.text
