@@ -439,11 +439,8 @@ although 0 ms cannot be realized on current hardware.
 package's random number generator so every run can be reproduced: 38
 observers, 4 methods, 10 repetitions and 120 trials, 1,520 runs per study,
 with the seeds of the earlier studies for the first 34 observers. Each study
-took 37 minutes with 28 worker processes on a 32-core machine:
-
-    python -m cardioception.HSD.simulate --out <dir> --reps 10 --processes 28 --trials 120 --seed 2026 --min-delay 130 --jitter-sd 26 --train-loss 0.07 --period 0.8 1.1 --methods mcs psi_mu psi_mu_x10 psi_mu_sigma
-
-and the same with `--jitter-sd 6`.
+took 37 minutes with 28 worker processes on a 32-core machine. The commands
+are under [how to reproduce](#how-to-reproduce).
 
 **Metrics.** Absolute error and root mean squared error of the posterior mean
 of `mu` at each trial count; credible-interval width; coverage of the 95
@@ -583,6 +580,26 @@ the lost trains, and the new grids; the 6 ms run is close to the old 130 ms one
 posterior mass spread over every `mu`. The earlier runs also reported that the
 detection evidence "moves in the right direction for both groups"; with the
 old grids that held only for the flat 0.3 and 0.5 responders they tested.
+
+A control with the new grids and exact delivery at the 130 ms floor, no
+jitter, no ceiling and no lost trains, is pending. It would separate the
+effect of the new grids from that of the realistic delivery, and will be run
+on the cluster.
+
+### How to reproduce
+
+From the repository root, at the commit that added these results, with the
+study seed 2026. The first two are the runs reported above; the third is the
+pending control.
+
+    python -m cardioception.HSD.simulate --out <dir>/jitter26 --reps 10 --processes 28 --trials 120 --seed 2026 --min-delay 130 --jitter-sd 26 --train-loss 0.07 --period 0.8 1.1 --methods mcs psi_mu psi_mu_x10 psi_mu_sigma
+    python -m cardioception.HSD.simulate --out <dir>/jitter6 --reps 10 --processes 28 --trials 120 --seed 2026 --min-delay 130 --jitter-sd 6 --train-loss 0.07 --period 0.8 1.1 --methods mcs psi_mu psi_mu_x10 psi_mu_sigma
+    python -m cardioception.HSD.simulate --out <dir>/exact130 --reps 10 --processes 28 --trials 120 --seed 2026 --min-delay 130 --jitter-sd 0 --train-loss 0 --no-ceiling --methods mcs psi_mu psi_mu_x10 psi_mu_sigma
+
+Each writes `trials.csv`, `summary.csv`, `evidence.csv`, `stopping.csv`,
+`delays.csv`, `figure.png` and `table.md`. The figure on this page is the
+`figure.png` of the first. The run seeds do not depend on `--processes`, so a
+cluster run with a different worker count reproduces the same runs.
 
 ## Hardware dry run
 
