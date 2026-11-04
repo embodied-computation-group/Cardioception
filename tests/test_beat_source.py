@@ -1,26 +1,21 @@
 # Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Beat sources: the virtual heart, and LSLBeatSource on a recorded ECG.
 
-The recorded file is a biosignalsplux chest ECG streamed over LSL. It lives
-outside the repository, and the tests that need it skip when it is missing.
+The recorded ECG is a biosignalsplux chest ECG streamed over LSL: the
+committed 60 s excerpt always, and a lab recording when
+``CARDIOCEPTION_RECORDINGS`` points at it (see ecg_recordings.py).
 The fakes here (clock, inlet, recorder) are also used by test_pat_engine.py.
 """
 
-from pathlib import Path
-
 import numpy as np
 import pytest
+from ecg_recordings import load
 
 from cardioception.devices.beat_source import (
     BeatSource,
     LSLBeatSource,
     VirtualBeatSource,
     simulated_periods,
-)
-
-XDF = Path(
-    r"C:\Users\stim\Desktop\cannabodies\plux-lsl\data\sub-test\ses-hrd20"
-    r"\sub-test_ses-hrd20_task-hrd_physio.xdf"
 )
 
 
@@ -163,23 +158,12 @@ class FakeRecorder:
         self.sfreq = sfreq
 
 
-@pytest.fixture(scope="module")
-def recorded_ecg():
-    """Two columns (a counter, ECG2) and their stamps, plus the offline beats."""
-    if not XDF.exists():
-        pytest.skip(f"{XDF} not found")
-    pyxdf = pytest.importorskip("pyxdf")
-    pytest.importorskip("systole")
-    from cardioception.devices._beats import detect_beats
-
-    streams, _ = pyxdf.load_xdf(str(XDF))
-    plux = next(s for s in streams if s["info"]["name"][0] == "PLUX")
-    labels = [c["label"][0] for c in plux["info"]["desc"][0]["channels"][0]["channel"]]
-    ecg = np.asarray(plux["time_series"][:, labels.index("ECG2")], dtype=float)
-    stamps = np.asarray(plux["time_stamps"], dtype=float)
+@pytest.fixture(scope="module", params=["excerpt", "hrd20"])
+def recorded_ecg(request):
+    """Two columns (a counter, the ECG) and their stamps, plus the offline beats."""
+    _, ecg, stamps, reference = load(request.param)
     data = np.column_stack([np.arange(ecg.size), ecg])
-    _, peaks = detect_beats(ecg, 1000, "ecg", 1000)
-    return data, stamps, stamps[np.flatnonzero(peaks)]
+    return data, stamps, stamps[reference]
 
 
 def test_lsl_beat_source_replay(recorded_ecg):
