@@ -46,10 +46,10 @@ spends the trials where they are informative.
 
 ## What the classical task established
 
-The [theory page](../../measuring.md) already covers
-[what fixed-delay synchrony tasks can establish](../../measuring.md#what-fixed-delay-synchrony-tasks-can-establish)
+The [theory page](../index.md#theory) already covers
+[what fixed-delay synchrony tasks can establish](../index.md#what-fixed-delay-synchrony-tasks-can-establish)
 and why the MCS is
-[a stronger measure of heartbeat timing](../../measuring.md#a-stronger-measure-of-heartbeat-timing).
+[a stronger measure of heartbeat timing](../index.md#a-stronger-measure-of-heartbeat-timing).
 This section adds the findings that shaped the HSD design. It follows the
 review by Brener and Ring {cite:p}`2016:brener`.
 

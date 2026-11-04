@@ -45,7 +45,7 @@ The HRD {cite:p}`2022:legrand` is an adaptive psychophysical measure. Participan
 
 The HBC {cite:p}`1978:dale,1981:schandry`, also known as the heartbeat tracking task, asks participants to count their heartbeats over a fixed period. An accuracy score compares the reported count against the true number of beats.
 
-The package keeps this task because much of the literature rests on it. Counting scores can reflect beliefs about heart rate as well as heartbeat sensations; the [theory page](measuring.md) sets out the evidence.
+The package keeps this task because much of the literature rests on it. Counting scores can reflect beliefs about heart rate as well as heartbeat sensations; the [theory page](tasks/index.md#what-heartbeat-counting-can-establish) sets out the evidence.
 
 ### Heartbeat Synchrony Discrimination task
 
@@ -67,7 +67,7 @@ For HRD data we recommend the [Hierarchical Interoception toolbox](https://githu
 
 - [User guide](user_guide.md) for installation, dependencies and running a task
 - [The tasks](tasks/index.md) for the four tasks side by side, and which to choose
-- [Theory](measuring.md) for what the HRD and the HBC measure and why
+- [Theory](tasks/hrd/theory.md) for what the HRD and the HBC measure and why
 - [HSD design](tasks/hsd/design.md) for the experimental Heartbeat Synchrony Discrimination task
 - [PAT](tasks/pat.md) for the experimental Phase Adjustment Task
 - [Tutorials](tasks/hrd/tutorials/index.md) for inspecting your data, then modelling it
@@ -103,7 +103,6 @@ caption: Tasks
 hidden:
 ---
 The tasks <tasks/index.md>
-Theory <measuring.md>
 ```
 
 ```{toctree}
