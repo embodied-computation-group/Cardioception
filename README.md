@@ -44,7 +44,9 @@ Because the tone frequency is placed relative to the participant's true heart ra
 > pip install cardioception-toolbox
 > ```
 >
-> This is the official package, maintained by the Embodied Computation Group at Aarhus University, and the version described in this repository and used in the papers below. Check that the name you install is exactly `cardioception-toolbox`.
+> This is the official package, maintained by the Embodied Computation Group at Aarhus University, and the one used in the papers below. Check that the name you install is exactly `cardioception-toolbox`.
+
+Until the next release, PyPI has the 0.7 line (0.7.2). The rewritten package this repository describes, with the new output layout and the experimental Heartbeat Synchrony Discrimination and Phase Adjustment tasks, reaches PyPI with that release; until then, install it from the `dev` branch as shown below. The [changelog](https://github.com/embodied-computation-group/Cardioception/blob/HEAD/CHANGELOG.md) lists what changes from 0.7.x and how to migrate analysis scripts.
 
 The import name has not changed, so scripts written against earlier versions keep working:
 
@@ -55,7 +57,7 @@ from cardioception.HRD import task
 To install the development branch instead:
 
 ```
-pip install git+https://github.com/embodied-computation-group/Cardioception.git
+pip install git+https://github.com/embodied-computation-group/Cardioception.git@dev
 ```
 
 ### Step by step, from a fresh machine
@@ -101,7 +103,7 @@ Installing the package also copies about 140 MB of images and sounds that the ta
 
 ### Legacy versions
 
-The 0.7 line, the last before the 2026 rewrite, is kept as the `legacy/0.7` branch and the `v0.7.2` tag, and installs with `pip install cardioception-toolbox==0.7.2`; the 0.4 line, from the period of the HRD paper, is tagged `v0.4.0` to `v0.4.5`. Both write to the old flat `data/<participant><session>/` layout, and the [installation guide](https://www.the-ecg.org/Cardioception/installation.html#legacy-versions) and the [changelog](CHANGELOG.md) cover installing them and migrating their output.
+The 0.7 line, the last before the 2026 rewrite, is kept as the `legacy/0.7` branch and the `v0.7.2` tag, and installs with `pip install cardioception-toolbox==0.7.2`; the 0.4 line, from the period of the HRD paper, is tagged `v0.4.0` to `v0.4.5`. Both write to the old flat `data/<participant><session>/` layout, and the [installation guide](https://www.the-ecg.org/Cardioception/installation.html#legacy-versions) and the [changelog](https://github.com/embodied-computation-group/Cardioception/blob/HEAD/CHANGELOG.md) cover installing them and migrating their output.
 
 ## Recording devices
 
