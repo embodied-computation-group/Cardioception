@@ -170,6 +170,11 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   timestamps and reports nothing for one period after it, instead of taking
   the resume transient for a beat. Without beats, its QRS estimate is no
   longer halved without limit, so electrode-off noise is not taken for beats.
+- Two tones closer than a tone's duration plus about 30 ms played the second
+  late, because the tone player starts a sound only after the previous one of
+  its kind has ended. `TonePlayer.schedule` now refuses such a tone (logged,
+  NaN onset), the PAT's `minToneGap` must be at least `toneDuration` plus
+  0.05 s (it allowed 0), and the HSD's `toneSecs` at most 0.2 s.
 
 ### Internal
 

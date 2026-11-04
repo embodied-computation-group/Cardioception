@@ -436,6 +436,26 @@ def test_parameters_reject_bad_input(fake_psychopy, tmp_path, kwargs):
         make_parameters(tmp_path, **kwargs)
 
 
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"minToneGap": 0.0},
+        {"minToneGap": 0.07},  # less than the 0.03 s tone plus 0.05 s
+        {"minToneGap": 0.3, "toneDuration": 0.3},
+    ],
+)
+def test_parameters_reject_a_tone_gap_the_player_cannot_keep(
+    fake_psychopy, tmp_path, kwargs
+):
+    with pytest.raises(ValueError, match="minToneGap"):
+        make_parameters(tmp_path, **kwargs)
+
+
+def test_parameters_accept_the_shortest_tone_gap(fake_psychopy, tmp_path):
+    parameters = make_parameters(tmp_path, minToneGap=0.08, toneDuration=0.03)
+    assert parameters["minToneGap"] == 0.08
+
+
 def test_parameters_need_a_recorder(fake_psychopy, tmp_path):
     with pytest.raises(ValueError, match="recorder"):
         getParameters(resultPath=str(tmp_path))

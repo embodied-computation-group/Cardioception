@@ -63,6 +63,9 @@ INTEGRATION = 0.15
 #: QRS is detected.
 THRESHOLD = 0.25
 
+#: Seconds after an R peak during which no other is accepted, by default.
+REFRACTORY = 0.25
+
 #: Weight of the newest peak in the running QRS and noise estimates.
 LEARNING_RATE = 0.125
 
@@ -160,7 +163,9 @@ class OnlineRDetector:
     The beats returned do not depend on how the signal is cut into chunks.
     """
 
-    def __init__(self, sfreq: float, refractory: float = 0.25, warmup: float = 2.0):
+    def __init__(
+        self, sfreq: float, refractory: float = REFRACTORY, warmup: float = 2.0
+    ):
         if sfreq < 2.5 * BAND[1]:
             raise ValueError(f"sfreq should be at least {2.5 * BAND[1]:g} Hz.")
         if warmup <= 0 or refractory < 0:
