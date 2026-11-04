@@ -92,7 +92,9 @@ class TaskConfig:
     targets: Tuple[str, ...] = ("mu",)
     #: The session stops once the credible interval of ``mu`` is no wider
     #: than :meth:`ci_width`, but not before ``minTrials`` and never after
-    #: ``maxTrials``.
+    #: ``maxTrials``. In the simulations of the task as it runs, about half
+    #: the clean detectors stop early; 90 trials instead of 60 would lower
+    #: the RMSE of ``mu`` by only about 2 ms (see the design page).
     minTrials: int = 15
     maxTrials: int = 60
     #: Width of the 95% credible interval of ``mu`` at which to stop, in ms
