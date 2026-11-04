@@ -215,7 +215,7 @@ original.
 
 Author: Micah G. Allen
 
-Before you analyse an HRD dataset, you need to be clear about what the task can
+Before you analyze an HRD dataset, you need to be clear about what the task can
 measure. Cardiac interoception is often described as the ability to perceive
 one's heartbeat accurately. That description sounds straightforward until we
 ask what an experimental score actually identifies.
@@ -359,7 +359,7 @@ This design addresses the main ambiguity of fixed-delay tasks and shows good
 agreement with related multi-interval procedures {cite:p}`2016:brener`.
 
 Its practical demands are substantial. A standard session takes about 35 minutes,
-and implementations can take considerably longer once familiarisation is included
+and implementations can take considerably longer once familiarization is included
 {cite:p}`2016:brener,2022:legrand`. The task also requires precise synchronization
 of cardiac and external events. Participants must attend to both streams and make
 a temporal judgement, which adds demands beyond sensing the heartbeat itself.
