@@ -2,7 +2,8 @@
 
 .. meta::
    :description: The Cardioception API: parameters and task functions for the
-      Heart Rate Discrimination and Heartbeat Counting tasks in PsychoPy.
+      Heart Rate Discrimination, Heartbeat Counting, Heartbeat Synchrony
+      Discrimination and Phase Adjustment tasks in PsychoPy.
    :keywords: cardioception API, heart rate discrimination, heartbeat counting,
       PsychoPy, python interoception
 
@@ -67,6 +68,16 @@ Parameters
 
     getParameters
 
+Configuration
+*************
+
+.. currentmodule:: cardioception.HRD.config
+
+.. autosummary::
+   :toctree: generated/HRD.config
+
+    TaskConfig
+
 Scripts
 *******
 
@@ -90,6 +101,8 @@ Languages
 .. autosummary::
    :toctree: generated/HRD.languages
 
+    available
+    get_texts
     english
     danish
     danish_children
@@ -112,6 +125,16 @@ Parameters
    :toctree: generated/HSD.parameters
 
     getParameters
+
+Configuration
+*************
+
+.. currentmodule:: cardioception.HSD.config
+
+.. autosummary::
+   :toctree: generated/HSD.config
+
+    TaskConfig
 
 Scripts
 *******
@@ -136,6 +159,17 @@ Engine
     SynchronyPsi
     gaussian_envelope
     default_grids
+
+Languages
+*********
+
+.. currentmodule:: cardioception.HSD.languages
+
+.. autosummary::
+   :toctree: generated/HSD.languages
+
+    available
+    get_texts
 
 Phase Adjustment Task
 =====================
@@ -215,6 +249,37 @@ Recording devices
     ContinuousOximeter
     LSLRecorder
     ReplayRecorder
+
+Beat sources and tone player
+============================
+
+Shared by the Heartbeat Synchrony Discrimination task and the Phase Adjustment
+Task, which time their tones from the R-wave.
+
+.. currentmodule:: cardioception.devices.beat_source
+
+.. autosummary::
+   :toctree: generated/devices.beat_source
+
+    LSLBeatSource
+    VirtualBeatSource
+
+.. currentmodule:: cardioception.devices.tone_player
+
+.. autosummary::
+   :toctree: generated/devices.tone_player
+
+    TonePlayer
+
+Confidence scales
+-----------------
+
+.. currentmodule:: cardioception.scales
+
+.. autosummary::
+   :toctree: generated/scales
+
+    ConfidenceScale
 
 Reports
 -------

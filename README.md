@@ -99,6 +99,10 @@ Analysing the data needs a few extras that are not installed by default: [paperm
 
 Installing the package also copies about 140 MB of images and sounds that the tasks play, most of it the 370 pre-generated tone files used by the Heart Rate Discrimination task. `pip uninstall cardioception-toolbox` removes them again.
 
+### Legacy versions
+
+The 0.7 line, the last before the 2026 rewrite, is kept as the `legacy/0.7` branch and the `v0.7.2` tag, and installs with `pip install cardioception-toolbox==0.7.2`; the 0.4 line, from the period of the HRD paper, is tagged `v0.4.0` to `v0.4.5`. Both write to the old flat `data/<participant><session>/` layout, and the [installation guide](https://www.the-ecg.org/Cardioception/installation.html#legacy-versions) and the [changelog](CHANGELOG.md) cover installing them and migrating their output.
+
 ## Recording devices
 
 The HRD and the HBC read the participant's cardiac signal while the task runs, either to estimate heart rate or to count beats in a time window. Two setups work out of the box:
