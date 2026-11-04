@@ -178,6 +178,9 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   shrunk is clamped to that period before it wraps. A notch from it no longer
   jumps ahead, and the `dial` and `press` markers report the phase that is
   played.
+- The PAT period outlier rule floors the robust standard deviation at 1 ms.
+  With a fixed period (median absolute deviation 0) float noise used to turn
+  trials into outliers.
 
 ### Internal
 

@@ -122,12 +122,37 @@ def test_mad_outliers_hand_computed():
 def test_mad_outliers_edge_cases():
     # NaN is missing, not an outlier.
     assert mad_outliers([1000, np.nan, 1010, 990]).tolist() == [False] * 4
-    # Identical periods (MAD 0): nothing is flagged, anything else would be.
+    # Identical periods (MAD 0): the robust SD is floored at 1 ms, so float
+    # noise and small differences are not outliers, and more than 5 ms is.
     assert not mad_outliers([1000] * 5).any()
-    assert mad_outliers([1000] * 5 + [1001]).tolist() == [False] * 5 + [True]
+    assert not mad_outliers([1000] * 5 + [1000 + 1e-9]).any()
+    assert not mad_outliers([1000] * 5 + [1001]).any()
+    assert not mad_outliers([1000] * 5 + [1005]).any()
+    assert mad_outliers([1000] * 5 + [1005.1]).tolist() == [False] * 5 + [True]
+    # Without the floor the old rule comes back.
+    assert mad_outliers([1000] * 5 + [1001], min_sd=0).tolist() == [False] * 5 + [True]
+    with pytest.raises(ValueError):
+        mad_outliers([1, 2], min_sd=-1)
     assert not mad_outliers([np.nan, np.nan]).any()
     with pytest.raises(ValueError):
         mad_outliers([1, 2], k=0)
+
+
+def test_grid_keeps_a_fixed_period_with_float_noise():
+    # An exteroceptive run at a fixed 1000 ms, written through float sums.
+    n = 28
+    period = 1000.0 + np.random.default_rng(5).choice([0, 1e-10, -1e-10], n)
+    df = pd.DataFrame(
+        {
+            "Block": "main",
+            "ChosenDelayMs": 300.0,
+            "AnticipatedPeriodMs": period,
+            "ObservedPeriodMs": period,
+            "Confidence": 5,
+        }
+    )
+    grid = consistency_grid(df, n_sim=100)
+    assert (grid["n_trials"] == n).all()
 
 
 def test_grid_drops_outlying_and_missing_periods():

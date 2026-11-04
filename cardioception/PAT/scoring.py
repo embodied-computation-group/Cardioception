@@ -21,8 +21,8 @@ computed eight ways, crossing three factors:
 Only main trials whose ``TrialStatus`` is ``ok`` are scored: a trial that
 timed out has no choice, and a stale one (the ECG lost before the press) has
 no trustworthy period. Before scoring, trials whose period lies more than 5
-robust standard deviations (1.4826 times the median absolute deviation) from the
-participant's median are removed, separately for each period type.
+robust standard deviations (1.4826 times the median absolute deviation, but at least 1 ms)
+from the participant's median are removed, separately for each period type.
 
 Each score is compared with its own chance threshold: the 95th percentile of
 the MRL of the same number of trials with delays drawn uniformly over the
@@ -41,6 +41,11 @@ import pandas as pd
 #: Factor converting the median absolute deviation into a robust standard
 #: deviation for normally distributed data.
 ROBUST_SD = 1.4826
+
+#: Smallest robust standard deviation, in ms, the outlier rule uses. Without
+#: it a run with a fixed period (MAD 0, the exteroceptive task) would flag any
+#: trial whose period differs by float noise.
+MIN_ROBUST_SD_MS = 1.0
 
 #: Default seed for the Monte Carlo thresholds, so that the same file always
 #: gives the same thresholds. Pass ``seed=None`` for fresh randomness.
@@ -148,11 +153,15 @@ def mean_resultant_length(
     return float(resultant / total)
 
 
-def mad_outliers(x: npt.ArrayLike, k: float = 5.0) -> npt.NDArray[np.bool_]:
+def mad_outliers(
+    x: npt.ArrayLike, k: float = 5.0, min_sd: float = MIN_ROBUST_SD_MS
+) -> npt.NDArray[np.bool_]:
     """Flag values more than ``k`` robust standard deviations from the median.
 
     The robust standard deviation is 1.4826 times the median absolute
-    deviation (Leys et al., 2013).
+    deviation (Leys et al., 2013), floored at ``min_sd``. Without the floor a
+    MAD of 0 (a fixed period, as in an exteroceptive run) would make any
+    difference at all, float noise included, an outlier.
 
     Parameters
     ----------
@@ -160,6 +169,10 @@ def mad_outliers(x: npt.ArrayLike, k: float = 5.0) -> npt.NDArray[np.bool_]:
         Values, typically one participant's heart periods in ms.
     k : float
         Cut-off in robust standard deviations. Hodgetts et al. (2026) use 5.
+    min_sd : float
+        Smallest robust standard deviation, in the units of ``x``: 1 ms by
+        default, so with identical periods only a trial more than ``k`` ms
+        away is flagged. 0 turns the floor off.
 
     Returns
     -------
@@ -169,13 +182,15 @@ def mad_outliers(x: npt.ArrayLike, k: float = 5.0) -> npt.NDArray[np.bool_]:
     """
     if not k > 0:
         raise ValueError(f"k must be positive, got {k}.")
+    if not min_sd >= 0:
+        raise ValueError(f"min_sd must not be negative, got {min_sd}.")
     values = np.asarray(x, dtype=float)
     finite = np.isfinite(values)
     mask = np.zeros(values.shape, dtype=bool)
     if not finite.any():
         return mask
     median = np.median(values[finite])
-    robust_sd = ROBUST_SD * np.median(np.abs(values[finite] - median))
+    robust_sd = max(ROBUST_SD * np.median(np.abs(values[finite] - median)), min_sd)
     mask[finite] = np.abs(values[finite] - median) > k * robust_sd
     return mask
 
