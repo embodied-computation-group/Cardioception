@@ -36,11 +36,21 @@ so the procedure can be simulated and tested headless.
 
 from __future__ import annotations
 
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 
 PARAMETERS: Tuple[str, ...] = ("mu", "sigma", "floor", "peak")
+
+#: Parameters estimated from the posterior conditioned on a rise: where and
+#: how wide the sensation is, given that there is one. A flat envelope says
+#: nothing about either, and leaving its mass in would spread ``mu`` and
+#: ``sigma`` over the whole grid.
+CONDITIONAL: Tuple[str, ...] = ("mu", "sigma")
+
+#: Below this posterior mass on a rise, the conditional estimates fall back to
+#: the marginal ones (see :meth:`SynchronyPsi.rise_supported`).
+MIN_RISE_MASS = 0.01
 
 Envelope = Callable[..., np.ndarray]
 Values = Union[Sequence[float], np.ndarray]
@@ -320,22 +330,60 @@ class SynchronyPsi:
 
     # ------------------------------------------------------------- estimates
 
-    def marginal(self, name: str) -> np.ndarray:
-        """Marginal posterior over one parameter, on its grid."""
+    def rise_supported(self, rise: float = 0.2) -> bool:
+        """Whether the conditional estimates are conditioned on a rise.
+
+        True while the posterior mass on a rise of more than ``rise``
+        (:meth:`detection_evidence`) is at least :data:`MIN_RISE_MASS`.
+        Below it, conditioning would renormalize next to nothing, so
+        :meth:`estimate` falls back to the marginal posterior.
+        """
+        return self.detection_evidence(rise) >= MIN_RISE_MASS
+
+    def marginal(
+        self, name: str, conditional: bool = False, rise: float = 0.2
+    ) -> np.ndarray:
+        """Posterior over one parameter, on its grid.
+
+        With ``conditional``, the posterior restricted to the grid points
+        whose envelope rises by more than ``rise`` (:meth:`visible_rise`),
+        renormalized; the plain marginal if the rise is not supported (see
+        :meth:`rise_supported`).
+        """
         if name not in PARAMETERS:
             raise ValueError(f"unknown parameter {name!r}")
+        weights = self.posterior
+        if conditional and self.rise_supported(rise):
+            weights = np.where(self._rises(rise), self.posterior, 0.0)
+            weights = weights / weights.sum()
         axes = tuple(i for i, other in enumerate(PARAMETERS) if other != name)
-        return self.posterior.reshape(self.shape).sum(axis=axes)
+        return weights.reshape(self.shape).sum(axis=axes)
 
-    def estimate(self, name: str, ci: float = 0.95) -> Dict[str, float]:
+    def estimate(
+        self,
+        name: str,
+        ci: float = 0.95,
+        conditional: Optional[bool] = None,
+        rise: float = 0.2,
+    ) -> Dict[str, float]:
         """Posterior mean, median, mode, SD and central credible interval.
 
-        Quantiles are the smallest grid value whose cumulative mass reaches
-        the level, so the interval is quantized to the grid spacing.
+        ``mu`` and ``sigma`` (:data:`CONDITIONAL`) are estimated by default
+        from the posterior conditioned on a rise of more than ``rise``, the
+        threshold of :meth:`detection_evidence`: where the sensation is,
+        given that there is one. While a flat envelope keeps posterior mass,
+        the marginal ``mu`` is a mixture with a uniform spread over the grid
+        and its interval stays wide however well the location is known.
+        ``floor`` and ``peak`` are marginal. ``conditional`` overrides the
+        default; :meth:`rise_supported` says whether the conditioning took
+        place. Quantiles are the smallest grid value whose cumulative mass
+        reaches the level, so the interval is quantized to the grid spacing.
         """
         if not 0.0 < ci < 1.0:
             raise ValueError("ci must lie strictly between 0 and 1")
-        p = self.marginal(name)
+        if conditional is None:
+            conditional = name in CONDITIONAL
+        p = self.marginal(name, conditional, rise)
         grid = self.grids[name]
         mean = float(np.sum(grid * p))
         sd = float(np.sqrt(np.sum((grid - mean) ** 2 * p)))
@@ -357,15 +405,25 @@ class SynchronyPsi:
             "ci_high": quantile(hi),
         }
 
-    def summary(self) -> Dict[str, Dict[str, float]]:
-        return {name: self.estimate(name) for name in PARAMETERS}
+    def summary(self) -> Dict[str, Any]:
+        """:meth:`estimate` of every parameter, and under ``"conditional"``
+        whether ``mu`` and ``sigma`` were conditioned on a rise."""
+        out: Dict[str, Any] = {name: self.estimate(name) for name in PARAMETERS}
+        out["conditional"] = self.rise_supported()
+        return out
 
     def ci_width(self, name: str = "mu", ci: float = 0.95) -> float:
+        """Width of the credible interval of :meth:`estimate`: for ``mu``,
+        conditioned on a rise while one is supported."""
         est = self.estimate(name, ci)
         return est["ci_high"] - est["ci_low"]
 
     def converged(self, width: float, name: str = "mu", ci: float = 0.95) -> bool:
-        """True once the credible interval for ``name`` is at most ``width``."""
+        """True once the credible interval for ``name`` is at most ``width``.
+
+        The interval is that of :meth:`estimate`, so for ``mu`` it is
+        conditioned on a rise; the stopping rule of the task uses it.
+        """
         return self.ci_width(name, ci) <= width
 
     def rise_range(self) -> Tuple[float, float]:

@@ -174,7 +174,12 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   The prior on a rise of more than 0.2 is about 0.5, not 0.92. The same
   responders now give -4.3 to -0.2, the detector +2.2 to +2.7. `FloorMean`
   and `PeakMean` keep their names; the grid is larger (98,820 points) and a
-  stimulus selection takes about 20 ms.
+  stimulus selection takes about 20 ms. Because a flat envelope now keeps
+  posterior mass, and leaves `mu` unidentified, `mu` and `sigma` (so
+  `MuMean`, `MuCILow`, `MuCIHigh`, the `Sigma` columns and the stopping rule)
+  come from the posterior conditioned on a rise of more than 0.2, falling back
+  to the marginal below 0.01 of mass on a rise; the new `MuConditional`
+  column says which. Delay placement still uses the marginal `mu`.
 - A missed R peak or a T wave taken for one no longer skews the anticipated
   period of the live beat source (PAT, HSD) by a third for three beats. An RR
   interval outside 0.6 to 1.6 times the median of the last five accepted ones

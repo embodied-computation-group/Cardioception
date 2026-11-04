@@ -337,6 +337,60 @@ class TestRecovery(unittest.TestCase):
                     if below is not None:
                         self.assertLessEqual(log_bf, below)
 
+    def test_mu_is_estimated_given_a_rise(self):
+        """mu and sigma come from the posterior conditioned on a rise.
+
+        A sharp observer (mu 250, sigma 40, floor 0.02, peak 0.98) after 12
+        trials of the task's configuration at a 0.6 s period, seed 0. While
+        a flat envelope keeps mass, the marginal mu is spread over the grid;
+        the conditional one is not. The estimate matches the masked and
+        renormalized posterior, floor and peak stay marginal, and the
+        stopping rule reads the conditional width. Seeds 0 to 2 gave
+        conditional widths of 70 to 170 ms against marginal ones of 160 to
+        420 ms.
+        """
+        config = TaskConfig()
+        low, high = config.bounds(0.6)
+        rng = np.random.default_rng(0)
+        observer = Observer(250.0, 40.0, 0.02, 0.98)
+        psi = config.engine(rng=rng)
+        for _ in range(12):
+            delay, explored = psi.next_delay(low, high)
+            psi.update(delay, observer.respond(delay, rng), explored)
+        self.assertTrue(psi.rise_supported())
+        conditional = psi.estimate("mu")
+        marginal = psi.estimate("mu", conditional=False)
+        width = conditional["ci_high"] - conditional["ci_low"]
+        self.assertLess(width, marginal["ci_high"] - marginal["ci_low"])
+        self.assertLessEqual(conditional["ci_low"], 250.0)
+        self.assertGreaterEqual(conditional["ci_high"], 250.0)
+        self.assertEqual(psi.ci_width(), width)
+        self.assertEqual(psi.converged(width), True)
+        weights = np.where(psi.visible_rise() > 0.2 + 1e-9, psi.posterior, 0.0)
+        weights = weights.reshape(psi.shape).sum(axis=(1, 2, 3))
+        weights = weights / weights.sum()
+        self.assertAlmostEqual(
+            conditional["mean"], float(np.sum(psi.grids["mu"] * weights)), places=9
+        )
+        floor = psi.estimate("floor")
+        self.assertEqual(floor, psi.estimate("floor", conditional=False))
+        self.assertTrue(psi.summary()["conditional"])
+
+    def test_conditional_estimate_falls_back_without_a_rise(self):
+        """With no mass on a rise the estimates are the marginal ones, and
+        the summary says so."""
+        flat = SynchronyPsi(DEFAULT_DELAYS, floor=[0.4], peak=[0.5])
+        self.assertFalse(flat.rise_supported())
+        self.assertEqual(flat.estimate("mu"), flat.estimate("mu", conditional=False))
+        self.assertFalse(flat.summary()["conditional"])
+        config = TaskConfig()
+        psi = config.engine(rng=np.random.default_rng(0))
+        for delay in np.linspace(140.0, 500.0, 60):
+            psi.update(float(delay), True)
+        self.assertLess(psi.detection_evidence(), 0.01)
+        self.assertFalse(psi.rise_supported())
+        self.assertEqual(psi.estimate("mu"), psi.estimate("mu", conditional=False))
+
     def test_non_detector_gives_a_bayes_factor_below_one(self):
         """Seeds 1 to 5: a flat 0.4 responder favours no rise after 80 trials.
 

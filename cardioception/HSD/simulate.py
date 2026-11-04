@@ -203,6 +203,7 @@ def _row(
         "sigma_median": sigma["median"],
         "sigma_ci_low": sigma["ci_low"],
         "sigma_ci_high": sigma["ci_high"],
+        "mu_conditional": psi.rise_supported(),
         "floor_mean": psi.estimate("floor")["mean"],
         "peak_mean": psi.estimate("peak")["mean"],
         "detection_evidence": psi.detection_evidence(),

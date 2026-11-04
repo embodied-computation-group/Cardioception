@@ -298,8 +298,9 @@ parameters = getParameters(..., config=config)
 | `RealizedDelay` | The same value without the latency bias. On the absolute axis it sits 50 ms below `RequestedDelay`, by design |
 | `Decision` | `Synchronous`, `NotSynchronous`, or empty when no key was pressed in time |
 | `Confidence` | The rating on the scale shown, 1 to 10 by default. `ConfidenceUnit` holds the same rating on 0 to 1 |
-| `MuMean`, `MuCILow`, `MuCIHigh` | The posterior mean of `mu` after this trial, and its 95 percent credible interval |
-| `SigmaMean` | The posterior mean of `sigma` |
+| `MuMean`, `MuCILow`, `MuCIHigh` | The posterior mean of `mu` after this trial, and its 95 percent credible interval, given that the envelope rises (conditioned on a rise of more than 0.2). The stopping rule reads this interval |
+| `SigmaMean` | The posterior mean of `sigma`, also given a rise |
+| `MuConditional` | True when the `Mu` and `Sigma` columns are conditioned on a rise; False when the posterior put less than 0.01 on a rise, and they are then the plain marginal ones |
 | `FloorMean`, `PeakMean` | The posterior means of the floor and the peak of the envelope |
 | `DetectionBF` | The Bayes factor, posterior odds over prior odds, for an envelope that rises by more than 0.2 across the delays presented so far. `DetectionEvidence` is the posterior probability of that rise |
 

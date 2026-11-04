@@ -208,6 +208,27 @@ Bayes factor for detection was:
 The biased non-detectors favoured a rise more strongly than the detector did.
 The estimate of `mu` for a detector was not affected.
 
+**Estimates and the stopping rule.** While a flat envelope keeps posterior
+mass, `mu` is unidentified under it, and the marginal posterior of `mu` is a
+mixture with a uniform spread over the grid: its interval stays wide however
+well the location of a rise is known. So `mu` and `sigma` (mean, median and
+credible interval) are estimated from the posterior conditioned on a rise of
+more than 0.2 across the delays presented, the event of the detection
+evidence, renormalized: where and how wide the sensation is, given that there
+is one. `floor` and `peak` stay marginal, and the detection evidence says how
+much the posterior believes in a rise at all. The stopping rule uses the
+conditional interval of `mu`. If the posterior mass on a rise falls below
+0.01 the estimates fall back to the marginal posterior, and the `MuConditional`
+column of `final.txt` is False. The next delay is still chosen to minimize the
+expected entropy of the marginal `mu`, flat mass included: that entropy falls
+both when the location sharpens and when the question of a rise is settled, so
+the trials keep serving the detection evidence too, and the placement, and
+therefore the Bayes factors above, are those of the simulations. With the
+task's configuration at a 0.6 s period, a sharp observer (`mu` 250 ms,
+`sigma` 40 ms) reaches a conditional interval of 70 to 170 ms in 12 trials
+(three seeds), against a marginal one of 160 to 420 ms. The simulation tables below report the marginal estimate of
+`mu`; their rerun with the conditional one is pending with the cluster runs.
+
 ## Choosing the next delay
 
 **Objective.** Each trial presents the candidate delay that minimizes the

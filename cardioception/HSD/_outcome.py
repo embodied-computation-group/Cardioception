@@ -11,7 +11,7 @@ The names of the columns, and their order, are decided in one place:
      ConfidenceGranularity, ConfidenceLevels, ConfidenceSigned>,
     DecisionProvided, RatingProvided, nTrials,
     MuMean, MuMedian, MuCILow, MuCIHigh,
-    SigmaMean, SigmaMedian, SigmaCILow, SigmaCIHigh,
+    SigmaMean, SigmaMedian, SigmaCILow, SigmaCIHigh, MuConditional,
     FloorMean, PeakMean, DetectionEvidence, DetectionBF, PeriodMean,
     <quality columns>,
     StartTrigger, TrainStart, TrainStop, DecisionStart, ResponseMade,
@@ -46,6 +46,14 @@ quantities:
   is on the scale the engine chose from.
 
 When the heart speeds up or slows down during a train, the two differ. ``PeriodMean`` is seconds.
+
+The ``Mu`` and ``Sigma`` summaries come from the posterior conditioned on a
+rise of more than 0.2 across the delays presented (the threshold of
+``DetectionEvidence``): where and how wide the sensation is, given that there
+is one. ``MuConditional`` is True when they were; it is False when the
+posterior mass on a rise was below
+:data:`~cardioception.HSD.psi.MIN_RISE_MASS`, and the summaries are then
+marginal. ``FloorMean`` and ``PeakMean`` are marginal.
 Triggers are clock seconds. The posterior summaries are taken after the
 trial's update.
 """
@@ -92,6 +100,8 @@ class HSDTrialOutcome:
     sigmaMedian: Optional[float] = None
     sigmaCILow: Optional[float] = None
     sigmaCIHigh: Optional[float] = None
+    #: Whether the mu and sigma summaries are conditioned on a rise.
+    muConditional: Optional[bool] = None
     floorMean: Optional[float] = None
     peakMean: Optional[float] = None
     detectionEvidence: Optional[float] = None
@@ -151,6 +161,7 @@ class HSDTrialOutcome:
                 "SigmaMedian": self.sigmaMedian,
                 "SigmaCILow": self.sigmaCILow,
                 "SigmaCIHigh": self.sigmaCIHigh,
+                "MuConditional": self.muConditional,
                 "FloorMean": self.floorMean,
                 "PeakMean": self.peakMean,
                 "DetectionEvidence": self.detectionEvidence,
@@ -211,6 +222,7 @@ def posterior_fields(psi: SynchronyPsi) -> Dict[str, Any]:
         "sigmaMedian": sigma["median"],
         "sigmaCILow": sigma["ci_low"],
         "sigmaCIHigh": sigma["ci_high"],
+        "muConditional": psi.rise_supported(),
         "floorMean": psi.estimate("floor")["mean"],
         "peakMean": psi.estimate("peak")["mean"],
         "detectionEvidence": psi.detection_evidence(),
