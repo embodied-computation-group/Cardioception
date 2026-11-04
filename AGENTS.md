@@ -10,7 +10,8 @@ Cardioception is a Python package that runs two psychophysical tasks in PsychoPy
 - **Heart Rate Discrimination task (HRD)** — the primary task. Participants judge
   whether tones are faster or slower than their own heart, under an adaptive staircase.
 - **Heartbeat Counting task (HBC)** — the classic counting task, kept because the
-  literature rests on it. Not recommended for new studies.
+  literature rests on it. The docs describe each task's strengths and limits and do
+  not tell readers which task to use; keep it that way.
 
 The package **collects** data. It does not analyse it. Modelling happens in R with the
 [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception).
