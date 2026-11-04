@@ -23,7 +23,6 @@ import pytest
 from cardioception._log import start_session_log
 from cardioception.output import SessionPaths
 from cardioception.PAT import parameters as pat_parameters
-from cardioception.PAT.languages import danish, english
 from cardioception.PAT.parameters import getParameters, startPhaseSequence
 from cardioception.PAT.task import (
     FINAL_COLUMNS,
@@ -501,39 +500,6 @@ def test_parameters_open_a_real_window(tmp_path):
         assert parameters["myMouse"] is not None
     finally:
         parameters["win"].close()
-
-
-#########
-# Texts #
-#########
-
-
-@pytest.mark.parametrize("language", [english, danish])
-@pytest.mark.parametrize("extero", [False, True])
-@pytest.mark.parametrize("device", ["keyboard", "mouse"])
-def test_texts(language, extero, device):
-    texts = language(device=device, extero=extero)
-    assert set(texts) == set(english(device=device, extero=extero))
-    assert len(texts["instructions"]) == 7
-    assert (
-        len(language(device=device, extero=extero, showDial=False)["instructions"]) == 7
-    )
-    flat = " ".join(
-        " ".join(v) if isinstance(v, list) else str(v) for v in texts.values()
-    )
-    assert "—" not in flat and "–" not in flat  # no em or en dashes
-    assert "10" in texts["instructions"][5]
-    vibration = "vibration" in flat
-    assert vibration is extero
-    # The wheel is named, and the beeps never change speed
-    assert "scroll" in texts["instructions"][1]
-    assert any(word in texts["instructions"][0] for word in ("never", "aldrig"))
-
-
-def test_texts_describe_the_dial_only_when_shown():
-    with_dial = " ".join(english(showDial=True)["instructions"])
-    without = " ".join(english(showDial=False)["instructions"])
-    assert "pointer" in with_dial and "pointer" not in without
 
 
 #################

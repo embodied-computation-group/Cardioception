@@ -1,0 +1,134 @@
+# Participant-facing text of the Phase Adjustment Task, read by
+# cardioception/PAT/languages.py, whose docstring gives the rules: {low} and
+# {high} are the ends of the confidence scale, and the instructions page that
+# reads {dial} becomes dialPage or noDialPage.
+language: danish
+texts:
+  VASlabels:
+  - Slet ikke
+  - Ekstremt
+  done: Du har gennemført opgaven. Tak for din deltagelse.
+  noDialPage: Hold blikket på krydset i midten under hver runde.
+  textBreaks: |-
+    Hold en kort pause.
+
+    Tryk på MELLEMRUM, når du er klar til at fortsætte.
+  textNext: Tryk på MELLEMRUM for at fortsætte.
+  textNextTrial: Tryk på MELLEMRUM for at starte næste runde.
+  textPracticeStart: |-
+    Nu kommer et par øvelsesrunder.
+
+    Tryk på MELLEMRUM for at starte.
+  textTaskStart: |-
+    Nu begynder hovedopgaven.
+
+    Tryk på MELLEMRUM for at starte.
+  tooLate: For langsomt
+  tutorialEnd: |-
+    Hvis du har spørgsmål, så spørg forsøgslederen nu.
+
+    Ellers tryk på MELLEMRUM for at fortsætte.
+  tutorialIntro: Lad os øve med hjulet. Du hører nu bippene.
+  tutorialProgress: Rullet {done} af {total}. Tryk derefter på MELLEMRUM.
+  tutorialReady: Tryk nu på MELLEMRUM for at fortsætte.
+variants:
+  Confidence:
+    axis: exteroception
+    values:
+      'false': Hvor sikker er du på, at bippene passede med dit hjerteslag?
+      'true': Hvor sikker er du på, at bippene passede med vibrationen?
+  dialPage:
+    axis: exteroception
+    values:
+      'false': |-
+        På skærmen viser en viser på en cirkel, hvor langt du har rullet hjulet. Den lyser op ved hvert bip.
+
+        Den viser ikke, hvor dit hjerteslag er. Gå efter det, du mærker, og hold blikket på krydset i midten.
+      'true': |-
+        På skærmen viser en viser på en cirkel, hvor langt du har rullet hjulet. Den lyser op ved hvert bip.
+
+        Den viser ikke, hvor vibrationen er. Gå efter det, du mærker, og hold blikket på krydset i midten.
+  instructions:
+    axis: exteroception
+    values:
+      'false':
+      - |-
+        I denne opgave hører du et kort bip ved hvert hjerteslag.
+
+        Bippene kommer altid én gang per hjerteslag. De bliver aldrig hurtigere eller langsommere.
+      - |-
+        Brug scroll-hjulet på musen med din dominante hånd.
+
+        Når du ruller på hjulet, flytter hvert bip sig lidt tidligere eller senere i hjerteslaget.
+      - Når du ruller på hjulet, hører du én pause mellem to bip blive længere eller kortere.
+        Derefter falder rytmen til ro igen på den nye position.
+      - |-
+        Bliv ved med at justere, indtil bippet lander på det hjerteslag, du mærker. Udforsk frit, begge veje, så meget du vil.
+
+        Når de passer sammen, så tryk på MELLEMRUM med den anden hånd.
+      - '{dial}'
+      - Efter hver runde angiver du, hvor sikker du er på, at bippene passede med dit hjerteslag,
+        fra {low} (slet ikke) til {high} (ekstremt).
+      - |-
+        Mærk dit hjerteslag ét sted i kroppen, og hold din opmærksomhed der.
+
+        Sid stille, træk vejret normalt, og spænd ikke i musklerne. Mærk ikke efter din puls med fingrene.
+      'true':
+      - |-
+        I denne opgave mærker du en kort vibration på hånden og hører et kort bip ved hver vibration.
+
+        Bippene kommer altid én gang per vibration. De bliver aldrig hurtigere eller langsommere.
+      - |-
+        Brug scroll-hjulet på musen med din dominante hånd.
+
+        Når du ruller på hjulet, flytter hvert bip sig lidt tidligere eller senere i forhold til vibrationen.
+      - Når du ruller på hjulet, hører du én pause mellem to bip blive længere eller kortere.
+        Derefter falder rytmen til ro igen på den nye position.
+      - |-
+        Bliv ved med at justere, indtil bippet lander på vibrationen. Udforsk frit, begge veje, så meget du vil.
+
+        Når de passer sammen, så tryk på MELLEMRUM med den anden hånd.
+      - '{dial}'
+      - Efter hver runde angiver du, hvor sikker du er på, at bippene passede med vibrationen,
+        fra {low} (slet ikke) til {high} (ekstremt).
+      - Sid stille, træk vejret normalt, og spænd ikke i musklerne.
+  ratingHelp:
+    axis: device
+    values:
+      keyboard: Rul på hjulet for at vælge, MELLEMRUM for at bekræfte.
+      mouse: Flyt musen for at vælge, klik for at bekræfte.
+  tutorialEarlier:
+    axis: exteroception
+    values:
+      'false': 'Rul nu hjulet et par hak IND mod dig, og lyt: hvert bip flytter sig tidligere
+        i hjerteslaget.'
+      'true': 'Rul nu hjulet et par hak IND mod dig, og lyt: hvert bip flytter sig tidligere
+        i forhold til vibrationen.'
+  tutorialFree:
+    axis: exteroception
+    values:
+      'false': |-
+        Prøv at finde den position, hvor bippet falder på det hjerteslag, du mærker.
+
+        Tryk på MELLEMRUM, når det gør.
+      'true': |-
+        Prøv at finde den position, hvor bippet falder på vibrationen.
+
+        Tryk på MELLEMRUM, når det gør.
+  tutorialLater:
+    axis: exteroception
+    values:
+      'false': 'Rul nu hjulet et par hak VÆK fra dig, og lyt: hvert bip flytter sig senere
+        i hjerteslaget.'
+      'true': 'Rul nu hjulet et par hak VÆK fra dig, og lyt: hvert bip flytter sig senere
+        i forhold til vibrationen.'
+  tutorialListen:
+    axis: exteroception
+    values:
+      'false': 'Lyt: ét bip ved hvert hjerteslag.'
+      'true': 'Lyt: ét bip ved hver vibration.'
+  waitingFirstTone:
+    axis: exteroception
+    values:
+      'false': Lytter efter dit hjerteslag ...
+      'true': Bippene starter ...

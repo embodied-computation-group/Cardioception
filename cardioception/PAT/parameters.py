@@ -26,11 +26,11 @@ from .._log import get_logger, start_session_log
 from .._rng import make_rng
 from ..output import SessionPaths
 from ..scales import DISCRETE_1_10, ConfidenceScale
-from .languages import danish, english
+from .languages import available as available_languages
+from .languages import get_texts
 
 logger = get_logger()
 
-LANGUAGES = ("english", "danish")
 MODES = ("relative", "absolute")
 DEVICES = ("keyboard", "mouse")
 
@@ -102,9 +102,10 @@ def _validate(
     """Raise a ValueError naming the first invalid setting."""
     if mode not in MODES:
         raise ValueError(f"mode should be one of {MODES}, got {mode!r}.")
-    if language not in LANGUAGES:
+    if language not in available_languages():
         raise ValueError(
-            f"Invalid language: {language!r}. Can be one of {', '.join(LANGUAGES)}."
+            f"Invalid language: {language!r}. Can be one of "
+            f"{', '.join(available_languages())}."
         )
     if device not in DEVICES:
         raise ValueError(f"device should be one of {DEVICES}, got {device!r}.")
@@ -254,7 +255,8 @@ def getParameters(
         and the starting position of the confidence marker. Drawn from
         entropy when `None`, and recorded either way.
     language : str
-        `"english"` or `"danish"`.
+        A language in `cardioception/PAT/texts`, `"english"` or `"danish"` so
+        far (:func:`cardioception.PAT.languages.available` lists them).
     extero : bool
         If `True`, run the exteroceptive control task: a vibration on the hand
         takes the place of the heartbeat, and no ECG is needed.
@@ -442,11 +444,12 @@ def getParameters(
     # The ends of the scale are known before its labels, which come from the
     # texts, so the instructions can name them.
     ends = confidenceScale if confidenceScale is not None else DISCRETE_1_10
-    texts_fn = english if language == "english" else danish
-    parameters["texts"] = texts_fn(
+    parameters["texts"] = get_texts(
+        language,
         device=device,
         extero=extero,
-        confScale=(f"{ends.low:g}", f"{ends.high:g}"),
+        low=ends.low,
+        high=ends.high,
         showDial=showDial,
     )
     if confidenceScale is None:

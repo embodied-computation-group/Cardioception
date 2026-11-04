@@ -101,6 +101,7 @@ if __name__ == "__main__":
                 "texts/*.yaml",
             ],
             "cardioception.HSD": ["texts/*.yaml"],
+            "cardioception.PAT": ["texts/*.yaml"],
             "cardioception.notebooks": ["*.ipynb"],
         },
     )

@@ -13,6 +13,7 @@ import sys
 
 from psychopy import gui
 
+from cardioception.PAT.languages import available
 from cardioception.PAT.parameters import getParameters
 from cardioception.PAT.task import run
 
@@ -23,7 +24,7 @@ g.addField("LSL stream:", initial="PLUX")
 g.addField("Channel:", initial="ECG2")
 g.addField("Mode:", initial="relative", choices=["relative", "absolute"])
 g.addField("Extero (vibration):", initial=False)
-g.addField("Language:", initial="english", choices=["english", "danish"])
+g.addField("Language:", initial="english", choices=available())
 g.show()
 if not g.OK:
     sys.exit("Cancelled.")
