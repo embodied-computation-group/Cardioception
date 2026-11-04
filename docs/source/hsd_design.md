@@ -131,7 +131,7 @@ Two ideas from the PAT carry over:
 - **Cardiac phase as an alternative stimulus axis.** A delay can be fixed in
   milliseconds or as a fraction of the interbeat interval. Palmer and
   colleagues report both delay-based and phase-based responders
-  {cite:p}`2025:palmer`. The HSD engine works on any real-valued stimulus, so a
+  {cite:p}`2026:palmer_phase`. The HSD engine works on any real-valued stimulus, so a
   phase axis needs only a different candidate set and grid.
 - **An exteroceptive version with a known delay.** The same procedure applied
   to a stimulus whose true delay is known validates the whole pipeline, from
