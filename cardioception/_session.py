@@ -236,22 +236,29 @@ def confidence_rating(
             )
 
     elif parameters["device"] == "mouse":
-        # Use the mouse position to update the slider position
-        # The mouse movement is limited to a rectangle above the Slider
-        # To avoid being dragged out of the screen (in case of multi screens)
-        # and to avoid interferences with the Slider when clicking.
+        # The horizontal cursor position drives the slider marker. The cursor
+        # is hidden and warped once to a random start, so the marker does not
+        # begin where the decision click left it.
+        #
+        # The cursor must not be warped on every frame. On macOS each warp
+        # (CGDisplayMoveCursorToPoint, via pyglet) suppresses hardware mouse
+        # events, motion and clicks alike, for 0.25 s. Warping per frame kept
+        # that suppression permanently active and left the slider frozen
+        # (issue #103). The cursor is only brought back if it strays far from
+        # the slider, which keeps it from wandering onto a second screen while
+        # costing at most an occasional quarter second of input.
+        scale = parameters["confidenceScale"]
         parameters["win"].mouseVisible = False
         parameters["myMouse"].setPos((parameters["rng"].uniform(-0.25, 0.25), 0.2))
-        parameters["myMouse"].clickReset()
         message = text(parameters, parameters["texts"]["Confidence"], pos=(0, 0.2))
         slider = visual.Slider(
             win=parameters["win"],
             name="slider",
             pos=(0, -0.2),
             size=(0.7, 0.1),
-            labels=parameters["confidenceScale"].labels,
-            granularity=parameters["confidenceScale"].granularity,
-            ticks=parameters["confidenceScale"].ticks,
+            labels=scale.labels,
+            granularity=scale.granularity,
+            ticks=scale.ticks,
             style=("rating"),
             color="LightGray",
             flip=False,
@@ -260,41 +267,34 @@ def confidence_rating(
         slider.marker.size = (0.03, 0.03)
         clock = core.Clock()
         parameters["myMouse"].clickReset()
-        buttons, confidenceRT = parameters["myMouse"].getPressed(getTime=True)
         # The button used to answer the decision is often still down here, and
         # would submit the rating on the first frame past minRatingTime with
         # whatever value the marker happened to hold.
-        armed = not any(buttons)
+        armed = not any(parameters["myMouse"].getPressed())
 
         while True:
-            parameters["win"].mouseVisible = False
             trialdur = clock.getTime()
-            buttons, confidenceRT = parameters["myMouse"].getPressed(getTime=True)
-            buttons, armed = accept_press(buttons, armed)
+            buttons, armed = accept_press(parameters["myMouse"].getPressed(), armed)
 
-            # Mouse position (keep in in the rectangle)
-            newPos = parameters["myMouse"].getPos()
-            if newPos[0] < -0.5:
-                newX = -0.5
-            elif newPos[0] > 0.5:
-                newX = 0.5
-            else:
-                newX = newPos[0]
-            if newPos[1] < 0.1:
-                newY = 0.1
-            elif newPos[1] > 0.3:
-                newY = 0.3
-            else:
-                newY = newPos[1]
-            parameters["myMouse"].setPos((newX, newY))
+            # The marker follows the cursor over the slider's extent, in
+            # height units, expressed on whichever scale the session is using
+            # rather than assuming 0-100. Only the marker is clamped, not the
+            # cursor.
+            mouseX, mouseY = parameters["myMouse"].getPos()[:2]
+            newX = min(max(float(mouseX), -0.5), 0.5)
+            slider.markerPos = scale.from_unit((newX / 0.5 + 1) / 2)
 
-            # Marker position from the mouse, expressed on whichever scale
-            # the session is using rather than assuming 0-100.
-            p = newX / 0.5
-            slider.markerPos = parameters["confidenceScale"].from_unit((p + 1) / 2)
+            # Bring the cursor back only when it is about to leave a 16:9
+            # full screen (half width 0.89 in height units), which is where it
+            # would cross onto a second monitor. See the note above on why
+            # this is not done every frame.
+            if abs(mouseX) > 0.85 or abs(mouseY) > 0.45:
+                parameters["myMouse"].setPos((newX, 0.2))
 
-            # Check if response provided
-            if (buttons == [1, 0, 0]) & (trialdur > parameters["minRatingTime"]):
+            # A left click confirms the rating. Clicks before minRatingTime are
+            # ignored, as in the keyboard branch, so a participant cannot
+            # confirm the random start value reflexively.
+            if buttons[0] and (trialdur > parameters["minRatingTime"]):
                 confidence, confidenceRT, ratingProvided = (
                     slider.markerPos,
                     clock.getTime(),
@@ -311,7 +311,8 @@ def confidence_rating(
                 break
             elif trialdur > parameters["maxRatingTime"]:  # if too long
                 ratingProvided = False
-                confidenceRT = parameters["myMouse"].clickReset()
+                confidenceRT = None
+                parameters["myMouse"].clickReset()
 
                 # Text feedback if no rating provided
                 message = text(
