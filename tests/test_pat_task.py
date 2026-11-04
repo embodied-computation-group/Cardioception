@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """The PsychoPy side of the Phase Adjustment Task, without hardware.
 
 A fake engine stands in for :class:`cardioception.PAT.engine.PhaseEngine`
@@ -7,19 +7,25 @@ and wheel turns, so these tests need no ECG, no sound card and no display.
 One test opens a small real window, and is skipped where that is impossible.
 """
 
+import json
 import math
 import os
 import sys
 import time
 import types
+from pathlib import Path
 from typing import Callable, List, Optional
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from cardioception.PAT.languages import danish, english
-from cardioception.PAT.parameters import getParameters, startPhaseSequence
+from cardioception._log import start_session_log
+from cardioception._present import on_every_frame
+from cardioception.output import SessionPaths
+from cardioception.PAT import parameters as pat_parameters
+from cardioception.PAT._autopilot import PATAutopilot
+from cardioception.PAT.parameters import EVENTS, getParameters, startPhaseSequence
 from cardioception.PAT.task import (
     FINAL_COLUMNS,
     TONE_COLUMNS,
@@ -214,17 +220,24 @@ class FakeWindow:
 
 
 class FakeMouse:
-    """Half a notch per wheel read, so every second frame moves the dial."""
+    """Half a notch per wheel read, so every second frame moves the dial.
+
+    ``buttons``, when set, scripts the left button one read at a time; past
+    its end the button stays as ``pressed`` says.
+    """
 
     def __init__(self, *args, **kwargs):
         self.wheel = 0.5
         self.pressed = False
+        self.buttons: List[bool] = []
         self.x = 0.0
 
     def getWheelRel(self) -> np.ndarray:
         return np.array([0.0, self.wheel])
 
     def getPressed(self):
+        if self.buttons:
+            return [int(self.buttons.pop(0)), 0, 0]
         return [int(self.pressed), 0, 0]
 
     def getPos(self) -> np.ndarray:
@@ -277,7 +290,9 @@ def fake_psychopy(monkeypatch):
         setattr(psychopy, name, module)
         monkeypatch.setitem(sys.modules, f"psychopy.{name}", module)
     monkeypatch.setitem(sys.modules, "psychopy", psychopy)
-    return keyboard
+    yield keyboard
+    # Release the session log, so the run directory can be removed on Windows.
+    start_session_log(None)
 
 
 def make_parameters(tmp_path, engine=None, **kwargs) -> dict:
@@ -369,7 +384,9 @@ def test_parameters(fake_psychopy, tmp_path):
     assert parameters["outlet"] is None  # an injected engine brings its own markers
     assert len(parameters["startPhaseMain"]) == 28
     assert len(parameters["startPhasePractice"]) == 8
-    assert parameters["confScale"] == [1, 10]
+    scale = parameters["confidenceScale"]
+    assert scale.bounds == (1, 10) and scale.kind == "discrete"
+    assert list(scale.labels) == ["Not at all", "Extremely"]
     assert parameters["labelsRating"] == ["Not at all", "Extremely"]
     assert parameters["results_df"].empty and parameters["tones"] == []
     assert isinstance(parameters["win"], FakeWindow)
@@ -378,6 +395,24 @@ def test_parameters(fake_psychopy, tmp_path):
 
     danish_parameters = make_parameters(tmp_path / "da", language="danish")
     assert danish_parameters["labelsRating"] == ["Slet ikke", "Ekstremt"]
+    assert list(danish_parameters["confidenceScale"].labels) == [
+        "Slet ikke",
+        "Ekstremt",
+    ]
+
+
+def test_a_scale_passed_in_keeps_its_labels_and_sets_the_instructions(
+    fake_psychopy, tmp_path
+):
+    from cardioception.scales import VAS_0_100
+
+    scale = VAS_0_100.with_labels(["low", "high"])
+    parameters = make_parameters(tmp_path, confidenceScale=scale)
+    assert parameters["confidenceScale"] is scale
+    assert parameters["labelsRating"] == ["low", "high"]
+    assert "from 0 (not at all) to 100 (extremely)" in " ".join(
+        parameters["texts"]["instructions"]
+    )
 
 
 @pytest.mark.parametrize(
@@ -393,7 +428,7 @@ def test_parameters(fake_psychopy, tmp_path):
         {"exteroPeriod": 1000},  # milliseconds, not seconds
         {"exteroPeriod": "regular"},
         {"toneVolume": 2.0},
-        {"confScale": (10, 1)},
+        {"confidenceScale": (1, 10)},  # a ConfidenceScale, not a tuple
     ],
 )
 def test_parameters_reject_bad_input(fake_psychopy, tmp_path, kwargs):
@@ -406,10 +441,51 @@ def test_parameters_need_a_recorder(fake_psychopy, tmp_path):
         getParameters(resultPath=str(tmp_path))
 
 
-def test_parameters_refuse_to_overwrite_a_run(fake_psychopy, tmp_path):
-    (tmp_path / "final.txt").write_text("Trial\n1\n")
-    with pytest.raises(ValueError, match="already holds"):
+def test_parameters_refuse_to_overwrite_a_run(fake_psychopy, tmp_path, monkeypatch):
+    """A run directory that already holds results is not written into."""
+    monkeypatch.setattr(
+        pat_parameters,
+        "SessionPaths",
+        lambda **kwargs: SessionPaths(run_id="fixed", **kwargs),
+    )
+    first = make_parameters(tmp_path)
+    with open(first["paths"].path("final"), "w") as handle:
+        handle.write("Trial\n1\n")
+    with pytest.raises(FileExistsError, match="already holds"):
         make_parameters(tmp_path)
+    again = make_parameters(tmp_path, overwrite=True)
+    assert again["paths"].directory == first["paths"].directory
+
+
+def test_results_go_to_a_run_directory(fake_psychopy, tmp_path):
+    """sub-<participant>/ses-<session>/run-<timestamp>, with a manifest."""
+    parameters = make_parameters(tmp_path, session="002", seed=11)
+    directory = Path(parameters["paths"].directory)
+    assert directory.parent == tmp_path / "sub-test" / "ses-002"
+    assert directory.name.startswith("run-")
+    assert parameters["resultPath"] == str(directory)
+    assert Path(parameters["paths"].path("final")).name.startswith(
+        "sub-test_ses-002_run-"
+    )
+    manifest = json.loads((directory / "manifest.json").read_text())
+    assert manifest["task"] == "PAT"
+    assert manifest["participant"] == "test" and manifest["session"] == "002"
+    assert manifest["seed"] == 11
+    assert manifest["nTrials"] == 4 and manifest["nPractice"] == 2
+    assert manifest["mode"] == "relative" and manifest["extero"] is False
+    assert (directory / "session.log").exists()
+
+
+def test_the_seed_decides_the_start_phases(fake_psychopy, tmp_path):
+    a = make_parameters(tmp_path / "a", nTrials=28, nPractice=8, seed=5)
+    b = make_parameters(tmp_path / "b", nTrials=28, nPractice=8, seed=5)
+    c = make_parameters(tmp_path / "c", nTrials=28, nPractice=8, seed=6)
+    assert a["seed"] == 5
+    assert a["startPhaseMain"] == b["startPhaseMain"]
+    assert a["startPhasePractice"] == b["startPhasePractice"]
+    assert a["startPhaseMain"] != c["startPhaseMain"]
+    unseeded = make_parameters(tmp_path / "d")
+    assert isinstance(unseeded["seed"], int)  # drawn, and recorded
 
 
 def test_parameters_open_a_real_window(tmp_path):
@@ -426,39 +502,6 @@ def test_parameters_open_a_real_window(tmp_path):
         assert parameters["myMouse"] is not None
     finally:
         parameters["win"].close()
-
-
-#########
-# Texts #
-#########
-
-
-@pytest.mark.parametrize("language", [english, danish])
-@pytest.mark.parametrize("extero", [False, True])
-@pytest.mark.parametrize("device", ["keyboard", "mouse"])
-def test_texts(language, extero, device):
-    texts = language(device=device, extero=extero)
-    assert set(texts) == set(english(device=device, extero=extero))
-    assert len(texts["instructions"]) == 7
-    assert (
-        len(language(device=device, extero=extero, showDial=False)["instructions"]) == 7
-    )
-    flat = " ".join(
-        " ".join(v) if isinstance(v, list) else str(v) for v in texts.values()
-    )
-    assert "—" not in flat and "–" not in flat  # no em or en dashes
-    assert "10" in texts["instructions"][5]
-    vibration = "vibration" in flat
-    assert vibration is extero
-    # The wheel is named, and the beeps never change speed
-    assert "scroll" in texts["instructions"][1]
-    assert any(word in texts["instructions"][0] for word in ("never", "aldrig"))
-
-
-def test_texts_describe_the_dial_only_when_shown():
-    with_dial = " ".join(english(showDial=True)["instructions"])
-    without = " ".join(english(showDial=False)["instructions"])
-    assert "pointer" in with_dial and "pointer" not in without
 
 
 #################
@@ -481,17 +524,26 @@ def test_trial_writes_a_row_and_saves(fake_psychopy, tmp_path):
     assert 1 <= row["Confidence"] <= 10 and row["ConfidenceRT"] > 0.5
     assert row["PressTime"] > 0 and row["TrialDuration"] >= 0  # task fallback
 
-    final = read(tmp_path / "final.txt")
+    final = read(parameters["paths"].path("final"))
     assert list(final.columns) == FINAL_COLUMNS
     assert len(final) == 1
+    # The rating, the same rating on 0 to 1, and the scale it was given on
+    assert final.loc[0, "ConfidenceUnit"] == pytest.approx(
+        (final.loc[0, "Confidence"] - 1) / 9
+    )
+    assert final.loc[0, "Device"] == "keyboard"
+    assert final.loc[0, "ConfidenceScale"] == "discrete"
+    assert final.loc[0, "ConfidenceLow"] == 1 and final.loc[0, "ConfidenceHigh"] == 10
+    assert final.loc[0, "ConfidenceLevels"] == 10
+    assert bool(final.loc[0, "ConfidenceSigned"]) is False
     assert final.loc[0, "Block"] == "practice"
     assert final.loc[0, "StartPhaseDeg"] == 90
     assert bool(final.loc[0, "Extero"]) is False
 
     trial(parameters, 2, "practice", 180.0)
-    assert len(read(tmp_path / "final.txt")) == 2  # saved after every trial
+    assert len(read(parameters["paths"].path("final"))) == 2  # saved after every trial
 
-    tones = read(tmp_path / "tones.txt")
+    tones = read(parameters["paths"].path("tones"))
     assert list(tones.columns) == TONE_COLUMNS
     assert set(tones["Trial"]) == {1, 2}
     assert set(tones["Block"]) == {"practice"}
@@ -598,7 +650,7 @@ def test_tutorial_guides_through_the_wheel(fake_psychopy, tmp_path):
     assert sum(engine.nudges[:firstEarlier]) >= parameters["tutorialNotches"]
     assert sum(n for n in engine.nudges[firstEarlier:] if n < 0) <= -3
     assert texts["textNext"] in shown  # the footer once a step is done
-    assert not os.path.exists(tmp_path / "tones.txt")  # nothing saved
+    assert not os.path.exists(parameters["paths"].path("tones"))  # nothing saved
 
 
 def test_run_saves_everything(fake_psychopy, tmp_path):
@@ -611,7 +663,7 @@ def test_run_saves_everything(fake_psychopy, tmp_path):
     assert parameters["aborted"] is False
     # Tutorial, then 2 practice and 12 main trials, numbered across blocks
     assert [s[0] for s in engine.started] == [TUTORIAL_TRIAL] + list(range(1, 15))
-    final = read(tmp_path / "final.txt")
+    final = read(parameters["paths"].path("final"))
     assert list(final["Trial"]) == list(range(1, 15))
     assert list(final["Block"]) == ["practice"] * 2 + ["main"] * 12
     assert list(final["StartPhaseDeg"]) == (
@@ -619,14 +671,14 @@ def test_run_saves_everything(fake_psychopy, tmp_path):
     )
     assert final["Confidence"].between(1, 10).all()
 
-    tones = read(tmp_path / "tones.txt")
+    tones = read(parameters["paths"].path("tones"))
     assert TUTORIAL_TRIAL not in set(tones["Trial"])  # the tutorial is not saved
     assert set(tones["Trial"]) == set(range(1, 15))
     assert (
         tones.groupby("Trial")["Block"].first() == final.set_index("Trial")["Block"]
     ).all()
 
-    saved = read(tmp_path / "parameters.txt").set_index("Parameter")["Value"]
+    saved = read(parameters["paths"].path("parameters")).set_index("Parameter")["Value"]
     assert saved["mode"] == '"relative"'
     assert saved["nTrials"] == "12"
     assert "engine" not in saved.index and "win" not in saved.index
@@ -639,7 +691,7 @@ def test_run_without_rating(fake_psychopy, tmp_path):
 
     run(parameters, runTutorial=False, confidenceRating=False)
 
-    final = read(tmp_path / "final.txt")
+    final = read(parameters["paths"].path("final"))
     assert len(final) == 4 and final["Confidence"].isna().all()
     assert engine.marks == []
 
@@ -659,7 +711,7 @@ def test_escape_in_a_trial_keeps_completed_trials(fake_psychopy, tmp_path):
 
     assert parameters["aborted"] is True
     assert engine.stops >= 3  # the tones of the aborted trial were stopped
-    final = read(tmp_path / "final.txt")
+    final = read(parameters["paths"].path("final"))
     assert list(final["Trial"]) == [1, 2]
     assert not engine.closed  # left to the caller
 
@@ -667,6 +719,55 @@ def test_escape_in_a_trial_keeps_completed_trials(fake_psychopy, tmp_path):
 def test_escape_in_the_rating_keeps_the_trial(fake_psychopy, tmp_path):
     engine = FakeEngine()
     parameters = make_parameters(tmp_path, engine=engine, nPractice=0)
+    normal = space_after_polls(engine)
+
+    def policy(keyList):
+        if engine.ended == 1 and keyList and "escape" in keyList:
+            return ["escape"]  # while the first rating is on screen
+        return normal(keyList)
+
+    fake_psychopy.policy = policy
+    run(parameters, runTutorial=False)
+
+    assert parameters["aborted"] is True
+    final = read(parameters["paths"].path("final"))
+    assert len(final) == 1 and final["Confidence"].isna().all()
+    assert final["ConfidenceUnit"].isna().all()
+
+
+def test_escape_before_any_trial_writes_no_results(fake_psychopy, tmp_path):
+    parameters = make_parameters(tmp_path)
+    fake_psychopy.policy = lambda keyList: ["escape"]
+
+    run(parameters)
+
+    assert parameters["aborted"] is True
+    assert not os.path.exists(parameters["paths"].path("final"))
+    assert not os.path.exists(parameters["paths"].path("tones"))
+
+
+def test_mouse_rating(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, device="mouse")
+    fake_psychopy.policy = space_after_polls(engine)
+    mouse = parameters["myMouse"]
+    # Held from before the rating for 10 reads, released, then pressed
+    mouse.buttons = [True] * 10 + [False] * 2
+    mouse.pressed = True
+    mouse.x = 0.5  # right end of the slider
+
+    row = trial(parameters, 1, "main", 0.0)
+
+    assert row["Confidence"] == 10
+    # Not on the first read past minRatingTime, while the button was still held
+    assert row["ConfidenceRT"] > 1.0
+    assert row["Device"] == "mouse" and row["ConfidenceUnit"] == 1.0
+    assert engine.idlePolls >= 10  # the engine is polled during the rating
+
+
+def test_escape_in_the_mouse_rating_keeps_the_trial(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, device="mouse", nPractice=0)
     normal = space_after_polls(engine)
 
     def policy(keyList):
@@ -678,33 +779,8 @@ def test_escape_in_the_rating_keeps_the_trial(fake_psychopy, tmp_path):
     run(parameters, runTutorial=False)
 
     assert parameters["aborted"] is True
-    final = read(tmp_path / "final.txt")
+    final = read(parameters["paths"].path("final"))
     assert len(final) == 1 and final["Confidence"].isna().all()
-
-
-def test_escape_before_any_trial_writes_no_results(fake_psychopy, tmp_path):
-    parameters = make_parameters(tmp_path)
-    fake_psychopy.policy = lambda keyList: ["escape"]
-
-    run(parameters)
-
-    assert parameters["aborted"] is True
-    assert not os.path.exists(tmp_path / "final.txt")
-    # So the same session can be started again
-    make_parameters(tmp_path)
-
-
-def test_mouse_rating(fake_psychopy, tmp_path):
-    engine = FakeEngine()
-    parameters = make_parameters(tmp_path, engine=engine, device="mouse")
-    fake_psychopy.policy = space_after_polls(engine)
-    parameters["myMouse"].pressed = True
-    parameters["myMouse"].x = 0.35  # right end of the slider
-
-    row = trial(parameters, 1, "main", 0.0)
-
-    assert row["Confidence"] == 10
-    assert row["ConfidenceRT"] > parameters["minRatingTime"]
 
 
 #####################################
@@ -769,11 +845,11 @@ def test_trial_with_the_real_engine(fake_psychopy, tmp_path):
     assert row["nTonesReal"] + row["nTonesPredicted"] >= 2
     assert row["nDialMoves"] > 0
 
-    tones = read(tmp_path / "tones.txt")
+    tones = read(parameters["paths"].path("tones"))
     assert set(tones["Kind"]) == {"tone", "vibration"}
     assert set(tones.loc[tones["Kind"] == "vibration", "Anchor"]) == {"virtual"}
     assert tones["Onset"].notna().all()
-    assert list(read(tmp_path / "final.txt").columns) == FINAL_COLUMNS
+    assert list(read(parameters["paths"].path("final")).columns) == FINAL_COLUMNS
 
 
 ##################################
@@ -796,11 +872,11 @@ def test_rating_follows_the_wheel(fake_psychopy, tmp_path, direction, expected):
 
 
 def test_wheel_rating_steps_one_per_notch(fake_psychopy):
-    from cardioception.PAT._rating import wheel_rating
+    from cardioception._rating import keyboard_rating
 
     win = FakeWindow()
     fake_psychopy.policy = lambda keyList: ["space"] if keyList else []
-    confidence, _, provided = wheel_rating(
+    confidence, _, provided = keyboard_rating(
         win=win,
         message=FakeStim(),
         low=1,
@@ -828,11 +904,24 @@ def test_text_screens_ignore_the_wheel(fake_psychopy, tmp_path):
         return ["space"] if len(calls) > 5 else []
 
     fake_psychopy.policy = policy
-    waitInput(parameters)
+    # run() installs the engine's idle poll as the per-frame hook
+    on_every_frame(parameters["win"], engine.idle_poll)
+    waitInput(parameters, FakeStim(text="a screen"))
 
     assert len(calls) == 6  # only space moved on
     assert engine.nudges == []
     assert engine.idlePolls == 6  # beats are still detected on text screens
+    assert TEXTS.count("a screen") == 6  # and the screen is redrawn
+
+
+def test_run_removes_the_frame_hook(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, nPractice=0)
+    fake_psychopy.policy = space_after_polls(engine)
+
+    run(parameters, runTutorial=False)
+
+    assert getattr(parameters["win"], "_cardioception_frame_hook", None) is None
 
 
 def test_idle_poll_between_trials_only(fake_psychopy, tmp_path):
@@ -942,3 +1031,158 @@ def test_tutorial_timeout_lets_space_through(fake_psychopy, tmp_path):
     texts = parameters["texts"]
     assert texts["tutorialProgress"].format(done=0, total=3) in TEXTS
     assert texts["tutorialFree"] in TEXTS  # got through both wheel pages
+
+
+############
+# Triggers #
+############
+
+
+def test_triggers_fire_once_per_trial(fake_psychopy, tmp_path):
+    counts = {event: 0 for event in EVENTS}
+
+    def counter(event):
+        def callback():
+            counts[event] += 1
+
+        return callback
+
+    engine = FakeEngine()
+    parameters = make_parameters(
+        tmp_path,
+        engine=engine,
+        nPractice=1,
+        triggers={event: counter(event) for event in EVENTS},
+    )
+    fake_psychopy.policy = space_after_polls(engine, parameters=parameters)
+
+    run(parameters, runTutorial=True)
+
+    assert counts == {event: 5 for event in EVENTS}  # 1 practice, 4 main
+
+
+def test_triggers_without_a_rating(fake_psychopy, tmp_path):
+    counts = {event: 0 for event in EVENTS}
+    triggers = {e: (lambda e=e: counts.__setitem__(e, counts[e] + 1)) for e in EVENTS}
+    engine = FakeEngine()
+    parameters = make_parameters(
+        tmp_path, engine=engine, nPractice=0, triggers=triggers
+    )
+    fake_psychopy.policy = space_after_polls(engine)
+
+    run(parameters, runTutorial=False, confidenceRating=False)
+
+    assert counts["trialStart"] == counts["trialStop"] == 4
+    assert counts["confidenceStart"] == counts["confidenceStop"] == 0
+
+
+@pytest.mark.parametrize(
+    "triggers, error",
+    [({"listeningStart": print}, ValueError), ({"trialStart": 1}, TypeError)],
+)
+def test_bad_triggers_are_refused(fake_psychopy, tmp_path, triggers, error):
+    with pytest.raises(error):
+        make_parameters(tmp_path, triggers=triggers)
+
+
+#############
+# Autopilot #
+#############
+
+
+def test_the_autopilot_turns_towards_its_aim_and_presses():
+    pilot = PATAutopilot(
+        np.random.default_rng(0), target=40.0, spread=0.0, notch_interval=0.1
+    )
+    pilot.start_trial(1)
+    assert pilot.aim == 40.0
+    # From 0 degrees, later; one notch per interval at most
+    assert pilot.frame(0.0, 0.0, 10.0) == (1, False)
+    assert pilot.frame(0.05, 10.0, 10.0) == (0, False)
+    assert pilot.frame(0.1, 10.0, 10.0) == (1, False)
+    # From 350 degrees the short way is later, through 0
+    assert pilot.frame(0.25, 350.0, 10.0)[0] == 1
+    # From 60 degrees, earlier
+    assert pilot.frame(0.5, 60.0, 10.0)[0] == -1
+    # Within half a notch: no turn, and the press once it has settled
+    assert pilot.frame(1.0, 44.0, 10.0) == (0, False)
+    assert pilot.frame(1.1, 44.0, 10.0) == (0, False)
+    assert pilot.frame(1.25, 44.0, 10.0) == (0, True)
+    # Tutorial screens: roll the way asked, or only press
+    assert pilot.frame(2.0, 44.0, 10.0, roll=-1) == (-1, True)
+    assert pilot.frame(3.0, 44.0, 10.0, wheel=False) == (0, True)
+    # No phase yet, nothing to aim at
+    assert pilot.frame(4.0, math.nan, 10.0) == (0, False)
+    assert [e["event"] for e in pilot.log] == ["trial"]
+
+
+def test_the_autopilot_runs_a_session(fake_psychopy, tmp_path):
+    """Tutorial, practice and main trials with nobody at the keyboard."""
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, nTrials=4, nPractice=2)
+    pilot = PATAutopilot(
+        parameters["rng"], target=95.0, spread=0.0, notch_interval=0.0, settle=0.0
+    )
+    parameters["autopilot"] = pilot
+    fake_psychopy.policy = lambda keyList: []  # no key is ever pressed
+
+    run(parameters, runTutorial=True)
+
+    assert parameters["aborted"] is False
+    assert [s[0] for s in engine.started] == [TUTORIAL_TRIAL] + list(range(1, 7))
+    final = read(parameters["paths"].path("final"))
+    assert len(final) == 6
+    # The dial stops within half a notch of the aim, whatever the start phase
+    assert (final["ChosenPhaseDeg"] - 95.0).abs().max() <= 5.0
+    assert final["Confidence"].between(1, 10).all()
+    assert (final["Confidence"] == final["Confidence"].round()).all()  # on a step
+    np.testing.assert_allclose(final["ConfidenceUnit"], (final["Confidence"] - 1) / 9)
+    rated = [e for e in pilot.log if e["event"] == "rate"]
+    assert len(rated) == 6
+    # The tutorial screens rolled the way they asked, three notches each
+    assert sum(n > 0 for n in engine.nudges) >= 3
+    assert sum(n < 0 for n in engine.nudges) >= 3
+
+
+def test_the_autopilot_tutorial_on_a_clock_of_another_origin(fake_psychopy, tmp_path):
+    """The dial loop reads the engine's clock, not one of its own.
+
+    On Linux without pylsl the task's fallback clock and the beat source's
+    (PsychToolbox's epoch-based ``GetSecs``) differ by decades, and a loop
+    timing beeps on the wrong one never heard one: the tutorial hung.
+    """
+    engine = FakeEngine()
+    base = engine.clock
+    engine.clock = lambda: base() + 1.0e9
+    parameters = make_parameters(tmp_path, engine=engine, nTrials=1, nPractice=0)
+    parameters["tutorialStageTimeout"] = 5.0
+    parameters["autopilot"] = PATAutopilot(
+        parameters["rng"], target=95.0, spread=0.0, notch_interval=0.0, settle=0.0
+    )
+
+    tutorial(parameters)
+
+    assert engine.ended == 1
+    assert sum(n > 0 for n in engine.nudges) >= parameters["tutorialNotches"]
+    assert sum(n < 0 for n in engine.nudges) >= parameters["tutorialNotches"]
+
+
+class SilentEngine(FakeEngine):
+    """Polled, but never plays a beep: an ECG that finds no beat."""
+
+    def poll(self) -> None:
+        self.polls += 1
+
+
+def test_a_tutorial_without_beeps_ends_on_its_timeout(fake_psychopy, tmp_path, caplog):
+    engine = SilentEngine()
+    parameters = make_parameters(tmp_path, engine=engine, nTrials=1, nPractice=0)
+    parameters["tutorialStageTimeout"] = 0.2
+    parameters["autopilot"] = PATAutopilot(parameters["rng"], target=95.0)
+
+    tutorial(parameters)
+
+    assert engine.ended == 1
+    assert engine.stops == 1
+    assert engine.nudges == []
+    assert "tutorial was skipped" in caplog.text

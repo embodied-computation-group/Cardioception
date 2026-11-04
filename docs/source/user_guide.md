@@ -212,12 +212,12 @@ The delay can be set on one of two axes, chosen per session with `axis`:
    | participant | `Participant` | The participant identifier |
    | session | `HSD` | The session identifier |
    | LSL stream | `PLUX` | The name of the ECG stream |
-   | Channel | `ECG2` | The label of the ECG channel in that stream |
+   | Channel | none | The label of the ECG channel in that stream. It must be given: the task does not start without it |
    | Axis | `absolute` | `absolute` or `phase` |
    | Device | `keyboard` | The response device, keyboard only so far |
    | Language | `english` | The instructions, English only so far |
 
-   The channel label must be one the stream actually has, and it is not the same on every hub: the PLUX bridge has given `ECG1` on one hub and `ECG2` on another. A label the stream does not have stops the task before anything is written, with an error that lists the stream's channels. The wrapper runs at most 60 trials (`nTrials=60`).
+   The channel has no default because its label is not the same on every hub: the PLUX bridge has given `ECG1` on one hub and `ECG2` on another. A label the stream does not have stops the task before anything is written, with an error that lists the stream's channels. The wrapper runs at most 60 trials (`nTrials=60`).
 3. When the dialog closes, the task opens the `HSD` marker stream. In LabRecorder, update the stream list, select the ECG stream and `HSD`, and start recording while the first instruction screen is still up.
 4. The participant reads three instruction screens, does three practice trials, which do not update the estimate, and then the task starts. There is a break every 20 trials (`nBreaking`).
 

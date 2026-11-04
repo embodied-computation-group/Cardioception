@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """OnlineRDetector against the offline detector, and on a synthetic ECG.
 
 The recorded files are a biosignalsplux chest ECG streamed over LSL. They live

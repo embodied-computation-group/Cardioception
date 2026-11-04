@@ -55,6 +55,10 @@ for mod in (
     "cardioception.HBC.task",
     "cardioception.check_device",
     "cardioception._rating",
+    "cardioception.PAT.engine",
+    "cardioception.PAT.parameters",
+    "cardioception.PAT.task",
+    "cardioception.PAT.scoring",
 ):
     try:
         __import__(mod)
@@ -96,6 +100,20 @@ try:
             check(f"texts/{language}.yaml", False, f"{type(exc).__name__}: {exc}")
 except Exception as exc:
     check("language loader", False, f"{type(exc).__name__}: {exc}")
+
+try:
+    from cardioception.PAT.languages import available as pat_available
+    from cardioception.PAT.languages import get_texts as pat_texts
+
+    for language in ("english", "danish"):
+        try:
+            found = language in pat_available()
+            texts = pat_texts(language, "keyboard", True)
+            check(f"PAT/texts/{language}.yaml", found, f"{len(texts)} keys")
+        except Exception as exc:
+            check(f"PAT/texts/{language}.yaml", False, f"{type(exc).__name__}: {exc}")
+except Exception as exc:
+    check("PAT language loader", False, f"{type(exc).__name__}: {exc}")
 
 # --- the interpreter really is one the metadata allows ---------------------
 print("\npython_requires")

@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Tones and vibration bursts at scheduled times, with their reported onsets.
 
 :class:`TonePlayer` drives PsychPortAudio (``psychtoolbox.audio``) directly:

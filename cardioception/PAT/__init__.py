@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Phase adjustment task (PAT), after the PAT-ECG of Hodgetts et al. (2026).
 
 The participant hears one tone per heartbeat, at a delay after the R-wave they

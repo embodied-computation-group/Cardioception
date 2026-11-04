@@ -137,6 +137,73 @@ Engine
     gaussian_envelope
     default_grids
 
+Phase Adjustment Task
+=====================
+
+Experimental, after the PAT-ECG of Hodgetts et al. (2026); see the
+:doc:`PAT page <pat>`.
+
+Parameters
+**********
+
+.. currentmodule:: cardioception.PAT.parameters
+
+.. autosummary::
+   :toctree: generated/PAT.parameters
+
+    getParameters
+    startPhaseSequence
+
+Scripts
+*******
+
+.. currentmodule:: cardioception.PAT.task
+
+.. autosummary::
+   :toctree: generated/PAT.task
+
+    run
+    trial
+    tutorial
+    dialLoop
+    confidenceRatingTask
+
+Engine
+******
+
+.. currentmodule:: cardioception.PAT.engine
+
+.. autosummary::
+   :toctree: generated/PAT.engine
+
+    PhaseEngine
+
+Scoring
+*******
+
+.. currentmodule:: cardioception.PAT.scoring
+
+.. autosummary::
+   :toctree: generated/PAT.scoring
+
+    consistency_grid
+    mean_resultant_length
+    phase_angles
+    monte_carlo_threshold
+    extero_threshold
+    mad_outliers
+
+Languages
+*********
+
+.. currentmodule:: cardioception.PAT.languages
+
+.. autosummary::
+   :toctree: generated/PAT.languages
+
+    available
+    get_texts
+
 Recording devices
 -----------------
 

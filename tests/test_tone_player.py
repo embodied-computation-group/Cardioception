@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """TonePlayer on the real sound card, and the sound it makes.
 
 The live tests skip when PsychToolbox or pylsl is missing, or no audio

@@ -12,7 +12,7 @@ The phase adjustment task (PAT) {cite:p}`2021:plans` measures how consistently a
 Cardioception's version follows the ECG-based implementation of {cite:t}`2026:hodgetts` (PAT-ECG), which triggers the tones from the R-wave of the electrocardiogram rather than from a finger pulse, adds an online relative-delay (phase) mode and an exteroceptive control task, and scores every participant on a grid of eight consistency measures. The PAT 2.0 refinements of {cite:t}`2026:palmer` provide the fixed-mapping score and the Monte Carlo thresholds.
 
 ```{note}
-The PAT module is new and runs only with an ECG streamed over Lab Streaming Layer (LSL). The original PAT-ECG uses a hardware R-wave trigger and a Teensy microcontroller; this port detects the R-wave in software, which changes the timing budget. Read the [timing section](#timing-and-latency) before you plan a study.
+**Experimental.** The PAT module is new and runs only with an ECG streamed over Lab Streaming Layer (LSL). The original PAT-ECG uses a hardware R-wave trigger and a Teensy microcontroller; this port detects the R-wave in software, which changes the timing budget. Read the [timing section](#timing-and-latency) before you plan a study.
 ```
 
 ## What the task measures
@@ -43,7 +43,7 @@ The vibration period is set by `exteroPeriod`: `"simulated"` (the default) gives
 
 ## Hardware on our setup
 
-- **ECG**: the PLUX hub with a chest ECG lead (channel `ECG2`), streamed to LSL as `PLUX` by the hub bridge (`plux_lsl.py`). Start the bridge before the task. Electrodes as in the paper: right clavicle, lowest left rib, reference on the left clavicle or hip. With the PLUX lead set, upright R-waves came from black on the lowest left rib and red on the right clavicle; swap them if the trace is inverted.
+- **ECG**: the PLUX hub with a chest ECG lead, streamed to LSL as `PLUX` by the hub bridge (`plux_lsl.py`). The label of the ECG channel is not the same on every hub (the bridge has given `ECG1` on one and `ECG2` on another), so check it in the stream before the session. Start the bridge before the task. Electrodes as in the paper: right clavicle, lowest left rib, reference on the left clavicle or hip. With the PLUX lead set, upright R-waves came from black on the lowest left rib and red on the right clavicle; swap them if the trace is inverted.
 - **Audio**: headphones or speakers on the stimulus PC. Tones are 1000 Hz, 30 ms, with 5 ms ramps, on the left channel. The task plays them through PsychPortAudio (`psychtoolbox.audio`) directly, at latency class 1, which reports the true onset of every tone.
 - **Tactor** (exteroceptive variant only): a vibrotactile transducer (Dayton Audio TT25-16 or similar) driven from the **right** audio channel through a small amplifier. Tone and vibration come from the same stereo stream, so they are locked to the sample. The burst is silent unless `vibrationVolume` is set above its default of 0, so ordinary speakers or headphones never carry it. The tactor also buzzes faintly; that is expected.
 - **Dial**: the mouse wheel, held in the dominant hand. The left and right arrow keys move it too. Space, with the other hand, ends the trial.
@@ -57,21 +57,58 @@ Install with the LSL extra, `pip install cardioception-toolbox[lsl]`. Start the 
 python wrappers/pat_lsl.py
 ```
 
-It asks for the participant, session, stream, channel, mode and whether to run the exteroceptive variant, then runs the tutorial, 8 practice trials and 28 main trials, with a break every 10 trials. The same in a script:
+It asks for:
+
+| Field | Default | What it sets |
+|---|---|---|
+| participant | `Participant` | The participant identifier |
+| session | `PAT` | The session identifier; `Extero` is appended for the exteroceptive run |
+| LSL stream | `PLUX` | The name of the ECG stream |
+| Channel | none | The label of the ECG channel in that stream. It must be given: the task does not start without it, unless the exteroceptive variant is ticked |
+| Mode | `relative` | `relative` or `absolute` |
+| Extero (vibration) | off | Run the exteroceptive variant, which needs no ECG |
+| Language | `english` | The instructions, from the languages in `cardioception/PAT/texts` |
+
+It then runs the instructions, the tutorial, 8 practice trials and 28 main trials, with a break every 10 trials. The same in a script, with the channel your stream has:
 
 ```python
 from cardioception.devices import LSLRecorder
 from cardioception.PAT.parameters import getParameters
 from cardioception.PAT.task import run
 
-recorder = LSLRecorder(name="PLUX", channel="ECG2", signal_type="ecg")
+recorder = LSLRecorder(name="PLUX", channel="ECG1", signal_type="ecg")
 parameters = getParameters(
     participant="sub01", session="001", recorder=recorder, mode="relative"
 )
 run(parameters, runTutorial=True, confidenceRating=True)
 parameters["win"].close()
+parameters["engine"].close()
 recorder.close()
 ```
+
+The defaults of `getParameters` are those of the paper, except where noted:
+
+| Parameter | Default | Meaning |
+|---|---|---|
+| `mode` | `"relative"` | What the dial controls (see above) |
+| `nTrials`, `nPractice` | 28, 8 | Main and practice trials |
+| `startPhases` | 0, 90, 180, 270 | Start phases of the dial, in degrees |
+| `device` | `"keyboard"` | Rate confidence with the wheel and the arrow keys, space to confirm (`"keyboard"`), or with the mouse, a click to confirm (`"mouse"`). The dial is the wheel either way |
+| `confidenceScale` | `DISCRETE_1_10` | The confidence scale (see below) |
+| `language` | `"english"` | `"english"` or `"danish"` |
+| `dialGainDeg`, `dialGainMs` | 10, 25 | Degrees per wheel notch in relative mode, ms per notch in absolute mode |
+| `latencyBias`, `audioLead` | 0.05, 0.05 s | See [timing](#timing-and-latency) |
+| `minToneGap` | 0.3 s | A tone less than this after the previous one is skipped |
+| `showDial` | `True` | The ring and pointer around the fixation cross |
+| `exteroPeriod` | `"simulated"` | The vibration's period in the exteroceptive variant |
+| `vibrationVolume` | 0 | The vibration burst is silent unless raised |
+| `seed` | drawn | Seeds the session's random generator; recorded in the manifest |
+| `resultPath` | `data` | Root of the run directories |
+| `overwrite` | `False` | Allow writing into a run directory that already holds results |
+| `triggers` | none | `{event: callable}` for `trialStart`, `confidenceStart`, `confidenceStop` and `trialStop` |
+| `markerStream` | `"PAT"` | The LSL marker stream the task opens |
+
+The confidence rating has no time limit (`parameters["maxRatingTime"]` is `None`), as in the paper.
 
 For the exteroceptive variant pass `extero=True` and no recorder is needed. The paper ran the exteroceptive task (8 + 28 trials, about 10 minutes) before the PAT (8 + 28 trials, about 30 minutes). Between 15 and 20 trials already separate consistent responders from chance; gains beyond 20 are small {cite:p}`2026:palmer`.
 
@@ -79,7 +116,17 @@ Instructions to the participant matter. Ask them to focus on one consistent body
 
 ## Output files
 
-The task writes to `data/<participant><session>/` (or `resultPath`). `final.txt` and `tones.txt` are tab separated and rewritten after every trial. `parameters.txt` holds the settings.
+Each run gets its own directory, `data/sub-<participant>/ses-<session>/run-<YYYYMMDD-HHMMSS>/` (under `resultPath` instead of `data` when it is given), so a second run of the same session never overwrites the first. Every results file carries the three identifiers in its name, `sub-<participant>_ses-<session>_run-<timestamp>_<kind>.txt`:
+
+| File | Written | Content |
+|---|---|---|
+| `manifest.json` | when the session is set up | participant, session, run, seed, version, device, language, mode, exteroceptive or not, trial counts and the confidence scale |
+| `session.log` | as the task runs | the console messages, with timestamps |
+| `..._parameters.txt` | when the task starts | the settings, one per line |
+| `..._final.txt` | after every trial | one row per trial, tab separated |
+| `..._tones.txt` | after every trial | one row per tone or vibration, tab separated |
+
+The wrapper appends `Extero` to the session label of the exteroceptive run, so both runs of a session sit side by side. The seed of the session's random generator, which draws the start phases, the simulated heart of the exteroceptive task and the starting position of the confidence marker, is in the manifest; pass it back as `seed` to draw the same session again.
 
 `final.txt`, one row per trial:
 
@@ -92,22 +139,61 @@ The task writes to `data/<participant><session>/` (or `resultPath`). `final.txt`
 | `AnticipatedPeriodMs` | The anticipated period (mean of the last three R-R intervals) at the last beat before the press |
 | `ObservedPeriodMs` | The R-R interval containing the press, known once the next R-wave arrives; NaN if it did not arrive within 3 s |
 | `LastRTime`, `PressTime` | The last R-wave before the press and the press itself, in LSL seconds |
-| `Confidence`, `ConfidenceRT` | Rating from 1 (not at all) to 10 (extremely), and its response time |
+| `Confidence`, `ConfidenceRT` | The rating on the session's scale, from 1 (not at all) to 10 (extremely) by default, and its response time; empty when no rating was given |
+| `ConfidenceUnit` | The same rating on 0 to 1, so sessions rated on different scales can be pooled |
+| `Device` | `keyboard` (wheel and arrow keys) or `mouse` |
+| `ConfidenceScale`, `ConfidenceLow`, `ConfidenceHigh`, `ConfidenceGranularity`, `ConfidenceLevels`, `ConfidenceSigned` | The scale the rating was given on, written on every row so the file explains itself |
 | `nTonesReal`, `nTonesPredicted`, `nTonesSkipped` | Tones anchored on the detected beat, on the predicted next beat, and skipped by the double-tone guard |
 | `TrialDuration`, `nDialMoves` | Seconds from trial start to press, and number of dial movements |
 | `WallTime` | Computer clock time of the press |
 
 `tones.txt`, one row per tone or vibration: `Trial`, `Block`, `RTime` (the R-wave it was timed from, LSL seconds), `PeriodS` (anticipated period), `PhaseDeg` and `DelayMs` (the dial), `Target` (when it was meant to sound), `Anchor` (`real`, `predicted` or `virtual`), `Onset` (the onset PsychPortAudio reported, NaN if none) and `Kind` (`tone` or `vibration`). Together with the ECG in the XDF file this gives the true R-to-tone interval of every tone, which the original PAT-ECG did not log.
 
+## Confidence scale
+
+`confidenceScale` takes a `cardioception.scales.ConfidenceScale`. The default, `DISCRETE_1_10`, is the 1 to 10 of the paper, labelled with the language's end labels (`Not at all` and `Extremely` in English). A scale passed in keeps its own labels, and its ends are the numbers the instructions name:
+
+```python
+from cardioception.scales import VAS_0_100
+
+parameters = getParameters(..., confidenceScale=VAS_0_100.with_labels(["Not at all", "Extremely"]))
+```
+
+The confidence-weighted scores use the raw rating as the weight, not `ConfidenceUnit`: on the 1 to 10 scale `ConfidenceUnit` is 0 for a rating of 1, which would leave those trials out of the weighted score.
+
+## Language
+
+The participant's texts live in `cardioception/PAT/texts/<language>.yaml`, English and Danish so far, loaded by `cardioception.PAT.languages.get_texts` and checked for completeness when the session is set up. `cardioception.PAT.languages.available()` lists them, and the wrapper offers that list. A text can differ by rating device and by the exteroceptive variant; `{low}` and `{high}` stand for the ends of the confidence scale, and the instructions page that reads `{dial}` becomes the page describing the dial, or the one without it when `showDial=False`. To add a language, copy `english.yaml` and translate the values, not the keys or the placeholders.
+
+## Running without a participant
+
+`cardioception.PAT._autopilot.PATAutopilot` is a simulated participant for tests and dry runs. It is given the phase at which it feels the heartbeat, aims each trial at that phase plus Gaussian noise, rolls the wheel a notch at a time towards it, presses once it has settled, and rates its confidence at random. With `beat_source=` and `tone_player=` in place of the ECG and the sound card, a whole session runs headless:
+
+```python
+from cardioception.PAT._autopilot import PATAutopilot
+
+parameters = getParameters(
+    participant="pilot", extero=True, fullscr=False, seed=1,
+    markerStream=None, tone_player=my_silent_player,
+)
+parameters["autopilot"] = PATAutopilot(parameters["rng"], target=120.0, spread=10.0)
+run(parameters)
+```
+
+Here `my_silent_player` is any object with the tone player's `schedule(when, kind)` and `poll_onsets()` that reports each sound as played; `tests/test_pat_headless.py` has one, and runs an interoceptive session the same way with a virtual heart as `beat_source`.
+
 ## Scoring
 
 `cardioception.PAT.scoring` holds the scores. It needs only numpy and pandas:
 
 ```python
+from glob import glob
+
 import pandas as pd
 from cardioception.PAT.scoring import consistency_grid, extero_threshold
 
-final = pd.read_csv("data/sub01001/final.txt", sep="\t")
+(path,) = glob("data/sub-sub01/ses-001/run-*/*_final.txt")
+final = pd.read_csv(path, sep="\t")
 grid = consistency_grid(final)
 print(grid)
 ```

@@ -118,6 +118,21 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   dry run, 60 trials on a PLUX ECG over Bluetooth, is recorded in the design
   document, with a simulation rerun at the 130 ms floor. The user guide has a
   how-to for running a session and reading its results.
+- The Phase Adjustment Task, experimental: `cardioception.PAT`, after the
+  PAT-ECG variant of Hodgetts et al. (2026, *Psychophysiology* 63:e70415).
+  One tone per heartbeat, timed from the R-waves of an LSL ECG stream, at a
+  delay the participant moves with the mouse wheel until tones and heartbeats
+  feel simultaneous. Relative (phase) and absolute (ms) dial modes, start
+  phases in shuffled blocks, a guided tutorial, an exteroceptive control task
+  on a vibration with a simulated heart, English and Danish instructions,
+  and `wrappers/pat_lsl.py`. A session writes `final`, `tones` and
+  `parameters`; `cardioception.PAT.scoring` gives the paper's 2 x 2 x 2 grid
+  of phase-consistency scores with Monte Carlo chance thresholds. See
+  `docs/source/pat.md`.
+- The ECG channel is a required field in `wrappers/pat_lsl.py` and
+  `wrappers/hsd_lsl.py`, with no default: its label is not the same on every
+  hub (`ECG1` on one, `ECG2` on another), so it has to be typed in, and the
+  wrapper does not start without it.
 
 ### Fixed
 
@@ -181,6 +196,16 @@ code it replaced rather than read over.
   `getParameters` — response window, tutorial lengths, ISI, listening duration,
   heart-rate cutoffs, staircase bounds, text size. Pass one to `getParameters`,
   and it is written to `manifest.json` with the data it produced.
+- The Phase Adjustment Task, written against 0.7, follows the conventions
+  above: the per-run output directory and manifest, one recorded seed per
+  session, `session.log`, a `ConfidenceScale` with `ConfidenceUnit` and the
+  scale columns on every row, the shared rating widgets (the keyboard rating
+  gains a `wheel` option, and the mouse rating moves into
+  `_rating.mouse_rating`), texts in YAML checked against a snapshot of the
+  functions they replace, screens and waits through `text`, `hold` and
+  `on_every_frame`, validated triggers, and an autopilot that runs whole
+  sessions headless. Its phase arithmetic, scheduling, scoring and data
+  columns are unchanged.
 
 **`responseDecision` returns five values, not six.** The second, a
 `responseTrigger` timestamp, was unpacked by its only caller and never read.

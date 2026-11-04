@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """The PsychoPy side of the Phase Adjustment Task.
 
 During a trial the participant sees a fixation cross inside a ring whose
@@ -9,6 +9,17 @@ heartbeat through ``parameters["engine"]`` (see
 the timing. Space ends the trial, then comes the
 confidence rating. The experimenter gets one status line per second in the
 console.
+
+Between trials the engine keeps detecting beats, without tones: :func:`run`
+installs ``engine.idle_poll`` as the window's per-frame hook
+(:func:`cardioception._present.on_every_frame`), so every frame held through
+:func:`cardioception._present.hold` polls it, and the rating polls it on
+every frame of its own loop.
+
+With ``parameters["autopilot"]`` set (see
+:class:`cardioception.PAT._autopilot.PATAutopilot`) a simulated participant
+turns the dial, presses and rates, so a whole session runs without anyone at
+the keyboard.
 """
 
 import json
@@ -19,6 +30,15 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
+
+from .._log import get_logger
+from .._present import hold, on_every_frame
+from .._screens import Screen, text
+from .._session import show_screen as _show_screen
+from .._triggers import fire
+from ..devices.beat_source import default_clock
+
+logger = get_logger()
 
 #: Columns of final.txt, in order. Extra fields from the engine follow them.
 FINAL_COLUMNS = [
@@ -35,6 +55,14 @@ FINAL_COLUMNS = [
     "PressTime",
     "Confidence",
     "ConfidenceRT",
+    "ConfidenceUnit",
+    "Device",
+    "ConfidenceScale",
+    "ConfidenceLow",
+    "ConfidenceHigh",
+    "ConfidenceGranularity",
+    "ConfidenceLevels",
+    "ConfidenceSigned",
     "nTonesReal",
     "nTonesPredicted",
     "nTonesSkipped",
@@ -60,30 +88,35 @@ TONE_COLUMNS = [
 #: Trial number given to the engine during the tutorial. Its tones are not saved.
 TUTORIAL_TRIAL = 0
 
+#: Before the practice trials.
+PRACTICE_SCREEN = Screen([("textPracticeStart", (0.0, 0.0))], seconds=0.0)
+
+#: Before the main trials.
+TASK_SCREEN = Screen([("textTaskStart", (0.0, 0.0))], seconds=0.0)
+
+#: Between two trials.
+NEXT_TRIAL_SCREEN = Screen([("textNextTrial", (0.0, 0.0))], seconds=0.0)
+
+#: Before the dial tutorial, with the "press space" line.
+TUTORIAL_INTRO = Screen([("tutorialIntro", (0.0, 0.0))], seconds=0.0)
+
+#: After the dial tutorial.
+TUTORIAL_END = Screen([("tutorialEnd", (0.0, 0.0))], seconds=0.0)
+
 
 class TaskAbort(Exception):
     """Raised when the experimenter presses Esc."""
 
 
 def _clock() -> Callable[[], float]:
-    """The LSL clock, which is also the PTB clock on Windows."""
-    try:
-        from pylsl import local_clock
+    """The clock the beat sources default to.
 
-        return local_clock
-    except ImportError:  # pragma: no cover
-        return time.perf_counter
-
-
-def _idle(parameters: dict) -> None:
-    """Keep the engine detecting beats between trials, without tones.
-
-    Called on every frame of the screens between trials, so beats keep their
-    true times and the anticipated period stays current.
+    ``pylsl.local_clock``, or PsychToolbox's ``GetSecs`` without pylsl (see
+    :func:`cardioception.devices.beat_source.default_clock`). The dial loop
+    reads the engine's own clock rather than this one, so that it compares
+    times on the clock the tones were scheduled on.
     """
-    idle_poll = getattr(parameters["engine"], "idle_poll", None)
-    if idle_poll is not None:
-        idle_poll()
+    return default_clock()
 
 
 def _checkEscape(keys: List[str]) -> None:
@@ -126,7 +159,7 @@ def saveParameters(parameters: dict) -> None:
     ]
     _write(
         pd.DataFrame(rows, columns=["Parameter", "Value"]),
-        os.path.join(parameters["resultPath"], "parameters.txt"),
+        parameters["paths"].path("parameters"),
     )
 
 
@@ -147,10 +180,10 @@ def toneTable(parameters: dict) -> pd.DataFrame:
 
 
 def saveResults(parameters: dict) -> None:
-    """Write final.txt and tones.txt. Called after every trial.
+    """Write the final and tones files. Called after every trial.
 
     Nothing is written before the first trial is complete, so a run stopped
-    during the instructions can be started again under the same session.
+    during the instructions leaves no empty results behind.
     """
     results = parameters["results_df"]
     if len(results) == 0:
@@ -158,9 +191,9 @@ def saveResults(parameters: dict) -> None:
     extra = [c for c in results.columns if c not in FINAL_COLUMNS]
     _write(
         results.reindex(columns=FINAL_COLUMNS + extra),
-        os.path.join(parameters["resultPath"], "final.txt"),
+        parameters["paths"].path("final"),
     )
-    _write(toneTable(parameters), os.path.join(parameters["resultPath"], "tones.txt"))
+    _write(toneTable(parameters), parameters["paths"].path("tones"))
 
 
 def run(
@@ -175,6 +208,9 @@ def run(
     after every trial. Esc at any point stops the task and keeps what was
     saved; the window and the engine stay open for the caller to close.
 
+    The engine's ``idle_poll`` is the window's per-frame hook for the length
+    of the session, so beats are detected on every screen between trials.
+
     Parameters
     ----------
     parameters : dict
@@ -186,27 +222,24 @@ def run(
         If `True`, ask for a confidence rating after each trial.
 
     """
-    from psychopy import core
-
+    win = parameters["win"]
     parameters["aborted"] = False
     saveParameters(parameters)
     trialNumber = 0
+    on_every_frame(win, parameters["engine"].idle_poll)
 
     try:
         for page in parameters["texts"]["instructions"]:
             showText(parameters, page, footer=parameters["texts"]["textNext"])
-            waitInput(parameters)
 
         if runTutorial is True:
             tutorial(parameters)
 
         if parameters["nPractice"] > 0:
-            showText(parameters, parameters["texts"]["textPracticeStart"])
-            waitInput(parameters)
+            show_screen(parameters, PRACTICE_SCREEN)
             for i, startPhase in enumerate(parameters["startPhasePractice"]):
                 if i > 0:
-                    showText(parameters, parameters["texts"]["textNextTrial"])
-                    waitInput(parameters)
+                    show_screen(parameters, NEXT_TRIAL_SCREEN)
                 trialNumber += 1
                 trial(
                     parameters,
@@ -216,21 +249,21 @@ def run(
                     confidenceRating=confidenceRating,
                 )
 
-        showText(parameters, parameters["texts"]["textTaskStart"])
-        waitInput(parameters)
+        show_screen(parameters, TASK_SCREEN)
         for i, startPhase in enumerate(parameters["startPhaseMain"]):
             if i > 0:
                 if i % parameters["nBreaking"] == 0:
                     remain = round(i / parameters["nTrials"] * 100)
+                    logger.info(
+                        f"... break after main trial {i} of {parameters['nTrials']}"
+                    )
                     showText(
                         parameters,
                         parameters["texts"]["textBreaks"],
                         header=f" ---- {remain} % ---- ",
                     )
-                    print(f"... break after main trial {i} of {parameters['nTrials']}")
                 else:
-                    showText(parameters, parameters["texts"]["textNextTrial"])
-                waitInput(parameters)
+                    show_screen(parameters, NEXT_TRIAL_SCREEN)
             trialNumber += 1
             trial(
                 parameters,
@@ -242,18 +275,20 @@ def run(
 
     except TaskAbort:
         parameters["aborted"] = True
-        print("... Esc pressed: the task stops here. Completed trials are saved.")
+        logger.warning(
+            "... Esc pressed: the task stops here. Completed trials are saved."
+        )
 
     finally:
+        on_every_frame(win, None)
         saveResults(parameters)
-        print(
+        logger.info(
             f"... {len(parameters['results_df'])} trials saved in "
             f"{parameters['resultPath']}"
         )
 
     if not parameters["aborted"]:
-        showText(parameters, parameters["texts"]["done"])
-        core.wait(3)
+        hold(win, 3, text(parameters, parameters["texts"]["done"], wrapWidth=1.2))
 
 
 def trial(
@@ -292,12 +327,14 @@ def trial(
 
     """
     engine = parameters["engine"]
+    scale = parameters["confidenceScale"]
     parameters["trialBlocks"][trialNumber] = block
-    print(
+    logger.info(
         f"Starting {block} trial {trialNumber} - start phase {startPhase:g} deg "
         f"- mode {parameters['mode']}{' - extero' if parameters['extero'] else ''}"
     )
 
+    fire(parameters, "trialStart")
     press = dialLoop(parameters, trialNumber, block, startPhase)
     fields = engine.end_trial()
 
@@ -305,11 +342,13 @@ def trial(
     confidenceRT: Any = np.nan
     abort = False
     if confidenceRating is True:
+        fire(parameters, "confidenceStart")
         try:
             rating, ratingRT, provided = confidenceRatingTask(parameters)
         except TaskAbort:
             # The trial itself is complete: keep it, without a rating
             abort, provided = True, False
+        fire(parameters, "confidenceStop")
         if provided:
             confidence, confidenceRT = rating, ratingRT
         _pushMarker(
@@ -341,11 +380,17 @@ def trial(
             "StartPhaseDeg": startPhase,
             "Confidence": confidence,
             "ConfidenceRT": confidenceRT,
+            "ConfidenceUnit": (
+                scale.to_unit(confidence) if np.isfinite(confidence) else np.nan
+            ),
+            "Device": parameters["device"],
+            **scale.describe(),
             "nDialMoves": press["n_dial_moves"],
             "WallTime": press["wall_time"],
         }
     )
 
+    fire(parameters, "trialStop")
     parameters["results_df"] = pd.concat(
         [parameters["results_df"], pd.DataFrame([row])], ignore_index=True
     )
@@ -353,7 +398,7 @@ def trial(
     if abort:
         raise TaskAbort()
 
-    print(
+    logger.info(
         f"... trial {trialNumber} ({block}): phase {_fmt(row['ChosenPhaseDeg'])} deg, "
         f"delay {_fmt(row['ChosenDelayMs'])} ms, anticipated "
         f"{_fmt(row['AnticipatedPeriodMs'])} ms, observed "
@@ -388,12 +433,17 @@ class Stage:
     footer : str | callable | None
         A text, shown below the dial once the stage is ready, or a function of
         the loop state that returns the text to show on each frame (or None).
+    roll : int
+        The way the stage asks for the wheel to be rolled: `1` away (later),
+        `-1` towards (earlier), `0` to find the heartbeat. Only the autopilot
+        reads it.
     """
 
     text: Optional[str] = None
     wheel: bool = True
     ready: Callable[[dict], bool] = field(default=lambda state: True)
     footer: Union[str, Callable[[dict], Optional[str]], None] = None
+    roll: int = 0
 
 
 def _newState() -> Dict[str, float]:
@@ -457,6 +507,14 @@ class _Dial:
         self.fixation.draw()
 
 
+def _degreesPerNotch(parameters: dict, engine: Any, trialNumber: int) -> float:
+    """How far one notch turns the pointer, in degrees of the period."""
+    if parameters["mode"] == "relative":
+        return parameters["dialGainDeg"]
+    period = _periodS(engine, trialNumber)
+    return parameters["dialGainMs"] / (period * 1000) * 360
+
+
 def _periodS(engine: Any, trialNumber: int) -> float:
     """The latest period the engine used in this trial, 1 s before any."""
     for tone in reversed(engine.tones):
@@ -473,6 +531,7 @@ def dialLoop(
     block: str,
     startPhase: float,
     stages: Optional[List[Stage]] = None,
+    silenceTimeout: Optional[float] = None,
 ) -> Dict[str, Any]:
     """Run the engine and the dial until space ends the last stage.
 
@@ -494,21 +553,32 @@ def dialLoop(
         Start phase of the beeps, in degrees.
     stages : list of Stage | None
         The screens to go through. Default is one trial screen.
+    silenceTimeout : float | None
+        If no beep has played this many seconds after the loop started, the
+        loop ends without a press and logs a warning, as nothing on screen
+        can then progress. `None`, the default, waits for the first beep
+        however long it takes (the experimenter sees the warning in the
+        status line and can press Esc).
 
     Returns
     -------
     press : dict
         `phase_deg` and `delay_ms` (the dial at the press), `press_time` (LSL
         seconds), `wall_time` (`time.time()`), `duration` (seconds from the
-        start of the trial) and `n_dial_moves`.
+        start of the trial), `n_dial_moves`, and `timed_out` (true if the
+        loop ended on `silenceTimeout` rather than on a press).
 
     """
-    from psychopy import event, visual
+    from psychopy import event
 
     engine = parameters["engine"]
     win = parameters["win"]
     mouse = parameters["myMouse"]
-    now = _clock()
+    pilot = parameters.get("autopilot")
+    # Beep targets are on the engine's clock, so the loop reads that clock
+    # too. Another clock with another origin (``time.perf_counter`` against
+    # PsychToolbox's epoch-based ``GetSecs`` on Linux) never sees a beep play.
+    now = getattr(engine, "clock", None) or _clock()
     dialKeys = list(parameters["dialKeys"])
     watched = [parameters["startKey"], "escape"] + dialKeys
     if stages is None:
@@ -516,28 +586,19 @@ def dialLoop(
         stages = [Stage(ready=lambda state: state["elapsed"] >= minTime)]
 
     dial = _Dial(parameters)
-    textSize = parameters["textSize"]
-    waiting = visual.TextStim(
-        win,
-        height=textSize,
-        pos=(0, 0.3),
-        text=parameters["texts"]["waitingFirstTone"],
-    )
+    waiting = text(parameters, parameters["texts"]["waitingFirstTone"], pos=(0, 0.3))
     stageTexts = []
     for s in stages:
-        text = footer = None
+        above = below = None
         if s.text:
-            text = visual.TextStim(
-                win, height=textSize, pos=(0, 0.33), text=s.text, wrapWidth=1.2
-            )
+            above = text(parameters, s.text, pos=(0, 0.33), wrapWidth=1.2)
         if s.footer:
-            footer = visual.TextStim(
-                win,
-                height=textSize,
+            below = text(
+                parameters,
+                s.footer if isinstance(s.footer, str) else "",
                 pos=(0, -0.35),
-                text=s.footer if isinstance(s.footer, str) else "",
             )
-        stageTexts.append((text, footer))
+        stageTexts.append((above, below))
     win.mouseVisible = False
 
     # Forget the press that started the trial, and wheel turns made before it
@@ -549,6 +610,8 @@ def dialLoop(
     engine.start_trial(trialNumber, startPhase, block=block)
     tStart = now()
     status = _Status(parameters, trialNumber, block, tStart)
+    if pilot is not None:
+        pilot.start_trial(trialNumber)
 
     # Target times of this trial's beeps, to know when one has played
     seen = len(engine.tones)
@@ -578,42 +641,59 @@ def dialLoop(
         state["elapsed"] = t - tStage
 
         notches = 0
-        wheel += parameters["wheelDirection"] * float(mouse.getWheelRel()[1])
-        if abs(wheel) >= 1:
-            notches = int(wheel)  # whole notches, the rest carries over
-            wheel -= notches
-
         pressed = False
-        for key in event.getKeys(keyList=watched):
-            if key == "escape":
-                engine.stop_tones()
-                raise TaskAbort()
-            elif len(dialKeys) == 2 and key == dialKeys[0]:
-                notches -= 1
-            elif len(dialKeys) == 2 and key == dialKeys[1]:
-                notches += 1
-            elif key == parameters["startKey"]:
-                pressed = heard and stage.ready(state)
+        if pilot is not None:
+            # The simulated participant rolls and presses in place of the
+            # wheel and the keyboard, and only once the first beep is heard.
+            if heard:
+                notches, done = pilot.frame(
+                    t,
+                    engine.phase_deg,
+                    _degreesPerNotch(parameters, engine, trialNumber),
+                    wheel=stage.wheel,
+                    roll=stage.roll,
+                )
+                pressed = done and stage.ready(state)
+        else:
+            wheel += parameters["wheelDirection"] * float(mouse.getWheelRel()[1])
+            if abs(wheel) >= 1:
+                notches = int(wheel)  # whole notches, the rest carries over
+                wheel -= notches
+
+            for key in event.getKeys(keyList=watched):
+                if key == "escape":
+                    engine.stop_tones()
+                    raise TaskAbort()
+                elif len(dialKeys) == 2 and key == dialKeys[0]:
+                    notches -= 1
+                elif len(dialKeys) == 2 and key == dialKeys[1]:
+                    notches += 1
+                elif key == parameters["startKey"]:
+                    pressed = heard and stage.ready(state)
 
         if not (heard and stage.wheel):
             notches, wheel = 0, 0.0
         if notches != 0:
-            if parameters["mode"] == "relative":
-                turn = notches * parameters["dialGainDeg"]
-            else:
-                period = _periodS(engine, trialNumber)
-                turn = notches * parameters["dialGainMs"] / (period * 1000) * 360
+            turn = notches * _degreesPerNotch(parameters, engine, trialNumber)
             engine.nudge(notches, parameters["dialGainDeg"], parameters["dialGainMs"])
             dial.turn(turn)
             state["notches"] += notches
             state["later" if notches > 0 else "earlier"] += abs(notches)
             nDialMoves += 1
 
+        timedOut = (
+            not heard and silenceTimeout is not None and t - tStart >= silenceTimeout
+        )
+        if timedOut:
+            logger.warning(
+                f"No beep played in the first {silenceTimeout:g} s of {block} "
+                f"trial {trialNumber}; ending it without a press."
+            )
         if pressed and stageIndex < len(stages) - 1:
             stageIndex += 1
             tStage = t
             state = _newState()
-        elif pressed:
+        elif pressed or timedOut:
             pressTime, wallTime = now(), time.time()
             engine.stop_tones()
             press = {
@@ -623,6 +703,7 @@ def dialLoop(
                 "wall_time": wallTime,
                 "duration": pressTime - tStart,
                 "n_dial_moves": nDialMoves,
+                "timed_out": timedOut,
             }
             dial.draw(dial=False)
             win.flip()
@@ -630,9 +711,9 @@ def dialLoop(
 
         status.update(t)
         if heard:
-            text, footer = stageTexts[stageIndex]
-            if text is not None:
-                text.draw()
+            above, footer = stageTexts[stageIndex]
+            if above is not None:
+                above.draw()
             stageFooter = stages[stageIndex].footer
             if footer is not None and callable(stageFooter):
                 line = stageFooter(state)
@@ -694,44 +775,74 @@ class _Status:
                 "vibrations" if self.parameters["extero"] else "beats (check the ECG)"
             )
             line += f" | NO {what.upper()} FOR {silent:.0f} s"
-        print(line)
+        logger.info(line)
+
+
+def _text(parameters: dict, message: str, pos=(0.0, 0.0)):
+    """A text of an instruction screen, wrapped as the PAT's always were."""
+    return text(parameters, message, pos=pos, wrapWidth=1.2)
+
+
+def _no_wait(parameters: dict) -> None:
+    """Stand-in for the shared wait, which would not redraw the screen."""
+
+
+def show_screen(parameters: dict, screen: Screen, prompt=None) -> list:
+    """Show one instruction screen until the start key.
+
+    :func:`cardioception._session.show_screen` builds and holds it; the wait
+    is :func:`waitInput`, which redraws it on every frame so the per-frame
+    hook keeps polling the engine.
+    """
+    stims = _show_screen(
+        parameters, screen, prompt, text_fn=_text, hold_fn=hold, wait_fn=_no_wait
+    )
+    if screen.wait:
+        waitInput(parameters, *stims)
+    return stims
 
 
 def showText(
     parameters: dict,
-    text: str,
+    message: str,
     footer: Optional[str] = None,
     header: Optional[str] = None,
 ) -> None:
-    """Draw a text screen, with an optional footer and header line."""
-    from psychopy import visual
+    """Show a text, with an optional footer and header line, until the start key."""
+    stims = [_text(parameters, message)]
+    if footer is not None:
+        stims.append(text(parameters, footer, pos=(0.0, -0.4)))
+    if header is not None:
+        stims.append(text(parameters, header, pos=(0.0, 0.3)))
+    waitInput(parameters, *stims)
+
+
+def waitInput(parameters: dict, *stims) -> None:
+    """Hold `stims` on screen until the start key. Esc stops the task.
+
+    Every frame goes through :func:`cardioception._present.hold`, so the
+    window's per-frame hook (the engine's idle poll, during :func:`run`) keeps
+    detecting beats while the participant reads. The wheel does nothing here.
+    With an autopilot the screen is drawn once and passed at once.
+    """
+    from psychopy import event
 
     win = parameters["win"]
-    visual.TextStim(win, height=parameters["textSize"], text=text, wrapWidth=1.2).draw()
-    if footer is not None:
-        visual.TextStim(
-            win, height=parameters["textSize"], pos=(0.0, -0.4), text=footer
-        ).draw()
-    if header is not None:
-        visual.TextStim(
-            win, height=parameters["textSize"], pos=(0.0, 0.3), text=header
-        ).draw()
-    win.flip()
-
-
-def waitInput(parameters: dict) -> None:
-    """Wait for the start key. Esc stops the task; the wheel does nothing."""
-    from psychopy import event
+    pilot = parameters.get("autopilot")
+    if pilot is not None:
+        hold(win, 0, *stims)
+        pilot.advance()
+        parameters["myMouse"].getWheelRel()
+        return
 
     event.clearEvents(eventType="keyboard")
     while True:
-        _idle(parameters)
+        hold(win, 0, *stims)
         keys = event.getKeys(keyList=[parameters["startKey"], "escape"])
         _checkEscape(keys)
         if parameters["startKey"] in keys:
             parameters["myMouse"].getWheelRel()  # drop turns made while waiting
             return
-        time.sleep(0.005)
 
 
 def _wheelNotches(parameters: dict) -> Callable[[], float]:
@@ -781,8 +892,11 @@ def tutorial(parameters: dict) -> None:
 
         return footer
 
-    showText(parameters, texts["tutorialIntro"], footer=texts["textNext"])
-    waitInput(parameters)
+    show_screen(
+        parameters,
+        TUTORIAL_INTRO,
+        prompt=text(parameters, texts["textNext"], pos=(0.0, -0.4)),
+    )
 
     stages = [
         Stage(
@@ -797,65 +911,78 @@ def tutorial(parameters: dict) -> None:
             texts["tutorialLater"],
             ready=rolled("later"),
             footer=progress("later"),
+            roll=1,
         ),
         Stage(
             texts["tutorialEarlier"],
             ready=rolled("earlier"),
             footer=progress("earlier"),
+            roll=-1,
         ),
         Stage(
             texts["tutorialFree"],
             ready=lambda state: state["elapsed"] >= min(minTime, timeout),
         ),
     ]
-    startPhase = float(np.random.choice(parameters["startPhases"]))
-    dialLoop(parameters, TUTORIAL_TRIAL, "tutorial", startPhase, stages=stages)
+    startPhase = float(parameters["rng"].choice(parameters["startPhases"]))
+    # Every stage waits for a beep. Without one in the first `timeout`
+    # seconds there is nothing to teach, so the tutorial ends rather than
+    # waiting for ever.
+    press = dialLoop(
+        parameters,
+        TUTORIAL_TRIAL,
+        "tutorial",
+        startPhase,
+        stages=stages,
+        silenceTimeout=timeout,
+    )
     parameters["engine"].end_trial()
+    if press["timed_out"]:
+        logger.warning("The tutorial was skipped: no beep played (check the ECG).")
 
-    showText(parameters, texts["tutorialEnd"])
-    waitInput(parameters)
+    show_screen(parameters, TUTORIAL_END)
 
 
-class _EscapableText:
-    """A text stimulus that raises TaskAbort on Esc when drawn.
+class _Prompt:
+    """The rating question and the line saying how to answer, drawn as one."""
 
-    The shared keyboard rating draws its message on every frame, which makes
-    this the place to watch for Esc without changing the rating itself.
-    """
-
-    def __init__(self, parameters: dict, text: str):
-        from psychopy import visual
-
-        self.parameters = parameters
+    def __init__(self, parameters: dict):
         self.parts = [
-            visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
+            text(
+                parameters,
+                parameters["texts"]["Confidence"],
                 pos=(0, 0.2),
-                text=text,
                 wrapWidth=1.2,
             ),
-            visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"] * 0.7,
+            text(
+                parameters,
+                parameters["texts"]["ratingHelp"],
                 pos=(0, -0.4),
-                text=parameters["texts"]["ratingHelp"],
+                height=parameters["textSize"] * 0.7,
             ),
         ]
 
     def draw(self) -> None:
-        from psychopy import event
-
-        _idle(self.parameters)  # the rating draws this on every frame
-        _checkEscape(event.getKeys(keyList=["escape"]))
         for part in self.parts:
             part.draw()
+
+
+def _abort() -> None:
+    raise TaskAbort()
 
 
 def confidenceRatingTask(
     parameters: dict,
 ) -> Tuple[Optional[float], Optional[float], bool]:
-    """Confidence rating, with the arrow keys or the mouse.
+    """Confidence rating, with the wheel and arrow keys or with the mouse.
+
+    The shared rating widgets of :mod:`cardioception._rating`, on
+    ``parameters["confidenceScale"]``. With ``device="keyboard"`` the mouse
+    wheel and the arrow keys move the marker and space confirms; with
+    ``device="mouse"`` the cursor moves it and a click confirms, once the
+    button that may still be down from the trial has been released. The
+    engine is polled on every frame, so beats keep being detected, and Esc
+    raises :class:`TaskAbort`, so the trial being rated is kept.
 
     Parameters
     ----------
@@ -870,86 +997,69 @@ def confidenceRatingTask(
         Whether a rating was given before `maxRatingTime`.
 
     """
-    from psychopy import core, event, visual
+    from psychopy import event
 
-    from ._rating import wheel_rating
+    from .._rating import keyboard_rating, mouse_rating
 
-    low, high = parameters["confScale"]
-    message = _EscapableText(parameters, parameters["texts"]["Confidence"])
+    scale = parameters["confidenceScale"]
+    engine = parameters["engine"]
+    message = _Prompt(parameters)
+    pilot = parameters.get("autopilot")
 
-    if parameters["device"] == "keyboard":
-        confidence, confidenceRT, provided = wheel_rating(
+    if pilot is not None:
+        # The scale is drawn once; the simulated participant answers on it.
+        hold(parameters["win"], 0, message)
+        answer = pilot.rate(
+            *scale.bounds,
+            min_time=parameters["minRatingTime"],
+            max_wait=parameters["maxRatingTime"],
+        )
+        confidence, confidenceRT, provided = None, None, False
+        if answer is not None:
+            # The widget can only stop on a step of the scale.
+            confidence, confidenceRT, provided = scale.clamp(answer[0]), answer[1], True
+    elif parameters["device"] == "keyboard":
+        confidence, confidenceRT, provided = keyboard_rating(
             win=parameters["win"],
             message=message,
-            low=low,
-            high=high,
-            labels=parameters["labelsRating"],
+            low=scale.low,
+            high=scale.high,
+            labels=scale.labels,
+            granularity=scale.granularity,
             min_time=parameters["minRatingTime"],
             max_time=parameters["maxRatingTime"],
             accept_keys=(parameters["startKey"],),
             label_height=parameters["textSize"] * 0.6,
+            rng=parameters["rng"],
+            on_frame=engine.idle_poll,
             wheel=_wheelNotches(parameters),
+            on_escape=_abort,
         )
     else:
-        # As the HRD mouse slider: the cursor is hidden, warped once to a random
-        # start, and only brought back when it nears the screen edge (warping
-        # on every frame freezes the mouse on macOS, issue #103).
-        win, mouse = parameters["win"], parameters["myMouse"]
-        win.mouseVisible = False
-        mouse.setPos((np.random.uniform(-0.25, 0.25), 0.2))
-        slider = visual.Slider(
-            win=win,
-            name="slider",
-            pos=(0, -0.2),
-            size=(0.7, 0.1),
-            labels=parameters["labelsRating"],
-            granularity=1,
-            ticks=(low, high),
-            style="rating",
-            color="LightGray",
-            flip=False,
-            labelHeight=parameters["textSize"] * 0.6,
+
+        def on_frame() -> None:
+            engine.idle_poll()
+            # The mouse rating reads no keys, so Esc is looked for here.
+            _checkEscape(event.getKeys(keyList=["escape"]))
+
+        confidence, confidenceRT, provided = mouse_rating(
+            win=parameters["win"],
+            mouse=parameters["myMouse"],
+            message=message,
+            scale=scale,
+            min_time=parameters["minRatingTime"],
+            max_time=parameters["maxRatingTime"],
+            label_height=parameters["textSize"] * 0.6,
+            rng=parameters["rng"],
+            on_frame=on_frame,
         )
-        slider.marker.size = (0.03, 0.03)
-        confidence, confidenceRT, provided = None, None, False
-        clock = core.Clock()
-        mouse.clickReset()
-        event.clearEvents(eventType="keyboard")
-        while True:
-            elapsed = clock.getTime()
-            buttons = mouse.getPressed()
-            mouseX, mouseY = mouse.getPos()[:2]
-            newX = min(max(float(mouseX), -0.35), 0.35)
-            slider.markerPos = round(low + (newX + 0.35) / 0.7 * (high - low))
-            if abs(mouseX) > 0.85 or abs(mouseY) > 0.45:
-                mouse.setPos((newX, 0.2))
-            if buttons[0] and elapsed > parameters["minRatingTime"]:
-                confidence, confidenceRT, provided = slider.markerPos, elapsed, True
-                slider.marker.color = "green"
-                slider.draw()
-                message.draw()
-                win.flip()
-                core.wait(0.2)
-                break
-            maxTime = parameters["maxRatingTime"]
-            if maxTime is not None and elapsed > maxTime:
-                break
-            slider.draw()
-            message.draw()
-            win.flip()
 
     if provided:
-        print(f"... confidence {confidence} after {confidenceRT:.2f} s")
+        logger.info(f"... confidence {confidence} after {confidenceRT:.2f} s")
     else:
-        print("... no confidence rating")
+        logger.info("... no confidence rating")
         if parameters["maxRatingTime"] is not None:
-            visual.TextStim(
-                parameters["win"],
-                height=parameters["textSize"],
-                text=parameters["texts"]["tooLate"],
-                color="red",
-            ).draw()
-            parameters["win"].flip()
-            core.wait(0.5)
+            late = text(parameters, parameters["texts"]["tooLate"], color="red")
+            hold(parameters["win"], 0.5, late)
     parameters["win"].flip()
     return confidence, confidenceRT, provided

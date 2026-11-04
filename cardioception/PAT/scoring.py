@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Consistency scores for the phase adjustment task (PAT).
 
 A PAT trial has no correct answer. What is scored is how consistently a
@@ -328,6 +328,9 @@ def consistency_grid(
 
     main = final_df[final_df["Block"].astype(str) == "main"]
     delay = _numeric(main, "ChosenDelayMs")
+    # The raw rating is the weight, as in the paper, not ConfidenceUnit: on
+    # the 1 to 10 scale to_unit(1) is 0, which would drop every trial rated 1
+    # from the weighted MRL.
     confidence = _numeric(main, "Confidence")
 
     rows: List[dict] = []

@@ -1,0 +1,134 @@
+# Participant-facing text of the Phase Adjustment Task, read by
+# cardioception/PAT/languages.py, whose docstring gives the rules: {low} and
+# {high} are the ends of the confidence scale, and the instructions page that
+# reads {dial} becomes dialPage or noDialPage.
+language: english
+texts:
+  VASlabels:
+  - Not at all
+  - Extremely
+  done: You have completed the task. Thank you for your participation.
+  noDialPage: During a trial, keep your eyes on the cross in the middle.
+  textBreaks: |-
+    Take a short break.
+
+    Press SPACE when you are ready to continue.
+  textNext: Press SPACE to continue.
+  textNextTrial: Press SPACE to start the next trial.
+  textPracticeStart: |-
+    Now a few practice trials.
+
+    Press SPACE to start.
+  textTaskStart: |-
+    The main task starts now.
+
+    Press SPACE to start.
+  tooLate: Too late
+  tutorialEnd: |-
+    If you have any questions, please ask the experimenter now.
+
+    Otherwise, press SPACE to continue.
+  tutorialIntro: Let's practise with the wheel. You will now hear the beeps.
+  tutorialProgress: Rolled {done} of {total}. Then press SPACE.
+  tutorialReady: Now press SPACE to continue.
+variants:
+  Confidence:
+    axis: exteroception
+    values:
+      'false': How confident are you that the beeps matched your heartbeat?
+      'true': How confident are you that the beeps matched the vibration?
+  dialPage:
+    axis: exteroception
+    values:
+      'false': |-
+        On the screen, a pointer on a circle shows how far you have rolled the wheel. It flashes with each beep.
+
+        It does not show where your heartbeat is. Go by what you feel, and keep your eyes on the cross in the middle.
+      'true': |-
+        On the screen, a pointer on a circle shows how far you have rolled the wheel. It flashes with each beep.
+
+        It does not show where the vibration is. Go by what you feel, and keep your eyes on the cross in the middle.
+  instructions:
+    axis: exteroception
+    values:
+      'false':
+      - |-
+        In this task you hear a short beep with each heartbeat.
+
+        The beeps always come once per heartbeat. They never speed up or slow down.
+      - |-
+        Use the scroll wheel on the mouse, with your dominant hand.
+
+        Rolling the wheel moves each beep a little earlier or later within the heartbeat.
+      - When you roll the wheel, you hear one gap between beeps stretch or shrink. Then the
+        rhythm settles again at the new position.
+      - |-
+        Keep adjusting until the beep lands on the heartbeat you feel. Explore freely, both ways, as much as you like.
+
+        When they match, press SPACE with your other hand.
+      - '{dial}'
+      - After each trial, rate how confident you are that the beeps matched your heartbeat,
+        from {low} (not at all) to {high} (extremely).
+      - |-
+        Feel your heartbeat in one place in your body, and keep your attention there.
+
+        Sit still, breathe normally and do not tense your muscles. Do not check your pulse with your fingers.
+      'true':
+      - |-
+        In this task you feel a short vibration on your hand, and hear a short beep with each vibration.
+
+        The beeps always come once per vibration. They never speed up or slow down.
+      - |-
+        Use the scroll wheel on the mouse, with your dominant hand.
+
+        Rolling the wheel moves each beep a little earlier or later compared to the vibration.
+      - When you roll the wheel, you hear one gap between beeps stretch or shrink. Then the
+        rhythm settles again at the new position.
+      - |-
+        Keep adjusting until the beep lands on the vibration. Explore freely, both ways, as much as you like.
+
+        When they match, press SPACE with your other hand.
+      - '{dial}'
+      - After each trial, rate how confident you are that the beeps matched the vibration,
+        from {low} (not at all) to {high} (extremely).
+      - Sit still, breathe normally and do not tense your muscles.
+  ratingHelp:
+    axis: device
+    values:
+      keyboard: Roll the wheel to choose, SPACE to confirm.
+      mouse: Move the mouse to choose, click to confirm.
+  tutorialEarlier:
+    axis: exteroception
+    values:
+      'false': 'Now roll the wheel TOWARDS you a few notches, and listen: each beep moves
+        earlier within the heartbeat.'
+      'true': 'Now roll the wheel TOWARDS you a few notches, and listen: each beep moves earlier
+        compared to the vibration.'
+  tutorialFree:
+    axis: exteroception
+    values:
+      'false': |-
+        Try to find the position where the beep falls on the heartbeat you feel.
+
+        Press SPACE when it does.
+      'true': |-
+        Try to find the position where the beep falls on the vibration.
+
+        Press SPACE when it does.
+  tutorialLater:
+    axis: exteroception
+    values:
+      'false': 'Now roll the wheel AWAY from you a few notches, and listen: each beep moves
+        later within the heartbeat.'
+      'true': 'Now roll the wheel AWAY from you a few notches, and listen: each beep moves
+        later compared to the vibration.'
+  tutorialListen:
+    axis: exteroception
+    values:
+      'false': 'Listen: one beep with each heartbeat.'
+      'true': 'Listen: one beep with each vibration.'
+  waitingFirstTone:
+    axis: exteroception
+    values:
+      'false': Listening for your heartbeat ...
+      'true': The beeps are starting ...

@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2026 Micah Allen, Embodied Computation Group, Aarhus University
+# Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Parameters of the Phase Adjustment Task (PAT).
 
 The task follows the ECG version of Hodgetts et al. (2026), Psychophysiology
@@ -6,19 +6,39 @@ The task follows the ECG version of Hodgetts et al. (2026), Psychophysiology
 participant moves with the mouse wheel until tones and heartbeats feel
 simultaneous. The exteroceptive control task replaces the heartbeat with a
 vibration on the hand.
+
+As for the other tasks, one random generator, built from ``seed`` by
+:func:`cardioception._rng.make_rng`, draws everything random in a session:
+the start phases, the simulated heart of the exteroceptive task, the tutorial
+start phase and the starting position of every confidence marker. The seed is
+recorded in ``manifest.json``, so a session can be drawn again.
 """
 
+import datetime
 import os
+import time
 from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
 
-from .languages import danish, english
+from .._log import get_logger, start_session_log
+from .._rng import make_rng
+from .._triggers import validate as validate_triggers
+from ..output import SessionPaths
+from ..scales import DISCRETE_1_10, ConfidenceScale
+from .languages import available as available_languages
+from .languages import get_texts
 
-LANGUAGES = ("english", "danish")
+logger = get_logger()
+
 MODES = ("relative", "absolute")
 DEVICES = ("keyboard", "mouse")
+
+#: Events a trigger callback can be registered for, in the order a trial
+#: fires them. ``confidenceStart`` and ``confidenceStop`` fire only when a
+#: rating is asked for.
+EVENTS = ("trialStart", "confidenceStart", "confidenceStop", "trialStop")
 
 
 def startPhaseSequence(
@@ -82,15 +102,16 @@ def _validate(
     dialGainDeg: float,
     dialGainMs: float,
     minToneGap: float,
-    confScale: Sequence[int],
+    confidenceScale: Optional[ConfidenceScale],
     wheelDirection: int = 1,
 ) -> None:
     """Raise a ValueError naming the first invalid setting."""
     if mode not in MODES:
         raise ValueError(f"mode should be one of {MODES}, got {mode!r}.")
-    if language not in LANGUAGES:
+    if language not in available_languages():
         raise ValueError(
-            f"Invalid language: {language!r}. Can be one of {', '.join(LANGUAGES)}."
+            f"Invalid language: {language!r}. Can be one of "
+            f"{', '.join(available_languages())}."
         )
     if device not in DEVICES:
         raise ValueError(f"device should be one of {DEVICES}, got {device!r}.")
@@ -145,8 +166,11 @@ def _validate(
         raise ValueError(f"wheelDirection should be 1 or -1, got {wheelDirection!r}.")
     if not minToneGap >= 0:
         raise ValueError(f"minToneGap should be 0 or more, got {minToneGap}.")
-    if len(confScale) != 2 or not confScale[0] < confScale[1]:
-        raise ValueError(f"confScale should be (low, high), got {confScale!r}.")
+    if confidenceScale is not None and not isinstance(confidenceScale, ConfidenceScale):
+        raise ValueError(
+            "confidenceScale should be a cardioception.scales.ConfidenceScale "
+            f"or None, got {confidenceScale!r}."
+        )
 
 
 def _markerOutlet(name: str):
@@ -176,6 +200,8 @@ def getParameters(
     screenNb: int = 0,
     fullscr: bool = True,
     resultPath: Optional[str] = None,
+    overwrite: bool = False,
+    seed: Optional[int] = None,
     language: str = "english",
     extero: bool = False,
     exteroPeriod: Union[str, float, Sequence[float]] = "simulated",
@@ -190,8 +216,12 @@ def getParameters(
     wheelDirection: int = 1,
     showDial: bool = True,
     minToneGap: float = 0.3,
-    confScale: Sequence[int] = (1, 10),
+    confidenceScale: Optional[ConfidenceScale] = None,
     markerStream: Optional[str] = "PAT",
+    triggers: Optional[Dict[str, Any]] = None,
+    autopilot=None,
+    beat_source=None,
+    tone_player=None,
     engine=None,
 ) -> Dict[str, Any]:
     """Create Phase Adjustment Task parameters.
@@ -201,8 +231,7 @@ def getParameters(
     participant : str
         Participant ID.
     session : str
-        Session label. Results go to `data/<participant><session>/` unless
-        `resultPath` is given.
+        Session label.
     recorder : :class:`cardioception.devices.LSLRecorder` | None
         The ECG stream. Required unless `extero=True`. The task reads its inlet
         through the beat detector, so do not read from it yourself.
@@ -225,9 +254,19 @@ def getParameters(
     fullscr : bool
         If `True`, the window is full screen.
     resultPath : str | None
-        Where to save the results. Default is `<cwd>/data/<participant><session>/`.
+        Root directory holding every participant; results go to
+        `<resultPath>/sub-<participant>/ses-<session>/run-<timestamp>/`.
+        Defaults to `<cwd>/data`.
+    overwrite : bool
+        Allow writing into a run directory that already holds results.
+    seed : int | None
+        Seeds the session generator, which draws the start phases, the
+        simulated heart of the exteroceptive task, the tutorial start phase
+        and the starting position of the confidence marker. Drawn from
+        entropy when `None`, and recorded either way.
     language : str
-        `"english"` or `"danish"`.
+        A language in `cardioception/PAT/texts`, `"english"` or `"danish"` so
+        far (:func:`cardioception.PAT.languages.available` lists them).
     extero : bool
         If `True`, run the exteroceptive control task: a vibration on the hand
         takes the place of the heartbeat, and no ECG is needed.
@@ -266,13 +305,30 @@ def getParameters(
         A tone is skipped when its target is less than this many seconds after
         the previous target, so the participant never hears two tones in quick
         succession while turning the dial.
-    confScale : tuple of int
-        Ends of the confidence scale. The paper used 1 to 10.
+    confidenceScale : ConfidenceScale | None
+        How confidence is collected. `None` takes
+        :data:`cardioception.scales.DISCRETE_1_10`, the 1 to 10 of the paper,
+        with the end labels of the language. A scale passed in keeps its own
+        labels. Its ends are the numbers the instructions name.
     markerStream : str | None
         Name of the LSL marker stream the task opens. Every beat, tone, dial
         move, press and rating is pushed to it as one JSON string, so a
         LabRecorder file holds the ECG and the task together. `None` falls back
         on the recorder's own marker outlet, if it has one.
+    triggers : dict | None
+        `{event: callable}` for the events in :data:`EVENTS`, for a parallel
+        port or another marker of your own. Checked here, so a misspelt event
+        fails before the window opens.
+    autopilot : PATAutopilot | None
+        A simulated participant
+        (:class:`cardioception.PAT._autopilot.PATAutopilot`), for headless
+        runs. It can also be set as `parameters["autopilot"]` afterwards, built
+        on `parameters["rng"]`.
+    beat_source, tone_player :
+        Replace the beat source (the ECG, or the virtual heart with
+        `extero=True`) and the PsychPortAudio tone player, for tests and
+        headless runs. Both must report times on the LSL clock. With
+        `beat_source` no recorder is needed.
 
     Returns
     -------
@@ -287,14 +343,19 @@ def getParameters(
         * `startPhasePractice`, `startPhaseMain`: the start phase of each trial.
         * `results_df`: the trial results, filled during the task.
         * `tones`: the tone rows, filled during the task.
-        * `path`, `resultPath`: working and result directories.
+        * `rng`, `seed`: the session generator and its seed.
+        * `paths`: the :class:`cardioception.output.SessionPaths` of the run.
+        * `path`, `resultPath`: working and run directories.
 
     Notes
     -----
-    Three files are written to `resultPath`, after every trial: `final.txt`
-    (one row per trial), `tones.txt` (one row per tone) and `parameters.txt`
-    (the settings). All times are LSL seconds (`pylsl.local_clock`), except
-    `WallTime` in `final.txt`, which is `time.time()` at the press.
+    `manifest.json` (the session's settings) and `session.log` are written to
+    the run directory at once. Three tab-separated files follow, each named
+    `sub-<participant>_ses-<session>_run-<timestamp>_<kind>.txt`: `final`
+    (one row per trial) and `tones` (one row per tone), rewritten after every
+    trial, and `parameters` (the settings), written when the task starts. All
+    times are LSL seconds (`pylsl.local_clock`), except `WallTime` in
+    `final`, which is `time.time()` at the press.
 
     """
     _validate(
@@ -314,16 +375,21 @@ def getParameters(
         dialGainDeg=dialGainDeg,
         dialGainMs=dialGainMs,
         minToneGap=minToneGap,
-        confScale=confScale,
+        confidenceScale=confidenceScale,
         wheelDirection=wheelDirection,
     )
-    if recorder is None and not extero and engine is None:
+    if recorder is None and not extero and engine is None and beat_source is None:
         raise ValueError(
             "The PAT needs an ECG recorder, e.g. "
             "recorder=LSLRecorder(name='PLUX', channel='ECG2'), unless extero=True."
         )
 
+    from .. import __version__
+
     parameters: Dict[str, Any] = {}
+    parameters["rng"], parameters["seed"] = make_rng(seed)
+    parameters["autopilot"] = autopilot
+    parameters["triggers"] = validate_triggers(triggers, events=EVENTS)
     parameters["participant"] = participant
     parameters["session"] = session
     parameters["mode"] = mode
@@ -350,7 +416,6 @@ def getParameters(
     parameters["dialGainDeg"] = float(dialGainDeg)
     parameters["dialGainMs"] = float(dialGainMs)
     parameters["minToneGap"] = float(minToneGap)
-    parameters["confScale"] = [int(confScale[0]), int(confScale[1])]
     parameters["markerStream"] = markerStream
 
     # Task flow
@@ -374,39 +439,49 @@ def getParameters(
 
     # Start phases: one sequence for practice, one for the main trials
     parameters["startPhasePractice"] = startPhaseSequence(
-        parameters["nPractice"], parameters["startPhases"]
+        parameters["nPractice"], parameters["startPhases"], rng=parameters["rng"]
     )
     parameters["startPhaseMain"] = startPhaseSequence(
-        parameters["nTrials"], parameters["startPhases"]
+        parameters["nTrials"], parameters["startPhases"], rng=parameters["rng"]
     )
 
     parameters["results_df"] = pd.DataFrame([])
     parameters["tones"] = []
     parameters["trialBlocks"] = {}  # trial number -> block, for tones.txt
 
-    # Result directory, default /data/<participant><session>/
+    # Run directory: <resultPath>/sub-<participant>/ses-<session>/run-<time>/
     parameters["path"] = os.getcwd()
-    if resultPath is None:
-        parameters["resultPath"] = os.path.join(
-            parameters["path"], "data", participant + session
-        )
-    else:
-        parameters["resultPath"] = resultPath
-    if os.path.exists(os.path.join(parameters["resultPath"], "final.txt")):
-        raise ValueError(
-            f"{parameters['resultPath']} already holds a PAT run (final.txt). "
-            "Use another session name, or move the old files away first."
-        )
-    os.makedirs(parameters["resultPath"], exist_ok=True)
+    parameters["paths"] = SessionPaths(
+        root=(
+            resultPath
+            if resultPath is not None
+            else os.path.join(parameters["path"], "data")
+        ),
+        participant=participant,
+        session=session,
+        overwrite=overwrite,
+    )
+    parameters["resultPath"] = parameters["paths"].directory
+    parameters["logFile"] = start_session_log(parameters["paths"].directory)
 
     ##############
     # Load texts #
     ##############
-    texts_fn = english if language == "english" else danish
-    parameters["texts"] = texts_fn(
-        device=device, extero=extero, confScale=confScale, showDial=showDial
+    # The ends of the scale are known before its labels, which come from the
+    # texts, so the instructions can name them.
+    ends = confidenceScale if confidenceScale is not None else DISCRETE_1_10
+    parameters["texts"] = get_texts(
+        language,
+        device=device,
+        extero=extero,
+        low=ends.low,
+        high=ends.high,
+        showDial=showDial,
     )
-    parameters["labelsRating"] = parameters["texts"]["VASlabels"]
+    if confidenceScale is None:
+        confidenceScale = DISCRETE_1_10.with_labels(parameters["texts"]["VASlabels"])
+    parameters["confidenceScale"] = confidenceScale
+    parameters["labelsRating"] = list(confidenceScale.labels)
 
     ###########################
     # Marker outlet and engine #
@@ -424,17 +499,23 @@ def getParameters(
     if engine is None:
         from .engine import LSLBeatSource, PhaseEngine, TonePlayer, VirtualBeatSource
 
-        source: Any
-        if extero:
-            source = VirtualBeatSource(exteroPeriod)
-        else:
+        source: Any = beat_source
+        if source is None and extero:
+            # The simulated heart draws its own series from a seed, taken from
+            # the session generator so the seed in the manifest decides it.
+            source = VirtualBeatSource(
+                exteroPeriod, seed=int(parameters["rng"].integers(2**32))
+            )
+        elif source is None:
             source = LSLBeatSource(recorder)
-        player = TonePlayer(
-            freq=parameters["toneFreq"],
-            duration=parameters["toneDuration"],
-            volume=parameters["toneVolume"],
-            vib_volume=parameters["vibrationVolume"],
-        )
+        player: Any = tone_player
+        if player is None:
+            player = TonePlayer(
+                freq=parameters["toneFreq"],
+                duration=parameters["toneDuration"],
+                volume=parameters["toneVolume"],
+                vib_volume=parameters["vibrationVolume"],
+            )
         engine = PhaseEngine(
             source,
             player,
@@ -460,5 +541,36 @@ def getParameters(
     parameters["win"].mouseVisible = False
     # The wheel is the dial, so the mouse is needed whatever the rating device
     parameters["myMouse"] = event.Mouse(win=parameters["win"])
+
+    parameters["startTime"] = time.time()
+    parameters["paths"].write_manifest(
+        task="PAT",
+        version=__version__,
+        start_epoch=parameters["startTime"],
+        start_local=datetime.datetime.now().isoformat(timespec="seconds"),
+        seed=parameters["seed"],
+        device=device,
+        language=language,
+        mode=mode,
+        extero=extero,
+        exteroPeriod=parameters["exteroPeriod"],
+        nTrials=parameters["nTrials"],
+        nPractice=parameters["nPractice"],
+        startPhases=parameters["startPhases"],
+        confidence=confidenceScale.describe(),
+        recording=(
+            recorder.describe()
+            if recorder is not None and hasattr(recorder, "describe")
+            else None
+        ),
+        beat_source=type(getattr(engine, "source", None)).__name__,
+        tone_player=type(getattr(engine, "player", None)).__name__,
+        autopilot=None if autopilot is None else type(autopilot).__name__,
+    )
+    logger.info(
+        f"PAT session {participant}/{session}: {mode} mode"
+        f"{', exteroceptive' if extero else ''}, seed {parameters['seed']}, "
+        f"results in {parameters['resultPath']}"
+    )
 
     return parameters
