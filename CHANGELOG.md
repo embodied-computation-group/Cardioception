@@ -166,6 +166,10 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   period of the live beat source (PAT, HSD) by a third for three beats. An RR
   interval outside 0.6 to 1.6 times the median of the last five accepted ones
   is left out of the period and counted in `LSLBeatSource.n_rejected`.
+- The online R-peak detector restarts its filters after a gap in the ECG
+  timestamps and reports nothing for one period after it, instead of taking
+  the resume transient for a beat. Without beats, its QRS estimate is no
+  longer halved without limit, so electrode-off noise is not taken for beats.
 
 ### Internal
 
