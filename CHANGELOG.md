@@ -167,6 +167,10 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   `timeout`; a press more than 1.5 anticipated periods after the last R-wave
   is `stale`, with no anticipated period. The PAT scores drop both and report
   how many in `n_dropped`.
+- A PAT trial row now records the delay of the last tone actually heard
+  (`LastToneDelayMs`, with its anchor, R-wave and `LastToneIndex`), which
+  differs from the dial for a tone timed from the predicted next beat.
+  `tones.txt` gains a `ToneIndex` to join on.
 
 ### Internal
 

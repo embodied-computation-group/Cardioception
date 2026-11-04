@@ -891,7 +891,17 @@ def test_trial_with_the_real_engine(fake_psychopy, tmp_path):
     assert set(tones["Kind"]) == {"tone", "vibration"}
     assert set(tones.loc[tones["Kind"] == "vibration", "Anchor"]) == {"virtual"}
     assert tones["Onset"].notna().all()
-    assert list(read(parameters["paths"].path("final")).columns) == FINAL_COLUMNS
+    final = read(parameters["paths"].path("final"))
+    assert list(final.columns) == FINAL_COLUMNS
+    assert list(tones.columns) == TONE_COLUMNS
+    # The last tone heard joins tones.txt on its index
+    assert tones["ToneIndex"].is_unique
+    (last,) = tones[tones["ToneIndex"] == final.loc[0, "LastToneIndex"]].itertuples()
+    assert last.Kind == "tone" and last.Anchor == final.loc[0, "LastToneAnchor"]
+    assert last.RTime == pytest.approx(final.loc[0, "LastToneRTime"])
+    assert last.Target <= final.loc[0, "PressTime"]
+    # A virtual heart is never late, so the delay heard is the dial's then
+    assert final.loc[0, "LastToneDelayMs"] == pytest.approx(last.DelayMs)
 
 
 ##################################

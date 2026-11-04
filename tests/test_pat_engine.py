@@ -373,6 +373,13 @@ def test_end_trial_fields():
     assert row["nTonesSkipped"] == 0
     assert row["nDialMoves"] == 1
     assert isinstance(row["WallTime"], float)
+    # The last tone before the press was timed from 101.9 at 90 degrees, before
+    # the dial moved to 180: what was heard is not what was chosen.
+    assert row["LastToneAnchor"] == "real"
+    assert row["LastToneRTime"] == 101.9
+    assert row["LastToneDelayMs"] == pytest.approx(225)
+    assert [t["ToneIndex"] for t in engine.tones] == [1, 2, 3]
+    assert row["LastToneIndex"] == 3
     assert "Confidence" not in row
     # Every tone has its onset once end_trial returns.
     assert all(np.isfinite(t["Onset"]) for t in engine.tones)
@@ -382,6 +389,57 @@ def test_end_trial_fields():
     assert kinds.index("press") < kinds.index("trial_end")
     end = outlet.samples[kinds.index("trial_end")][0]
     assert end["Trial"] == 7 and end["ChosenDelayMs"] == pytest.approx(450)
+
+
+def test_predicted_tone_delay_is_measured_from_its_own_r_wave():
+    """At phase 0 the tone is predicted from the R before, and the heart is
+    slower than predicted: the tone sounds 50 ms before the R it was meant
+    for, while the dial says 0 ms."""
+    engine, source, player, clock, outlet = make_engine(latency_bias=0.05)
+    engine.start_trial(1, 0)
+    beat_now(engine, source, clock, 100.0, period=0.8)  # tone at 100.75
+    (tone,) = engine.tones
+    assert tone["Anchor"] == "predicted"
+    beat_now(engine, source, clock, 100.85, period=0.82)  # its R, 50 ms late
+    clock.t = 101.0
+    engine.poll()
+    engine.stop_tones()
+    source.feed(Beat(101.67, 0.82))
+    clock.t = 101.7
+    row = engine.end_trial()
+    assert row["ChosenDelayMs"] == pytest.approx(0)
+    # The last tone heard before the press is the first one (the second, timed
+    # from 100.85, sounds at 101.62, after the press).
+    assert row["LastToneIndex"] == tone["ToneIndex"] == 1
+    assert row["LastToneAnchor"] == "predicted"
+    assert row["LastToneRTime"] == 100.0
+    assert row["LastToneDelayMs"] == pytest.approx(-50, abs=1e-6)
+    scheduled = [m for m, _ in outlet.samples if m["kind"] == "tone_scheduled"]
+    assert [m["tone"] for m in scheduled] == [1, 2]
+
+
+def test_predicted_tone_delay_without_its_r_wave():
+    engine, source, player, clock, _ = make_engine()
+    engine.start_trial(1, 0)
+    beat_now(engine, source, clock, 100.0, period=0.8)
+    clock.t = 100.9  # the tone has played, its R never came
+    engine.stop_tones()
+    clock.step = 0.05
+    row = engine.end_trial()
+    assert row["LastToneAnchor"] == "predicted"
+    assert math.isnan(row["LastToneDelayMs"])
+
+
+def test_no_tone_before_the_press():
+    engine, source, player, clock, _ = make_engine()
+    engine.start_trial(1, 270)
+    beat_now(engine, source, clock, 100.0)  # tone at 100.70
+    engine.stop_tones()  # at 100.02
+    source.feed(Beat(101.0, 1.0))
+    clock.t = 101.1
+    row = engine.end_trial()
+    assert math.isnan(row["LastToneIndex"]) and row["LastToneAnchor"] == ""
+    assert math.isnan(row["LastToneDelayMs"])
 
 
 def test_end_trial_absolute_clamps_chosen_delay():

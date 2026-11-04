@@ -398,6 +398,18 @@ class PhaseEngine:
         that period, as it would have been for the next tone.
         ``ObservedPeriodMs`` is the RR interval containing the press.
 
+        The ``LastTone*`` columns describe the last tone of the trial whose
+        target came before the press, the tone the participant was matching:
+        its ``ToneIndex`` in :attr:`tones`, its ``Anchor``, the R-wave it was
+        timed from (``LastToneRTime``) and ``LastToneDelayMs``, the delay it
+        was actually played at after the R-wave of its own cycle, with the
+        latency bias added back so it reads like ``ChosenDelayMs``. For a
+        ``real`` tone that R-wave is the one it was timed from and the delay is
+        the dial's. A ``predicted`` tone was timed from the R-wave before, one
+        anticipated period ahead, so its delay is measured from the next R-wave
+        and differs from the dial's by the error of that prediction; NaN if
+        that R-wave never came.
+
         ``TrialStatus`` (see :data:`TRIAL_STATUSES`) is ``timeout`` when the
         trial was stopped with ``stop_tones("timeout")``, and both chosen
         columns are then NaN. It is ``stale`` when no R-wave came within
@@ -472,6 +484,7 @@ class PhaseEngine:
             "ObservedPeriodMs": observed,
             "LastRTime": last_r,
             "PressTime": press,
+            **self._last_tone(press),
             "WallTime": self._press_wall,
             "nTonesReal": self.counts["real"],
             "nTonesPredicted": self.counts["predicted"],
@@ -484,7 +497,11 @@ class PhaseEngine:
 
     @property
     def tones(self) -> List[dict]:
-        """Every tone and vibration scheduled so far, as ``tones.txt`` rows."""
+        """Every tone and vibration scheduled so far, as ``tones.txt`` rows.
+
+        ``ToneIndex`` numbers them from 1 in the order they were scheduled,
+        across trials; ``LastToneIndex`` on a trial row refers to it.
+        """
         return self._tones
 
     def close(self) -> None:
@@ -573,6 +590,38 @@ class PhaseEngine:
         self.counts[anchor] += 1
         self._schedule(beat, target, anchor, "tone", phase, delay_ms, now)
 
+    def _last_tone(self, press: float) -> Dict[str, Any]:
+        """The ``LastTone*`` columns of the trial row (see :meth:`end_trial`)."""
+        fields: Dict[str, Any] = {
+            "LastToneIndex": math.nan,
+            "LastToneAnchor": "",
+            "LastToneRTime": math.nan,
+            "LastToneDelayMs": math.nan,
+        }
+        tone = None
+        for row in reversed(self._tones):
+            if row["Trial"] != self.trial:
+                break
+            if row["Kind"] == "tone" and row["Target"] <= press:
+                tone = row
+                break
+        if tone is None:
+            return fields
+        r_cycle: Optional[float] = tone["RTime"]
+        if tone["Anchor"] == "predicted":
+            nxt = self._next_beat_after(tone["RTime"])
+            r_cycle = nxt.r_time if nxt is not None else None
+        fields.update(
+            LastToneIndex=tone["ToneIndex"],
+            LastToneAnchor=tone["Anchor"],
+            LastToneRTime=tone["RTime"],
+        )
+        if r_cycle is not None:
+            fields["LastToneDelayMs"] = (
+                tone["Target"] + self.latency_bias - r_cycle
+            ) * 1000.0
+        return fields
+
     def _schedule(
         self,
         beat: Beat,
@@ -584,7 +633,9 @@ class PhaseEngine:
         now: float,
     ) -> None:
         handle = self.player.schedule(target, kind)
+        index = len(self._tones) + 1
         row = {
+            "ToneIndex": index,
             "Trial": self.trial,
             "Block": self.block,
             "RTime": beat.r_time,
@@ -602,6 +653,7 @@ class PhaseEngine:
             "tone_scheduled",
             now,
             trial=self.trial,
+            tone=index,
             sound=kind,
             r_time=beat.r_time,
             period=beat.period,

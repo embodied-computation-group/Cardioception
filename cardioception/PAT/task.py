@@ -53,6 +53,10 @@ FINAL_COLUMNS = [
     "ObservedPeriodMs",
     "LastRTime",
     "PressTime",
+    "LastToneIndex",
+    "LastToneAnchor",
+    "LastToneRTime",
+    "LastToneDelayMs",
     "Confidence",
     "ConfidenceRT",
     "ConfidenceUnit",
@@ -73,6 +77,7 @@ FINAL_COLUMNS = [
 
 #: Columns of tones.txt, in order.
 TONE_COLUMNS = [
+    "ToneIndex",
     "Trial",
     "Block",
     "RTime",

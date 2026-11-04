@@ -140,6 +140,8 @@ The wrapper appends `Extero` to the session label of the exteroceptive run, so b
 | `AnticipatedPeriodMs` | The anticipated period (mean of the last three R-R intervals) at the last beat before the press |
 | `ObservedPeriodMs` | The R-R interval containing the press, known once the next R-wave arrives; NaN if it did not arrive within 3 s |
 | `LastRTime`, `PressTime` | The last R-wave before the press and the press itself, in LSL seconds |
+| `LastToneIndex`, `LastToneAnchor`, `LastToneRTime` | The last tone that sounded before the press: its `ToneIndex` in `tones.txt`, its anchor (`real` or `predicted`) and the R-wave it was timed from |
+| `LastToneDelayMs` | The delay that tone was actually played at after the R-wave of its own cycle, with `latencyBias` added back so it reads like `ChosenDelayMs`. Equal to the dial for a `real` tone; for a `predicted` tone it is measured from the R-wave that followed the one it was timed from, and is NaN if that R-wave never came |
 | `Confidence`, `ConfidenceRT` | The rating on the session's scale, from 1 (not at all) to 10 (extremely) by default, and its response time; empty when no rating was given |
 | `ConfidenceUnit` | The same rating on 0 to 1, so sessions rated on different scales can be pooled |
 | `Device` | `keyboard` (wheel and arrow keys) or `mouse` |
@@ -148,7 +150,7 @@ The wrapper appends `Extero` to the session label of the exteroceptive run, so b
 | `TrialDuration`, `nDialMoves` | Seconds from trial start to press, and number of dial movements |
 | `WallTime` | Computer clock time of the press |
 
-`tones.txt`, one row per tone or vibration: `Trial`, `Block`, `RTime` (the R-wave it was timed from, LSL seconds), `PeriodS` (anticipated period), `PhaseDeg` and `DelayMs` (the dial), `Target` (when it was meant to sound), `Anchor` (`real`, `predicted` or `virtual`), `Onset` (the onset PsychPortAudio reported, NaN if none) and `Kind` (`tone` or `vibration`). Together with the ECG in the XDF file this gives the true R-to-tone interval of every tone, which the original PAT-ECG did not log.
+`tones.txt`, one row per tone or vibration: `ToneIndex` (a running number across the session, which `LastToneIndex` refers to), `Trial`, `Block`, `RTime` (the R-wave it was timed from, LSL seconds), `PeriodS` (anticipated period), `PhaseDeg` and `DelayMs` (the dial), `Target` (when it was meant to sound), `Anchor` (`real`, `predicted` or `virtual`), `Onset` (the onset PsychPortAudio reported, NaN if none) and `Kind` (`tone` or `vibration`). Together with the ECG in the XDF file this gives the true R-to-tone interval of every tone, which the original PAT-ECG did not log.
 
 ## Confidence scale
 
@@ -206,6 +208,8 @@ Only rows with `Block == "main"` count. `consistency_grid` returns eight rows, t
 | `mapping` | `variable`: each trial's angle uses its own period (phase-based consistency). `fixed`: every trial uses the participant's median period (delay-based consistency); trials whose delay exceeds that median are dropped. |
 | `period` | `anticipated`: the period the task used online. `observed`: the R-R interval that contained the press. |
 | `weighting` | `none`, or `confidence`: each trial weighted by its rating. |
+
+The scores use `ChosenDelayMs`, the dial at the press. That is the delay the participant heard only when the last tone was anchored on a `real` beat. A `predicted` tone was timed from the R-wave before, one anticipated period ahead, so when the heart period changes from one beat to the next it sounds earlier or later than the dial says, by tens of ms at resting heart rate variability. To score what was heard instead, use `LastToneDelayMs`, or join `LastToneIndex` to `ToneIndex` in `tones.txt` and measure each tone's `Onset` from the R-waves in the XDF file.
 
 Each row gives `n_trials` (trials scored), `n_dropped` (main trials left out because their `TrialStatus` is not `ok`), `score` (the MRL), `threshold` and `interoceptive` (`score > threshold`). Before scoring, trials that are `stale` or `timeout` are dropped, then trials with a missing period, then trials whose period lies more than 5 robust standard deviations (1.4826 times the median absolute deviation) from the participant's median period, separately for each period type. In the paper this removed under 1 % of trials.
 
