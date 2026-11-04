@@ -39,6 +39,14 @@ FINAL_COLUMNS = [
     "PressTime",
     "Confidence",
     "ConfidenceRT",
+    "ConfidenceUnit",
+    "Device",
+    "ConfidenceScale",
+    "ConfidenceLow",
+    "ConfidenceHigh",
+    "ConfidenceGranularity",
+    "ConfidenceLevels",
+    "ConfidenceSigned",
     "nTonesReal",
     "nTonesPredicted",
     "nTonesSkipped",
@@ -300,6 +308,7 @@ def trial(
 
     """
     engine = parameters["engine"]
+    scale = parameters["confidenceScale"]
     parameters["trialBlocks"][trialNumber] = block
     logger.info(
         f"Starting {block} trial {trialNumber} - start phase {startPhase:g} deg "
@@ -349,6 +358,11 @@ def trial(
             "StartPhaseDeg": startPhase,
             "Confidence": confidence,
             "ConfidenceRT": confidenceRT,
+            "ConfidenceUnit": (
+                scale.to_unit(confidence) if np.isfinite(confidence) else np.nan
+            ),
+            "Device": parameters["device"],
+            **scale.describe(),
             "nDialMoves": press["n_dial_moves"],
             "WallTime": press["wall_time"],
         }
@@ -824,23 +838,18 @@ def tutorial(parameters: dict) -> None:
     waitInput(parameters)
 
 
-class _EscapableText:
-    """A text stimulus that raises TaskAbort on Esc when drawn.
+class _Prompt:
+    """The rating question and the line saying how to answer, drawn as one."""
 
-    The shared keyboard rating draws its message on every frame, which makes
-    this the place to watch for Esc without changing the rating itself.
-    """
-
-    def __init__(self, parameters: dict, text: str):
+    def __init__(self, parameters: dict):
         from psychopy import visual
 
-        self.parameters = parameters
         self.parts = [
             visual.TextStim(
                 parameters["win"],
                 height=parameters["textSize"],
                 pos=(0, 0.2),
-                text=text,
+                text=parameters["texts"]["Confidence"],
                 wrapWidth=1.2,
             ),
             visual.TextStim(
@@ -852,18 +861,26 @@ class _EscapableText:
         ]
 
     def draw(self) -> None:
-        from psychopy import event
-
-        _idle(self.parameters)  # the rating draws this on every frame
-        _checkEscape(event.getKeys(keyList=["escape"]))
         for part in self.parts:
             part.draw()
+
+
+def _abort() -> None:
+    raise TaskAbort()
 
 
 def confidenceRatingTask(
     parameters: dict,
 ) -> Tuple[Optional[float], Optional[float], bool]:
-    """Confidence rating, with the arrow keys or the mouse.
+    """Confidence rating, with the wheel and arrow keys or with the mouse.
+
+    The shared rating widgets of :mod:`cardioception._rating`, on
+    ``parameters["confidenceScale"]``. With ``device="keyboard"`` the mouse
+    wheel and the arrow keys move the marker and space confirms; with
+    ``device="mouse"`` the cursor moves it and a click confirms, once the
+    button that may still be down from the trial has been released. The
+    engine is polled on every frame, so beats keep being detected, and Esc
+    raises :class:`TaskAbort`, so the trial being rated is kept.
 
     Parameters
     ----------
@@ -880,73 +897,47 @@ def confidenceRatingTask(
     """
     from psychopy import core, event, visual
 
-    from ._rating import wheel_rating
+    from .._rating import keyboard_rating, mouse_rating
 
-    low, high = parameters["confScale"]
-    message = _EscapableText(parameters, parameters["texts"]["Confidence"])
+    scale = parameters["confidenceScale"]
+    engine = parameters["engine"]
+    message = _Prompt(parameters)
 
     if parameters["device"] == "keyboard":
-        confidence, confidenceRT, provided = wheel_rating(
+        confidence, confidenceRT, provided = keyboard_rating(
             win=parameters["win"],
             message=message,
-            low=low,
-            high=high,
-            labels=parameters["labelsRating"],
+            low=scale.low,
+            high=scale.high,
+            labels=scale.labels,
+            granularity=scale.granularity,
             min_time=parameters["minRatingTime"],
             max_time=parameters["maxRatingTime"],
             accept_keys=(parameters["startKey"],),
             label_height=parameters["textSize"] * 0.6,
+            rng=parameters["rng"],
+            on_frame=engine.idle_poll,
             wheel=_wheelNotches(parameters),
-            # Drawn from the session generator, so it is reproducible
-            marker_start=int(parameters["rng"].choice(np.arange(low, high))),
+            on_escape=_abort,
         )
     else:
-        # As the HRD mouse slider: the cursor is hidden, warped once to a random
-        # start, and only brought back when it nears the screen edge (warping
-        # on every frame freezes the mouse on macOS, issue #103).
-        win, mouse = parameters["win"], parameters["myMouse"]
-        win.mouseVisible = False
-        mouse.setPos((parameters["rng"].uniform(-0.25, 0.25), 0.2))
-        slider = visual.Slider(
-            win=win,
-            name="slider",
-            pos=(0, -0.2),
-            size=(0.7, 0.1),
-            labels=parameters["labelsRating"],
-            granularity=1,
-            ticks=(low, high),
-            style="rating",
-            color="LightGray",
-            flip=False,
-            labelHeight=parameters["textSize"] * 0.6,
+
+        def on_frame() -> None:
+            engine.idle_poll()
+            # The mouse rating reads no keys, so Esc is looked for here.
+            _checkEscape(event.getKeys(keyList=["escape"]))
+
+        confidence, confidenceRT, provided = mouse_rating(
+            win=parameters["win"],
+            mouse=parameters["myMouse"],
+            message=message,
+            scale=scale,
+            min_time=parameters["minRatingTime"],
+            max_time=parameters["maxRatingTime"],
+            label_height=parameters["textSize"] * 0.6,
+            rng=parameters["rng"],
+            on_frame=on_frame,
         )
-        slider.marker.size = (0.03, 0.03)
-        confidence, confidenceRT, provided = None, None, False
-        clock = core.Clock()
-        mouse.clickReset()
-        event.clearEvents(eventType="keyboard")
-        while True:
-            elapsed = clock.getTime()
-            buttons = mouse.getPressed()
-            mouseX, mouseY = mouse.getPos()[:2]
-            newX = min(max(float(mouseX), -0.35), 0.35)
-            slider.markerPos = round(low + (newX + 0.35) / 0.7 * (high - low))
-            if abs(mouseX) > 0.85 or abs(mouseY) > 0.45:
-                mouse.setPos((newX, 0.2))
-            if buttons[0] and elapsed > parameters["minRatingTime"]:
-                confidence, confidenceRT, provided = slider.markerPos, elapsed, True
-                slider.marker.color = "green"
-                slider.draw()
-                message.draw()
-                win.flip()
-                core.wait(0.2)
-                break
-            maxTime = parameters["maxRatingTime"]
-            if maxTime is not None and elapsed > maxTime:
-                break
-            slider.draw()
-            message.draw()
-            win.flip()
 
     if provided:
         logger.info(f"... confidence {confidence} after {confidenceRT:.2f} s")

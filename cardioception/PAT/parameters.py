@@ -25,6 +25,7 @@ import pandas as pd
 from .._log import get_logger, start_session_log
 from .._rng import make_rng
 from ..output import SessionPaths
+from ..scales import DISCRETE_1_10, ConfidenceScale
 from .languages import danish, english
 
 logger = get_logger()
@@ -95,7 +96,7 @@ def _validate(
     dialGainDeg: float,
     dialGainMs: float,
     minToneGap: float,
-    confScale: Sequence[int],
+    confidenceScale: Optional[ConfidenceScale],
     wheelDirection: int = 1,
 ) -> None:
     """Raise a ValueError naming the first invalid setting."""
@@ -158,8 +159,11 @@ def _validate(
         raise ValueError(f"wheelDirection should be 1 or -1, got {wheelDirection!r}.")
     if not minToneGap >= 0:
         raise ValueError(f"minToneGap should be 0 or more, got {minToneGap}.")
-    if len(confScale) != 2 or not confScale[0] < confScale[1]:
-        raise ValueError(f"confScale should be (low, high), got {confScale!r}.")
+    if confidenceScale is not None and not isinstance(confidenceScale, ConfidenceScale):
+        raise ValueError(
+            "confidenceScale should be a cardioception.scales.ConfidenceScale "
+            f"or None, got {confidenceScale!r}."
+        )
 
 
 def _markerOutlet(name: str):
@@ -205,7 +209,7 @@ def getParameters(
     wheelDirection: int = 1,
     showDial: bool = True,
     minToneGap: float = 0.3,
-    confScale: Sequence[int] = (1, 10),
+    confidenceScale: Optional[ConfidenceScale] = None,
     markerStream: Optional[str] = "PAT",
     engine=None,
 ) -> Dict[str, Any]:
@@ -289,8 +293,11 @@ def getParameters(
         A tone is skipped when its target is less than this many seconds after
         the previous target, so the participant never hears two tones in quick
         succession while turning the dial.
-    confScale : tuple of int
-        Ends of the confidence scale. The paper used 1 to 10.
+    confidenceScale : ConfidenceScale | None
+        How confidence is collected. `None` takes
+        :data:`cardioception.scales.DISCRETE_1_10`, the 1 to 10 of the paper,
+        with the end labels of the language. A scale passed in keeps its own
+        labels. Its ends are the numbers the instructions name.
     markerStream : str | None
         Name of the LSL marker stream the task opens. Every beat, tone, dial
         move, press and rating is pushed to it as one JSON string, so a
@@ -342,7 +349,7 @@ def getParameters(
         dialGainDeg=dialGainDeg,
         dialGainMs=dialGainMs,
         minToneGap=minToneGap,
-        confScale=confScale,
+        confidenceScale=confidenceScale,
         wheelDirection=wheelDirection,
     )
     if recorder is None and not extero and engine is None:
@@ -381,7 +388,6 @@ def getParameters(
     parameters["dialGainDeg"] = float(dialGainDeg)
     parameters["dialGainMs"] = float(dialGainMs)
     parameters["minToneGap"] = float(minToneGap)
-    parameters["confScale"] = [int(confScale[0]), int(confScale[1])]
     parameters["markerStream"] = markerStream
 
     # Task flow
@@ -433,11 +439,20 @@ def getParameters(
     ##############
     # Load texts #
     ##############
+    # The ends of the scale are known before its labels, which come from the
+    # texts, so the instructions can name them.
+    ends = confidenceScale if confidenceScale is not None else DISCRETE_1_10
     texts_fn = english if language == "english" else danish
     parameters["texts"] = texts_fn(
-        device=device, extero=extero, confScale=confScale, showDial=showDial
+        device=device,
+        extero=extero,
+        confScale=(f"{ends.low:g}", f"{ends.high:g}"),
+        showDial=showDial,
     )
-    parameters["labelsRating"] = parameters["texts"]["VASlabels"]
+    if confidenceScale is None:
+        confidenceScale = DISCRETE_1_10.with_labels(parameters["texts"]["VASlabels"])
+    parameters["confidenceScale"] = confidenceScale
+    parameters["labelsRating"] = list(confidenceScale.labels)
 
     ###########################
     # Marker outlet and engine #
@@ -511,7 +526,7 @@ def getParameters(
         nTrials=parameters["nTrials"],
         nPractice=parameters["nPractice"],
         startPhases=parameters["startPhases"],
-        confScale=parameters["confScale"],
+        confidence=confidenceScale.describe(),
         recording=(
             recorder.describe()
             if recorder is not None and hasattr(recorder, "describe")

@@ -219,17 +219,24 @@ class FakeWindow:
 
 
 class FakeMouse:
-    """Half a notch per wheel read, so every second frame moves the dial."""
+    """Half a notch per wheel read, so every second frame moves the dial.
+
+    ``buttons``, when set, scripts the left button one read at a time; past
+    its end the button stays as ``pressed`` says.
+    """
 
     def __init__(self, *args, **kwargs):
         self.wheel = 0.5
         self.pressed = False
+        self.buttons: List[bool] = []
         self.x = 0.0
 
     def getWheelRel(self) -> np.ndarray:
         return np.array([0.0, self.wheel])
 
     def getPressed(self):
+        if self.buttons:
+            return [int(self.buttons.pop(0)), 0, 0]
         return [int(self.pressed), 0, 0]
 
     def getPos(self) -> np.ndarray:
@@ -376,7 +383,9 @@ def test_parameters(fake_psychopy, tmp_path):
     assert parameters["outlet"] is None  # an injected engine brings its own markers
     assert len(parameters["startPhaseMain"]) == 28
     assert len(parameters["startPhasePractice"]) == 8
-    assert parameters["confScale"] == [1, 10]
+    scale = parameters["confidenceScale"]
+    assert scale.bounds == (1, 10) and scale.kind == "discrete"
+    assert list(scale.labels) == ["Not at all", "Extremely"]
     assert parameters["labelsRating"] == ["Not at all", "Extremely"]
     assert parameters["results_df"].empty and parameters["tones"] == []
     assert isinstance(parameters["win"], FakeWindow)
@@ -385,6 +394,24 @@ def test_parameters(fake_psychopy, tmp_path):
 
     danish_parameters = make_parameters(tmp_path / "da", language="danish")
     assert danish_parameters["labelsRating"] == ["Slet ikke", "Ekstremt"]
+    assert list(danish_parameters["confidenceScale"].labels) == [
+        "Slet ikke",
+        "Ekstremt",
+    ]
+
+
+def test_a_scale_passed_in_keeps_its_labels_and_sets_the_instructions(
+    fake_psychopy, tmp_path
+):
+    from cardioception.scales import VAS_0_100
+
+    scale = VAS_0_100.with_labels(["low", "high"])
+    parameters = make_parameters(tmp_path, confidenceScale=scale)
+    assert parameters["confidenceScale"] is scale
+    assert parameters["labelsRating"] == ["low", "high"]
+    assert "from 0 (not at all) to 100 (extremely)" in " ".join(
+        parameters["texts"]["instructions"]
+    )
 
 
 @pytest.mark.parametrize(
@@ -400,7 +427,7 @@ def test_parameters(fake_psychopy, tmp_path):
         {"exteroPeriod": 1000},  # milliseconds, not seconds
         {"exteroPeriod": "regular"},
         {"toneVolume": 2.0},
-        {"confScale": (10, 1)},
+        {"confidenceScale": (1, 10)},  # a ConfidenceScale, not a tuple
     ],
 )
 def test_parameters_reject_bad_input(fake_psychopy, tmp_path, kwargs):
@@ -532,6 +559,15 @@ def test_trial_writes_a_row_and_saves(fake_psychopy, tmp_path):
     final = read(parameters["paths"].path("final"))
     assert list(final.columns) == FINAL_COLUMNS
     assert len(final) == 1
+    # The rating, the same rating on 0 to 1, and the scale it was given on
+    assert final.loc[0, "ConfidenceUnit"] == pytest.approx(
+        (final.loc[0, "Confidence"] - 1) / 9
+    )
+    assert final.loc[0, "Device"] == "keyboard"
+    assert final.loc[0, "ConfidenceScale"] == "discrete"
+    assert final.loc[0, "ConfidenceLow"] == 1 and final.loc[0, "ConfidenceHigh"] == 10
+    assert final.loc[0, "ConfidenceLevels"] == 10
+    assert bool(final.loc[0, "ConfidenceSigned"]) is False
     assert final.loc[0, "Block"] == "practice"
     assert final.loc[0, "StartPhaseDeg"] == 90
     assert bool(final.loc[0, "Extero"]) is False
@@ -718,7 +754,7 @@ def test_escape_in_the_rating_keeps_the_trial(fake_psychopy, tmp_path):
     normal = space_after_polls(engine)
 
     def policy(keyList):
-        if engine.ended == 1 and keyList == ["escape"]:
+        if engine.ended == 1 and keyList and "escape" in keyList:
             return ["escape"]  # while the first rating is on screen
         return normal(keyList)
 
@@ -728,6 +764,7 @@ def test_escape_in_the_rating_keeps_the_trial(fake_psychopy, tmp_path):
     assert parameters["aborted"] is True
     final = read(parameters["paths"].path("final"))
     assert len(final) == 1 and final["Confidence"].isna().all()
+    assert final["ConfidenceUnit"].isna().all()
 
 
 def test_escape_before_any_trial_writes_no_results(fake_psychopy, tmp_path):
@@ -745,13 +782,37 @@ def test_mouse_rating(fake_psychopy, tmp_path):
     engine = FakeEngine()
     parameters = make_parameters(tmp_path, engine=engine, device="mouse")
     fake_psychopy.policy = space_after_polls(engine)
-    parameters["myMouse"].pressed = True
-    parameters["myMouse"].x = 0.35  # right end of the slider
+    mouse = parameters["myMouse"]
+    # Held from before the rating for 10 reads, released, then pressed
+    mouse.buttons = [True] * 10 + [False] * 2
+    mouse.pressed = True
+    mouse.x = 0.5  # right end of the slider
 
     row = trial(parameters, 1, "main", 0.0)
 
     assert row["Confidence"] == 10
-    assert row["ConfidenceRT"] > parameters["minRatingTime"]
+    # Not on the first read past minRatingTime, while the button was still held
+    assert row["ConfidenceRT"] > 1.0
+    assert row["Device"] == "mouse" and row["ConfidenceUnit"] == 1.0
+    assert engine.idlePolls >= 10  # the engine is polled during the rating
+
+
+def test_escape_in_the_mouse_rating_keeps_the_trial(fake_psychopy, tmp_path):
+    engine = FakeEngine()
+    parameters = make_parameters(tmp_path, engine=engine, device="mouse", nPractice=0)
+    normal = space_after_polls(engine)
+
+    def policy(keyList):
+        if engine.ended == 1 and keyList == ["escape"]:
+            return ["escape"]  # while the first rating is on screen
+        return normal(keyList)
+
+    fake_psychopy.policy = policy
+    run(parameters, runTutorial=False)
+
+    assert parameters["aborted"] is True
+    final = read(parameters["paths"].path("final"))
+    assert len(final) == 1 and final["Confidence"].isna().all()
 
 
 #####################################
@@ -843,11 +904,11 @@ def test_rating_follows_the_wheel(fake_psychopy, tmp_path, direction, expected):
 
 
 def test_wheel_rating_steps_one_per_notch(fake_psychopy):
-    from cardioception.PAT._rating import wheel_rating
+    from cardioception._rating import keyboard_rating
 
     win = FakeWindow()
     fake_psychopy.policy = lambda keyList: ["space"] if keyList else []
-    confidence, _, provided = wheel_rating(
+    confidence, _, provided = keyboard_rating(
         win=win,
         message=FakeStim(),
         low=1,

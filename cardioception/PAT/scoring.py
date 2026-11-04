@@ -328,6 +328,9 @@ def consistency_grid(
 
     main = final_df[final_df["Block"].astype(str) == "main"]
     delay = _numeric(main, "ChosenDelayMs")
+    # The raw rating is the weight, as in the paper, not ConfidenceUnit: on
+    # the 1 to 10 scale to_unit(1) is 0, which would drop every trial rated 1
+    # from the weighted MRL.
     confidence = _numeric(main, "Confidence")
 
     rows: List[dict] = []

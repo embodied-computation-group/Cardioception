@@ -18,7 +18,7 @@ from typing import Any, Dict, Sequence
 def english(
     device: str = "keyboard",
     extero: bool = False,
-    confScale: Sequence[int] = (1, 10),
+    confScale: Sequence[Any] = (1, 10),
     showDial: bool = True,
 ) -> Dict[str, Any]:
     """Create the text dictionary with instructions in English.
@@ -148,7 +148,7 @@ def english(
 def danish(
     device: str = "keyboard",
     extero: bool = False,
-    confScale: Sequence[int] = (1, 10),
+    confScale: Sequence[Any] = (1, 10),
     showDial: bool = True,
 ) -> Dict[str, Any]:
     """Create the text dictionary with instructions in Danish.
