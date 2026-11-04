@@ -107,8 +107,9 @@ STALE_PERIODS = 1.5
 #: with no press (see ``maxTrialTime`` in the task).
 TRIAL_STATUSES = ("ok", "stale", "timeout")
 
-#: How a trial stops: the participant's press, or the task's time limit.
-STOP_REASONS = ("press", "timeout")
+#: How a trial stops: the participant's press, the task's time limit, or the
+#: experimenter's Esc (``abort``, after which the trial gets no row).
+STOP_REASONS = ("press", "timeout", "abort")
 
 
 def _json_safe(value: Any) -> Any:
@@ -363,9 +364,11 @@ class PhaseEngine:
         """The trial stops: no more tones are scheduled. Those already
         scheduled play.
 
-        ``reason`` is ``"press"`` (the participant locked in a choice) or
-        ``"timeout"`` (the task's time limit ran out, with no choice), and is
-        the kind of the marker pushed. Only the first call of a trial counts.
+        ``reason`` is ``"press"`` (the participant locked in a choice),
+        ``"timeout"`` (the task's time limit ran out, with no choice) or
+        ``"abort"`` (Esc: the trial is dropped and :meth:`end_trial` is not
+        called), and is the kind of the marker pushed. Only the first call of
+        a trial counts.
         """
         if reason not in STOP_REASONS:
             raise ValueError(f"reason should be one of {STOP_REASONS}, got {reason!r}")

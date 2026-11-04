@@ -339,7 +339,13 @@ def trial(
     )
 
     fire(parameters, "trialStart")
-    press = dialLoop(parameters, trialNumber, block, startPhase)
+    try:
+        press = dialLoop(parameters, trialNumber, block, startPhase)
+    except TaskAbort:
+        # Esc before the press: the trial gets no row, so its tones are left
+        # out of tones.txt too (the marker stream still has them).
+        parameters["trialBlocks"].pop(trialNumber, None)
+        raise
     fields = engine.end_trial()
     timedOut = press["status"] == "timeout"
 
@@ -670,7 +676,7 @@ def dialLoop(
 
             for key in event.getKeys(keyList=watched):
                 if key == "escape":
-                    engine.stop_tones()
+                    engine.stop_tones(reason="abort")
                     raise TaskAbort()
                 elif len(dialKeys) == 2 and key == dialKeys[0]:
                     notches -= 1

@@ -532,6 +532,18 @@ def test_timeout_has_no_choice():
     assert engine.end_trial()["TrialStatus"] == "ok"
 
 
+def test_abort_marker_is_not_a_press():
+    engine, source, player, clock, outlet = make_engine()
+    engine.start_trial(1, 90)
+    beat_now(engine, source, clock, 100.0)
+    engine.stop_tones("abort")
+    engine.stop_tones()  # only the first call of a trial counts
+    kinds = outlet.kinds()
+    assert kinds.count("abort") == 1 and "press" not in kinds
+    abort = [m for m, _ in outlet.samples if m["kind"] == "abort"][0]
+    assert abort["trial"] == 1
+
+
 def test_stop_tones_rejects_an_unknown_reason():
     engine, *_ = make_engine()
     engine.start_trial(1, 0)

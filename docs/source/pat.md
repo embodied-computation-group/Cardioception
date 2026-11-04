@@ -112,7 +112,7 @@ The confidence rating has no time limit (`parameters["maxRatingTime"]` is `None`
 
 For the exteroceptive variant pass `extero=True` and no recorder is needed. The paper ran the exteroceptive task (8 + 28 trials, about 10 minutes) before the PAT (8 + 28 trials, about 30 minutes). Between 15 and 20 trials already separate consistent responders from chance; gains beyond 20 are small {cite:p}`2026:palmer`.
 
-Instructions to the participant matter. Ask them to focus on one consistent body location, to sit still, breathe normally and not tense their muscles, which would amplify the heartbeat sensation. The experimenter sees a one-line status every second in the console (trial, heart rate, phase, tones anchored on real and predicted beats). Press Esc at any prompt to stop; what has been collected is saved.
+Instructions to the participant matter. Ask them to focus on one consistent body location, to sit still, breathe normally and not tense their muscles, which would amplify the heartbeat sensation. The experimenter sees a one-line status every second in the console (trial, heart rate, phase, tones anchored on real and predicted beats). Press Esc at any prompt to stop; what has been collected is saved. Esc during a trial, before space, drops that trial: the marker stream gets an `abort` marker rather than a `press`, the trial has no row in `final.txt`, and its tones are left out of `tones.txt` (the marker stream still has them).
 
 ## Output files
 

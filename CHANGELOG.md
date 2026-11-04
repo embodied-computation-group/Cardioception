@@ -171,6 +171,9 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   (`LastToneDelayMs`, with its anchor, R-wave and `LastToneIndex`), which
   differs from the dial for a tone timed from the predicted next beat.
   `tones.txt` gains a `ToneIndex` to join on.
+- Esc during a PAT trial pushes an `abort` marker instead of a `press`, and
+  the aborted trial's tones are no longer written to `tones.txt` without a
+  row in `final.txt`.
 
 ### Internal
 
