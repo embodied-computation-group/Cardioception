@@ -22,6 +22,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 import cardioception.PAT.task as pat
 from cardioception._log import start_session_log
@@ -30,6 +31,11 @@ from cardioception.PAT._autopilot import PATAutopilot
 from cardioception.PAT.parameters import EVENTS, getParameters
 from cardioception.PAT.scoring import consistency_grid
 from cardioception.PAT.task import FINAL_COLUMNS, TONE_COLUMNS, TUTORIAL_TRIAL
+
+# The sessions run in real time against the virtual heart, and the virtual
+# display in CI renders far more slowly than a desktop, so one class's
+# session can outlast the suite-wide per-test limit of 180 s.
+pytestmark = pytest.mark.timeout(600)
 
 SEED = 314
 TARGET = 120.0
