@@ -84,6 +84,47 @@ Languages
     danish_children
     french
 
+Heartbeat Synchrony Discrimination task
+=======================================
+
+Experimental, run on hardware once so far; see the
+:doc:`design document <hsd_design>` and the
+:doc:`user guide <user_guide>`.
+
+Parameters
+**********
+
+.. currentmodule:: cardioception.HSD.parameters
+
+.. autosummary::
+   :toctree: generated/HSD.parameters
+
+    getParameters
+
+Scripts
+*******
+
+.. currentmodule:: cardioception.HSD.task
+
+.. autosummary::
+   :toctree: generated/HSD.task
+
+    run
+    trial
+    tutorial
+
+Engine
+******
+
+.. currentmodule:: cardioception.HSD.psi
+
+.. autosummary::
+   :toctree: generated/HSD.psi
+
+    SynchronyPsi
+    gaussian_envelope
+    default_grids
+
 Recording devices
 -----------------
 

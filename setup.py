@@ -100,6 +100,7 @@ if __name__ == "__main__":
                 "Sounds/*.wav",
                 "texts/*.yaml",
             ],
+            "cardioception.HSD": ["texts/*.yaml"],
             "cardioception.notebooks": ["*.ipynb"],
         },
     )

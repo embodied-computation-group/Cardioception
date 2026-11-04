@@ -1,0 +1,43 @@
+language: english
+texts:
+  Confidence: How confident are you in your answer?
+  Decision:
+    question: Were the tones synchronous with your heartbeat?
+    Synchronous: "UP: synchronous"
+    NotSynchronous: "DOWN: not synchronous"
+  Tutorial1: |-
+    In this task you will hear short tones that are timed to your own heartbeat.
+
+    After each set of tones, you will decide whether the tones felt synchronous with your heartbeat: whether each tone seemed to come at the same moment as a beat.
+
+    Please do not check your pulse at your wrist or your neck. Try to feel your heartbeat from the inside.
+  Tutorial2: |-
+    Each trial plays five tones. Sit still and listen while they play.
+
+    When the tones have finished, press the UP key if they felt synchronous with your heartbeat, or the DOWN key if they did not.
+
+    There is no right or wrong answer. Answer by how it feels to you.
+  Tutorial3: |-
+    After each answer, you will rate how confident you are in it.
+
+    Move the marker with the LEFT and RIGHT keys and press DOWN to confirm. The left end means you were guessing, the right end that you are certain.
+
+    You will now do three practice trials.
+  VASlabels:
+  - Guess
+  - Certain
+  done: You have completed the task. Thank you for your participation.
+  responseText: UP key for synchronous, DOWN key for not synchronous.
+  textTaskStart: The task is now going to start, get ready.
+  tooLate: Too late
+  trainPrompt: Listen
+variants:
+  textBreaks:
+    axis: device
+    values:
+      keyboard: Break. You can rest as long as you want. Just press SPACE when you want to
+        resume the task.
+  textNext:
+    axis: device
+    values:
+      keyboard: Please press SPACE to continue

@@ -16,7 +16,7 @@ its filename stem as ``language``. Keys are not translated.
 """
 
 import os
-from typing import Any, Dict, List
+from typing import AbstractSet, Any, Dict, List, Optional
 
 import yaml
 
@@ -61,12 +61,18 @@ REQUIRED_KEYS = frozenset(
 )
 
 
-def available() -> List[str]:
-    """Languages that can be passed as ``language``."""
-    if not os.path.isdir(TEXTS_DIR):
+def available(texts_dir: Optional[str] = None) -> List[str]:
+    """Languages that can be passed as ``language``.
+
+    ``texts_dir`` defaults to :data:`TEXTS_DIR`, read when this is called.
+    Another task passes its own directory.
+    """
+    if texts_dir is None:
+        texts_dir = TEXTS_DIR
+    if not os.path.isdir(texts_dir):
         return []
     return sorted(
-        f[: -len(".yaml")] for f in os.listdir(TEXTS_DIR) if f.endswith(".yaml")
+        f[: -len(".yaml")] for f in os.listdir(texts_dir) if f.endswith(".yaml")
     )
 
 
@@ -87,7 +93,13 @@ def _resolve(key: str, variant: Dict[str, Any], device: str, exteroception: bool
     return values[selector]
 
 
-def get_texts(language: str, device: str, exteroception: bool) -> Dict[str, Any]:
+def get_texts(
+    language: str,
+    device: str,
+    exteroception: bool,
+    texts_dir: Optional[str] = None,
+    required: Optional[AbstractSet[str]] = None,
+) -> Dict[str, Any]:
     """Every string this session will show the participant.
 
     Parameters
@@ -100,6 +112,13 @@ def get_texts(language: str, device: str, exteroception: bool) -> Dict[str, Any]
     exteroception :
         Whether the session includes the exteroceptive condition, which changes
         what the tutorial says is coming.
+    texts_dir :
+        The directory holding the language files. Defaults to
+        :data:`TEXTS_DIR`, read when this is called. Another task passes its
+        own directory.
+    required :
+        The keys every language must define. Defaults to
+        :data:`REQUIRED_KEYS`, read when this is called.
 
     Raises
     ------
@@ -108,11 +127,17 @@ def get_texts(language: str, device: str, exteroception: bool) -> Dict[str, Any]
         raised here, at setup, rather than at the screen that needed the text.
 
     """
-    path = os.path.join(TEXTS_DIR, f"{language}.yaml")
+    if texts_dir is None:
+        texts_dir = TEXTS_DIR
+    if required is None:
+        required = REQUIRED_KEYS
+
+    path = os.path.join(texts_dir, f"{language}.yaml")
     if not os.path.isfile(path):
         raise ValueError(
-            f"No texts for language {language!r}. Available: {available()}. "
-            f"Add {language}.yaml to {TEXTS_DIR} to define it."
+            f"No texts for language {language!r}. "
+            f"Available: {available(texts_dir)}. "
+            f"Add {language}.yaml to {texts_dir} to define it."
         )
 
     with open(path, encoding="utf-8") as handle:
@@ -124,11 +149,12 @@ def get_texts(language: str, device: str, exteroception: bool) -> Dict[str, Any]
     # Completeness is checked against the file, not against what this session
     # resolves to, so a language missing a key fails at launch whatever the
     # session was configured to do.
-    missing = REQUIRED_KEYS - (set(plain) | set(variants))
+    missing = set(required) - (set(plain) | set(variants))
     if missing:
         raise ValueError(
             f"{path} is missing {sorted(missing)}. Every language must define "
-            f"all {len(REQUIRED_KEYS)} keys; see texts/english.yaml."
+            f"all {len(required)} keys; see "
+            f"{os.path.join(texts_dir, 'english.yaml')}."
         )
 
     texts: Dict[str, Any] = dict(plain)

@@ -90,6 +90,28 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   detector, each moved to the R peak, and the task's trigger codes are also
   sent to an LSL marker stream, so a LabRecorder file holds the physiology
   and the events on one clock. Needs `pip install cardioception-toolbox[lsl]`.
+- `cardioception.HSD.psi.SynchronyPsi`, the estimation engine for an
+  experimental Heartbeat Synchrony Discrimination task: an adaptive Bayesian
+  version of the Brener, Liu and Ring method of constant stimuli that chooses
+  each R-wave-to-tone delay by expected information gain and estimates where
+  in the cardiac cycle the heartbeat is felt, and how sharply. Plain NumPy, no
+  PsychoPy or device; the task runner comes later. The design is documented
+  in `docs/source/hsd_design.md`.
+- The Heartbeat Synchrony Discrimination task runner, experimental:
+  `cardioception.HSD.parameters.getParameters` and `cardioception.HSD.task.run`,
+  with English instructions, a tutorial with three practice trials, both
+  stimulus axes (ms after the R-wave, or a fraction of the interbeat
+  interval), an adaptive stopping rule, and `wrappers/hsd_lsl.py`. Each
+  trial's train is scheduled on the R-waves of an LSL ECG stream and the
+  engine is updated with the delay actually realized. A session writes
+  `final`, `tones`, `beats`, the posterior per trial and the engine state.
+  `setup="behavioral"` uses the shared `LSLBeatSource` and `TonePlayer` in
+  `cardioception.devices`. Every tone is scheduled a 50 ms latency bias early
+  (`TaskConfig.latencyBias`), for the transport and speaker delays the
+  recordings cannot see, so the shortest delay played is 130 ms. One hardware
+  dry run, 60 trials on a PLUX ECG over Bluetooth, is recorded in the design
+  document, with a simulation rerun at the 130 ms floor. The user guide has a
+  how-to for running a session and reading its results.
 
 ### Fixed
 
