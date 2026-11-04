@@ -2,11 +2,12 @@
 """Heartbeat Synchrony Discrimination task (HSD): adaptive estimation of the heartbeat sensation envelope."""
 
 from .parameters import getParameters
-from .psi import PARAMETERS, SynchronyPsi, default_grids, gaussian_envelope
+from .psi import PARAMETERS, RATES, SynchronyPsi, default_grids, gaussian_envelope
 from .task import run, trial, tutorial
 
 __all__ = [
     "PARAMETERS",
+    "RATES",
     "SynchronyPsi",
     "default_grids",
     "gaussian_envelope",

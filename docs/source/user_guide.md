@@ -192,7 +192,7 @@ The HSD is an adaptive version of the heartbeat detection task of Brener, Liu an
 
 The delay can be set on one of two axes, chosen per session with `axis`:
 
-- `axis="absolute"` (the default): milliseconds after the R-wave, from 130 to 600 ms (see the latency floor below). The longest delay on a given trial is limited to just under three quarters of the current interbeat interval, so a tone is not heard as belonging to the next beat.
+- `axis="absolute"` (the default): milliseconds after the R-wave. The candidates run from 80 to 600 ms in 20 ms steps, and the shortest presented is 140 ms, the first above the 130 ms floor (see the latency floor below). The longest delay on a given trial is limited to about 0.71 of the current interbeat interval, so that a tone is not heard as belonging to the next beat; 600 ms is allowed only when the period is over 0.84 s.
 - `axis="phase"`: a fraction of the anticipated interbeat interval, so the delay scales with heart rate.
 
 #### What you need
@@ -272,11 +272,11 @@ The run directory holds no ECG. The beat source is the only reader of the LSL st
 
 #### The latency bias and the 130 ms floor
 
-The ECG transport and the speaker add a roughly constant 30 to 70 ms that no recording can see, so the task schedules every tone a latency bias early, 50 ms by default (`TaskConfig.latencyBias`), so that the participant hears it at the requested delay after the true R-wave. Because a beat is known only up to 31 ms after its stamped R-wave and a tone must be scheduled 50 ms ahead, the shortest delay the task can play is 31 + 50 + 50 = 131 ms, and no delay below the 130 ms floor (`TaskConfig.minDelay`) is presented; the [design page](hsd_design.md#realized-delays-and-per-trial-constraints) has the measurements, and [what the floor costs](hsd_design.md#results-at-the-130-ms-floor) in accuracy.
+The ECG transport and the speaker add a roughly constant 30 to 70 ms that no recording can see, so the task schedules every tone a latency bias early, 50 ms by default (`TaskConfig.latencyBias`), so that the participant hears it at the requested delay after the true R-wave. On the bench a beat was known up to 31 ms (95th percentile) after its stamped R-wave, and a tone must be scheduled 50 ms ahead, so the shortest delay the task can play is 31 + 50 + 50 = 131 ms, and no delay below the 130 ms floor (`TaskConfig.minDelay`) is presented. The hardware dry run measured a longer lag: the beats of a train were polled 48 ms (95th percentile) and 63 ms (99th) after their stamped R-wave, and 107 of 506 beats before it, because the LSL inlet's dejitter smooths the stamps. Set `minDelay` from the lag your setup shows; the [design page](hsd_design.md#realized-delays-and-per-trial-constraints) has the measurements, and [what the floor costs](hsd_design.md#results-as-the-task-runs) in accuracy.
 
 #### The stopping rule
 
-A session stops at the first of two points: once the 95 percent credible interval of `mu` is no wider than `TaskConfig.ciWidth` (100 ms on the absolute axis; `ciWidthPhase`, 0.17 of the period, on the phase axis), provided at least `minTrials` trials (15) have updated the estimate; or after `maxTrials` trials in all (60, which `nTrials` sets). These values are provisional. In the simulations a 100 ms interval took about 40 trials in median for observers who answer consistently and about 80 for noisy ones, so expect many sessions to run to the maximum, as the dry run did. To change them, pass a configuration:
+A session stops at the first of two points: once the 95 percent credible interval of `mu` is no wider than `TaskConfig.ciWidth` (100 ms on the absolute axis; `ciWidthPhase`, 0.17 of the period, on the phase axis), provided at least `minTrials` trials (15) have updated the estimate; or after `maxTrials` trials in all (60, which `nTrials` sets). These values are provisional. In the simulations of the task as it runs (130 ms floor, 26 ms of timing jitter, 7 percent of trains lost), a 100 ms interval took 61 trials in median for observers who answer consistently and was not reached by 120 for noisy ones, so expect most sessions to run to the maximum, as the dry run did. Running to 90 trials instead would lower the error of `mu` by only about 2 ms; the [design page](hsd_design.md#realized-delays-and-per-trial-constraints) has the figures. To change them, pass a configuration:
 
 ```python
 from cardioception.HSD.config import TaskConfig
@@ -294,14 +294,15 @@ parameters = getParameters(..., config=config)
 | Column | Meaning |
 |---|---|
 | `RequestedDelay` | The delay the engine asked for: ms after the R-wave on the absolute axis, a fraction of the interbeat interval on the phase axis. It is the physical delay the participant should hear |
-| `RealizedCorrected` | The mean delay of the trial's tones as played, measured against the stamped R-wave with the latency bias added back. The engine was updated with this value, and it is the stimulus to analyze |
-| `RealizedDelay` | The same measurement without the correction. On the absolute axis it sits 50 ms below `RequestedDelay`, by design |
+| `RealizedCorrected` | The mean delay of the trial's tones from the start time the tone player reports, against the stamped R-wave, with the latency bias added back. The engine was updated with this value. The reported start is the scheduled one, so it equals `RequestedDelay` unless a tone started late; the true delay of each tone comes from the LabRecorder file offline |
+| `RealizedDelay` | The same value without the latency bias. On the absolute axis it sits 50 ms below `RequestedDelay`, by design |
 | `Decision` | `Synchronous`, `NotSynchronous`, or empty when no key was pressed in time |
 | `Confidence` | The rating on the scale shown, 1 to 10 by default. `ConfidenceUnit` holds the same rating on 0 to 1 |
-| `MuMean`, `MuCILow`, `MuCIHigh` | The posterior mean of `mu` after this trial, and its 95 percent credible interval |
-| `SigmaMean` | The posterior mean of `sigma` |
+| `MuMean`, `MuCILow`, `MuCIHigh` | The posterior mean of `mu` after this trial, and its 95 percent credible interval, given that the envelope rises (conditioned on a rise of more than 0.2). The stopping rule reads this interval |
+| `SigmaMean` | The posterior mean of `sigma`, also given a rise |
+| `MuConditional` | True when the `Mu` and `Sigma` columns are conditioned on a rise; False when the posterior put less than 0.01 on a rise, and they are then the plain marginal ones |
 | `FloorMean`, `PeakMean` | The posterior means of the floor and the peak of the envelope |
-| `DetectionBF` | The Bayes factor, posterior odds over prior odds, for a rise of more than 0.2 from floor to peak. `DetectionEvidence` is the posterior probability of that rise |
+| `DetectionBF` | The Bayes factor, posterior odds over prior odds, for an envelope that rises by more than 0.2 across the delays presented so far. `DetectionEvidence` is the posterior probability of that rise |
 
 `nDelivered` and `nSkipped` count the tones played and refused on the trial, `Aborted` marks a train that could not be delivered, and `Explored` marks a delay drawn at random rather than by information gain. On the phase axis the two realized columns are different quantities; the docstring of `cardioception.HSD._outcome` explains how.
 
@@ -310,12 +311,12 @@ The posterior columns of the last row are the session's online estimate. As for 
 #### Interpreting the posterior
 
 - **Location**, `mu` (`MuMean`, with `MuCILow` to `MuCIHigh`): where in the cardiac cycle the heartbeat is felt, in ms after the R-wave. Read it with its interval; a wide interval means the location is not yet known.
-- **Width**, `sigma` (`SigmaMean`): how sharply the sensation is timed. It is recovered less well than `mu` (in the simulations its error fell only from about 36 ms at 20 trials to 23 to 28 ms at 120), and jitter in the ECG transport widens it.
+- **Width**, `sigma` (`SigmaMean`): how sharply the sensation is timed. It is recovered less well than `mu` (in the simulations its error fell only from about 36 ms at 15 trials to 27 to 32 ms at 120), and jitter in the ECG transport widens it.
 - **Contrast**, `PeakMean` minus `FloorMean`: how much more often the participant answers "synchronous" at the sensation than away from it. This is the sensitivity measure. Someone who cannot feel their heartbeat answers at the same rate at every delay, and their contrast is near zero.
 - **Floor**, `FloorMean`: the rate of "synchronous" answers far from the sensation, a bias towards answering "synchronous" whatever the delay.
-- **Detection Bayes factor**, `DetectionBF`: a sanity check, never a classification. The prior already puts about 0.92 of its mass on a rise of more than 0.2, so a `DetectionEvidence` of 0.92 means the data have not moved it, and a Bayes factor near 1 says the same thing. A flat responder can also be fitted by a very wide `sigma` or a `mu` at the edge of the grid.
+- **Detection Bayes factor**, `DetectionBF`: a sanity check, never a classification. The rise is measured across the delays presented, so a bump outside them, or one too wide to change across them, counts as flat, and a flat envelope is possible at any rate of answering "synchronous", from almost never to almost always. The prior puts about half its mass on a rise of more than 0.2 (0.47 over 140 to 500 ms), so read `DetectionEvidence` against that, or read the Bayes factor, which removes the prior. In the simulations, detectors were above 1 (log10 above 0) in 91 to 100 percent of runs at 60 trials and every biased non-detector was below it; non-detectors answering at a middling rate, 0.3 or 0.5, were still above it in 2 or 3 runs of 10.
 
-A located `mu` with a Bayes factor near 1 is possible. In the dry run, `mu` came out at 272 ms (150 to 400 ms) while the Bayes factor stayed near 1, because "synchronous" answers at the longest delays were absorbed as a floor of 0.32, leaving a contrast of 0.43.
+A located `mu` with a weak Bayes factor is possible. In the dry run, "synchronous" answers at the longest delays raised the floor, and re-analyzed with the current grids the session gives `mu` at 273 ms with a log10 Bayes factor of +0.38; a flat responder explains the answers nearly as well, so the interval on `mu` stays wide, 40 to 550 ms. Online, with the grids of the time, the session reported 272 ms (150 to 400 ms) and a Bayes factor near 1.
 
 ### Creating a shortcut (Windows)
 
