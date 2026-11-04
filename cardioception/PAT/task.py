@@ -36,6 +36,7 @@ from .._present import hold, on_every_frame
 from .._screens import Screen, text
 from .._session import show_screen as _show_screen
 from .._triggers import fire
+from ..devices.beat_source import default_clock
 
 logger = get_logger()
 
@@ -114,13 +115,14 @@ class TaskAbort(Exception):
 
 
 def _clock() -> Callable[[], float]:
-    """The LSL clock, which is also the PTB clock on Windows."""
-    try:
-        from pylsl import local_clock
+    """The clock the beat sources default to.
 
-        return local_clock
-    except ImportError:  # pragma: no cover
-        return time.perf_counter
+    ``pylsl.local_clock``, or PsychToolbox's ``GetSecs`` without pylsl (see
+    :func:`cardioception.devices.beat_source.default_clock`). The dial loop
+    reads the engine's own clock rather than this one, so that it compares
+    times on the clock the tones were scheduled on.
+    """
+    return default_clock()
 
 
 def _checkEscape(keys: List[str]) -> None:
@@ -584,6 +586,7 @@ def dialLoop(
     block: str,
     startPhase: float,
     stages: Optional[List[Stage]] = None,
+    silenceTimeout: Optional[float] = None,
 ) -> Dict[str, Any]:
     """Run the engine and the dial until space ends the last stage.
 
@@ -607,14 +610,22 @@ def dialLoop(
         Start phase of the beeps, in degrees.
     stages : list of Stage | None
         The screens to go through. Default is one trial screen.
+    silenceTimeout : float | None
+        If no beep has played this many seconds after the loop started, the
+        loop ends without a press and logs a warning, as nothing on screen
+        can then progress. `None`, the default, waits for the first beep
+        however long it takes (the experimenter sees the warning in the
+        status line and can press Esc).
 
     Returns
     -------
     press : dict
         `phase_deg` and `delay_ms` (the dial at the press, NaN after a
         timeout), `press_time` (LSL seconds), `wall_time` (`time.time()`),
-        `duration` (seconds from the start of the trial), `n_dial_moves` and
-        `status` (`ok`, or `timeout` when `maxTrialTime` ran out).
+        `duration` (seconds from the start of the trial), `n_dial_moves`,
+        `status` (`ok`, or `timeout` when `maxTrialTime` or `silenceTimeout`
+        ran out) and `timed_out` (true when the loop ended on a timeout
+        rather than on a press).
 
     """
     from psychopy import event
@@ -623,7 +634,10 @@ def dialLoop(
     win = parameters["win"]
     mouse = parameters["myMouse"]
     pilot = parameters.get("autopilot")
-    now = _clock()
+    # Beep targets are on the engine's clock, so the loop reads that clock
+    # too. Another clock with another origin (``time.perf_counter`` against
+    # PsychToolbox's epoch-based ``GetSecs`` on Linux) never sees a beep play.
+    now = getattr(engine, "clock", None) or _clock()
     dialKeys = list(parameters["dialKeys"])
     watched = [parameters["startKey"], "escape"] + dialKeys
     maxTime = parameters.get("maxTrialTime")
@@ -727,7 +741,15 @@ def dialLoop(
             state["later" if notches > 0 else "earlier"] += abs(notches)
             nDialMoves += 1
 
-        timedOut = maxTime is not None and state["elapsed"] >= maxTime
+        silent = (
+            not heard and silenceTimeout is not None and t - tStart >= silenceTimeout
+        )
+        if silent:
+            logger.warning(
+                f"No beep played in the first {silenceTimeout:g} s of {block} "
+                f"trial {trialNumber}; ending it without a press."
+            )
+        timedOut = silent or (maxTime is not None and state["elapsed"] >= maxTime)
         if pressed and stageIndex < len(stages) - 1:
             stageIndex += 1
             tStage = t
@@ -737,6 +759,7 @@ def dialLoop(
             outcome = "ok"
             if timedOut and not pressed:
                 outcome = "timeout"
+            if timedOut and not pressed and not silent:
                 logger.warning(
                     f"... {block} trial {trialNumber}: no press after {maxTime:g} s, "
                     f"{nPlayed} beeps heard. The trial ends without a choice."
@@ -750,6 +773,7 @@ def dialLoop(
                 "duration": pressTime - tStart,
                 "n_dial_moves": nDialMoves,
                 "status": outcome,
+                "timed_out": timedOut,
             }
             dial.draw(dial=False)
             win.flip()
@@ -971,10 +995,22 @@ def tutorial(parameters: dict) -> None:
         ),
     ]
     startPhase = float(parameters["rng"].choice(parameters["startPhases"]))
-    dialLoop(parameters, TUTORIAL_TRIAL, "tutorial", startPhase, stages=stages)
+    # Every stage waits for a beep. Without one in the first `timeout`
+    # seconds there is nothing to teach, so the tutorial ends rather than
+    # waiting for ever.
+    press = dialLoop(
+        parameters,
+        TUTORIAL_TRIAL,
+        "tutorial",
+        startPhase,
+        stages=stages,
+        silenceTimeout=timeout,
+    )
     _, escaped = endTrial(parameters)
     if escaped:
         raise TaskAbort()
+    if press["timed_out"]:
+        logger.warning("The tutorial was skipped: no beep played (check the ECG).")
 
     show_screen(parameters, TUTORIAL_END)
 
