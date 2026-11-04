@@ -1,10 +1,13 @@
 # Changelog
 
-## 0.8.0 (unreleased)
+## 1.0.0 (unreleased)
 
-The first release since the 2026 audit. It changes the output schema and the
-output layout, so analysis scripts written against 0.7.x need the migration
-notes below. Everything else is a fix.
+1.0.0 is the first release of the rewritten package. It runs four tasks under
+one output layout: the Heart Rate Discrimination and Heartbeat Counting tasks,
+and the experimental Heartbeat Synchrony Discrimination and Phase Adjustment
+tasks. It changes the output schema and the output layout, so analysis scripts
+written against 0.7.x need the migration notes under Breaking below. The 0.7
+line stays installable from the `legacy/0.7` branch and the `v0.7.2` tag.
 
 ### Breaking
 
@@ -16,8 +19,8 @@ filename carries all three identifiers. Two consequences:
 - Participant and session are no longer concatenated. `("P0", "1001")` and
   `("P01", "001")` used to land in the same directory; they no longer can.
 - A repeated session cannot overwrite an earlier one. This has cost real data
-  in longitudinal studies, and the workaround — telling people to append the
-  session to the participant ID — is no longer needed. Starting a session over
+  in longitudinal studies, and the workaround, telling people to append the
+  session to the participant ID, is no longer needed. Starting a session over
   an existing set of results raises `FileExistsError` unless you pass
   `overwrite=True`.
 
@@ -39,7 +42,7 @@ scale definition is written on every row next to `Device`.
 
 **`stairType="updown"` raises.** The nUp/nDown staircase is gone. It described
 itself as a 1-down 2-up procedure converging at ~71% accuracy, but built its
-conditions with `nUp=1, nDown=1`, which converges at 50% — chance on a
+conditions with `nUp=1, nDown=1`, which converges at 50%, chance on a
 two-alternative task. The documentation and the code never agreed, no published
 Cardioception data used it, and it could not estimate a slope. `TrialType` no
 longer contains `updown`.
@@ -47,7 +50,7 @@ longer contains `updown`.
 **Missed trials no longer reach the staircase.** A trial with no response was
 previously scored as `Less` and fed to `addResponse`, which pushed the psi
 posterior on evidence the participant never gave. Missed trials are now
-excluded and, by default, re-presented later in the session — so session length
+excluded and, by default, re-presented later in the session, so session length
 varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 `nRepresentations` records how many times each trial was shown.
 
@@ -57,12 +60,6 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   addressing the participant formally. The texts shipped in 0.7.2 as a Python
   function and move here to `HRD/texts/german.yaml`, checked against that
   function in the language snapshot test.
-- A `language` parameter for the Heartbeat Counting task, `"english"` (the
-  default) or `"german"`, also offered by `wrappers/hbc.py` and recorded in
-  `manifest.json`. 0.7.2 added it with the texts as Python functions; here
-  they are `HBC/texts/english.yaml` and `german.yaml`, checked against those
-  functions by a snapshot test, and an unknown language fails before a window
-  opens. The German confidence scale reads "Geraten" to "Sicher".
 - `time` in `_signal.txt`: absolute epoch seconds for every sample. Without it
   the PPG recording could not be aligned with the trial triggers or with
   anything recorded alongside it.
@@ -76,7 +73,7 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - Quality columns: `HeartRateAttempts`, `HeartRateAccepted`,
   `nRepresentations`, `DroppedFrames`. `HeartRateAccepted` distinguishes a
   trial where the task settled on a heart rate from one where it exhausted its
-  attempts and used the last window anyway — previously invisible.
+  attempts and used the last window anyway. This was previously invisible.
 - `cardioception.scales.ConfidenceScale`, including a signed
   −100 (certain error) / 0 / +100 (certain correct) VAS. On a signed scale the
   sign is the believed outcome and the magnitude is the confidence; use
@@ -96,12 +93,18 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   detector, each moved to the R peak, and the task's trigger codes are also
   sent to an LSL marker stream, so a LabRecorder file holds the physiology
   and the events on one clock. Needs `pip install cardioception-toolbox[lsl]`.
+- A `language` parameter for the Heartbeat Counting task, `"english"` (the
+  default) or `"german"`, also offered by `wrappers/hbc.py` and recorded in
+  `manifest.json`. 0.7.2 added it with the texts as Python functions; here
+  they are `HBC/texts/english.yaml` and `german.yaml`, checked against those
+  functions by a snapshot test, and an unknown language fails before a window
+  opens. The German confidence scale reads "Geraten" to "Sicher".
 - `cardioception.HSD.psi.SynchronyPsi`, the estimation engine for an
   experimental Heartbeat Synchrony Discrimination task: an adaptive Bayesian
   version of the Brener, Liu and Ring method of constant stimuli that chooses
   each R-wave-to-tone delay by expected information gain and estimates where
   in the cardiac cycle the heartbeat is felt, and how sharply. Plain NumPy, no
-  PsychoPy or device; the task runner comes later. The design is documented
+  PsychoPy or device. The design is documented
   in `docs/source/hsd_design.md`.
 - The Heartbeat Synchrony Discrimination task runner, experimental:
   `cardioception.HSD.parameters.getParameters` and `cardioception.HSD.task.run`,
@@ -143,9 +146,9 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - A button still held down from the decision no longer submits the confidence
   rating on the first frame past `minRatingTime`. `Mouse.getPressed` reports
   the button's level, not a press, and `clickReset` resets click times rather
-  than state, so a held button was read as a fresh click on the next screen —
-  observed in real data as 17 trials with a decision response time of exactly
-  zero.
+  than state, so a held button was read as a fresh click on the next screen.
+  It was observed in real data as 17 trials with a decision response time
+  of exactly zero.
 - The mouse confidence rating no longer warps the cursor on every frame
   (issue 103). On macOS each warp suppresses mouse events for 0.25 s, so the
   slider froze and could be neither moved nor clicked. The cursor is now
@@ -162,6 +165,19 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - The keyboard confidence rating uses `visual.Slider`. `visual.RatingScale`
   moved to the `psychopy-legacy` plugin in PsychoPy 2026 and now raises.
 - A crash or an abort still saves everything the session produced.
+- A missed R peak or a T wave taken for one no longer skews the anticipated
+  period of the live beat source (PAT, HSD) by a third for three beats. An RR
+  interval outside 0.6 to 1.6 times the median of the last five accepted ones
+  is left out of the period and counted in `LSLBeatSource.n_rejected`.
+- The online R-peak detector restarts its filters after a gap in the ECG
+  timestamps and reports nothing for one period after it, instead of taking
+  the resume transient for a beat. Without beats, its QRS estimate is no
+  longer halved without limit, so electrode-off noise is not taken for beats.
+- Two tones closer than a tone's duration plus about 30 ms played the second
+  late, because the tone player starts a sound only after the previous one of
+  its kind has ended. `TonePlayer.schedule` now refuses such a tone (logged,
+  NaN onset), the PAT's `minToneGap` must be at least `toneDuration` plus
+  0.05 s (it allowed 0), and the HSD's `toneSecs` at most 0.2 s.
 - The HSD detection evidence (`DetectionEvidence`, `DetectionBF`) no longer
   rewards biased non-detectors. The floor grid stopped at 0.4 and the peak
   grid started at 0.5, so a flat responder could be expressed only at yes
@@ -180,41 +196,6 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   come from the posterior conditioned on a rise of more than 0.2, falling back
   to the marginal below 0.01 of mass on a rise; the new `MuConditional`
   column says which. Delay placement still uses the marginal `mu`.
-- A missed R peak or a T wave taken for one no longer skews the anticipated
-  period of the live beat source (PAT, HSD) by a third for three beats. An RR
-  interval outside 0.6 to 1.6 times the median of the last five accepted ones
-  is left out of the period and counted in `LSLBeatSource.n_rejected`.
-- The online R-peak detector restarts its filters after a gap in the ECG
-  timestamps and reports nothing for one period after it, instead of taking
-  the resume transient for a beat. Without beats, its QRS estimate is no
-  longer halved without limit, so electrode-off noise is not taken for beats.
-- Two tones closer than a tone's duration plus about 30 ms played the second
-  late, because the tone player starts a sound only after the previous one of
-  its kind has ended. `TonePlayer.schedule` now refuses such a tone (logged,
-  NaN onset), the PAT's `minToneGap` must be at least `toneDuration` plus
-  0.05 s (it allowed 0), and the HSD's `toneSecs` at most 0.2 s.
-- A PAT trial on a lost ECG no longer waits for Esc or scores as normal. A
-  trial ends after `maxTrialTime` (60 s) with no choice and `TrialStatus`
-  `timeout`; a press more than 1.5 anticipated periods after the last R-wave
-  is `stale`, with no anticipated period. The PAT scores drop both and report
-  how many in `n_dropped`.
-- A PAT trial row now records the delay of the last tone actually heard
-  (`LastToneDelayMs`, with its anchor, R-wave and `LastToneIndex`), which
-  differs from the dial for a tone timed from the predicted next beat.
-  `tones.txt` gains a `ToneIndex` to join on.
-- Esc during a PAT trial pushes an `abort` marker instead of a `press`, and
-  the aborted trial's tones are no longer written to `tones.txt` without a
-  row in `final.txt`.
-- In the PAT's absolute mode, a dial left beyond a period that has since
-  shrunk is clamped to that period before it wraps. A notch from it no longer
-  jumps ahead, and the `dial` and `press` markers report the phase that is
-  played.
-- The PAT period outlier rule floors the robust standard deviation at 1 ms.
-  With a fixed period (median absolute deviation 0) float noise used to turn
-  trials into outliers.
-- The PAT's wait after the press, for the next R-wave (up to 3 s), keeps
-  the window flipping and the frame hook running, and Esc ends it. It used to
-  busy-wait with the screen frozen and Esc ignored.
 - An HSD train no longer stops at the first beat whose period puts the tone
   past the ceiling. That beat is skipped and a later one takes its place, up
   to `2 * nTones` beats a train, so long delays no longer lose most of their
@@ -239,6 +220,28 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   after a train are filed in `beats.txt` under that trial, as the marker
   stream has them, not under the next one. `posterior.npy` is float32, half
   the size (about 10 MB for 60 trials).
+- A PAT trial on a lost ECG no longer waits for Esc or scores as normal. A
+  trial ends after `maxTrialTime` (60 s) with no choice and `TrialStatus`
+  `timeout`; a press more than 1.5 anticipated periods after the last R-wave
+  is `stale`, with no anticipated period. The PAT scores drop both and report
+  how many in `n_dropped`.
+- A PAT trial row now records the delay of the last tone actually heard
+  (`LastToneDelayMs`, with its anchor, R-wave and `LastToneIndex`), which
+  differs from the dial for a tone timed from the predicted next beat.
+  `tones.txt` gains a `ToneIndex` to join on.
+- Esc during a PAT trial pushes an `abort` marker instead of a `press`, and
+  the aborted trial's tones are no longer written to `tones.txt` without a
+  row in `final.txt`.
+- In the PAT's absolute mode, a dial left beyond a period that has since
+  shrunk is clamped to that period before it wraps. A notch from it no longer
+  jumps ahead, and the `dial` and `press` markers report the phase that is
+  played.
+- The PAT period outlier rule floors the robust standard deviation at 1 ms.
+  With a fixed period (median absolute deviation 0) float noise used to turn
+  trials into outliers.
+- The PAT's wait after the press, for the next R-wave (up to 3 s), keeps
+  the window flipping and the frame hook running, and Esc ends it. It used to
+  busy-wait with the screen frozen and Esc ignored.
 
 ### Internal
 
@@ -263,26 +266,27 @@ code it replaced rather than read over.
   object owns the results row, so column order is decided in one place.
 - The two listening phases become `listen_to_heart()` and `listen_to_tone()`.
   The first is now the only place the task touches physiology.
-- The Heart Rate Discrimination tutorial is a table of phases — instruction
-  screens interleaved with practice blocks — rather than a sequential script.
+- The Heart Rate Discrimination tutorial is a table of phases, instruction
+  screens interleaved with practice blocks, rather than a sequential script.
   What participants are shown, how many practice trials each block runs and at
   what difficulty are all set in one place. Verified by tracing all 440
   presentation steps across every language, device and condition before and
   after; they are identical.
 - `TaskConfig` gathers the design values that were literals inside
-  `getParameters` — response window, tutorial lengths, ISI, listening duration,
+  `getParameters`: response window, tutorial lengths, ISI, listening duration,
   heart-rate cutoffs, staircase bounds, text size. Pass one to `getParameters`,
   and it is written to `manifest.json` with the data it produced.
-- The Phase Adjustment Task, written against 0.7, follows the conventions
-  above: the per-run output directory and manifest, one recorded seed per
-  session, `session.log`, a `ConfidenceScale` with `ConfidenceUnit` and the
-  scale columns on every row, the shared rating widgets (the keyboard rating
-  gains a `wheel` option, and the mouse rating moves into
-  `_rating.mouse_rating`), texts in YAML checked against a snapshot of the
-  functions they replace, screens and waits through `text`, `hold` and
-  `on_every_frame`, validated triggers, and an autopilot that runs whole
-  sessions headless. Its phase arithmetic, scheduling, scoring and data
-  columns are unchanged.
+- **`responseDecision` returns five values, not six.** The second, a
+  `responseTrigger` timestamp, was unpacked by its only caller and never read.
+  `parameters` no longer carries `lambdaIntero` or `lambdaExtero`, which were
+  always empty lists, so a `_parameters.pickle` will not contain them.
+- The live tests of the beat-locked tone player, which play through the
+  sound card at its own volume, are marked `audio` and run only with
+  `pytest --run-audio`, as `blocking` tests run only with `--run-blocking`.
+- The online R detector, the beat source and the PAT engine are tested on a
+  committed 60 s ECG excerpt (`tests/data/ecg_excerpt.npz`) instead of
+  skipping everywhere but the lab PC, and on the full lab recordings too when
+  `CARDIOCEPTION_RECORDINGS` points at their directory.
 - The HSD simulation (`python -m cardioception.HSD.simulate`) models the task
   as it runs: a 130 ms floor (`--min-delay`, was 80), a heart period per
   simulated participant that sets the task's ceiling (`--period`,
@@ -294,18 +298,16 @@ code it replaced rather than read over.
   stopping defaults (`minTrials` 15, `maxTrials` 60, `ciWidth` 100 ms) are
   unchanged: the median detector reaches a 100 ms interval only at 75 to 89
   trials, but running to 90 would lower the RMSE of `mu` by about 2 ms.
-- The live tests of the beat-locked tone player, which play through the
-  sound card at its own volume, are marked `audio` and run only with
-  `pytest --run-audio`, as `blocking` tests run only with `--run-blocking`.
-- The online R detector, the beat source and the PAT engine are tested on a
-  committed 60 s ECG excerpt (`tests/data/ecg_excerpt.npz`) instead of
-  skipping everywhere but the lab PC, and on the full lab recordings too when
-  `CARDIOCEPTION_RECORDINGS` points at their directory.
-
-**`responseDecision` returns five values, not six.** The second, a
-`responseTrigger` timestamp, was unpacked by its only caller and never read.
-`parameters` no longer carries `lambdaIntero` or `lambdaExtero`, which were
-always empty lists, so a `_parameters.pickle` will not contain them.
+- The Phase Adjustment Task, written against 0.7, follows the conventions
+  above: the per-run output directory and manifest, one recorded seed per
+  session, `session.log`, a `ConfidenceScale` with `ConfidenceUnit` and the
+  scale columns on every row, the shared rating widgets (the keyboard rating
+  gains a `wheel` option, and the mouse rating moves into
+  `_rating.mouse_rating`), texts in YAML checked against a snapshot of the
+  functions they replace, screens and waits through `text`, `hold` and
+  `on_every_frame`, validated triggers, and an autopilot that runs whole
+  sessions headless. Its phase arithmetic, scheduling, scoring and data
+  columns are unchanged.
 
 ### Packaging
 
