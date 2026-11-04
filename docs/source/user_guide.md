@@ -192,7 +192,7 @@ The HSD is an adaptive version of the heartbeat detection task of Brener, Liu an
 
 The delay can be set on one of two axes, chosen per session with `axis`:
 
-- `axis="absolute"` (the default): milliseconds after the R-wave, from 130 to 600 ms (see the latency floor below). The longest delay on a given trial is limited to just under three quarters of the current interbeat interval, so a tone is not heard as belonging to the next beat.
+- `axis="absolute"` (the default): milliseconds after the R-wave. The candidates run from 80 to 600 ms in 20 ms steps, and the shortest presented is 140 ms, the first above the 130 ms floor (see the latency floor below). The longest delay on a given trial is limited to about 0.71 of the current interbeat interval, so that a tone is not heard as belonging to the next beat; 600 ms is allowed only when the period is over 0.84 s.
 - `axis="phase"`: a fraction of the anticipated interbeat interval, so the delay scales with heart rate.
 
 #### What you need
@@ -272,7 +272,7 @@ The run directory holds no ECG. The beat source is the only reader of the LSL st
 
 #### The latency bias and the 130 ms floor
 
-The ECG transport and the speaker add a roughly constant 30 to 70 ms that no recording can see, so the task schedules every tone a latency bias early, 50 ms by default (`TaskConfig.latencyBias`), so that the participant hears it at the requested delay after the true R-wave. Because a beat is known only up to 31 ms after its stamped R-wave and a tone must be scheduled 50 ms ahead, the shortest delay the task can play is 31 + 50 + 50 = 131 ms, and no delay below the 130 ms floor (`TaskConfig.minDelay`) is presented; the [design page](hsd_design.md#realized-delays-and-per-trial-constraints) has the measurements, and [what the floor costs](hsd_design.md#results-at-the-130-ms-floor) in accuracy.
+The ECG transport and the speaker add a roughly constant 30 to 70 ms that no recording can see, so the task schedules every tone a latency bias early, 50 ms by default (`TaskConfig.latencyBias`), so that the participant hears it at the requested delay after the true R-wave. On the bench a beat was known up to 31 ms (95th percentile) after its stamped R-wave, and a tone must be scheduled 50 ms ahead, so the shortest delay the task can play is 31 + 50 + 50 = 131 ms, and no delay below the 130 ms floor (`TaskConfig.minDelay`) is presented. The hardware dry run measured a longer lag: the beats of a train were polled 48 ms (95th percentile) and 63 ms (99th) after their stamped R-wave, and 107 of 506 beats before it, because the LSL inlet's dejitter smooths the stamps. Set `minDelay` from the lag your setup shows; the [design page](hsd_design.md#realized-delays-and-per-trial-constraints) has the measurements, and [what the floor costs](hsd_design.md#results-at-the-130-ms-floor) in accuracy.
 
 #### The stopping rule
 
@@ -294,8 +294,8 @@ parameters = getParameters(..., config=config)
 | Column | Meaning |
 |---|---|
 | `RequestedDelay` | The delay the engine asked for: ms after the R-wave on the absolute axis, a fraction of the interbeat interval on the phase axis. It is the physical delay the participant should hear |
-| `RealizedCorrected` | The mean delay of the trial's tones as played, measured against the stamped R-wave with the latency bias added back. The engine was updated with this value, and it is the stimulus to analyze |
-| `RealizedDelay` | The same measurement without the correction. On the absolute axis it sits 50 ms below `RequestedDelay`, by design |
+| `RealizedCorrected` | The mean delay of the trial's tones from the start time the tone player reports, against the stamped R-wave, with the latency bias added back. The engine was updated with this value. The reported start is the scheduled one, so it equals `RequestedDelay` unless a tone started late; the true delay of each tone comes from the LabRecorder file offline |
+| `RealizedDelay` | The same value without the latency bias. On the absolute axis it sits 50 ms below `RequestedDelay`, by design |
 | `Decision` | `Synchronous`, `NotSynchronous`, or empty when no key was pressed in time |
 | `Confidence` | The rating on the scale shown, 1 to 10 by default. `ConfidenceUnit` holds the same rating on 0 to 1 |
 | `MuMean`, `MuCILow`, `MuCIHigh` | The posterior mean of `mu` after this trial, and its 95 percent credible interval |

@@ -51,7 +51,10 @@ TONE_RAMP = 0.005
 
 # Timing limits, measured on the PLUX ECG over LSL on the stim PC:
 #
-# - a beat is known 20 ms (median) and 31 ms (p95) after its stamped R peak;
+# - a beat is known 20 ms (median) and 31 ms (p95) after its stamped R peak
+#   on the bench; on the HSD hardware dry run (test desktop, Bluetooth jitter
+#   SD 26 ms) the beats of a train were polled up to 48 ms (p95) and 63 ms
+#   (p99) after it, so the floor below should follow the lag a setup shows;
 # - a tone scheduled 50 ms ahead lands within 1 ms of its target (20 ms ahead
 #   is still fine, 10 ms ahead is late);
 # - the stamped R peak itself trails the true R peak by the Bluetooth

@@ -20,13 +20,20 @@ The names of the columns, and their order, are decided in one place:
 Units: ``RequestedDelay``, ``RealizedDelay`` and ``RealizedCorrected`` are in
 engine units, ms on the absolute axis and fractions of the interbeat interval
 on the phase axis, as are the ``Mu`` and ``Sigma`` summaries. Both realized
-values are measured against the stamped R-wave. ``RealizedCorrected`` is the
-value the engine was updated with: the physical delay, which adds the latency
-bias (``TaskConfig.latencyBias``, the transport and speaker delays the
-recordings cannot see) to the measured one. ``RequestedDelay`` is physical
-too: each tone was scheduled the latency bias early to realize it.
+values are taken against the stamped R-wave, from the start time the tone
+player reports. With the PsychToolbox player that is the start time the
+device scheduled, not a measurement of the sound, so the realized values only
+catch a tone that started late: on the absolute axis ``RealizedCorrected``
+equals ``RequestedDelay`` otherwise (within 0.3 ms on every trial of the dry
+run). They do not show what the participant heard. The true delay of each
+tone, against the R-wave found offline, comes from the LabRecorder file
+(``bench/pat_dryrun_report.py --markers HSD``). ``RealizedCorrected`` is the
+value the engine was updated with: the latency bias
+(``TaskConfig.latencyBias``, the transport and speaker delays the recordings
+cannot see) added to the realized delay. ``RequestedDelay`` is the intended
+physical delay: each tone was scheduled the latency bias early to realize it.
 
-On the absolute axis ``RealizedDelay`` is the measured delay, the latency
+On the absolute axis ``RealizedDelay`` is the realized delay, the latency
 bias short of ``RequestedDelay``, and ``RealizedCorrected`` adds the bias
 back. On the phase axis both include the bias, and they are different
 quantities:
@@ -61,7 +68,8 @@ class HSDTrialOutcome:
     #: Mean realized delay against the stamped R-wave, engine units (see the
     #: module docstring for the phase axis).
     realizedDelay: Optional[float]
-    #: The physical delay the engine was updated with, engine units.
+    #: The realized delay plus the latency bias, engine units: the value the
+    #: engine was updated with. Equal to the request unless a tone was late.
     realizedCorrected: Optional[float]
     nDelivered: int
     nSkipped: int

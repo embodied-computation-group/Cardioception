@@ -102,9 +102,12 @@ class TaskConfig:
 
     # --- timing --------------------------------------------------------------
     #: Shortest physical R-to-tone delay requested, in seconds, on both axes:
-    #: the 31 ms (p95) it takes to know of a beat, plus ``audioLead``, plus
-    #: ``latencyBias`` (see :mod:`cardioception.HSD._constants`). Candidates
-    #: below it stay in the grid and are left out by :meth:`bounds`.
+    #: the 31 ms (p95, bench) it takes to know of a beat, plus ``audioLead``,
+    #: plus ``latencyBias`` (see :mod:`cardioception.HSD._constants`). On the
+    #: hardware dry run the beats of a train were polled up to 48 ms (p95) and
+    #: 63 ms (p99) after their stamped R-wave, so set it from the lag a
+    #: session actually shows. Candidates below it stay in the grid and are
+    #: left out by :meth:`bounds`.
     minDelay: float = MIN_DELAY_S
     #: Longest delay, as a fraction of the current interbeat interval.
     maxPeriodFraction: float = MAX_PERIOD_FRACTION
