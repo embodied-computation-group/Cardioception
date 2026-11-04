@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - master
+      - main
       - dev
   pull_request:
     branches:
       - master
+      - main
       - dev
 permissions:
   contents: write
@@ -41,8 +43,9 @@ jobs:
       # from a push to master. Without this guard a pull request deployed
       # straight to gh-pages, so any PR could replace the live documentation
       # before anyone reviewed it, and a push to dev would publish unreleased
-      # documentation. After the 1.0.0 release the default branch becomes
-      # main: replace master with main here and in the triggers above.
+      # documentation. `main` exists and is built, but the site still deploys
+      # from master until the 1.0.0 release: on release day, change the ref
+      # below to refs/heads/main.
       - name: Deploy 🚀
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JamesIves/github-pages-deploy-action@v4
