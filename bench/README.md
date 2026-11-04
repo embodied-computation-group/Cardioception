@@ -143,6 +143,20 @@ beat markers have no `commit_time`, so the lag is taken from the marker
 timestamp; it includes the wait for the next frame, about 8 ms more than in the
 dry run.
 
+### Plotting the behaviour
+
+```
+.venv\Scripts\python.exe bench\plot_pat_session.py data\P011inal.txt
+```
+
+Writes `results.png` next to `final.txt` (or to a second argument): the chosen
+phases on the cardiac cycle with the mean resultant vector (radius is
+confidence), the trial sequence against the start phases, and the chosen delay
+in ms against the anticipated heart period with constant-phase lines.
+Participant, session and the confidence scale come from `parameters.txt` in the
+same folder. `data\micahnonin4\` is a committed 28-trial pilot session to try
+it on.
+
 ## Setting up the PLUX bridge on another PC
 
 The launchers above start the hub bridge from the plux-lsl repository. To reproduce it:

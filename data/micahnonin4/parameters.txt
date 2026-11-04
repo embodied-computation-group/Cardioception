@@ -1,0 +1,45 @@
+Parameter	Value
+participant	"""micah"""
+session	"""nonin4"""
+mode	"""relative"""
+extero	false
+exteroPeriod	"""simulated"""
+nTrials	28
+nPractice	8
+nBreaking	10
+startPhases	[0.0, 90.0, 180.0, 270.0]
+device	"""keyboard"""
+screenNb	0
+monitor	"""testMonitor"""
+language	"""english"""
+latencyBias	0.05
+audioLead	0.05
+toneFreq	1000.0
+toneDuration	0.03
+toneVolume	0.5
+vibrationVolume	0.0
+dialGainDeg	10.0
+dialGainMs	25.0
+minToneGap	0.3
+confScale	[1, 10]
+markerStream	"""PAT"""
+startKey	"""space"""
+dialKeys	"[""left"", ""right""]"
+minTrialTime	3.0
+minRatingTime	0.5
+maxRatingTime	null
+statusEvery	1.0
+noBeatWarning	3.0
+textSize	0.04
+wheelDirection	1
+showDial	true
+dialRadius	0.15
+flashDuration	0.1
+tutorialListenTones	4
+tutorialNotches	3
+tutorialStageTimeout	20.0
+startPhasePractice	[180.0, 90.0, 0.0, 270.0, 90.0, 270.0, 180.0, 0.0]
+startPhaseMain	[0.0, 180.0, 270.0, 90.0, 270.0, 180.0, 0.0, 90.0, 270.0, 90.0, 180.0, 0.0, 270.0, 180.0, 0.0, 90.0, 0.0, 90.0, 180.0, 270.0, 180.0, 0.0, 270.0, 90.0, 0.0, 180.0, 90.0, 270.0]
+path	"""C:\\Users\\stim\\Desktop\\cannabodies\\cardioception-src"""
+resultPath	"""C:\\Users\\stim\\Desktop\\cannabodies\\cardioception-src\\data\\micahnonin4"""
+aborted	false
