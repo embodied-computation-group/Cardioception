@@ -197,6 +197,13 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - The PAT's wait after the press, for the next R-wave (up to 3 s), keeps
   the window flipping and the frame hook running, and Esc ends it. It used to
   busy-wait with the screen frozen and Esc ignored.
+- An HSD train no longer stops at the first beat whose period puts the tone
+  past the ceiling. That beat is skipped and a later one takes its place, up
+  to `2 * nTones` beats a train, so long delays no longer lose most of their
+  tones to respiratory sinus arrhythmia (three dry-run trials got 2 or 3 of
+  5). `ceilingMargin` widens to 0.10, and a trial with fewer than `minTones`
+  tones (3) is judged and written but does not update the posterior; the new
+  `Used` and `UnusedReason` columns say which trials did.
 
 ### Internal
 

@@ -32,10 +32,14 @@ The rules, per beat:
   predicted next beat, because that adds the error of the RR prediction to the
   delay.
 - If the delay is more than ``max_fraction`` of the period, the tone would land
-  near the next R-wave. The train is aborted, so that the task can draw a
-  delay with a tighter ceiling. A beat that carries no anticipated period is
-  checked against the observed RR interval instead; with neither, it is
-  skipped as ``"no_period"``.
+  near the next R-wave. Once a tone of the train has been scheduled, the beat
+  is skipped as ``"ceiling"`` and the train goes on, so that a period moved
+  by respiratory sinus arrhythmia costs one tone rather than the rest of the
+  train. Before any tone, the train is aborted instead, so that the task can
+  draw a delay with a tighter ceiling without the participant having heard
+  anything. A beat that carries no anticipated period is checked against the
+  observed RR interval instead; with neither, it is skipped as
+  ``"no_period"``.
 - A tone the device reports no onset for (NaN) does not count: another beat
   is tried in its place.
 
@@ -54,7 +58,8 @@ carries ``commit_time`` (when the beat became known: the source's
 ``tone_scheduled`` also carries ``latency``, the time from the beat becoming
 known to the tone being scheduled.
 
-The train ends when ``n_tones`` tones have played, after ``max_beats`` beats,
+The train ends when ``n_tones`` tones have played, after ``max_beats`` beats
+(``2 * n_tones`` by default, so a skipped beat is replaced by a later one),
 or at the deadline. The deadline is ``timeout_s``, or, when the period is
 known at the start, long enough for ``max_beats + 1`` beats plus the delay if
 that is later, so that a slow heart is not taken for a timeout.
@@ -177,7 +182,8 @@ class ToneRecord:
     realized_fraction: Optional[float] = None
     #: True for a beat that got no tone.
     skipped: bool = False
-    #: Why it was skipped: ``"late"``, ``"no_period"`` or ``"no_onset"``.
+    #: Why it was skipped: ``"late"``, ``"ceiling"``, ``"no_period"`` or
+    #: ``"no_onset"``.
     reason: Optional[str] = None
     #: Seconds between scheduling and the target.
     lead: Optional[float] = None
@@ -392,12 +398,12 @@ class TrainScheduler:
             ``(max_beats + 1) * period + delay``.
         max_beats :
             Beats to try before giving up on the rest of the train; defaults
-            to ``n_tones + 3``.
+            to ``2 * n_tones``.
         """
         if axis not in AXES:
             raise ValueError(f"axis should be one of {AXES}, got {axis!r}")
         if max_beats is None:
-            max_beats = self.n_tones + 3
+            max_beats = 2 * self.n_tones
         self.source.start()
         started = self.clock()
         result = TrainResult(delay=float(delay), axis=axis, started=started)
@@ -433,6 +439,7 @@ class TrainScheduler:
         pending: Dict[int, ToneRecord] = {}
         n_beats = 0  # beats that counted towards the train
         n_scheduled = 0  # tones played or still waiting to
+        any_scheduled = False  # whether the participant may have heard a tone
         abort: Optional[str] = None
 
         while True:
@@ -469,7 +476,11 @@ class TrainScheduler:
                     assert period is not None
                     delay_s = delay * period
                 if delay_s > max_fraction * ceiling_period + TOLERANCE:
-                    abort = "ceiling"
+                    if not any_scheduled:
+                        # Nothing heard yet: let the task draw a shorter delay.
+                        abort = "ceiling"
+                    else:
+                        self._skip(result, record, seen, now, "ceiling")
                     continue
 
                 record.target = beat.r_time + delay_s - self.latency_bias
@@ -483,6 +494,7 @@ class TrainScheduler:
                 pending[record.handle] = record
                 seen["status"] = "tone"
                 n_scheduled += 1
+                any_scheduled = True
                 scheduled_now = True
                 self._mark(
                     "tone_scheduled",

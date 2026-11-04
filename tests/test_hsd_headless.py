@@ -53,6 +53,8 @@ EXPECTED_COLUMNS = [
     "Aborted",
     "AbortReason",
     "Explored",
+    "Used",
+    "UnusedReason",
     "Decision",
     "DecisionRT",
     "Confidence",
@@ -259,6 +261,8 @@ class TestAbsoluteSession(unittest.TestCase):
         self.assertEqual(list(self.df.Trial), list(range(len(self.df))))
         self.assertTrue((self.df.nDelivered > 0).all())
         self.assertTrue(self.df.DecisionProvided.all())
+        self.assertTrue(self.df.Used.all())
+        self.assertTrue(self.df.UnusedReason.isna().all())
         self.assertTrue((self.df.Axis == "absolute").all())
 
     def test_decisions_are_the_two_labels(self):
@@ -521,6 +525,8 @@ class TestNoBeats(unittest.TestCase):
             self.assertEqual(len(df), hsd.MAX_EMPTY_TRIALS)
             self.assertTrue((df.nDelivered == 0).all())
             self.assertTrue((df.AbortReason == "no_period").all())
+            self.assertTrue((df.UnusedReason == "no_tone").all())
+            self.assertFalse(df.Used.any())
             self.assertFalse(df.DecisionProvided.any())
             posterior = np.load(paths.path("posterior", ext="npy"))
             self.assertEqual(posterior.shape[0], hsd.MAX_EMPTY_TRIALS)
@@ -639,19 +645,34 @@ class TestRefusedTrains(unittest.TestCase):
         outcome = hsd.trial(params, 0, confidenceRating=True)
         return params, scheduler, outcome, len(params["engine"].history) - n_history
 
-    def test_a_ceiling_after_tones_keeps_the_partial_train(self):
-        """Tones already heard are the stimulus: no second train is played."""
+    def test_a_short_train_is_judged_but_not_used(self):
+        """Two tones of five: asked about and written, but not in the posterior.
+
+        Tones already heard are the stimulus, so no second train is played.
+        """
         partial = scripted_result(
-            200.0, "absolute", n_delivered=2, aborted=True, reason="ceiling"
+            200.0, "absolute", n_delivered=2, aborted=True, reason="timeout"
         )
         params, scheduler, outcome, updates = self.run_trial("absolute", [partial])
         self.assertEqual(len(scheduler.asked), 1)
         self.assertEqual(outcome.quality["nTrains"], 1)
         self.assertEqual(outcome.nDelivered, 2)
-        self.assertTrue(outcome.aborted)
         self.assertTrue(outcome.respProvided)
-        self.assertEqual(updates, 1)
+        self.assertEqual(updates, 0)
+        self.assertFalse(outcome.used)
+        self.assertEqual(outcome.unusedReason, "few_tones")
         self.assertEqual({row["Attempt"] for row in params["tone_rows"]}, {0})
+
+    def test_min_tones_is_enough(self):
+        """Three tones of five reach the posterior, though the train timed out."""
+        partial = scripted_result(
+            200.0, "absolute", n_delivered=3, aborted=True, reason="timeout"
+        )
+        params, scheduler, outcome, updates = self.run_trial("absolute", [partial])
+        self.assertEqual(len(scheduler.asked), 1)
+        self.assertEqual(updates, 1)
+        self.assertTrue(outcome.used)
+        self.assertIsNone(outcome.unusedReason)
 
     def test_a_ceiling_before_any_tone_draws_once_more(self):
         """Nothing heard: one new delay, under the period the train saw."""
@@ -674,6 +695,7 @@ class TestRefusedTrains(unittest.TestCase):
         self.assertEqual(outcome.quality["nTrains"], 2)
         self.assertEqual(outcome.nDelivered, 5)
         self.assertEqual(updates, 1)
+        self.assertTrue(outcome.used)
 
     def test_a_phase_floor_refusal_draws_once_more(self):
         """A floor refusal on the phase axis is drawn again like a ceiling."""

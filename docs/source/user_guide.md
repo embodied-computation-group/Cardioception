@@ -303,9 +303,9 @@ parameters = getParameters(..., config=config)
 | `FloorMean`, `PeakMean` | The posterior means of the floor and the peak of the envelope |
 | `DetectionBF` | The Bayes factor, posterior odds over prior odds, for a rise of more than 0.2 from floor to peak. `DetectionEvidence` is the posterior probability of that rise |
 
-`nDelivered` and `nSkipped` count the tones played and refused on the trial, `Aborted` marks a train that could not be delivered, and `Explored` marks a delay drawn at random rather than by information gain. On the phase axis the two realized columns are different quantities; the docstring of `cardioception.HSD._outcome` explains how.
+`nDelivered` and `nSkipped` count the tones played and refused on the trial, `Aborted` marks a train that could not be delivered, and `Explored` marks a delay drawn at random rather than by information gain. `Used` marks the trials that updated the posterior, and `UnusedReason` says why the others did not: no tone (`no_tone`), fewer than `TaskConfig.minTones` tones, 3 by default (`few_tones`), or no decision (`no_decision`). On the phase axis the two realized columns are different quantities; the docstring of `cardioception.HSD._outcome` explains how.
 
-The posterior columns of the last row are the session's online estimate. As for the HRD, they are a monitoring aid, not an analysis: a later model should be fitted to the trial history, `RealizedCorrected` against `Decision`, which `*_engine.json` also holds.
+The posterior columns of the last row are the session's online estimate. As for the HRD, they are a monitoring aid, not an analysis: a later model should be fitted to the trial history, `RealizedCorrected` against `Decision` on the rows with `Used` true, which `*_engine.json` also holds.
 
 #### Interpreting the posterior
 

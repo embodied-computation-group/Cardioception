@@ -31,7 +31,7 @@ from .._session import show_screen as _show_screen
 from .._session import waitInput
 from .._triggers import fire
 from ._constants import Trigger
-from ._outcome import HSDTrialOutcome, posterior_fields, train_fields
+from ._outcome import HSDTrialOutcome, posterior_fields, train_fields, unused_reason
 from ._stimulus import TrainResult, TrainScheduler
 
 logger = get_logger()
@@ -315,7 +315,9 @@ def trial(
     outcome : HSDTrialOutcome
         The train, the judgement and the posterior after the update. A trial
         whose train delivered no tone has ``nDelivered == 0``, no decision,
-        and did not touch the posterior.
+        and did not touch the posterior. One that delivered fewer than
+        ``TaskConfig.minTones`` tones is judged, but does not update the
+        posterior either; ``used`` and ``unusedReason`` say which.
     """
     config = parameters["config"]
     engine = parameters["engine"]
@@ -385,16 +387,16 @@ def trial(
         )
         results.append(result)
 
-        redraw = result.aborted and result.abort_reason in ("ceiling", "floor")
-        if redraw and result.n_delivered > 0:
-            # The participant heard these tones: they are the stimulus.
-            logger.warning(
-                f"... train stopped at the {result.abort_reason} after "
-                f"{result.n_delivered} tone(s); kept as the stimulus."
-            )
-        elif redraw:
-            # Nothing was heard. The period changed between the draw and the
-            # train, so draw again for the period the train saw.
+        # The scheduler refuses at the ceiling or the floor only before any
+        # tone: once one is scheduled it skips the beat instead. So nothing
+        # was heard, and the period changed between the draw and the train;
+        # draw again for the period the train saw.
+        redraw = (
+            result.aborted
+            and result.abort_reason in ("ceiling", "floor")
+            and result.n_delivered == 0
+        )
+        if redraw:
             redraw_period = _redraw_period(result, source)
             logger.warning(
                 f"... {delay:g} refused at the {result.abort_reason} "
@@ -416,7 +418,8 @@ def trial(
         fire(parameters, "trainStop")
         win.recordFrameIntervals = True
 
-    # A train that ended short ("max_beats") still counts if one tone played.
+    # Any tone heard is asked about; whether the answer reaches the posterior
+    # depends on how many were heard (see unused_reason).
     realized = result.realized_corrected if result.n_delivered > 0 else None
     decision, decisionRT, respProvided = None, None, False
     confidence, confidenceRT, ratingProvided = None, None, False
@@ -459,8 +462,17 @@ def trial(
             fire(parameters, "confidenceStop")
             mark("confidence", 0.0, confidence=confidence, rt=confidenceRT)
 
-    if not practice and realized is not None and respProvided:
+    unusedReason = unused_reason(result.n_delivered, config.minTones, respProvided)
+    if unusedReason == "few_tones":
+        logger.warning(
+            f"... only {result.n_delivered} tone(s) of {config.nTones} delivered, "
+            f"under minTones={config.minTones}: the trial is written but does "
+            "not update the posterior."
+        )
+    used = False
+    if not practice and unusedReason is None and realized is not None:
         engine.update(realized, decision == "Synchronous", explored)
+        used = True
 
     endTrigger = _trigger(parameters, Trigger.TRIAL_STOP, "trialStop", mark)
 
@@ -481,6 +493,8 @@ def trial(
     return HSDTrialOutcome(
         trial=nTrial,
         explored=explored,
+        used=used,
+        unusedReason=unusedReason,
         decision=decision,
         decisionRT=decisionRT,
         confidence=confidence,

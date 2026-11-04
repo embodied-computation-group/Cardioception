@@ -13,7 +13,12 @@ import numpy as np
 from cardioception._rng import make_rng
 from cardioception.HSD._autopilot import HSDAutopilot
 from cardioception.HSD._constants import LATENCY_BIAS, MIN_DELAY_S
-from cardioception.HSD._outcome import HSDTrialOutcome, posterior_fields, train_fields
+from cardioception.HSD._outcome import (
+    HSDTrialOutcome,
+    posterior_fields,
+    train_fields,
+    unused_reason,
+)
 from cardioception.HSD._stimulus import BeatSource, TonePlayer, TrainScheduler
 from cardioception.HSD.config import TaskConfig
 from cardioception.HSD.simulate import Observer
@@ -220,12 +225,12 @@ class TestRules(unittest.TestCase):
         self.assertNotIn(BEATS[1] + 0.08, list(player.scheduled.values()))
 
     def test_every_beat_late_ends_after_max_beats(self):
-        """With no beat usable the train gives up after ``n_tones + 3`` beats."""
+        """With no beat usable the train gives up after ``2 * n_tones`` beats."""
         _, _, player, scheduler = setup(BEATS, latency=0.06)
         result = scheduler.run(130.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertFalse(result.aborted)
         self.assertEqual(result.end_reason, "max_beats")
-        self.assertEqual(result.n_skipped, 8)
+        self.assertEqual(result.n_skipped, 10)
         self.assertEqual(result.n_delivered, 0)
         self.assertIsNone(result.realized_mean)
         self.assertIsNone(result.realized_corrected)
@@ -426,13 +431,17 @@ class TestReview(unittest.TestCase):
         self.assertFalse(result.aborted)
 
     def test_top_candidate_survives_a_slightly_early_beat(self):
-        """The drawn ceiling leaves room for the next beat to come 0.6% early."""
+        """The drawn ceiling leaves room for the next beats to come 7% early.
+
+        Respiratory sinus arrhythmia moved the anticipated period by about 7
+        percent within a train on the hardware dry run.
+        """
         config = TaskConfig()
         _, high = config.bounds(0.8)
         top = float(max(d for d in config.candidates() if d <= high))
-        self.assertGreater(top, 0.75 * 0.8 * 0.994 * 1000.0 - 50.0)
-        periods = [0.8 * 0.994] * 10
-        r_times = [1.0 + 0.8 * 0.994 * i for i in range(10)]
+        self.assertGreater(top, 0.75 * 0.8 * 0.93 * 1000.0 - 50.0)
+        periods = [0.8 * 0.93] * 10
+        r_times = [1.0 + 0.8 * 0.93 * i for i in range(10)]
         _, _, _, scheduler = setup(r_times, period=0.8, periods=periods)
         result = scheduler.run(top, "absolute", min_delay_s=config.minDelay)
         self.assertFalse(result.aborted)
@@ -460,39 +469,62 @@ class TestReview(unittest.TestCase):
     def test_absolute_ceiling_is_rounded_down(self):
         """The absolute ceiling never rounds up past the margined bound."""
         config = TaskConfig()
-        # 0.75 * 0.95 of this period is 500.0000006 ms, which would round to
+        # 0.75 * 0.90 of this period is 500.0000006 ms, which would round to
         # nearest as 500.000001.
-        _, high = config.bounds(500.0000006 / 712.5)
+        _, high = config.bounds(500.0000006 / 675.0)
         self.assertEqual(high, 500.0)
 
-    def test_mid_train_ceiling_abort_stops_pending_tones(self):
-        """An abort collects the onset of a tone that played and stops the rest.
+    def test_mid_train_ceiling_skips_the_beat_and_goes_on(self):
+        """A beat whose period trips the ceiling costs one tone, not the train.
 
-        The heart jumps to 0.3 s after two tones are scheduled. The first has
-        played but not yet been reported; the second is still waiting. Both
-        are resolved on abort: an onset for the first, ``no_onset`` for the
-        second, and nothing is left pending on the player.
+        The dry-run case: a 540 ms delay drawn on a 0.8 s period, and the
+        anticipated period drops 12.5 percent to 0.7 s on the third beat, so
+        540 ms is past 0.75 of it. That beat is skipped as ``"ceiling"`` and
+        the next beats complete the train.
         """
-        r_times = [1.0, 2.0, 2.2]
-        periods = [1.0, 1.0, 0.3]
-        latency = lambda i: {0: 0.02, 1: 0.25, 2: 0.06}[i]  # noqa: E731
+        periods = [0.8, 0.8, 0.7, 0.8, 0.8, 0.8, 0.8, 0.8]
+        r_times = [1.0 + 0.8 * i for i in range(len(periods))]
+        _, _, player, scheduler = setup(r_times, period=0.8, periods=periods)
+        result = scheduler.run(540.0, "absolute", min_delay_s=MIN_DELAY_S)
+        self.assertFalse(result.aborted)
+        self.assertEqual(result.end_reason, "complete")
+        self.assertEqual(result.n_delivered, 5)
+        self.assertEqual(result.n_skipped, 1)
+        skipped = [t for t in result.tones if t.skipped]
+        self.assertEqual([t.reason for t in skipped], ["ceiling"])
+        self.assertEqual(skipped[0].r_time, r_times[2])
+        self.assertIsNone(skipped[0].target)
+        self.assertEqual(len(player.scheduled), 5)
+
+    def test_a_ceiling_before_any_tone_still_aborts(self):
+        """Nothing heard yet: the train is refused, for the task to draw again."""
+        periods = [0.7, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]
+        r_times = [1.0 + 0.8 * i for i in range(len(periods))]
+        _, _, player, scheduler = setup(r_times, period=0.8, periods=periods)
+        result = scheduler.run(540.0, "absolute", min_delay_s=MIN_DELAY_S)
+        self.assertTrue(result.aborted)
+        self.assertEqual(result.abort_reason, "ceiling")
+        self.assertEqual(player.scheduled, {})
+
+    def test_an_abort_stops_pending_tones(self):
+        """An abort collects the onsets of tones that played and stops the rest.
+
+        Two tones are scheduled, then the beats stop and the train times out.
+        Both tones have played but neither has been reported; on abort both
+        onsets are collected and nothing is left pending on the player.
+        """
         _, _, player, scheduler = setup(
-            r_times,
-            latency=latency,
-            periods=periods,
-            player_kwargs={"report_delay": 2.0},
+            [1.0, 2.0], player_kwargs={"report_delay": 60.0}
         )
         result = scheduler.run(400.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertTrue(result.aborted)
-        self.assertEqual(result.abort_reason, "ceiling")
+        self.assertEqual(result.abort_reason, "timeout")
         self.assertEqual(player.stopped, 1)
         self.assertFalse(player.busy)
         first, second = result.tones
         self.assertAlmostEqual(first.onset, 1.4 - LATENCY_BIAS)
-        self.assertFalse(first.skipped)
-        self.assertEqual(second.reason, "no_onset")
-        self.assertIsNone(second.onset)
-        self.assertEqual(result.n_delivered, 1)
+        self.assertAlmostEqual(second.onset, 2.4 - LATENCY_BIAS)
+        self.assertEqual(result.n_delivered, 2)
 
 
 class TestHooks(unittest.TestCase):
@@ -675,7 +707,8 @@ class TestConfig(unittest.TestCase):
         # The floor is the 130 ms physical floor; candidates below it stay in
         # the grid and are left out per trial.
         self.assertEqual(delays[0], 80.0)
-        self.assertEqual(config.bounds(0.8), (130.0, 570.0))
+        # The ceiling: 0.75 of the period, less the 0.10 margin.
+        self.assertEqual(config.bounds(0.8), (130.0, 540.0))
 
     def test_phase_candidates_and_grids(self):
         """Phase: 0.10 to 0.90 by 0.025, ``mu`` 0 to 1 and ``sigma`` in fractions."""
@@ -697,6 +730,14 @@ class TestConfig(unittest.TestCase):
         psi = config.engine(make_rng(0)[0])
         delay, _ = psi.next_delay(low, high)
         self.assertTrue(low <= delay <= high)
+
+    def test_min_tones_lies_between_one_and_n_tones(self):
+        """A trial cannot need more tones than a train plays."""
+        self.assertEqual(TaskConfig().minTones, 3)
+        TaskConfig(nTones=3, minTones=3)
+        for bad in (0, 6):
+            with self.assertRaisesRegex(ValueError, "minTones"):
+                TaskConfig(minTones=bad)
 
     def test_describe_is_json_serializable_and_apply_fills_parameters(self):
         """The manifest entry dumps to JSON; apply copies every field."""
@@ -722,6 +763,8 @@ class TestOutcome(unittest.TestCase):
         "Aborted",
         "AbortReason",
         "Explored",
+        "Used",
+        "UnusedReason",
         "Decision",
         "DecisionRT",
         "Confidence",
@@ -759,6 +802,14 @@ class TestOutcome(unittest.TestCase):
         "RatingEnds",
         "endTrigger",
     ]
+
+    def test_unused_reason(self):
+        """A trial updates the posterior only with minTones tones and a decision."""
+        self.assertEqual(unused_reason(0, 3, False), "no_tone")
+        self.assertEqual(unused_reason(2, 3, True), "few_tones")
+        self.assertEqual(unused_reason(3, 3, False), "no_decision")
+        self.assertIsNone(unused_reason(3, 3, True))
+        self.assertIsNone(unused_reason(5, 3, True))
 
     def test_row_has_a_fixed_column_order(self):
         """The order is the documented one, whatever order context is passed in."""
