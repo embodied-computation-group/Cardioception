@@ -162,6 +162,10 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - The keyboard confidence rating uses `visual.Slider`. `visual.RatingScale`
   moved to the `psychopy-legacy` plugin in PsychoPy 2026 and now raises.
 - A crash or an abort still saves everything the session produced.
+- A missed R peak or a T wave taken for one no longer skews the anticipated
+  period of the live beat source (PAT, HSD) by a third for three beats. An RR
+  interval outside 0.6 to 1.6 times the median of the last five accepted ones
+  is left out of the period and counted in `LSLBeatSource.n_rejected`.
 
 ### Internal
 
