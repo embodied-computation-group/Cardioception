@@ -13,8 +13,11 @@ from cardioception.HSD.psi import PARAMETERS, RATES, SynchronyPsi, gaussian_enve
 from cardioception.HSD.simulate import (
     DEFAULT_DELAYS,
     Observer,
+    default_observers,
+    evidence,
     run_adaptive,
     run_mcs,
+    stopping,
     study,
 )
 
@@ -225,8 +228,8 @@ class TestRecovery(unittest.TestCase):
 
         Observer mu 250, sigma 80, floor 0.05, peak 0.95. The posterior mean
         must be within 40 ms and the 95 percent interval must contain 250.
-        Seeds 0 to 7 all pass at the 80 ms floor; seed 1 gives about 255
-        [240, 270].
+        Seeds 0 to 7 all pass at the 130 ms floor; seed 1 gives about 258
+        [240, 280].
         """
         observer = Observer(250.0, 80.0, 0.05, 0.95)
         last = run_adaptive(observer, 80, make_rng(1)[0])[-1]
@@ -338,7 +341,8 @@ class TestRecovery(unittest.TestCase):
         """Seeds 1 to 5: a flat 0.4 responder favours no rise after 80 trials.
 
         log10 of the detection Bayes factor must be below 0 for every seed,
-        so the check is on the procedure rather than on one lucky draw.
+        so the check is on the procedure rather than on one lucky draw. At the
+        130 ms floor seeds 0 to 12 gave log10 values from -0.94 to -0.05.
         """
         observer = Observer(float("nan"), float("nan"), 0.4, 0.4)
         for seed in range(1, 6):
@@ -395,21 +399,92 @@ class TestSimulation(unittest.TestCase):
 
     def test_adaptive_runs_respect_the_latency_floor(self):
         """No adaptive trial, explored or chosen, may ask for a delay the
-        acquisition chain cannot realize (80 ms by default); the floor is
-        recorded per row, and is NaN for MCS, which keeps its 0 ms level."""
+        acquisition chain cannot realize (130 ms by default, the task's
+        floor) or one above the ceiling the participant's heart period sets;
+        both are recorded per row, and are NaN for MCS, which keeps its
+        levels of 0 to 500 ms."""
         observer = Observer(150.0, 50.0, 0.05, 0.95)
         for explore in (0.0, 1.0):
             rows = run_adaptive(observer, 15, make_rng(9)[0], explore=explore)
-            self.assertGreaterEqual(min(row["delay"] for row in rows), 80.0)
-        df = study([observer], ["mcs", "psi_mu_x10"], reps=1, seed=3, n_trials=12)
+            self.assertGreaterEqual(min(row["delay"] for row in rows), 130.0)
+        df = study([observer], ["mcs", "psi_mu_x10"], reps=2, seed=3, n_trials=12)
         adaptive = df[df["method"] == "psi_mu_x10"]
-        self.assertTrue((adaptive["min_delay"] == 80.0).all())
-        self.assertTrue((adaptive["delay"] >= 80.0).all())
+        self.assertTrue((adaptive["min_delay"] == 130.0).all())
+        self.assertTrue((adaptive["delay"] >= 130.0).all())
+        self.assertTrue((adaptive["delay"] <= adaptive["max_delay"]).all())
         self.assertTrue(df.loc[df["method"] == "mcs", "min_delay"].isna().all())
+        self.assertTrue(df.loc[df["method"] == "mcs", "max_delay"].isna().all())
         lower = study(
             [observer], ["psi_mu_x10"], reps=1, seed=3, n_trials=12, min_delay=40.0
         )
         self.assertTrue((lower["min_delay"] == 40.0).all())
+
+    def test_heart_period_sets_the_ceiling_per_participant(self):
+        """Each simulated participant has one heart period in 0.8 to 1.1 s,
+        shared by every method, and the adaptive ceiling is the task's
+        bound at that period; without a period range there is no ceiling."""
+        observer = Observer(250.0, 80.0, 0.05, 0.95)
+        df = study([observer], ["mcs", "psi_mu"], reps=3, seed=5, n_trials=3)
+        periods = df.groupby("rep")["period"].agg(["min", "max"])
+        self.assertTrue((periods["min"] == periods["max"]).all())
+        self.assertTrue(periods["min"].between(0.8, 1.1).all())
+        self.assertEqual(periods["min"].nunique(), 3)
+        adaptive = df[df["method"] == "psi_mu"]
+        for period, ceiling in zip(adaptive["period"], adaptive["max_delay"]):
+            self.assertEqual(ceiling, TaskConfig().bounds(period)[1])
+        free = study([observer], ["psi_mu"], reps=1, seed=5, n_trials=3, period=None)
+        self.assertTrue(free["max_delay"].isna().all())
+        self.assertTrue(free["period"].isna().all())
+
+    def test_jitter_and_train_loss(self):
+        """Jitter moves the delay the observer responds to, not the one the
+        engine is updated with; at 0 it draws nothing, so the run is the
+        exact one. A lost train gives no response and no update."""
+        observer = Observer(250.0, 20.0, 0.0, 1.0)
+        rng = make_rng(4)[0]
+        exact = [observer.respond(250.0, rng) for _ in range(200)]
+        self.assertTrue(all(exact))
+        jittered = [observer.respond(250.0, rng, 60.0) for _ in range(200)]
+        self.assertLess(np.mean(jittered), 0.6)
+        a = run_adaptive(observer, 10, make_rng(6)[0])
+        b = run_adaptive(observer, 10, make_rng(6)[0], jitter_sd=0.0, train_loss=0.0)
+        self.assertEqual(a, b)
+        rows = run_adaptive(observer, 30, make_rng(6)[0], train_loss=0.5)
+        lost = [row for row in rows if row["lost"]]
+        self.assertGreater(len(lost), 5)
+        self.assertTrue(all(math.isnan(row["response"]) for row in lost))
+        self.assertEqual(rows[-1]["n_updates"], 30 - len(lost))
+        for before, after in zip(rows, rows[1:]):
+            if after["lost"]:
+                self.assertEqual(before["mu_mean"], after["mu_mean"])
+        with self.assertRaises(ValueError):
+            study([observer], ["psi_mu"], reps=1, n_trials=2, train_loss=1.0)
+
+    def test_observer_bank_includes_biased_non_detectors(self):
+        """The four biased non-detectors come after the original 34, so the
+        earlier observers keep their indices and run seeds."""
+        bank = default_observers()
+        self.assertEqual(len(bank), 38)
+        self.assertEqual([o.floor for o in bank[34:]], [1.0, 0.0, 0.1, 0.9])
+        self.assertTrue(all(o.kind == "non-detector" for o in bank[34:]))
+        self.assertEqual(bank[32].kind, "asymmetric")
+
+    def test_evidence_and_stopping_tables(self):
+        """The stopping rule never runs past the maximum, counts only
+        updates towards the minimum, and the evidence table has one row per
+        method, group and trial count."""
+        observers = [Observer(250.0, 50.0, 0.05, 0.95), Observer(0, 0, 1.0, 1.0)]
+        df = study(observers, ["psi_mu"], reps=2, seed=1, n_trials=12)
+        stops = stopping(df, min_trials=5, max_trials=10, ci_width=600.0)
+        self.assertEqual(sorted(stops["group"]), ["always yes", "clean detector"])
+        self.assertTrue((stops["median_stop_trial"] <= 10).all())
+        self.assertTrue((stops["median_stop_trial"] >= 5).all())
+        self.assertTrue(
+            math.isnan(stops.set_index("group").loc["always yes", "rmse_at_stop"])
+        )
+        ev = evidence(df, trials=(5, 10))
+        self.assertEqual(len(ev), 2 * 2)
+        self.assertTrue((ev["n_runs"] == 2).all())
 
     def test_study_is_reproducible(self):
         """Each run is seeded from (seed, observer, method, rep), not from order.
