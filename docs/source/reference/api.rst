@@ -112,7 +112,7 @@ Languages
 Heartbeat Synchrony Discrimination task
 =======================================
 
-Experimental, run on hardware once so far; see the
+Beta; see the
 :doc:`design document </tasks/hsd/design>` and the
 :doc:`Running the HSD </tasks/hsd/running>`.
 
@@ -174,7 +174,7 @@ Languages
 Phase Adjustment Task
 =====================
 
-Experimental, after the PAT-ECG of Hodgetts et al. (2026); see the
+Beta, after the PAT-ECG of Hodgetts et al. (2026); see the
 :doc:`PAT page </tasks/pat>`.
 
 Parameters

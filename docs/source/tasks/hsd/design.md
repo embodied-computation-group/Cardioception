@@ -16,14 +16,14 @@ chosen to be as informative as possible about where in the cardiac cycle the
 sensation lies and how sharp it is.
 
 ```{note}
-This is a design document for an experimental task. The estimation engine,
+This is a design document for a task in beta. The estimation engine,
 `cardioception.HSD.psi`, exists and is tested, and its
 [simulation study](#simulation-study) has run. The task runner
 (`cardioception.HSD.parameters` and `cardioception.HSD.task`), its English
 instructions and `wrappers/hsd_lsl.py` exist and run headlessly against a
-virtual heart and against a synthetic ECG over LSL. One
-[hardware dry run](#hardware-dry-run) has been done, a single 60-trial session
-on a real ECG. The task has not been validated in a study; see
+virtual heart and against a synthetic ECG over LSL. A
+[hardware dry run](#hardware-dry-run), a single 60-trial session on a real
+ECG, is recorded below. The task has not been validated in a study; see
 [what comes next](#what-comes-next).
 ```
 

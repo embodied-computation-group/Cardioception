@@ -8,9 +8,10 @@ myst:
 # The tasks
 
 Cardioception runs four tasks: two established, the Heart Rate Discrimination
-task (HRD) and the Heartbeat Counting task (HBC), and two experimental, the
+task (HRD) and the Heartbeat Counting task (HBC), and two in beta, the
 Heartbeat Synchrony Discrimination task (HSD) and the Phase Adjustment Task
-(PAT). This page puts them side by side.
+(PAT). Tasks in beta are close to feature complete and are still being
+rigorously validated. This page puts them side by side.
 
 | Task | HRD | HBC | HSD | PAT | Whitehead | Brener |
 |---|---|---|---|---|---|---|
@@ -18,7 +19,7 @@ Heartbeat Synchrony Discrimination task (HSD) and the Phase Adjustment Task
 | Adaptive | Yes: a Psi staircase sets the tone rate | No | Yes: Bayesian placement of the tone delay | No: the participant adjusts the delay | No | No |
 | Hardware | Pulse oximeter, or ECG or PPG over LSL; headphones; mouse or keyboard | Pulse oximeter, or ECG or PPG over LSL; keyboard | ECG over LSL; sound card; keyboard | ECG over LSL; sound card; mouse wheel; a tactor for the control task |  |  |
 | Trials and minutes | 120 trials, about 20 minutes plus the tutorial | 6 counting windows, about 4 minutes | 15 to 60 trials; 60 took 7 minutes | 28 trials and 8 practice, about 30 minutes |  |  |
-| Status | Established | Established | [Experimental](hsd/design.md) | [Experimental](pat.md) | [Coming soon](whitehead.md) | [Coming soon](constant-stimuli.md) |
+| Status | Established | Established | [Beta](hsd/design.md) | [Beta](pat.md) | [Coming soon](whitehead.md) | [Coming soon](constant-stimuli.md) |
 
 Every task writes to the same layout,
 `data/sub-<participant>/ses-<session>/run-<YYYYMMDD-HHMMSS>/` under the current
@@ -125,11 +126,10 @@ played, which is the stimulus to analyze), `Decision`, `Confidence`, and the
 posterior after each trial (`MuMean`, `MuCILow`, `MuCIHigh`, `SigmaMean`,
 `DetectionBF`). Also `*_tones.txt`, `*_beats.txt` and `*_engine.json`.
 
-**Length.** Three practice trials, then 15 to 60 trials. The one hardware dry
+**Length.** Three practice trials, then 15 to 60 trials. A hardware dry
 run reached the 60 trial maximum in 7 minutes.
 
-**Status.** Experimental: run on hardware once, not validated, with a
-provisional stopping rule. See the [design page](hsd/design.md) and the
+**Status.** Beta: not validated, with a provisional stopping rule. See the [design page](hsd/design.md) and the
 [Running the HSD](hsd/running.md) page.
 
 **Analysis.** The online posterior is a monitoring aid. No offline model has
@@ -166,7 +166,7 @@ transducer on the right audio channel.
 **Length.** 8 practice and 28 main trials, about 30 minutes in the PAT-ECG
 study; the exteroceptive control, with the same trial counts, about 10.
 
-**Status.** Experimental. It detects the R-wave in software rather than in
+**Status.** Beta. It detects the R-wave in software rather than in
 hardware, which changes the timing; see the [PAT page](pat.md).
 
 **Analysis.** `cardioception.PAT.scoring.consistency_grid` scores the eight

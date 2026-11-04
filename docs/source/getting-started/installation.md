@@ -93,8 +93,8 @@ The distribution is named `cardioception-toolbox`. The import name is still
 ````{important}
 Until the next release, PyPI has the 0.7 line (0.7.2), and that is what the
 command above installs. This documentation describes the rewritten package,
-with the new output layout and the experimental Heartbeat Synchrony
-Discrimination and Phase Adjustment tasks. It reaches PyPI with the next
+with the new output layout and the Heartbeat Synchrony Discrimination task
+and the Phase Adjustment Task, both in beta. It reaches PyPI with the next
 release; until then, install it from the `dev` branch:
 
 ```bash

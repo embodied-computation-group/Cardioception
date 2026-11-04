@@ -4,8 +4,8 @@
 
 1.0.0 is the first release of the rewritten package. It runs four tasks under
 one output layout: the Heart Rate Discrimination and Heartbeat Counting tasks,
-and the experimental Heartbeat Synchrony Discrimination and Phase Adjustment
-tasks. It changes the output schema and the output layout, so analysis scripts
+and the Heartbeat Synchrony Discrimination and Phase Adjustment tasks, both
+in beta. It changes the output schema and the output layout, so analysis scripts
 written against 0.7.x need the migration notes under Breaking below. The 0.7
 line stays installable from the `legacy/0.7` branch and the `v0.7.2` tag.
 
@@ -99,14 +99,14 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   they are `HBC/texts/english.yaml` and `german.yaml`, checked against those
   functions by a snapshot test, and an unknown language fails before a window
   opens. The German confidence scale reads "Geraten" to "Sicher".
-- `cardioception.HSD.psi.SynchronyPsi`, the estimation engine for an
-  experimental Heartbeat Synchrony Discrimination task: an adaptive Bayesian
+- `cardioception.HSD.psi.SynchronyPsi`, the estimation engine for the
+  Heartbeat Synchrony Discrimination task: an adaptive Bayesian
   version of the Brener, Liu and Ring method of constant stimuli that chooses
   each R-wave-to-tone delay by expected information gain and estimates where
   in the cardiac cycle the heartbeat is felt, and how sharply. Plain NumPy, no
   PsychoPy or device. The design is documented
   in `docs/source/hsd_design.md`.
-- The Heartbeat Synchrony Discrimination task runner, experimental:
+- The Heartbeat Synchrony Discrimination task runner, in beta:
   `cardioception.HSD.parameters.getParameters` and `cardioception.HSD.task.run`,
   with English instructions, a tutorial with three practice trials, both
   stimulus axes (ms after the R-wave, or a fraction of the interbeat
@@ -121,7 +121,7 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   dry run, 60 trials on a PLUX ECG over Bluetooth, is recorded in the design
   document, with a simulation rerun at the 130 ms floor. The user guide has a
   how-to for running a session and reading its results.
-- The Phase Adjustment Task, experimental: `cardioception.PAT`, after the
+- The Phase Adjustment Task, in beta: `cardioception.PAT`, after the
   PAT-ECG variant of Hodgetts et al. (2026, *Psychophysiology* 63:e70415).
   One tone per heartbeat, timed from the R-waves of an LSL ECG stream, at a
   delay the participant moves with the mouse wheel until tones and heartbeats

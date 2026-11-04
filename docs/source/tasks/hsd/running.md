@@ -7,12 +7,12 @@ myst:
 
 # Running the HSD
 
-```{admonition} Experimental
+```{admonition} Beta
 :class: warning
 
 The Heartbeat Synchrony Discrimination task (HSD) is new. It has been run on
-hardware once, in a 60-trial [dry run](design.md#hardware-dry-run) with one
-participant, and has not been validated in a study. Its stopping rule is
+hardware in a [dry run](design.md#hardware-dry-run) and has not been
+validated in a study. Its stopping rule is
 provisional. The [design page](design.md) sets out the method and the
 evidence so far.
 ```

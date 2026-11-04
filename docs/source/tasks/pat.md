@@ -12,7 +12,7 @@ The phase adjustment task (PAT) {cite:p}`2021:plans` measures how consistently a
 Cardioception's version follows the ECG-based implementation of {cite:t}`2026:hodgetts` (PAT-ECG), which triggers the tones from the R-wave of the electrocardiogram rather than from a finger pulse, adds an online relative-delay (phase) mode and an exteroceptive control task, and scores every participant on a grid of eight consistency measures. The PAT 2.0 refinements of {cite:t}`2026:palmer` provide the fixed-mapping score and the Monte Carlo thresholds.
 
 ```{note}
-**Experimental.** The PAT module is new and runs only with an ECG streamed over Lab Streaming Layer (LSL). The original PAT-ECG uses a hardware R-wave trigger and a Teensy microcontroller; this port detects the R-wave in software, which changes the timing budget. Read the [timing section](#timing-and-latency) before you plan a study.
+**Beta.** The PAT module is new and runs only with an ECG streamed over Lab Streaming Layer (LSL). The original PAT-ECG uses a hardware R-wave trigger and a Teensy microcontroller; this port detects the R-wave in software, which changes the timing budget. Read the [timing section](#timing-and-latency) before you plan a study.
 ```
 
 ## What the task measures
