@@ -16,9 +16,15 @@ from cardioception.devices.tone_player import KINDS, make_tone
 
 
 def test_import_does_not_need_hardware():
-    """Both device modules and the engine import with pylsl and PsychToolbox
-    (and PsychoPy) made unimportable, in a fresh interpreter."""
+    """Both device modules and the task engines import with pylsl and
+    PsychToolbox (and PsychoPy) made unimportable, in a fresh interpreter.
+
+    The PAT and HSD engines are checked when their packages are present, so
+    the test holds on a checkout that carries only one of the two tasks.
+    """
     code = (
+        "import importlib\n"
+        "import importlib.util\n"
         "import sys\n"
         "class Block:\n"
         "    def find_spec(self, name, path=None, target=None):\n"
@@ -27,7 +33,9 @@ def test_import_does_not_need_hardware():
         "sys.meta_path.insert(0, Block())\n"
         "import cardioception.devices.beat_source\n"
         "import cardioception.devices.tone_player\n"
-        "import cardioception.PAT.engine\n"
+        "for engine in ('cardioception.PAT.engine', 'cardioception.HSD._stimulus'):\n"
+        "    if importlib.util.find_spec(engine.rsplit('.', 1)[0]) is not None:\n"
+        "        importlib.import_module(engine)\n"
         "print('ok')\n"
     )
     out = subprocess.run(
