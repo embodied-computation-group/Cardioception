@@ -112,7 +112,7 @@ stream instead of the Nonin oximeter, install the optional dependency as well:
 pip install "cardioception-toolbox[lsl]"
 ```
 
-The [user guide](../user_guide.md#ecg-or-ppg-over-lsl) explains how to point the
+The [Recording devices](recording-devices.md#ecg-or-ppg-over-lsl) page explains how to point the
 task at the stream.
 
 ## 4. Check that it imports
@@ -182,7 +182,7 @@ one when several are attached, and `--duration` changes the recording length.
 
 ## You are ready
 
-Continue to the [user guide](../user_guide.md) to run a session, and to the
+Continue to [Running a session](running-a-session.md) to run a session, and to the
 [tutorials](../tasks/hrd/tutorials/index.md) for what to do with the data afterwards.
 
 To run without any hardware, both tasks accept `setup="test"`, which skips the

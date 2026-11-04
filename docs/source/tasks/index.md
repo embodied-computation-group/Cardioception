@@ -94,7 +94,7 @@ count is typed, and confidence rated, on the keyboard.
 **Length.** About 4 minutes with the default settings.
 
 **Analysis.** The accuracy score of {cite:t}`2013:hart`, given in the
-[user guide](../user_guide.md#the-tasks) and computed by the HBC report notebook.
+[Heartbeat Counting page](hbc.md) and computed by the HBC report notebook.
 
 ## Heartbeat Synchrony Discrimination task
 
@@ -130,7 +130,7 @@ run reached the 60 trial maximum in 7 minutes.
 
 **Status.** Experimental: run on hardware once, not validated, with a
 provisional stopping rule. See the [design page](hsd/design.md) and the
-[user guide](../user_guide.md#heartbeat-synchrony-discrimination).
+[Running the HSD](hsd/running.md) page.
 
 **Analysis.** The online posterior is a monitoring aid. No offline model has
 been published yet: the Hierarchical Interoception toolbox covers the HRD so
@@ -372,8 +372,8 @@ different question.
 ---
 hidden:
 ---
-HRD theory <hrd/theory.md>
-Heart Rate Discrimination tutorials <hrd/tutorials/index.md>
+Heart Rate Discrimination task <hrd/index.md>
+Heartbeat Counting task <hbc.md>
 Phase Adjustment Task <pat.md>
-HSD design <hsd/design.md>
+Heartbeat Synchrony Discrimination task <hsd/index.md>
 ```

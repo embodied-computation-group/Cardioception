@@ -114,7 +114,7 @@ Heartbeat Synchrony Discrimination task
 
 Experimental, run on hardware once so far; see the
 :doc:`design document </tasks/hsd/design>` and the
-:doc:`user guide </user_guide>`.
+:doc:`Running the HSD </tasks/hsd/running>`.
 
 Parameters
 **********

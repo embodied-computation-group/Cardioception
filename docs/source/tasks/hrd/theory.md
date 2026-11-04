@@ -150,4 +150,4 @@ The tutorials follow the analysis from one session to a group model:
   metacognitive calibration.
 
 For task administration and staircase settings, see the
-[user guide](../../user_guide.md).
+[Running the HRD](running.md).

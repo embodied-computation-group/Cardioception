@@ -33,7 +33,7 @@ The import name is still `cardioception`, so existing scripts do not need to be 
 from cardioception.HRD import task
 ```
 
-See the [user guide](user_guide.md) for conda environments, dependencies and the development version.
+See [Installation](getting-started/installation.md) for conda environments, dependencies and the development version.
 
 ## The tasks
 
@@ -49,7 +49,7 @@ The package keeps this task because much of the literature rests on it. Counting
 
 ### Heartbeat Synchrony Discrimination task
 
-**Experimental.** The HSD is an adaptive Bayesian version of the heartbeat detection task {cite:p}`1993:brener`. Participants hear tones a chosen delay after each R-wave and judge whether they were synchronous with their heartbeat, and the delays are placed to estimate where in the cardiac cycle the heartbeat is felt and how sharply. It needs an ECG over Lab Streaming Layer and has so far been run on hardware once. The [design page](tasks/hsd/design.md) describes the method and the evidence, and the [user guide](user_guide.md#heartbeat-synchrony-discrimination) explains how to run it.
+**Experimental.** The HSD is an adaptive Bayesian version of the heartbeat detection task {cite:p}`1993:brener`. Participants hear tones a chosen delay after each R-wave and judge whether they were synchronous with their heartbeat, and the delays are placed to estimate where in the cardiac cycle the heartbeat is felt and how sharply. It needs an ECG over Lab Streaming Layer and has so far been run on hardware once. The [design page](tasks/hsd/design.md) describes the method and the evidence, and [Running the HSD](tasks/hsd/running.md) explains how to run it.
 
 ### Phase Adjustment Task
 
@@ -57,7 +57,7 @@ The package keeps this task because much of the literature rests on it. Counting
 
 ## Recording devices
 
-The default setup uses the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/), which plugs into the stimulus PC over USB and needs no extra code. Any ECG or PPG device that streams over [Lab Streaming Layer](https://labstreaminglayer.org/) also works, through `cardioception.devices.LSLRecorder`, and other devices can be added by supplying a recorder object to `getParameters`. The [user guide](user_guide.md) has the details.
+The default setup uses the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/), which plugs into the stimulus PC over USB and needs no extra code. Any ECG or PPG device that streams over [Lab Streaming Layer](https://labstreaminglayer.org/) also works, through `cardioception.devices.LSLRecorder`, and other devices can be added by supplying a recorder object to `getParameters`. [Recording devices](getting-started/recording-devices.md) has the details.
 
 ## Analysing your data
 
@@ -65,7 +65,7 @@ For HRD data we recommend the [Hierarchical Interoception toolbox](https://githu
 
 ## Where to go next
 
-- [User guide](user_guide.md) for installation, dependencies and running a task
+- [Running a session](getting-started/running-a-session.md) for running a task
 - [The tasks](tasks/index.md) for the four tasks side by side, and which to choose
 - [Theory](tasks/hrd/theory.md) for what the HRD and the HBC measure and why
 - [HSD design](tasks/hsd/design.md) for the experimental Heartbeat Synchrony Discrimination task
@@ -94,7 +94,8 @@ caption: Getting started
 hidden:
 ---
 Installation <getting-started/installation.md>
-Guide <user_guide.md>
+Recording devices <getting-started/recording-devices.md>
+Running a session <getting-started/running-a-session.md>
 ```
 
 ```{toctree}
@@ -113,4 +114,5 @@ hidden:
 API <reference/api.rst>
 Cite <reference/cite.md>
 References <reference/references.md>
+Changelog <reference/changelog.md>
 ```
