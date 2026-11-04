@@ -76,14 +76,19 @@ from cardioception.devices import LSLRecorder
 from cardioception.PAT.parameters import getParameters
 from cardioception.PAT.task import run
 
-recorder = LSLRecorder(name="PLUX", channel="ECG1", signal_type="ecg")
+# The task opens its own "PAT" marker stream, so the recorder opens none
+recorder = LSLRecorder(
+    name="PLUX", channel="ECG1", signal_type="ecg", marker_stream=None
+)
 parameters = getParameters(
     participant="sub01", session="001", recorder=recorder, mode="relative"
 )
-run(parameters, runTutorial=True, confidenceRating=True)
-parameters["win"].close()
-parameters["engine"].close()
-recorder.close()
+try:
+    run(parameters, runTutorial=True, confidenceRating=True)
+finally:
+    parameters["win"].close()
+    parameters["engine"].close()  # stops the beat detector, releases the sound card
+    recorder.close()
 ```
 
 The defaults of `getParameters` are those of the paper, except where noted:
@@ -136,8 +141,8 @@ The wrapper appends `Extero` to the session label of the exteroceptive run, so b
 | `TrialStatus` | `ok`; `stale` when the press came more than 1.5 anticipated periods after the last R-wave (the ECG was lost, so `AnticipatedPeriodMs` is NaN, and so is `ChosenDelayMs` in relative mode or `ChosenPhaseDeg` in absolute mode); `timeout` when `maxTrialTime` ran out with no press (both chosen columns NaN, no rating asked). The scores use `ok` trials only |
 | `Mode`, `Extero` | Scheduling mode, and whether this was the exteroceptive variant |
 | `StartPhaseDeg` | Where the dial started |
-| `ChosenPhaseDeg`, `ChosenDelayMs` | The choice at the space press, as a phase and as ms after the R-wave |
-| `AnticipatedPeriodMs` | The anticipated period (mean of the last three R-R intervals) at the last beat before the press |
+| `ChosenPhaseDeg`, `ChosenDelayMs` | The choice at the space press, as a phase and as ms after the R-wave. `ChosenDelayMs` is the dial's delay, before `latencyBias` is subtracted from the tone's target |
+| `AnticipatedPeriodMs` | The anticipated period at the last beat before the press: the mean of the last three R-R intervals, or in the exteroceptive variant the exact interval to the next virtual beat |
 | `ObservedPeriodMs` | The R-R interval containing the press, known once the next R-wave arrives; NaN if it did not arrive within 3 s |
 | `LastRTime`, `PressTime` | The last R-wave before the press and the press itself, in LSL seconds |
 | `LastToneIndex`, `LastToneAnchor`, `LastToneRTime` | The last tone that sounded before the press: its `ToneIndex` in `tones.txt`, its anchor (`real` or `predicted`) and the R-wave it was timed from |
@@ -233,16 +238,10 @@ In the original PAT-ECG an analogue R-wave detector triggers the microcontroller
 - **The beat is known about 20 ms after the R-peak** (95th percentile 31 ms).
 - **Audio onsets** reported by PsychPortAudio are within about 1 ms of the target, provided the tone is scheduled at least `audioLead` (50 ms) ahead.
 
-Each tone's target is `R + delay - latencyBias`. If that is at least `audioLead` after the moment the beat is known, the tone is timed from that beat (anchor `real`). Otherwise it is too late for this cycle, and the tone is timed from the *predicted* next R-wave, one anticipated period later (anchor `predicted`). With the defaults the boundary sits about 120 ms after the R-wave: roughly the first 35 degrees of the cycle at 50 beats per minute and nearly 60 at 80. Predicted tones scatter more than real ones, because the true next cycle differs from the three-beat mean. `tones.txt` records which anchor each tone used.
+Each tone's target is `R + delay - latencyBias`. If that is at least `audioLead` after the moment the beat is known, the tone is timed from that beat (anchor `real`). Otherwise it is too late for this cycle, and the tone is timed from the *predicted* next R-wave, one anticipated period later (anchor `predicted`). With the defaults the boundary sits about 120 to 137 ms after the R-wave: about 20 ms until the beat is known, then up to one frame (17 ms at 60 Hz) until the engine sees it, since it is polled once per screen refresh, plus `audioLead` and `latencyBias`. That is roughly the first 35 to 40 degrees of the cycle at 50 beats per minute and 60 to 65 at 80. Predicted tones scatter more than real ones, because the true next cycle differs from the three-beat mean. `tones.txt` records which anchor each tone used.
 
 `latencyBias` (default 0.05 s) is a constant subtracted from every target. It stands for the physical delay that LSL timestamps cannot see: the Bluetooth transfer before the samples are stamped (20 to 40 ms) and the path from the reported audio onset to the sound reaching the ear. Together these come to roughly 30 to 70 ms on our setup. A constant bias shifts every tone by the same amount, so it leaves fixed-mapping consistency unchanged and variable-mapping consistency almost unchanged. It does matter for the *mean* phase a participant chooses; report the bias whenever you report that.
 
 Space stops new tones, not the ones already handed to the sound card, so up to about 1.1 s of tones (at most one period plus `audioLead`) can follow the press. This is a design choice: the choice is the dial at the press, whatever is heard after it, and those tones are logged in `tones.txt` like any other. After the press the task waits for the next R-wave, which gives `ObservedPeriodMs`, and for the onsets of those last tones, at most 3 s. The fixation cross stays on screen during that wait, the window keeps refreshing, and Esc ends it at once; the trial is then kept, without a rating, and the task stops.
 
 Further checks of the timing chain are in `bench/README.md` in the repository.
-
-## References
-
-- Hodgetts, J., Gallicchio, G., Mckiernan, S., Ring, C., Murphy, J., & Cooke, A. (2026). The electrocardiogram-based phase adjustment task (PAT-ECG): An open-access laboratory test of cardiac interoceptive accuracy. *Psychophysiology*, 63, e70415. <https://doi.org/10.1111/psyp.70415>
-- Plans, D., Ponzo, S., Morelli, D., et al. (2021). Measuring interoception: The phase adjustment task. *Biological Psychology*, 165, 108171. <https://doi.org/10.1016/j.biopsycho.2021.108171>
-- Palmer, R., Murphy, J., Bird, J. M., et al. (2026). Refinements of the phase adjustment task (PAT 2.0). *Frontiers in Psychology*, 17, 1677186. <https://doi.org/10.3389/fpsyg.2026.1677186>
