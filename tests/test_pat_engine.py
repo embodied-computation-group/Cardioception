@@ -4,8 +4,9 @@
 Everything runs on fakes (a clock set by hand, a beat source fed by hand, a
 player that records what it was asked to play), so no sound card or LSL
 stream is needed. Two tests run the engine on a recorded ECG through
-``LSLBeatSource`` and skip when the file is missing. The beat sources and the
-player have their own tests, in test_beat_source.py and test_tone_player.py.
+``LSLBeatSource``: the committed excerpt, and a lab recording when
+``CARDIOCEPTION_RECORDINGS`` points at it. The beat sources and the player
+have their own tests, in test_beat_source.py and test_tone_player.py.
 """
 
 import json

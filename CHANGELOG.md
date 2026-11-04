@@ -244,6 +244,10 @@ code it replaced rather than read over.
 - The live tests of the beat-locked tone player, which play through the
   sound card at its own volume, are marked `audio` and run only with
   `pytest --run-audio`, as `blocking` tests run only with `--run-blocking`.
+- The online R detector, the beat source and the PAT engine are tested on a
+  committed 60 s ECG excerpt (`tests/data/ecg_excerpt.npz`) instead of
+  skipping everywhere but the lab PC, and on the full lab recordings too when
+  `CARDIOCEPTION_RECORDINGS` points at their directory.
 
 **`responseDecision` returns five values, not six.** The second, a
 `responseTrigger` timestamp, was unpacked by its only caller and never read.
