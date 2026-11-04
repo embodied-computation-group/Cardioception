@@ -125,6 +125,12 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   than state, so a held button was read as a fresh click on the next screen —
   observed in real data as 17 trials with a decision response time of exactly
   zero.
+- The mouse confidence rating no longer warps the cursor on every frame
+  (issue 103). On macOS each warp suppresses mouse events for 0.25 s, so the
+  slider froze and could be neither moved nor clicked. The cursor is now
+  warped once to the random start and brought back only near the edge of the
+  screen. The fix is in the shared rating, so it applies to every task that
+  uses it.
 - The heart-rate acquisition loop is bounded and can be escaped. A single
   artefactual interbeat interval could previously hold a participant on the
   listening screen indefinitely.
