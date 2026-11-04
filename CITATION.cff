@@ -45,7 +45,8 @@ keywords:
   - cardiac
   - psychopy
 license: Apache-2.0
-version: 0.8.0
+version: 1.0.0
+# Set on the day of the release.
 date-released: '2026-08-28'
 preferred-citation:
   type: article

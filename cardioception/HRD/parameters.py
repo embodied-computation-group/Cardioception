@@ -49,7 +49,7 @@ def _build_design(
     if stairType != "psi":
         raise ValueError(
             f"stairType={stairType!r}. The nUp/nDown staircase was removed in "
-            "0.8.0: it was a 1-up/1-down rule, which converges on 50% correct, "
+            "1.0.0: it was a 1-up/1-down rule, which converges on 50% correct, "
             "not the 71% the documentation claimed, and it was never used for "
             "published data. 'psi' is the only staircase."
         )
@@ -361,7 +361,7 @@ def getParameters(
         testing only).
     stairType : str
         Staircase type. `"psi"` is the only value; `"updown"` was removed in
-        0.8.0 and now raises. Kept as an argument so scripts passing it fail
+        1.0.0 and now raises. Kept as an argument so scripts passing it fail
         with an explanation rather than a TypeError.
     systole_kw : dict
         Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.

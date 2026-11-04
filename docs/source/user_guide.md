@@ -166,7 +166,7 @@ The only staircase. This uses Kontsevich and Tyler's {cite:p}`1999:kontsevich` p
 Psi converges on the participant's point of subjective equality, their bias, not on a target level of accuracy. That is what the task is designed to measure, but it has consequences for any measure scored against the true heart rate. See the [metacognition tutorial](tutorials/metacognition.md).
 ```
 
-```{admonition} The nUp/nDown staircase was removed in 0.8.0
+```{admonition} The nUp/nDown staircase was removed in 1.0.0
 :class: warning
 
 `stairType="updown"` now raises. It described itself as a 1-down 2-up

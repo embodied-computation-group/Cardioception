@@ -19,7 +19,7 @@ and run the code against it.
 
 ## Files in a participant folder
 
-Since 0.8.0 each run has a directory of its own, named for the participant,
+Since 1.0.0 each run has a directory of its own, named for the participant,
 the session and the moment the run started, and every file inside repeats all
 three. A repeated session can no longer overwrite an earlier one.
 

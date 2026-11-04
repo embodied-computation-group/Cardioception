@@ -54,13 +54,13 @@ class TestHRD(TestCase):
         assert sum(parameters["staircaseType"] == "psi") == 4
 
     def test_the_updown_staircase_is_gone(self):
-        """Removed in 0.8.0. The error has to say so, not just reject."""
+        """Removed in 1.0.0. The error has to say so, not just reject."""
         # resultPath matters even though this raises: getParameters builds
         # the session directory and opens session.log before the design is
         # built, so without it every `pytest tests/` left a run directory in
         # the working tree -- and an open file handle Windows would not let a
         # later rmtree remove.
-        with pytest.raises(ValueError, match="removed in 0.8.0"):
+        with pytest.raises(ValueError, match="removed in 1.0.0"):
             getParameters(
                 setup="test",
                 nTrials=4,
