@@ -195,6 +195,39 @@ notebooks.
 If you do not already use conda, do not install it just for this. The venv route
 above works and involves one fewer tool.
 
+(legacy-versions)=
+## Legacy versions
+
+This documentation describes the current version. Older ones stay available
+for studies that started on them.
+
+The 0.7 line, the last before the 2026 rewrite, is kept as the `legacy/0.7`
+branch and the `v0.7.2` tag. Install it from PyPI or from the branch:
+
+```bash
+pip install cardioception-toolbox==0.7.2
+pip install git+https://github.com/embodied-computation-group/Cardioception@legacy/0.7
+```
+
+The 0.4 line dates from the period of the Heart Rate Discrimination paper
+{cite:p}`2022:legrand` and is tagged `v0.4.0`, `v0.4.1`, `v0.4.2`, `v0.4.3`,
+`v0.4.4` and `v0.4.5`. The first four were tagged in 2021, the last two in 2023
+and 2025. The repository does not record which of them matches the code used in
+the paper. They pin the dependencies of their time (`v0.4.5` requires PsychoPy
+2020.1.2), so expect to need an older Python. Install one from its tag, for
+example:
+
+```bash
+pip install git+https://github.com/embodied-computation-group/Cardioception@v0.4.3
+```
+
+These versions write their output to the old flat layout,
+`data/<participant><session>/`, with participant and session joined together,
+rather than to `data/sub-<participant>/ses-<session>/run-<timestamp>/`. The
+migration notes in the
+[changelog](https://github.com/embodied-computation-group/Cardioception/blob/master/CHANGELOG.md)
+describe the change and what it means for analysis scripts.
+
 (troubleshooting)=
 ## Troubleshooting
 

@@ -4,7 +4,7 @@
 
 <img src="images/cardioception_icon.png" align="left" alt="cardioception" height="230" HSPACE=30>
 
-Cardioception measures cardiac interoception in [PsychoPy](https://www.psychopy.org/). The package is built around the Heart Rate Discrimination task (HRD), a psychophysical method that estimates how accurately and how precisely people judge their own heart rate. It also includes the older Heartbeat Counting task, described [further down](#the-heartbeat-counting-task), and an experimental third, the [Heartbeat Synchrony Discrimination task](#the-heartbeat-synchrony-discrimination-task).
+Cardioception measures cardiac interoception in [PsychoPy](https://www.psychopy.org/). The package is built around the Heart Rate Discrimination task (HRD), a psychophysical method that estimates how accurately and how precisely people judge their own heart rate. It also includes the older Heartbeat Counting task, described [further down](#the-heartbeat-counting-task), and two experimental tasks, the [Heartbeat Synchrony Discrimination task](#the-heartbeat-synchrony-discrimination-task) and the [Phase Adjustment Task](#the-phase-adjustment-task). [The tasks](https://www.the-ecg.org/Cardioception/tasks.html) page in the documentation compares all four.
 
 You do not need much equipment. A computer and a device that reads the participant's pulse is enough to run a study, and the tasks slot into richer setups (ECG, M/EEG, fMRI) when you have them.
 
@@ -21,6 +21,7 @@ Documentation lives at <https://www.the-ecg.org/Cardioception/>.
 - [Analysing your data](#analysing-your-data)
 - [The Heartbeat Counting task](#the-heartbeat-counting-task)
 - [The Heartbeat Synchrony Discrimination task (experimental)](#the-heartbeat-synchrony-discrimination-task)
+- [The Phase Adjustment Task (experimental)](#the-phase-adjustment-task)
 - [Getting help](#getting-help)
 - [How to cite](#how-to-cite)
 - [Publications using the HRD](#publications-using-the-hrd)
@@ -98,14 +99,18 @@ Analysing the data needs a few extras that are not installed by default: [paperm
 
 Installing the package also copies about 140 MB of images and sounds that the tasks play, most of it the 370 pre-generated tone files used by the Heart Rate Discrimination task. `pip uninstall cardioception-toolbox` removes them again.
 
+### Legacy versions
+
+The 0.7 line, the last before the 2026 rewrite, is kept as the `legacy/0.7` branch and the `v0.7.2` tag, and installs with `pip install cardioception-toolbox==0.7.2`; the 0.4 line, from the period of the HRD paper, is tagged `v0.4.0` to `v0.4.5`. Both write to the old flat `data/<participant><session>/` layout, and the [installation guide](https://www.the-ecg.org/Cardioception/installation.html#legacy-versions) and the [changelog](CHANGELOG.md) cover installing them and migrating their output.
+
 ## Recording devices
 
-Both tasks read the participant's cardiac signal while the task runs, either to estimate heart rate or to count beats in a time window. Two setups work out of the box:
+The HRD and the HBC read the participant's cardiac signal while the task runs, either to estimate heart rate or to count beats in a time window. Two setups work out of the box:
 
 * The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) with [Nonin 8000SM soft-clip fingertip sensors](https://www.nonin.com/products/8000s/), which plugs into the stimulus PC over USB and needs no extra code.
 * Any ECG or PPG device that streams over [Lab Streaming Layer](https://labstreaminglayer.org/) (LSL), through `cardioception.devices.LSLRecorder`. Install the optional dependency with `pip install cardioception-toolbox[lsl]`, start the device's own streaming program, and pass the recorder to `getParameters(recorder=...)`. The [user guide](https://www.the-ecg.org/Cardioception/user_guide.html#ecg-or-ppg-over-lsl) has the details.
 
-The experimental Heartbeat Synchrony Discrimination task times each tone from the R-wave, so it needs an ECG over LSL; a pulse oximeter cannot drive it.
+The experimental Heartbeat Synchrony Discrimination task and Phase Adjustment Task time each tone from the R-wave, so they need an ECG over LSL; a pulse oximeter cannot drive them.
 
 Other hardware can be added by writing a recorder and passing it to `getParameters(recorder=...)`, which bypasses the built-in setup entirely. It needs to supply a real-time estimate of cardiac frequency during the trial, since that is what sets the tone frequency; a device that only records for later analysis is not enough on its own. `cardioception.devices.ReplayRecorder` is a worked example, and is what the test suite runs against.
 
@@ -199,13 +204,17 @@ These notebooks fit the psychometric function at the subject and group level. Th
 
 <img src= "images/HeartBeatCounting.png">
 
-Cardioception also implements the heartbeat counting task <sup>1,2</sup>, where participants attend to their heartbeats over intervals of different lengths and report how many they counted. Accuracy comes from comparing that report against the true number of beats. Schandry's original version <sup>1</sup> opened with 60 seconds of rest, then three counting windows (25, 35 and 45 seconds) separated by 30 second rests. Cardioception defaults to the variant used in more recent work <sup>3</sup>: a 20 second training trial, then six counting trials (25, 30, 35, 40, 45 and 50 seconds) in random order. Trial length, condition (`'Rest'`, `'Count'`, `'Training'`) and randomisation are all set in the parameters dictionary.
+Cardioception also implements the heartbeat counting task <sup>1,2</sup>, where participants attend to their heartbeats over intervals of different lengths and report how many they counted. Accuracy comes from comparing that report against the true number of beats. Schandry's original version <sup>1</sup> opened with 60 seconds of rest, then three counting windows (25, 35 and 45 seconds) separated by 30 second rests. Cardioception defaults to the variant used in more recent work <sup>3</sup>: six counting trials (25, 30, 35, 40, 45 and 50 seconds) in random order. Trial length, condition (`'Rest'`, `'Count'`, `'Training'`) and randomisation are all set in the parameters dictionary.
 
 We keep the task available because a good deal of the literature rests on it and people need to run replications. For new studies, we would point you to the HRD instead. Counting scores are strongly shaped by what participants believe their heart rate to be and by how they interpret the instructions, which makes them hard to read as a measure of interoceptive sensitivity on their own.
 
 ## The Heartbeat Synchrony Discrimination task
 
 **Experimental.** The Heartbeat Synchrony Discrimination task (HSD) is an adaptive Bayesian version of the heartbeat detection task of Brener, Liu and Ring. Participants hear five tones, each a chosen delay after an R-wave detected online in the ECG, and judge whether they were synchronous with their heartbeat; the delays are placed to estimate where in the cardiac cycle the heartbeat is felt and how sharply. It needs an ECG streamed over LSL, has so far been run on hardware once, and its stopping rule is provisional. The [design page](https://www.the-ecg.org/Cardioception/hsd_design.html) describes the method and the evidence so far, and the [user guide](https://www.the-ecg.org/Cardioception/user_guide.html#heartbeat-synchrony-discrimination) explains how to run it with `wrappers/hsd_lsl.py`.
+
+## The Phase Adjustment Task
+
+**Experimental.** The Phase Adjustment Task (PAT) follows the ECG version of Hodgetts and colleagues (2026). Participants hear one tone per heartbeat and turn a dial, the mouse wheel, that moves the tone earlier or later after each R-wave until tone and heartbeat feel simultaneous. There is no correct answer on a single trial: the score is how consistently the choices fall at one phase of the cardiac cycle across 28 trials, tested against chance with `cardioception.PAT.scoring`. It needs an ECG streamed over LSL and detects the R-wave in software, which changes the timing of the hardware original. The [PAT page](https://www.the-ecg.org/Cardioception/pat.html) explains how to run and score it with `wrappers/pat_lsl.py`.
 
 ## Getting help
 
