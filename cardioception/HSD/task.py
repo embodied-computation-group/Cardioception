@@ -15,6 +15,7 @@ Every clock time written by this module is on the session clock,
 import json
 import math
 import pickle
+import time
 from dataclasses import asdict, dataclass
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
@@ -31,8 +32,8 @@ from .._session import show_screen as _show_screen
 from .._session import waitInput
 from .._triggers import fire
 from ._constants import Trigger
-from ._outcome import HSDTrialOutcome, posterior_fields, train_fields
-from ._stimulus import TrainResult, TrainScheduler
+from ._outcome import HSDTrialOutcome, posterior_fields, train_fields, unused_reason
+from ._stimulus import IDLE_SLEEP, TrainResult, TrainScheduler
 
 logger = get_logger()
 
@@ -57,6 +58,7 @@ _NOT_PICKLED = (
     "recorder",
     "triggers",
     "clock",
+    "drain",
     "results_rows",
     "results_df",
     "tone_rows",
@@ -207,6 +209,18 @@ def _redraw_period(result: TrainResult, source) -> Optional[float]:
     return None
 
 
+def _file_between(parameters: dict) -> None:
+    """File the beats polled since the last train, as the markers have them.
+
+    Under the trial whose markers they carry, ``parameters["markerTrial"]``:
+    the main trial during or after which they were polled. Beats polled
+    before the first main trial, or around a practice trial, have no trial.
+    """
+    trial = parameters.get("markerTrial")
+    for beat in _scheduler(parameters).take_between():
+        parameters["beat_rows"].append({"Trial": trial, "Attempt": None, **beat})
+
+
 def _scheduler(parameters: dict) -> TrainScheduler:
     """The session's scheduler, made on first use.
 
@@ -268,6 +282,10 @@ def responseDecision(
             if pressed:
                 responseKey = pressed
                 break
+            # Without a pause the loop pins a core for up to respMax. A key
+            # is stamped when it is read, so this sets the resolution of the
+            # response time.
+            time.sleep(IDLE_SLEEP)
         if responseKey and responseKey[0][0] == "escape":
             logger.warning("User abort")
             parameters["win"].close()
@@ -315,7 +333,9 @@ def trial(
     outcome : HSDTrialOutcome
         The train, the judgement and the posterior after the update. A trial
         whose train delivered no tone has ``nDelivered == 0``, no decision,
-        and did not touch the posterior.
+        and did not touch the posterior. One that delivered fewer than
+        ``TaskConfig.minTones`` tones is judged, but does not update the
+        posterior either; ``used`` and ``unusedReason`` say which.
     """
     config = parameters["config"]
     engine = parameters["engine"]
@@ -324,8 +344,13 @@ def trial(
     texts = parameters["texts"]
     mark = _marker(parameters, nTrial, practice)
     scheduler = _scheduler(parameters)
+    # Beats polled since the last train, during the previous trial's decision
+    # and rating or a break, carry that trial's markers: file them there.
+    _file_between(parameters)
     # Set now, so the beats observed before the train are marked with it.
     scheduler.marker = mark
+    parameters["markerTrial"] = None if practice else nTrial
+    scheduler.label = f"{'practice ' if practice else 'trial '}{nTrial}"
 
     logger.info(f"Starting trial {nTrial}{' (practice)' if practice else ''}")
     win.mouseVisible = False
@@ -346,28 +371,41 @@ def trial(
 
     results: List[TrainResult] = []
     explored = False
+    refusal: Optional[str] = None
     if period is None and config.axis == "phase":
         logger.warning(
             f"... the beat source reported no interbeat interval within "
             f"{PERIOD_WAIT:g} s; a phase-axis delay cannot be set, so the "
             "trial is skipped."
         )
+        refusal = "no_period"
+    else:
+        # On the absolute axis the period only sets the ceiling, and a 1 s
+        # period allows every default candidate.
+        try:
+            delay, explored = engine.next_delay(
+                *config.bounds(period if period is not None else 1.0)
+            )
+        except ValueError as error:
+            # A heart so fast that the ceiling falls below the floor, or a
+            # period the source should never report: as for a redraw below.
+            logger.warning(
+                f"... no candidate for an interbeat interval of {period} s "
+                f"({error}); the trial is skipped."
+            )
+            refusal = "no_candidate"
+    if refusal is not None:
         now = parameters["clock"]()
         result = TrainResult(
             delay=math.nan,
             axis=config.axis,
             aborted=True,
-            abort_reason="no_period",
-            end_reason="no_period",
+            abort_reason=refusal,
+            end_reason=refusal,
             started=now,
             ended=now,
         )
     else:
-        # On the absolute axis the period only sets the ceiling, and a 1 s
-        # period allows every default candidate.
-        delay, explored = engine.next_delay(
-            *config.bounds(period if period is not None else 1.0)
-        )
 
         def on_frame() -> None:
             prompt.draw()
@@ -375,8 +413,8 @@ def trial(
             _check_escape(parameters)
 
         scheduler.on_frame = on_frame
-        # The window flips once per tone at most during the train, by design,
-        # so those intervals are not dropped frames.
+        # The scheduler flips every 50 ms or so during the train, not on every
+        # refresh, by design, so those intervals are not dropped frames.
         win.recordFrameIntervals = False
         _trigger(parameters, Trigger.TRAIN_START, "trainStart", mark)
         logger.info(f"... train at {delay:g} ({config.axis}).")
@@ -385,16 +423,16 @@ def trial(
         )
         results.append(result)
 
-        redraw = result.aborted and result.abort_reason in ("ceiling", "floor")
-        if redraw and result.n_delivered > 0:
-            # The participant heard these tones: they are the stimulus.
-            logger.warning(
-                f"... train stopped at the {result.abort_reason} after "
-                f"{result.n_delivered} tone(s); kept as the stimulus."
-            )
-        elif redraw:
-            # Nothing was heard. The period changed between the draw and the
-            # train, so draw again for the period the train saw.
+        # The scheduler refuses at the ceiling or the floor only before any
+        # tone: once one is scheduled it skips the beat instead. So nothing
+        # was heard, and the period changed between the draw and the train;
+        # draw again for the period the train saw.
+        redraw = (
+            result.aborted
+            and result.abort_reason in ("ceiling", "floor")
+            and result.n_delivered == 0
+        )
+        if redraw:
             redraw_period = _redraw_period(result, source)
             logger.warning(
                 f"... {delay:g} refused at the {result.abort_reason} "
@@ -416,7 +454,8 @@ def trial(
         fire(parameters, "trainStop")
         win.recordFrameIntervals = True
 
-    # A train that ended short ("max_beats") still counts if one tone played.
+    # Any tone heard is asked about; whether the answer reaches the posterior
+    # depends on how many were heard (see unused_reason).
     realized = result.realized_corrected if result.n_delivered > 0 else None
     decision, decisionRT, respProvided = None, None, False
     confidence, confidenceRT, ratingProvided = None, None, False
@@ -459,8 +498,27 @@ def trial(
             fire(parameters, "confidenceStop")
             mark("confidence", 0.0, confidence=confidence, rt=confidenceRT)
 
-    if not practice and realized is not None and respProvided:
-        engine.update(realized, decision == "Synchronous", explored)
+    unusedReason = unused_reason(result.n_delivered, config.minTones, respProvided)
+    if unusedReason == "few_tones":
+        logger.warning(
+            f"... only {result.n_delivered} tone(s) of {config.nTones} delivered, "
+            f"under minTones={config.minTones}: the trial is written but does "
+            "not update the posterior."
+        )
+    used = False
+    if not practice and unusedReason is None and realized is not None:
+        try:
+            engine.update(realized, decision == "Synchronous", explored)
+        except FloatingPointError as error:
+            # The engine leaves the posterior as it was. Losing one trial is
+            # better than losing the rest of the session.
+            logger.error(
+                f"... the posterior could not take this trial ({error}); it is "
+                "written, and the posterior is left as it was."
+            )
+            unusedReason = "update_failed"
+        else:
+            used = True
 
     endTrigger = _trigger(parameters, Trigger.TRIAL_STOP, "trialStop", mark)
 
@@ -474,13 +532,17 @@ def trial(
                 parameters["beat_rows"].append(
                     {"Trial": nTrial, "Attempt": attempt, **beat}
                 )
+        # Single precision halves the file (21 MB to 10 MB for 60 trials);
+        # the engine itself keeps double precision.
         parameters["posteriors"].append(
-            np.asarray(engine.posterior).reshape(engine.shape).copy()
+            np.asarray(engine.posterior, dtype=np.float32).reshape(engine.shape)
         )
 
     return HSDTrialOutcome(
         trial=nTrial,
         explored=explored,
+        used=used,
+        unusedReason=unusedReason,
         decision=decision,
         decisionRT=decisionRT,
         confidence=confidence,
@@ -524,7 +586,11 @@ def _save_session(parameters: dict) -> None:
     posteriors = parameters["posteriors"]
     np.save(
         paths.path("posterior", ext="npy"),
-        np.array(posteriors) if posteriors else np.empty((0, *engine.shape)),
+        (
+            np.array(posteriors, dtype=np.float32)
+            if posteriors
+            else np.empty((0, *engine.shape), dtype=np.float32)
+        ),
     )
     with open(paths.path("engine", ext="json"), "w") as handle:
         json.dump(engine.state(), handle)
@@ -573,13 +639,16 @@ def run(
     Writes ``final`` (one row per trial, see
     :class:`cardioception.HSD._outcome.HSDTrialOutcome`), ``tones`` (one row
     per beat a tone was tried on), ``beats`` (every beat polled),
-    ``posterior`` (``.npy``, one posterior per trial), ``engine`` (JSON, the
-    engine's state) and the parameters pickle. The ``nTrials`` column counts
+    ``posterior`` (``.npy``, float32, the posterior after every trial),
+    ``engine`` (JSON, the engine's state) and the parameters pickle. The ``nTrials`` column counts
     the trials that had reached the posterior when the row was written.
 
-    ``beats`` holds every beat polled during the session. Those polled
-    between trains have status ``"between"`` and are filed with the trial
-    whose train followed them; those after the last train have no trial.
+    ``beats`` holds every beat polled during the session, filed under the
+    trial whose markers carry it. Those polled between trains have status
+    ``"between"``: polled before a train, they are filed with its trial and
+    attempt; polled after it, during the decision, the rating or a break,
+    with that trial and no attempt. Beats polled before the first trial, or
+    around the practice trials, have no trial.
 
     Raises
     ------
@@ -595,10 +664,13 @@ def run(
 
     # The detector needs a few seconds of signal and three beats before it
     # knows the period, so the source runs for the whole session; draining it
-    # on every held frame keeps it current between trains.
+    # on every held frame keeps it current between trains. The waits that do
+    # not flip through hold(), the confidence rating and the breaks, drain it
+    # through parameters["drain"] (see cardioception._session).
     source.start()
     _scheduler(parameters)
     on_every_frame(win, lambda: _poll_source(parameters))
+    parameters["drain"] = lambda: _poll_source(parameters)
 
     nTrial = 0
     try:
@@ -654,12 +726,12 @@ def run(
                 _break(parameters, nTrial)
     finally:
         on_every_frame(win, None)
+        parameters.pop("drain", None)
         player = parameters["tonePlayer"]
         if hasattr(player, "stop_all"):
             player.stop_all()
         source.stop()
-        for beat in _scheduler(parameters).take_between():
-            parameters["beat_rows"].append({"Trial": None, "Attempt": None, **beat})
+        _file_between(parameters)
         _save_session(parameters)
 
     end = text(parameters, parameters["texts"]["done"])

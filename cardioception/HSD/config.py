@@ -77,8 +77,16 @@ class TaskConfig:
     #: ``"absolute"`` (delay in ms after the R-wave) or ``"phase"`` (delay as a
     #: fraction of the anticipated interbeat interval).
     axis: str = "absolute"
-    #: Tones per trial.
+    #: Tones per trial. A train tries up to ``2 * nTones`` beats to play
+    #: them: a beat that is known too late, or whose period would put the
+    #: tone past ``maxPeriodFraction`` of it, is skipped and a later beat
+    #: takes its place.
     nTones: int = N_TONES
+    #: Fewest tones a train must deliver for its trial to update the
+    #: posterior. A shorter train is still judged and written, with ``Used``
+    #: false and ``UnusedReason`` ``"few_tones"``, so that the engine is not
+    #: given a one-tone trial with the weight of a five-tone one.
+    minTones: int = 3
     #: Candidate delays on the absolute axis, as (low, high, step) in ms.
     absoluteDelays: Tuple[float, float, float] = (80.0, 600.0, 20.0)
     #: Candidate delays on the phase axis, as (low, high, step) in fractions
@@ -117,10 +125,12 @@ class TaskConfig:
     maxPeriodFraction: float = MAX_PERIOD_FRACTION
     #: Fraction by which the absolute-axis ceiling drawn at the start of a
     #: trial is lowered below ``maxPeriodFraction`` of the period. The
-    #: scheduler checks every beat against its own period without the margin,
-    #: so without it the top candidate would abort whenever the next beat came
-    #: slightly early.
-    ceilingMargin: float = 0.05
+    #: scheduler checks every beat against its own period without the margin
+    #: and skips a beat whose period has shortened past it. Respiratory sinus
+    #: arrhythmia moved the anticipated period by about 7 percent within a
+    #: train on the hardware dry run, where a margin of 0.05 cost three
+    #: long-delay trials most of their tones.
+    ceilingMargin: float = 0.10
     #: Seconds a tone is scheduled ahead of its onset.
     audioLead: float = AUDIO_LEAD
     #: Seconds of physical delay the recordings cannot see: the transport
@@ -163,6 +173,8 @@ class TaskConfig:
             raise ValueError(f"axis should be one of {AXES}, got {self.axis!r}")
         if self.nTones < 1:
             raise ValueError("nTones should be at least 1")
+        if not 1 <= self.minTones <= self.nTones:
+            raise ValueError("need 1 <= minTones <= nTones")
         if not 1 <= self.minTrials <= self.maxTrials:
             raise ValueError("need 1 <= minTrials <= maxTrials")
         if not 0.0 < self.maxPeriodFraction < 1.0:

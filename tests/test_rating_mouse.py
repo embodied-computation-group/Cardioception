@@ -238,3 +238,80 @@ def test_timeout_returns_no_rating(rate):
     assert len(mouse.setPos_calls) == 1
     # Once when the scale opens and once on timeout.
     assert mouse.clickResets == 2
+
+
+class Counter:
+    """A drain that counts its calls."""
+
+    def __init__(self):
+        self.calls = 0
+
+    def __call__(self) -> None:
+        self.calls += 1
+
+
+class Recorder:
+    """An HRD recorder stand-in that counts its reads."""
+
+    def __init__(self):
+        self.reads = 0
+
+    def readInWaiting(self) -> None:
+        self.reads += 1
+
+
+def test_the_rating_calls_the_task_drain(rate):
+    """A task's own device is kept current while the scale is up (the HSD)."""
+    positions = [(0.0, 0.2)] * 8
+    pressed = [False] * 7 + [True]
+    parameters = make_parameters(ScriptedMouse(positions, pressed))
+    parameters["drain"] = Counter()
+
+    _, _, provided, _ = rate(parameters)
+
+    assert provided is True
+    # Once on every frame of the rating, without an HRD recorder in sight.
+    assert parameters["drain"].calls >= 6
+    assert "oxiTask" not in parameters
+
+
+def test_the_rating_drains_the_recorder_and_the_task_drain(rate):
+    """With continuous recording on, the HRD recorder is drained as before."""
+    positions = [(0.0, 0.2)] * 8
+    pressed = [False] * 7 + [True]
+    parameters = make_parameters(ScriptedMouse(positions, pressed))
+    parameters["continuousRecording"] = True
+    parameters["oxiTask"] = Recorder()
+    parameters["drain"] = Counter()
+
+    rate(parameters)
+
+    assert parameters["oxiTask"].reads >= 6
+    assert parameters["drain"].calls == parameters["oxiTask"].reads
+
+
+def test_wait_input_calls_the_task_drain(fake_psychopy, monkeypatch):
+    """A break screen keeps the task's device current until space is pressed."""
+    from cardioception._session import waitInput
+
+    polls = {"n": 0}
+
+    def getKeys(keyList=None, **kwargs):
+        polls["n"] += 1
+        return ["space"] if polls["n"] > 5 else []
+
+    event = types.ModuleType("psychopy.event")
+    event.getKeys = getKeys  # type: ignore[attr-defined]
+    event.clearEvents = lambda eventType=None: None  # type: ignore[attr-defined]
+    fake_psychopy.event = event
+    monkeypatch.setitem(sys.modules, "psychopy.event", event)
+    parameters = {
+        "device": "keyboard",
+        "win": FakeWindow(),
+        "startKey": "space",
+        "drain": Counter(),
+    }
+
+    waitInput(parameters)
+
+    assert parameters["drain"].calls == 6

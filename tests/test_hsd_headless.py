@@ -56,6 +56,8 @@ EXPECTED_COLUMNS = [
     "Aborted",
     "AbortReason",
     "Explored",
+    "Used",
+    "UnusedReason",
     "Decision",
     "DecisionRT",
     "Confidence",
@@ -263,6 +265,8 @@ class TestAbsoluteSession(unittest.TestCase):
         self.assertEqual(list(self.df.Trial), list(range(len(self.df))))
         self.assertTrue((self.df.nDelivered > 0).all())
         self.assertTrue(self.df.DecisionProvided.all())
+        self.assertTrue(self.df.Used.all())
+        self.assertTrue(self.df.UnusedReason.isna().all())
         self.assertTrue((self.df.Axis == "absolute").all())
 
     def test_decisions_are_the_two_labels(self):
@@ -309,22 +313,32 @@ class TestAbsoluteSession(unittest.TestCase):
         self.assertEqual(
             int(last.sum()), int((self.df.nDelivered + self.df.nSkipped).sum())
         )
-        # Beats after the last train belong to no trial.
-        filed = beats[beats.Trial.notna()]
-        self.assertEqual(len(filed), int(self.df.nBeatsSeen.sum()))
-        # The beats polled between trains are kept, not thrown away.
+        # Every beat is filed once, and under a trial once the first has
+        # started: the trains' beats, and those polled after each train,
+        # under the trial that was running.
+        self.assertTrue(beats.r_time.is_unique)
+        unfiled = beats[beats.Trial.isna()]
+        self.assertTrue((unfiled.seen < self.df.StartTrigger.iloc[0]).all())
+        per_trial = beats.groupby("Trial").size()
+        for row in self.df.itertuples():
+            self.assertGreaterEqual(per_trial[row.Trial], row.nBeatsSeen)
+        # The beats polled between trains are kept, not thrown away, and
+        # those after a train are filed with it, with no attempt.
         self.assertGreater(int((beats.status == "between").sum()), 0)
+        self.assertGreater(int(beats.Attempt.isna().sum()), 0)
         for column in ("Trial", "index", "r_time", "target", "onset", "realized"):
             self.assertIn(column, tones.columns)
         played = tones[~tones.skipped.astype(bool)]
         np.testing.assert_allclose(played.onset, played.target, atol=1e-9)
 
     def test_posterior_file_has_one_grid_per_trial(self):
-        """The .npy stacks the posterior after each trial."""
+        """The .npy stacks the posterior after each trial, in single precision."""
         posterior = np.load(self.paths.path("posterior", ext="npy"))
         engine = self.params["engine"]
         self.assertEqual(posterior.shape, (len(self.df), *engine.shape))
-        np.testing.assert_allclose(posterior.reshape(len(self.df), -1).sum(1), 1.0)
+        self.assertEqual(posterior.dtype, np.float32)
+        total = posterior.reshape(len(self.df), -1).sum(1, dtype=np.float64)
+        np.testing.assert_allclose(total, 1.0, rtol=1e-5)
 
     def test_engine_state_is_saved(self):
         """The engine JSON loads and holds one history entry per decision."""
@@ -360,8 +374,10 @@ class TestAbsoluteSession(unittest.TestCase):
 
         with open(self.paths.path("parameters", ext="pickle"), "rb") as handle:
             saved = pickle.load(handle)
-        for key in ("win", "engine", "beatSource", "tonePlayer", "clock"):
+        for key in ("win", "engine", "beatSource", "tonePlayer", "clock", "drain"):
             self.assertNotIn(key, saved)
+        # The beat source's drain is the session's only: it goes with it.
+        self.assertNotIn("drain", self.params)
         self.assertEqual(saved["axis"], "absolute")
 
 
@@ -525,6 +541,8 @@ class TestNoBeats(unittest.TestCase):
             self.assertEqual(len(df), hsd.MAX_EMPTY_TRIALS)
             self.assertTrue((df.nDelivered == 0).all())
             self.assertTrue((df.AbortReason == "no_period").all())
+            self.assertTrue((df.UnusedReason == "no_tone").all())
+            self.assertFalse(df.Used.any())
             self.assertFalse(df.DecisionProvided.any())
             posterior = np.load(paths.path("posterior", ext="npy"))
             self.assertEqual(posterior.shape[0], hsd.MAX_EMPTY_TRIALS)
@@ -643,19 +661,34 @@ class TestRefusedTrains(unittest.TestCase):
         outcome = hsd.trial(params, 0, confidenceRating=True)
         return params, scheduler, outcome, len(params["engine"].history) - n_history
 
-    def test_a_ceiling_after_tones_keeps_the_partial_train(self):
-        """Tones already heard are the stimulus: no second train is played."""
+    def test_a_short_train_is_judged_but_not_used(self):
+        """Two tones of five: asked about and written, but not in the posterior.
+
+        Tones already heard are the stimulus, so no second train is played.
+        """
         partial = scripted_result(
-            200.0, "absolute", n_delivered=2, aborted=True, reason="ceiling"
+            200.0, "absolute", n_delivered=2, aborted=True, reason="timeout"
         )
         params, scheduler, outcome, updates = self.run_trial("absolute", [partial])
         self.assertEqual(len(scheduler.asked), 1)
         self.assertEqual(outcome.quality["nTrains"], 1)
         self.assertEqual(outcome.nDelivered, 2)
-        self.assertTrue(outcome.aborted)
         self.assertTrue(outcome.respProvided)
-        self.assertEqual(updates, 1)
+        self.assertEqual(updates, 0)
+        self.assertFalse(outcome.used)
+        self.assertEqual(outcome.unusedReason, "few_tones")
         self.assertEqual({row["Attempt"] for row in params["tone_rows"]}, {0})
+
+    def test_min_tones_is_enough(self):
+        """Three tones of five reach the posterior, though the train timed out."""
+        partial = scripted_result(
+            200.0, "absolute", n_delivered=3, aborted=True, reason="timeout"
+        )
+        params, scheduler, outcome, updates = self.run_trial("absolute", [partial])
+        self.assertEqual(len(scheduler.asked), 1)
+        self.assertEqual(updates, 1)
+        self.assertTrue(outcome.used)
+        self.assertIsNone(outcome.unusedReason)
 
     def test_a_ceiling_before_any_tone_draws_once_more(self):
         """Nothing heard: one new delay, under the period the train saw."""
@@ -678,6 +711,7 @@ class TestRefusedTrains(unittest.TestCase):
         self.assertEqual(outcome.quality["nTrains"], 2)
         self.assertEqual(outcome.nDelivered, 5)
         self.assertEqual(updates, 1)
+        self.assertTrue(outcome.used)
 
     def test_a_phase_floor_refusal_draws_once_more(self):
         """A floor refusal on the phase axis is drawn again like a ceiling."""
@@ -692,6 +726,45 @@ class TestRefusedTrains(unittest.TestCase):
         self.assertEqual(outcome.quality["nTrains"], 2)
         self.assertEqual(updates, 1)
         self.assertEqual({row["Attempt"] for row in params["tone_rows"]}, {1})
+
+    def test_no_candidate_at_the_first_draw_skips_the_trial(self):
+        """The trial is written with no train, rather than the session crashing."""
+        engine = self.sessions["absolute"]["engine"]
+
+        def no_candidate(*args, **kwargs):
+            raise ValueError("no candidate delay lies inside the allowed range")
+
+        engine.next_delay = no_candidate
+        try:
+            params, scheduler, outcome, updates = self.run_trial("absolute", [])
+        finally:
+            del engine.next_delay
+        self.assertEqual(scheduler.asked, [])
+        self.assertEqual(outcome.quality["nTrains"], 0)
+        self.assertTrue(outcome.aborted)
+        self.assertEqual(outcome.abortReason, "no_candidate")
+        self.assertEqual(outcome.unusedReason, "no_tone")
+        self.assertEqual(updates, 0)
+
+    def test_a_collapsed_posterior_is_logged_and_the_trial_written(self):
+        """FloatingPointError from update leaves the posterior and carries on."""
+        engine = self.sessions["absolute"]["engine"]
+        before = engine.posterior.copy()
+
+        def collapse(*args, **kwargs):
+            raise FloatingPointError("posterior collapsed")
+
+        engine.update = collapse
+        try:
+            complete = scripted_result(200.0, "absolute", n_delivered=5)
+            params, scheduler, outcome, updates = self.run_trial("absolute", [complete])
+        finally:
+            del engine.update
+        self.assertTrue(outcome.respProvided)
+        self.assertFalse(outcome.used)
+        self.assertEqual(outcome.unusedReason, "update_failed")
+        self.assertEqual(updates, 0)
+        np.testing.assert_array_equal(engine.posterior, before)
 
 
 class Stub:

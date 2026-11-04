@@ -11,10 +11,17 @@ Discrimination task (``cardioception.HSD``) use the same code, and
 Some of them read parameter keys that the HRD session defines, most notably
 ``parameters["oxiTask"]`` for the recorder. Each docstring says which, so a
 second task knows what its parameters dictionary has to provide.
+
+The waits that do not flip through :func:`cardioception._present.hold`, and
+so are not reached by the window's per-frame hook, keep the session's
+devices current by calling :func:`drain_hook`: the HRD recorder,
+``parameters["oxiTask"]``, when ``parameters["continuousRecording"]`` is
+true, and ``parameters["drain"]``, an optional callable a task sets for its
+own device (the HSD polls its beat source with it).
 """
 
 import time
-from typing import Callable, Optional, Tuple
+from typing import Any, Callable, List, Optional, Tuple
 
 from ._log import get_logger
 from ._present import accept_press, hold
@@ -23,13 +30,38 @@ from ._screens import text
 logger = get_logger()
 
 
+def drain_hook(parameters: dict) -> Optional[Callable[[], None]]:
+    """What a wait that does not flip should call on every pass, or ``None``.
+
+    ``parameters["oxiTask"].readInWaiting`` when
+    ``parameters["continuousRecording"]`` is true, and
+    ``parameters["drain"]`` when a task has set it, both if both apply.
+    """
+    calls: List[Callable[[], Any]] = []
+    if parameters.get("continuousRecording"):
+        calls.append(parameters["oxiTask"].readInWaiting)
+    if parameters.get("drain") is not None:
+        calls.append(parameters["drain"])
+    if not calls:
+        return None
+    if len(calls) == 1:
+        return calls[0]
+
+    def drain_all() -> None:
+        for call in calls:
+            call()
+
+    return drain_all
+
+
 def waitInput(parameters: dict):
     """Wait for participant input before continue.
 
     Reads ``parameters["device"]``, ``"win"``, ``"startKey"`` (keyboard) or
-    ``"myMouse"`` (mouse), and ``"autopilot"`` when set. With
-    ``parameters["continuousRecording"]`` true it also drains
-    ``parameters["oxiTask"]``, the HRD recorder key, while it waits.
+    ``"myMouse"`` (mouse), and ``"autopilot"`` when set. While it waits it
+    calls :func:`drain_hook`: ``parameters["oxiTask"]``, the HRD recorder key,
+    with ``parameters["continuousRecording"]`` true, and
+    ``parameters["drain"]`` when set.
     """
 
     from psychopy import core, event
@@ -43,20 +75,17 @@ def waitInput(parameters: dict):
     # A break is the longest the task ever waits, and it does not flip, so the
     # per-frame hook does not reach here. Undrained, the driver buffer holds
     # about 10.9 seconds -- 4096 bytes at 5 bytes a packet and 75 Hz -- and a
-    # participant resting for longer loses whatever overflows.
-    drain = (
-        parameters["oxiTask"].readInWaiting
-        if parameters.get("continuousRecording")
-        else None
-    )
+    # participant resting for longer loses whatever overflows. The HSD beat
+    # source has the same problem, through parameters["drain"].
+    on_pass = drain_hook(parameters)
 
     if parameters["device"] == "keyboard":
         # Without this, a key pressed earlier is still buffered and dismisses
         # this screen before it is read.
         event.clearEvents(eventType="keyboard")
         while True:
-            if drain is not None:
-                drain()
+            if on_pass is not None:
+                on_pass()
             keys = event.getKeys()
             if "escape" in keys:
                 logger.warning("User abort")
@@ -72,8 +101,8 @@ def waitInput(parameters: dict):
         # release, then for a press.
         armed = not any(mouse.getPressed())
         while True:
-            if drain is not None:
-                drain()
+            if on_pass is not None:
+                on_pass()
             buttons, armed = accept_press(mouse.getPressed(), armed)
             if any(buttons):
                 break
@@ -96,14 +125,17 @@ def drain_for(parameters: dict, duration: float, *stims) -> None:
     an experimenter is most likely to want to stop.
 
     The recorder is read from ``parameters["oxiTask"]``, the key the HRD
-    session uses for it.
+    session uses for it, and ``parameters["drain"]`` is called too when set.
     """
     from psychopy import core, event
 
     recorder = parameters["oxiTask"]
+    extra = parameters.get("drain")
     clock = core.Clock()
     while clock.getTime() < duration:
         recorder.readInWaiting()
+        if extra is not None:
+            extra()
         for stim in stims:
             stim.draw()
         parameters["win"].flip()
@@ -165,9 +197,10 @@ def confidence_rating(
         Parameters dictionary. Reads ``"device"``, ``"win"``, ``"texts"``
         (``Confidence`` and ``tooLate``), ``"confidenceScale"``,
         ``"minRatingTime"``, ``"maxRatingTime"``, ``"textSize"``, ``"rng"``,
-        ``"myMouse"`` (mouse) and ``"autopilot"`` when set. With
-        ``"continuousRecording"`` true it also drains ``parameters["oxiTask"]``,
-        the HRD recorder key, while the scale is up.
+        ``"myMouse"`` (mouse) and ``"autopilot"`` when set. While the scale
+        is up it calls :func:`drain_hook` on every frame: ``"oxiTask"``, the HRD
+        recorder key, with ``"continuousRecording"`` true, and ``"drain"``
+        when set.
 
     Returns
     -------
@@ -181,11 +214,7 @@ def confidence_rating(
 
     # Both rating loops flip for themselves rather than through hold(), so the
     # window's per-frame hook does not reach either of them.
-    rating_drain = (
-        parameters["oxiTask"].readInWaiting
-        if parameters.get("continuousRecording")
-        else None
-    )
+    rating_drain = drain_hook(parameters)
 
     # Initialise default values
     confidence, confidenceRT = None, None

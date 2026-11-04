@@ -5,7 +5,7 @@ The names of the columns, and their order, are decided in one place:
 :meth:`HSDTrialOutcome.row`. Columns, in order::
 
     Trial, Axis, RequestedDelay, RealizedDelay, RealizedCorrected,
-    nDelivered, nSkipped, Aborted, AbortReason, Explored,
+    nDelivered, nSkipped, Aborted, AbortReason, Explored, Used, UnusedReason,
     Decision, DecisionRT, Confidence, ConfidenceRT, ConfidenceUnit, Device,
     <scale columns: ConfidenceScale, ConfidenceLow, ConfidenceHigh,
      ConfidenceGranularity, ConfidenceLevels, ConfidenceSigned>,
@@ -45,17 +45,24 @@ quantities:
   *anticipated* period: the same period the delay was scheduled with, so it
   is on the scale the engine chose from.
 
-When the heart speeds up or slows down during a train, the two differ. ``PeriodMean`` is seconds.
+``Aborted`` and ``AbortReason`` describe the train: ``"ceiling"`` or
+``"floor"`` for a delay refused before any tone (the task then draws again
+once), ``"no_period"`` for a phase-axis trial with no period known,
+``"no_candidate"`` for a period at which no candidate fits between the floor
+and the ceiling, and ``"timeout"`` for a train that ran out of time, whose
+tones still count.
+A beat skipped within a train is counted in ``nSkipped`` and does not abort
+it. ``Used`` says whether the trial updated the posterior, and
+``UnusedReason`` why not, the first that applies of:
 
-The ``Mu`` and ``Sigma`` summaries come from the posterior conditioned on a
-rise of more than 0.2 across the delays presented (the threshold of
-``DetectionEvidence``): where and how wide the sensation is, given that there
-is one. ``MuConditional`` is True when they were; it is False when the
-posterior mass on a rise was below
-:data:`~cardioception.HSD.psi.MIN_RISE_MASS`, and the summaries are then
-marginal. ``FloorMean`` and ``PeakMean`` are marginal.
-Triggers are clock seconds. The posterior summaries are taken after the
-trial's update.
+- ``"no_tone"``: the train delivered no tone, so nothing was asked;
+- ``"few_tones"``: fewer than ``TaskConfig.minTones`` tones were delivered;
+- ``"no_decision"``: no key was pressed in time;
+- ``"update_failed"``: the posterior could not take the judgement (it had
+  collapsed), and was left as it was.
+
+Analyses should keep the rows with ``Used`` true, which are the trials in
+the engine's history; ``nTrials`` counts them.
 """
 
 from dataclasses import dataclass, field
@@ -90,6 +97,9 @@ class HSDTrialOutcome:
     respProvided: bool
     ratingProvided: bool
     abortReason: Optional[str] = None
+    #: Whether the trial updated the posterior, and why not if it did not.
+    used: bool = False
+    unusedReason: Optional[str] = None
 
     # --- posterior after the update ------------------------------------------
     muMean: Optional[float] = None
@@ -140,6 +150,8 @@ class HSDTrialOutcome:
             "Aborted": self.aborted,
             "AbortReason": self.abortReason,
             "Explored": self.explored,
+            "Used": self.used,
+            "UnusedReason": self.unusedReason,
             "Decision": self.decision,
             "DecisionRT": self.decisionRT,
             "Confidence": self.confidence,
@@ -183,6 +195,21 @@ class HSDTrialOutcome:
             }
         )
         return row
+
+
+def unused_reason(n_delivered: int, min_tones: int, decided: bool) -> Optional[str]:
+    """Why a trial cannot update the posterior, or ``None`` if it can.
+
+    ``"no_tone"``, ``"few_tones"`` (fewer than ``min_tones`` delivered) or
+    ``"no_decision"``, the first that applies.
+    """
+    if n_delivered == 0:
+        return "no_tone"
+    if n_delivered < min_tones:
+        return "few_tones"
+    if not decided:
+        return "no_decision"
+    return None
 
 
 def train_fields(result: TrainResult) -> Dict[str, Any]:

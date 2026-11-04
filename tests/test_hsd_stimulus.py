@@ -10,13 +10,25 @@ import unittest
 
 import numpy as np
 
+from cardioception._log import LOGGER_NAME
 from cardioception._rng import make_rng
 from cardioception.HSD._autopilot import HSDAutopilot
 from cardioception.HSD._constants import LATENCY_BIAS, MIN_DELAY_S
-from cardioception.HSD._outcome import HSDTrialOutcome, posterior_fields, train_fields
-from cardioception.HSD._stimulus import BeatSource, TonePlayer, TrainScheduler
+from cardioception.HSD._outcome import (
+    HSDTrialOutcome,
+    posterior_fields,
+    train_fields,
+    unused_reason,
+)
+from cardioception.HSD._stimulus import (
+    IDLE_SLEEP,
+    BeatSource,
+    TonePlayer,
+    TrainScheduler,
+)
 from cardioception.HSD.config import TaskConfig
 from cardioception.HSD.simulate import Observer
+from cardioception.HSD.task import _file_between
 from cardioception.scales import VAS_0_100
 
 
@@ -31,6 +43,10 @@ class FakeClock:
         value = self.now
         self.now += self.step
         return value
+
+    def sleep(self, seconds):
+        """Sleep on this clock, for the scheduler's idle pause."""
+        self.now += seconds
 
 
 class FakeBeat:
@@ -145,6 +161,7 @@ def setup(
         clock, r_times, period=period, latency=latency, periods=periods
     )
     player = FakePlayer(clock, onset_error=onset_error, **(player_kwargs or {}))
+    kwargs.setdefault("sleep", clock.sleep)
     scheduler = TrainScheduler(source, player, clock, **kwargs)
     return clock, source, player, scheduler
 
@@ -220,12 +237,12 @@ class TestRules(unittest.TestCase):
         self.assertNotIn(BEATS[1] + 0.08, list(player.scheduled.values()))
 
     def test_every_beat_late_ends_after_max_beats(self):
-        """With no beat usable the train gives up after ``n_tones + 3`` beats."""
+        """With no beat usable the train gives up after ``2 * n_tones`` beats."""
         _, _, player, scheduler = setup(BEATS, latency=0.06)
         result = scheduler.run(130.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertFalse(result.aborted)
         self.assertEqual(result.end_reason, "max_beats")
-        self.assertEqual(result.n_skipped, 8)
+        self.assertEqual(result.n_skipped, 10)
         self.assertEqual(result.n_delivered, 0)
         self.assertIsNone(result.realized_mean)
         self.assertIsNone(result.realized_corrected)
@@ -426,13 +443,17 @@ class TestReview(unittest.TestCase):
         self.assertFalse(result.aborted)
 
     def test_top_candidate_survives_a_slightly_early_beat(self):
-        """The drawn ceiling leaves room for the next beat to come 0.6% early."""
+        """The drawn ceiling leaves room for the next beats to come 7% early.
+
+        Respiratory sinus arrhythmia moved the anticipated period by about 7
+        percent within a train on the hardware dry run.
+        """
         config = TaskConfig()
         _, high = config.bounds(0.8)
         top = float(max(d for d in config.candidates() if d <= high))
-        self.assertGreater(top, 0.75 * 0.8 * 0.994 * 1000.0 - 50.0)
-        periods = [0.8 * 0.994] * 10
-        r_times = [1.0 + 0.8 * 0.994 * i for i in range(10)]
+        self.assertGreater(top, 0.75 * 0.8 * 0.93 * 1000.0 - 50.0)
+        periods = [0.8 * 0.93] * 10
+        r_times = [1.0 + 0.8 * 0.93 * i for i in range(10)]
         _, _, _, scheduler = setup(r_times, period=0.8, periods=periods)
         result = scheduler.run(top, "absolute", min_delay_s=config.minDelay)
         self.assertFalse(result.aborted)
@@ -460,39 +481,62 @@ class TestReview(unittest.TestCase):
     def test_absolute_ceiling_is_rounded_down(self):
         """The absolute ceiling never rounds up past the margined bound."""
         config = TaskConfig()
-        # 0.75 * 0.95 of this period is 500.0000006 ms, which would round to
+        # 0.75 * 0.90 of this period is 500.0000006 ms, which would round to
         # nearest as 500.000001.
-        _, high = config.bounds(500.0000006 / 712.5)
+        _, high = config.bounds(500.0000006 / 675.0)
         self.assertEqual(high, 500.0)
 
-    def test_mid_train_ceiling_abort_stops_pending_tones(self):
-        """An abort collects the onset of a tone that played and stops the rest.
+    def test_mid_train_ceiling_skips_the_beat_and_goes_on(self):
+        """A beat whose period trips the ceiling costs one tone, not the train.
 
-        The heart jumps to 0.3 s after two tones are scheduled. The first has
-        played but not yet been reported; the second is still waiting. Both
-        are resolved on abort: an onset for the first, ``no_onset`` for the
-        second, and nothing is left pending on the player.
+        The dry-run case: a 540 ms delay drawn on a 0.8 s period, and the
+        anticipated period drops 12.5 percent to 0.7 s on the third beat, so
+        540 ms is past 0.75 of it. That beat is skipped as ``"ceiling"`` and
+        the next beats complete the train.
         """
-        r_times = [1.0, 2.0, 2.2]
-        periods = [1.0, 1.0, 0.3]
-        latency = lambda i: {0: 0.02, 1: 0.25, 2: 0.06}[i]  # noqa: E731
+        periods = [0.8, 0.8, 0.7, 0.8, 0.8, 0.8, 0.8, 0.8]
+        r_times = [1.0 + 0.8 * i for i in range(len(periods))]
+        _, _, player, scheduler = setup(r_times, period=0.8, periods=periods)
+        result = scheduler.run(540.0, "absolute", min_delay_s=MIN_DELAY_S)
+        self.assertFalse(result.aborted)
+        self.assertEqual(result.end_reason, "complete")
+        self.assertEqual(result.n_delivered, 5)
+        self.assertEqual(result.n_skipped, 1)
+        skipped = [t for t in result.tones if t.skipped]
+        self.assertEqual([t.reason for t in skipped], ["ceiling"])
+        self.assertEqual(skipped[0].r_time, r_times[2])
+        self.assertIsNone(skipped[0].target)
+        self.assertEqual(len(player.scheduled), 5)
+
+    def test_a_ceiling_before_any_tone_still_aborts(self):
+        """Nothing heard yet: the train is refused, for the task to draw again."""
+        periods = [0.7, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]
+        r_times = [1.0 + 0.8 * i for i in range(len(periods))]
+        _, _, player, scheduler = setup(r_times, period=0.8, periods=periods)
+        result = scheduler.run(540.0, "absolute", min_delay_s=MIN_DELAY_S)
+        self.assertTrue(result.aborted)
+        self.assertEqual(result.abort_reason, "ceiling")
+        self.assertEqual(player.scheduled, {})
+
+    def test_an_abort_stops_pending_tones(self):
+        """An abort collects the onsets of tones that played and stops the rest.
+
+        Two tones are scheduled, then the beats stop and the train times out.
+        Both tones have played but neither has been reported; on abort both
+        onsets are collected and nothing is left pending on the player.
+        """
         _, _, player, scheduler = setup(
-            r_times,
-            latency=latency,
-            periods=periods,
-            player_kwargs={"report_delay": 2.0},
+            [1.0, 2.0], player_kwargs={"report_delay": 60.0}
         )
         result = scheduler.run(400.0, "absolute", min_delay_s=MIN_DELAY_S)
         self.assertTrue(result.aborted)
-        self.assertEqual(result.abort_reason, "ceiling")
+        self.assertEqual(result.abort_reason, "timeout")
         self.assertEqual(player.stopped, 1)
         self.assertFalse(player.busy)
         first, second = result.tones
         self.assertAlmostEqual(first.onset, 1.4 - LATENCY_BIAS)
-        self.assertFalse(first.skipped)
-        self.assertEqual(second.reason, "no_onset")
-        self.assertIsNone(second.onset)
-        self.assertEqual(result.n_delivered, 1)
+        self.assertAlmostEqual(second.onset, 2.4 - LATENCY_BIAS)
+        self.assertEqual(result.n_delivered, 2)
 
 
 class TestHooks(unittest.TestCase):
@@ -561,13 +605,85 @@ class TestHooks(unittest.TestCase):
                 self.assertEqual(fields["reason"], "late")
         self.assertEqual(sum(k == "tone_onset" for k, _, _ in markers), 5)
 
-    def test_on_frame_runs_at_most_once_per_scheduled_tone(self):
-        """The frame hook is not called on every loop pass."""
+    def test_on_frame_runs_on_a_timer_without_beats(self):
+        """With no beat coming in, the hook still runs every 50 ms."""
         calls = []
-        _, _, _, scheduler = setup(BEATS, on_frame=lambda: calls.append(1))
+        _, _, _, scheduler = setup([], period=None, on_frame=lambda: calls.append(1))
+        result = scheduler.run(
+            200.0, "absolute", min_delay_s=MIN_DELAY_S, timeout_s=1.0
+        )
+        self.assertEqual(result.abort_reason, "timeout")
+        self.assertGreaterEqual(len(calls), 15)
+        self.assertLessEqual(len(calls), 21)
+
+    def test_on_frame_runs_after_each_tone_and_between_beats(self):
+        """A one-second heart gets a frame after each tone and many between."""
+        clock = FakeClock(now=0.5)
+        times = []
+        source = FakeBeatSource(clock, BEATS, period=1.0)
+        scheduler = TrainScheduler(
+            source,
+            FakePlayer(clock),
+            clock,
+            on_frame=lambda: times.append(clock.now),
+            sleep=clock.sleep,
+        )
         result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
-        self.assertLessEqual(len(calls), result.n_delivered)
-        self.assertGreater(len(calls), 0)
+        self.assertEqual(result.n_delivered, 5)
+        self.assertGreater(len(times), 5 * 15)
+        self.assertLess(max(np.diff(times)), 0.06)
+
+    def test_an_idle_pass_sleeps(self):
+        """Waiting for a beat yields the core instead of spinning."""
+        clock, _, _, scheduler = setup([], period=None)
+        pauses = []
+
+        def sleep(seconds):
+            pauses.append(seconds)
+            clock.sleep(seconds)
+
+        scheduler.sleep = sleep
+        scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S, timeout_s=1.0)
+        self.assertGreater(len(pauses), 100)
+        self.assertEqual(set(pauses), {IDLE_SLEEP})
+
+    def test_escape_ends_a_silent_train_at_once(self):
+        """An exception from the hook, as Escape raises, is not held to the deadline."""
+
+        class Escape(Exception):
+            pass
+
+        def on_frame():
+            if clock.now > 0.7:
+                raise Escape()
+
+        clock, _, _, scheduler = setup([], on_frame=on_frame)
+        with self.assertRaises(Escape):
+            scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
+        self.assertLess(clock.now, 0.8)
+
+    def test_the_status_line_says_no_beats_within_a_second(self):
+        """A source that has gone quiet is flagged on the first status line."""
+        clock, _, _, scheduler = setup([], period=None)
+        scheduler.label = "trial 4"
+        with self.assertLogs(LOGGER_NAME, level="INFO") as logs:
+            scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S, timeout_s=2.5)
+        lines = [
+            r.getMessage() for r in logs.records if "[HSD trial 4]" in r.getMessage()
+        ]
+        self.assertEqual(len(lines), 2)
+        self.assertTrue(all("NO BEATS" in line for line in lines), lines)
+        self.assertIn(" 1.0 s", lines[0])
+
+    def test_the_status_line_is_quiet_with_beats(self):
+        """A one-second heart is never reported as lost."""
+        _, _, _, scheduler = setup(BEATS)
+        with self.assertLogs(LOGGER_NAME, level="INFO") as logs:
+            scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
+        lines = [r.getMessage() for r in logs.records if "[HSD " in r.getMessage()]
+        self.assertGreaterEqual(len(lines), 4)
+        self.assertFalse(any("NO BEATS" in line for line in lines), lines)
+        self.assertIn("HR 60 bpm", lines[-1])
 
     def test_commit_time_from_the_source_is_kept(self):
         """A beat's own commit time is marked, recorded and timed against."""
@@ -585,6 +701,7 @@ class TestHooks(unittest.TestCase):
             FakePlayer(clock),
             clock,
             marker=lambda kind, stamp, **f: markers.append((kind, stamp, f)),
+            sleep=clock.sleep,
         )
         result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
         for beat in result.beats_seen:
@@ -675,7 +792,8 @@ class TestConfig(unittest.TestCase):
         # The floor is the 130 ms physical floor; candidates below it stay in
         # the grid and are left out per trial.
         self.assertEqual(delays[0], 80.0)
-        self.assertEqual(config.bounds(0.8), (130.0, 570.0))
+        # The ceiling: 0.75 of the period, less the 0.10 margin.
+        self.assertEqual(config.bounds(0.8), (130.0, 540.0))
 
     def test_phase_candidates_and_grids(self):
         """Phase: 0.10 to 0.90 by 0.025, ``mu`` 0 to 1 and ``sigma`` in fractions."""
@@ -697,6 +815,14 @@ class TestConfig(unittest.TestCase):
         psi = config.engine(make_rng(0)[0])
         delay, _ = psi.next_delay(low, high)
         self.assertTrue(low <= delay <= high)
+
+    def test_min_tones_lies_between_one_and_n_tones(self):
+        """A trial cannot need more tones than a train plays."""
+        self.assertEqual(TaskConfig().minTones, 3)
+        TaskConfig(nTones=3, minTones=3)
+        for bad in (0, 6):
+            with self.assertRaisesRegex(ValueError, "minTones"):
+                TaskConfig(minTones=bad)
 
     def test_describe_is_json_serializable_and_apply_fills_parameters(self):
         """The manifest entry dumps to JSON; apply copies every field."""
@@ -722,6 +848,8 @@ class TestOutcome(unittest.TestCase):
         "Aborted",
         "AbortReason",
         "Explored",
+        "Used",
+        "UnusedReason",
         "Decision",
         "DecisionRT",
         "Confidence",
@@ -760,6 +888,14 @@ class TestOutcome(unittest.TestCase):
         "RatingEnds",
         "endTrigger",
     ]
+
+    def test_unused_reason(self):
+        """A trial updates the posterior only with minTones tones and a decision."""
+        self.assertEqual(unused_reason(0, 3, False), "no_tone")
+        self.assertEqual(unused_reason(2, 3, True), "few_tones")
+        self.assertEqual(unused_reason(3, 3, False), "no_decision")
+        self.assertIsNone(unused_reason(3, 3, True))
+        self.assertIsNone(unused_reason(5, 3, True))
 
     def test_row_has_a_fixed_column_order(self):
         """The order is the documented one, whatever order context is passed in."""
@@ -847,6 +983,32 @@ class TestObserve(unittest.TestCase):
             b for b in second.beats_seen if b["status"] in ("tone", "skipped")
         )
         self.assertAlmostEqual(first_of_train["rr"], 4.0)
+
+    def test_beats_are_filed_under_the_trial_of_their_markers(self):
+        """Beats after a train are filed with that trial, as they were marked.
+
+        They were polled during its decision and rating, under its markers,
+        so they belong to it rather than to the train that comes next.
+        """
+        clock, source, _, scheduler = setup(BEATS, n_tones=1)
+        parameters = {"scheduler": scheduler, "beat_rows": [], "markerTrial": 3}
+        scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
+        clock.now += 2.0
+        scheduler.observe(source.poll())
+        _file_between(parameters)
+        self.assertEqual(len(parameters["beat_rows"]), 2)
+        for row in parameters["beat_rows"]:
+            self.assertEqual(row["Trial"], 3)
+            self.assertIsNone(row["Attempt"])
+            self.assertEqual(row["status"], "between")
+        # Nothing is left for the next train to take.
+        self.assertEqual(scheduler.take_between(), [])
+        # Before any main trial, or after a practice one, there is no trial.
+        clock.now += 1.0
+        scheduler.observe(source.poll())
+        parameters["markerTrial"] = None
+        _file_between(parameters)
+        self.assertIsNone(parameters["beat_rows"][-1]["Trial"])
 
     def test_take_between_returns_and_clears(self):
         """Beats observed after the last train can still be collected."""

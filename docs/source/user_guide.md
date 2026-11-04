@@ -262,8 +262,8 @@ Results go to `data/sub-<participant>/ses-<session>/run-<timestamp>/` under the 
 |---|---|
 | `*_final.txt` | One row per trial: requested and realized delay, tones delivered and skipped, decision, confidence, the posterior summary after the trial and the clock times |
 | `*_tones.txt` | One row per beat a tone was tried on: R-wave time, target, onset and realized delay |
-| `*_beats.txt` | Every beat detected during the session, including those between trials |
-| `*_posterior.npy` | The posterior after each trial, trials by grid |
+| `*_beats.txt` | Every beat detected during the session, including those between trains, filed under the trial whose markers carry it |
+| `*_posterior.npy` | The posterior after each trial, trials by grid, in single precision (float32) |
 | `*_engine.json` | The engine's state and trial history, enough to re-analyze the session |
 | `manifest.json` | The task, axis, configuration, clock and devices, written before the first trial |
 | `*_behaviour.txt`, `*_parameters.pickle`, `session.log` | The rows written after every trial, the parameters at the end, and the session's log |
@@ -304,9 +304,9 @@ parameters = getParameters(..., config=config)
 | `FloorMean`, `PeakMean` | The posterior means of the floor and the peak of the envelope |
 | `DetectionBF` | The Bayes factor, posterior odds over prior odds, for an envelope that rises by more than 0.2 across the delays presented so far. `DetectionEvidence` is the posterior probability of that rise |
 
-`nDelivered` and `nSkipped` count the tones played and refused on the trial, `Aborted` marks a train that could not be delivered, and `Explored` marks a delay drawn at random rather than by information gain. On the phase axis the two realized columns are different quantities; the docstring of `cardioception.HSD._outcome` explains how.
+`nDelivered` and `nSkipped` count the tones played and refused on the trial, `Aborted` marks a train that could not be delivered, and `Explored` marks a delay drawn at random rather than by information gain. `Used` marks the trials that updated the posterior, and `UnusedReason` says why the others did not: no tone (`no_tone`), fewer than `TaskConfig.minTones` tones, 3 by default (`few_tones`), or no decision (`no_decision`). On the phase axis the two realized columns are different quantities; the docstring of `cardioception.HSD._outcome` explains how.
 
-The posterior columns of the last row are the session's online estimate. As for the HRD, they are a monitoring aid, not an analysis: a later model should be fitted to the trial history, `RealizedCorrected` against `Decision`, which `*_engine.json` also holds.
+The posterior columns of the last row are the session's online estimate. As for the HRD, they are a monitoring aid, not an analysis: a later model should be fitted to the trial history, `RealizedCorrected` against `Decision` on the rows with `Used` true, which `*_engine.json` also holds.
 
 #### Interpreting the posterior
 

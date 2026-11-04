@@ -208,6 +208,15 @@ class TestHSDOverLSL(unittest.TestCase):
         triggers = [m["name"] for m in self.markers if m["kind"] == "trigger"]
         self.assertEqual(triggers.count("TRIAL_START"), N_TRIALS)
 
+    def test_beats_are_filed_under_the_trial_of_their_marker(self):
+        """beats.txt files every marked beat under the trial its marker names."""
+        beats = pd.read_csv(self.params["paths"].path("beats"))
+        filed = {round(b.r_time, 6): b.Trial for b in beats.itertuples()}
+        marked = [m for m in self.markers if m["kind"] == "beat"]
+        self.assertGreater(len(marked), 0)
+        for marker in marked:
+            self.assertEqual(filed[round(marker["r_time"], 6)], marker["trial"])
+
     def test_the_manifest_describes_the_recording(self):
         """The LSL recorder's description reaches the manifest."""
         manifest = json.loads(

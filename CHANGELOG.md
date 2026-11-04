@@ -215,6 +215,30 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - The PAT's wait after the press, for the next R-wave (up to 3 s), keeps
   the window flipping and the frame hook running, and Esc ends it. It used to
   busy-wait with the screen frozen and Esc ignored.
+- An HSD train no longer stops at the first beat whose period puts the tone
+  past the ceiling. That beat is skipped and a later one takes its place, up
+  to `2 * nTones` beats a train, so long delays no longer lose most of their
+  tones to respiratory sinus arrhythmia (three dry-run trials got 2 or 3 of
+  5). `ceilingMargin` widens to 0.10, and a trial with fewer than `minTones`
+  tones (3) is judged and written but does not update the posterior; the new
+  `Used` and `UnusedReason` columns say which trials did.
+- During an HSD train the screen flips and Esc is read every 50 ms whether
+  or not beats arrive. With a silent beat source the screen used to freeze
+  and Esc wait for the train's deadline, 10 s or more. A status line is
+  logged every second and says `NO BEATS` from the first second the source
+  is quiet for 1.5 periods, as the PAT's does.
+- The HSD beat source is polled during the confidence rating and the breaks.
+  The shared rating and wait drained only the HRD recorder, so HSD beats
+  reached the record up to 7 s late after a rating. They now also call
+  `parameters["drain"]` when a task sets it; the HRD leaves it unset.
+- Smaller HSD fixes. A period with no candidate between the floor and the
+  ceiling skips the trial (`AbortReason` `no_candidate`) instead of crashing
+  the session, and so does a collapsed posterior, which is logged and leaves
+  the trial written with `UnusedReason` `update_failed`. The train and the
+  decision loops sleep 1 ms when idle instead of pinning a core. Beats polled
+  after a train are filed in `beats.txt` under that trial, as the marker
+  stream has them, not under the next one. `posterior.npy` is float32, half
+  the size (about 10 MB for 60 trials).
 
 ### Internal
 
