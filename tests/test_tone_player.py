@@ -1,8 +1,10 @@
 # Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """TonePlayer on the real sound card, and the sound it makes.
 
-The live tests skip when PsychToolbox or pylsl is missing, or no audio
-device opens.
+The live tests are marked ``audio`` and run only with ``--run-audio``:
+PsychToolbox plays at the sound card's own volume, whatever the system mixer
+says. They also skip when PsychToolbox or pylsl is missing, or no audio
+device opens. The other tests are silent and always run.
 """
 
 import logging
@@ -169,6 +171,7 @@ def wait_onsets(player, handles, seconds=3.0):
     return found
 
 
+@pytest.mark.audio
 def test_tone_player_onsets(player):
     import pylsl
 
@@ -183,6 +186,7 @@ def test_tone_player_onsets(player):
     assert np.all(np.abs(errors) < 0.005), errors
 
 
+@pytest.mark.audio
 def test_tone_player_stop_all(player):
     import pylsl
 

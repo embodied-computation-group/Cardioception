@@ -219,6 +219,9 @@ code it replaced rather than read over.
   `on_every_frame`, validated triggers, and an autopilot that runs whole
   sessions headless. Its phase arithmetic, scheduling, scoring and data
   columns are unchanged.
+- The live tests of the beat-locked tone player, which play through the
+  sound card at its own volume, are marked `audio` and run only with
+  `pytest --run-audio`, as `blocking` tests run only with `--run-blocking`.
 
 **`responseDecision` returns five values, not six.** The second, a
 `responseTrigger` timestamp, was unpacked by its only caller and never read.
