@@ -204,6 +204,11 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   5). `ceilingMargin` widens to 0.10, and a trial with fewer than `minTones`
   tones (3) is judged and written but does not update the posterior; the new
   `Used` and `UnusedReason` columns say which trials did.
+- During an HSD train the screen flips and Esc is read every 50 ms whether
+  or not beats arrive. With a silent beat source the screen used to freeze
+  and Esc wait for the train's deadline, 10 s or more. A status line is
+  logged every second and says `NO BEATS` from the first second the source
+  is quiet for 1.5 periods, as the PAT's does.
 
 ### Internal
 

@@ -10,6 +10,7 @@ import unittest
 
 import numpy as np
 
+from cardioception._log import LOGGER_NAME
 from cardioception._rng import make_rng
 from cardioception.HSD._autopilot import HSDAutopilot
 from cardioception.HSD._constants import LATENCY_BIAS, MIN_DELAY_S
@@ -593,13 +594,67 @@ class TestHooks(unittest.TestCase):
                 self.assertEqual(fields["reason"], "late")
         self.assertEqual(sum(k == "tone_onset" for k, _, _ in markers), 5)
 
-    def test_on_frame_runs_at_most_once_per_scheduled_tone(self):
-        """The frame hook is not called on every loop pass."""
+    def test_on_frame_runs_on_a_timer_without_beats(self):
+        """With no beat coming in, the hook still runs every 50 ms."""
         calls = []
-        _, _, _, scheduler = setup(BEATS, on_frame=lambda: calls.append(1))
+        _, _, _, scheduler = setup([], period=None, on_frame=lambda: calls.append(1))
+        result = scheduler.run(
+            200.0, "absolute", min_delay_s=MIN_DELAY_S, timeout_s=1.0
+        )
+        self.assertEqual(result.abort_reason, "timeout")
+        self.assertGreaterEqual(len(calls), 15)
+        self.assertLessEqual(len(calls), 21)
+
+    def test_on_frame_runs_after_each_tone_and_between_beats(self):
+        """A one-second heart gets a frame after each tone and many between."""
+        clock = FakeClock(now=0.5)
+        times = []
+        source = FakeBeatSource(clock, BEATS, period=1.0)
+        scheduler = TrainScheduler(
+            source, FakePlayer(clock), clock, on_frame=lambda: times.append(clock.now)
+        )
         result = scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
-        self.assertLessEqual(len(calls), result.n_delivered)
-        self.assertGreater(len(calls), 0)
+        self.assertEqual(result.n_delivered, 5)
+        self.assertGreater(len(times), 5 * 15)
+        self.assertLess(max(np.diff(times)), 0.06)
+
+    def test_escape_ends_a_silent_train_at_once(self):
+        """An exception from the hook, as Escape raises, is not held to the deadline."""
+
+        class Escape(Exception):
+            pass
+
+        def on_frame():
+            if clock.now > 0.7:
+                raise Escape()
+
+        clock, _, _, scheduler = setup([], on_frame=on_frame)
+        with self.assertRaises(Escape):
+            scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
+        self.assertLess(clock.now, 0.8)
+
+    def test_the_status_line_says_no_beats_within_a_second(self):
+        """A source that has gone quiet is flagged on the first status line."""
+        clock, _, _, scheduler = setup([], period=None)
+        scheduler.label = "trial 4"
+        with self.assertLogs(LOGGER_NAME, level="INFO") as logs:
+            scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S, timeout_s=2.5)
+        lines = [
+            r.getMessage() for r in logs.records if "[HSD trial 4]" in r.getMessage()
+        ]
+        self.assertEqual(len(lines), 2)
+        self.assertTrue(all("NO BEATS" in line for line in lines), lines)
+        self.assertIn(" 1.0 s", lines[0])
+
+    def test_the_status_line_is_quiet_with_beats(self):
+        """A one-second heart is never reported as lost."""
+        _, _, _, scheduler = setup(BEATS)
+        with self.assertLogs(LOGGER_NAME, level="INFO") as logs:
+            scheduler.run(200.0, "absolute", min_delay_s=MIN_DELAY_S)
+        lines = [r.getMessage() for r in logs.records if "[HSD " in r.getMessage()]
+        self.assertGreaterEqual(len(lines), 4)
+        self.assertFalse(any("NO BEATS" in line for line in lines), lines)
+        self.assertIn("HR 60 bpm", lines[-1])
 
     def test_commit_time_from_the_source_is_kept(self):
         """A beat's own commit time is marked, recorded and timed against."""

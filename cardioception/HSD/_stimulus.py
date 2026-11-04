@@ -58,6 +58,13 @@ carries ``commit_time`` (when the beat became known: the source's
 ``tone_scheduled`` also carries ``latency``, the time from the beat becoming
 known to the tone being scheduled.
 
+While the train runs, the frame hook (a ``win.flip`` and an Escape check, in
+the task) is called every ``frame_interval`` seconds whatever the beats do,
+and once more right after each tone is scheduled, when the next beat is
+furthest away. An experimenter status line is logged every second, and says
+``NO BEATS`` once no beat has come for 1.5 anticipated periods (at least
+1 s).
+
 The train ends when ``n_tones`` tones have played, after ``max_beats`` beats
 (``2 * n_tones`` by default, so a skipped beat is replaced by a later one),
 or at the deadline. The deadline is ``timeout_s``, or, when the period is
@@ -79,11 +86,27 @@ from typing import (
     runtime_checkable,
 )
 
+from .._log import get_logger
 from ._constants import AUDIO_LEAD, AXES, LATENCY_BIAS, MAX_PERIOD_FRACTION, N_TONES
+
+logger = get_logger()
 
 #: Seconds of float error forgiven in the floor and ceiling checks, so that a
 #: delay drawn exactly on a bound is not refused by rounding.
 TOLERANCE = 1e-9
+
+#: Seconds between calls of the frame hook during a train, whatever the beats
+#: do, so that the screen keeps flipping and Escape is read with no beat
+#: coming in.
+FRAME_INTERVAL = 0.05
+
+#: Seconds between the experimenter's status lines during a train.
+STATUS_INTERVAL = 1.0
+
+#: Seconds without a beat after which the status line says ``NO BEATS``, at
+#: least. With an anticipated period it is 1.5 periods, if that is longer, so
+#: that a slow heart is not reported as lost.
+NO_BEAT_WARNING = 1.0
 
 # -- protocols -----------------------------------------------------------------
 
@@ -283,9 +306,12 @@ class TrainScheduler:
         ``tone_skipped``, with the field names of the PAT dry run. Bind the
         trial number into it if the stream needs one.
     on_frame :
-        Optional callable run once after each loop pass that scheduled a tone,
-        such as a ``win.flip`` wrapper. Called at most once per tone, so the
-        loop is not tied to the screen refresh.
+        Optional callable, such as a ``win.flip`` wrapper that also checks for
+        Escape. Called every ``frame_interval`` seconds during a train,
+        whether or not beats arrive, and right after each tone is scheduled.
+    frame_interval :
+        Seconds between calls of ``on_frame``, at most (give or take one loop
+        pass and the hook's own duration).
     """
 
     def __init__(
@@ -298,6 +324,7 @@ class TrainScheduler:
         latency_bias: float = LATENCY_BIAS,
         marker: Optional[Marker] = None,
         on_frame: Optional[Callable[[], Any]] = None,
+        frame_interval: float = FRAME_INTERVAL,
     ):
         if n_tones < 1:
             raise ValueError("n_tones should be at least 1")
@@ -311,8 +338,13 @@ class TrainScheduler:
         self.latency_bias = float(latency_bias)
         self.marker = marker
         self.on_frame = on_frame
+        self.frame_interval = float(frame_interval)
+        #: Names the train in the status line, such as ``"trial 3"``.
+        self.label = ""
         # Kept across trains so the first beat of a train still has an RR.
         self._last_r: Optional[float] = None
+        # Clock time the last beat was polled, for the status line.
+        self._last_seen: Optional[float] = None
         # Beats observed since the last train, for the next one's record.
         self._between: List[Dict[str, Any]] = []
 
@@ -326,6 +358,7 @@ class TrainScheduler:
         period = beat.period if beat.period is not None else self.source.period
         rr = beat.r_time - self._last_r if self._last_r is not None else None
         self._last_r = beat.r_time
+        self._last_seen = now
         commit = getattr(beat, "commit_time", None)
         seen: Dict[str, Any] = {
             "r_time": beat.r_time,
@@ -436,6 +469,8 @@ class TrainScheduler:
             allowed = max(timeout_s, (max_beats + 1) * start_period + start_delay_s)
         deadline = started + allowed
 
+        last_frame = started
+        next_status = started + STATUS_INTERVAL
         pending: Dict[int, ToneRecord] = {}
         n_beats = 0  # beats that counted towards the train
         n_scheduled = 0  # tones played or still waiting to
@@ -517,8 +552,18 @@ class TrainScheduler:
 
             # A tone with no onset did not play: free its place in the train.
             n_scheduled -= self._collect(pending)
-            if scheduled_now and self.on_frame is not None:
+            # On a timer, so that a train with no beats coming in still
+            # flips and reads Escape; and right after a tone is scheduled,
+            # when the next beat is furthest away.
+            now = self.clock()
+            frame_due = now - last_frame >= self.frame_interval
+            if self.on_frame is not None and (scheduled_now or frame_due):
                 self.on_frame()
+                last_frame = self.clock()
+            if now >= next_status:
+                n_skipped = sum(t.skipped for t in result.tones)
+                self._status(now, started, n_scheduled, n_skipped)
+                next_status = now + STATUS_INTERVAL
 
             if abort is not None:
                 break
@@ -533,6 +578,21 @@ class TrainScheduler:
         return self._finish(result, pending, None, aborted=False)
 
     # -- internals -------------------------------------------------------------
+
+    def _status(self, now: float, started: float, n_scheduled: int, n_skipped: int):
+        """Log one status line for the experimenter, flagging a silent source."""
+        period = self.source.period
+        hr = f"{60.0 / period:.0f}" if period else "--"
+        line = (
+            f"  [HSD {self.label}] {now - started:4.1f} s | HR {hr} bpm"
+            f" | tones {n_scheduled}/{self.n_tones}, skipped {n_skipped}"
+        )
+        since = self._last_seen if self._last_seen is not None else started
+        silent = now - since
+        if silent >= max(NO_BEAT_WARNING, 1.5 * period if period else 0.0):
+            logger.warning(f"{line} | NO BEATS (check the ECG) FOR {silent:.0f} s")
+        else:
+            logger.info(line)
 
     def _skip(
         self,

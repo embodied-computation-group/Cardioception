@@ -328,6 +328,7 @@ def trial(
     scheduler = _scheduler(parameters)
     # Set now, so the beats observed before the train are marked with it.
     scheduler.marker = mark
+    scheduler.label = f"{'practice ' if practice else 'trial '}{nTrial}"
 
     logger.info(f"Starting trial {nTrial}{' (practice)' if practice else ''}")
     win.mouseVisible = False
@@ -377,8 +378,8 @@ def trial(
             _check_escape(parameters)
 
         scheduler.on_frame = on_frame
-        # The window flips once per tone at most during the train, by design,
-        # so those intervals are not dropped frames.
+        # The scheduler flips every 50 ms or so during the train, not on every
+        # refresh, by design, so those intervals are not dropped frames.
         win.recordFrameIntervals = False
         _trigger(parameters, Trigger.TRAIN_START, "trainStart", mark)
         logger.info(f"... train at {delay:g} ({config.axis}).")
