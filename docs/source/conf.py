@@ -64,6 +64,7 @@ extensions = [
     "sphinx_design",
     "sphinx_sitemap",
     "sphinxext.opengraph",
+    "sphinx_reredirects",
 ]
 
 bibtex_bibfiles = ['refs.bib']
@@ -203,6 +204,32 @@ ogp_social_cards = {
     "enable": True,
     "site_url": "the-ecg.org/Cardioception",
     "line_color": "#1f3352",
+}
+
+
+# -- Redirects from the old flat layout --------------------------------------
+
+# The pages moved into getting-started/, tasks/ and reference/ in the 1.0
+# restructure. These stubs keep the old URLs, which the README on PyPI, papers
+# and the workshop notebooks link to, landing on the new pages. A redirect
+# drops the #fragment, so links in this repository point at the new pages
+# directly. user_guide.md was dissolved and measuring.md split, so each goes
+# to the page that took most of it. Targets are relative to the old page.
+redirects = {
+    "installation": "getting-started/installation.html",
+    "user_guide": "getting-started/running-a-session.html",
+    "tasks": "tasks/index.html",
+    "measuring": "tasks/hrd/theory.html",
+    "pat": "tasks/pat.html",
+    "hsd_design": "tasks/hsd/design.html",
+    "api": "reference/api.html",
+    "cite": "reference/cite.html",
+    "references": "reference/references.html",
+    "tutorials/index": "../tasks/hrd/tutorials/index.html",
+    "tutorials/inspecting-data": "../tasks/hrd/tutorials/inspecting-data.html",
+    "tutorials/psychophysics": "../tasks/hrd/tutorials/psychophysics.html",
+    "tutorials/hierarchical": "../tasks/hrd/tutorials/hierarchical.html",
+    "tutorials/metacognition": "../tasks/hrd/tutorials/metacognition.html",
 }
 
 

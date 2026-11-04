@@ -25,6 +25,10 @@ furo==2023.3.27
 sphinx-sitemap==2.6.0
 sphinxext-opengraph==0.9.1
 
+# Redirect stubs for the pages moved in the 1.0 restructure. 0.1.4 is the last
+# release without a Sphinx floor: 0.1.5 requires Sphinx 7.1.
+sphinx-reredirects==0.1.4
+
 # Visualization (compatible versions)
 graphviz
 
