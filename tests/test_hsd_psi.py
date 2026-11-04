@@ -8,7 +8,8 @@ import unittest
 import numpy as np
 
 from cardioception._rng import make_rng
-from cardioception.HSD.psi import PARAMETERS, SynchronyPsi, gaussian_envelope
+from cardioception.HSD.config import TaskConfig
+from cardioception.HSD.psi import PARAMETERS, RATES, SynchronyPsi, gaussian_envelope
 from cardioception.HSD.simulate import (
     DEFAULT_DELAYS,
     Observer,
@@ -238,23 +239,106 @@ class TestRecovery(unittest.TestCase):
     def test_detection_bayes_factor_starts_at_one(self):
         """The Bayes factor removes the prior, so before any data it is 1.
 
-        The posterior mass is not: 33 of the 36 default (floor, peak) pairs
-        rise by more than 0.2, so detection_evidence starts at 0.92.
+        The posterior mass is not. On the default grids over the candidate
+        range, 0 to 600 ms, about 0.57 of the prior rises by more than 0.2:
+        an honest prior, near even, where the old floor and peak grids put
+        0.92 on a rise because they could not express most flat responders.
         """
         psi = SynchronyPsi(DEFAULT_DELAYS)
-        self.assertAlmostEqual(psi.detection_evidence(), 33 / 36, places=6)
+        self.assertGreater(psi.detection_evidence(), 0.45)
+        self.assertLess(psi.detection_evidence(), 0.6)
         self.assertAlmostEqual(psi.detection_bayes_factor(), 1.0, places=9)
         # No grid point rises by more than 0.2: there is nothing to compare,
         # and the answer must not read as evidence for detection.
         flat = SynchronyPsi(DEFAULT_DELAYS, floor=[0.4], peak=[0.5])
         self.assertTrue(math.isnan(flat.detection_bayes_factor()))
 
+    def test_every_flat_rate_is_on_the_grid(self):
+        """A flat responder at any rate from 0.03 to 0.97 is a grid point
+        (peak equal to floor) with prior mass, so a biased non-detector does
+        not have to be explained as a rise."""
+        psi = SynchronyPsi(DEFAULT_DELAYS)
+        self.assertEqual(psi.grids["floor"].tolist(), RATES.tolist())
+        self.assertEqual(psi.grids["peak"].tolist(), RATES.tolist())
+        self.assertLessEqual(RATES.min(), 0.03)
+        self.assertGreaterEqual(RATES.max(), 0.97)
+        for rate in RATES:
+            flat = (psi.theta["floor"] == rate) & (psi.theta["peak"] == rate)
+            self.assertGreater(psi.prior[flat].sum(), 0.0)
+            # A flat envelope never rises, wherever mu and sigma sit.
+            self.assertTrue(np.all(psi.visible_rise()[flat] < 1e-12))
+
+    def test_a_rise_outside_the_presented_range_is_not_a_rise(self):
+        """A bump the task cannot present counts as flat.
+
+        Over 140 to 500 ms, a narrow bump at 0 or 600 ms rises by almost
+        nothing, whatever its peak; the same bump at 300 ms rises by the
+        whole of peak minus floor. Without a fixed range the rise is measured
+        over the delays presented so far.
+        """
+        psi = SynchronyPsi(DEFAULT_DELAYS, rise_range=(140.0, 500.0))
+        rise = psi.visible_rise()
+        point = (
+            (psi.theta["floor"] == 0.03)
+            & (psi.theta["peak"] == 0.97)
+            & np.isclose(psi.theta["sigma"], psi.grids["sigma"][0])
+        )
+        for mu, expected in ((0.0, 0.0), (600.0, 0.0), (300.0, 0.94)):
+            with self.subTest(mu=mu):
+                at = point & (psi.theta["mu"] == mu)
+                self.assertAlmostEqual(float(rise[at][0]), expected, delta=1e-4)
+        self.assertEqual(psi.state()["rise_range"], [140.0, 500.0])
+        free = SynchronyPsi(DEFAULT_DELAYS)
+        self.assertEqual(free.rise_range(), (0.0, 600.0))
+        free.update(200.0, True)
+        self.assertEqual(free.rise_range(), (0.0, 600.0))
+        free.update(460.0, False)
+        self.assertEqual(free.rise_range(), (200.0, 460.0))
+        for bad in ((500.0, 140.0), (0.0, float("inf"))):
+            with self.assertRaises(ValueError):
+                SynchronyPsi(DEFAULT_DELAYS, rise_range=bad)
+
+    def test_flat_responders_do_not_look_like_detectors(self):
+        """Seeds 0 to 2, 60 trials of the task's own configuration.
+
+        Bounds 130 to 513 ms (a 0.72 s heart period), explore 0.1. Answering
+        always "yes", always "no", or at a flat 0.1 or 0.9, the log10
+        detection Bayes factor must be at most 0: biased non-detectors used
+        to reach +3 to +10, because the old grids could express a flat rate
+        only from about 0.3 to 0.6. A detector (mu 250, sigma 50, floor 0.1,
+        peak 0.9) must be clearly positive. Seeds 0 to 7 gave -2.0 (all no),
+        -4.3 (all yes), -1.5 to -0.7 (0.1), -3.2 to -0.5 (0.9) and +1.9 to
+        +3.2 (the detector).
+        """
+        config = TaskConfig()
+        low, high = config.bounds(0.72)
+        nan = float("nan")
+        cases = {
+            "all no": (Observer(nan, nan, 0.0, 0.0), None, 0.0),
+            "all yes": (Observer(nan, nan, 1.0, 1.0), None, 0.0),
+            "flat 0.1": (Observer(nan, nan, 0.1, 0.1), None, 0.0),
+            "flat 0.9": (Observer(nan, nan, 0.9, 0.9), None, 0.0),
+            "detector": (Observer(250.0, 50.0, 0.1, 0.9), 1.0, None),
+        }
+        for name, (observer, above, below) in cases.items():
+            for seed in range(3):
+                with self.subTest(observer=name, seed=seed):
+                    rng = np.random.default_rng(seed)
+                    psi = config.engine(rng=rng)
+                    for _ in range(60):
+                        delay, explored = psi.next_delay(low, high)
+                        psi.update(delay, observer.respond(delay, rng), explored)
+                    log_bf = np.log10(psi.detection_bayes_factor())
+                    if above is not None:
+                        self.assertGreater(log_bf, above)
+                    if below is not None:
+                        self.assertLessEqual(log_bf, below)
+
     def test_non_detector_gives_a_bayes_factor_below_one(self):
         """Seeds 1 to 5: a flat 0.4 responder favours no rise after 80 trials.
 
         log10 of the detection Bayes factor must be below 0 for every seed,
-        so the check is on the procedure rather than on one lucky draw. At the
-        80 ms floor seeds 0 to 12 gave log10 values from -1.30 to -0.09.
+        so the check is on the procedure rather than on one lucky draw.
         """
         observer = Observer(float("nan"), float("nan"), 0.4, 0.4)
         for seed in range(1, 6):

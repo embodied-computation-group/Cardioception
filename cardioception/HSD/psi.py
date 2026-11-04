@@ -19,8 +19,11 @@ as a Gaussian bump on a floor::
 
 ``mu`` is the temporal location of the sensation relative to the R-wave,
 ``sigma`` its width, ``floor`` the rate of "yes" far from the sensation (lapses
-towards "yes", and the whole response profile of a non-detector), and ``peak``
-the rate of "yes" at the sensation (one minus the lapse towards "no").
+towards "yes"), and ``peak`` the rate of "yes" at the sensation (one minus the
+lapse towards "no"). The floor and the peak share one grid, so ``peak ==
+floor`` is on it: a flat responder, who answers "yes" at the same rate at
+every delay, is expressible at any rate from 0.03 to 0.97 and does not have
+to be explained as a rise.
 
 The stimulus axis need not be absolute delay: cardiac phase (the delay as a
 fraction of the anticipated interbeat interval) is the same engine with a
@@ -41,6 +44,10 @@ PARAMETERS: Tuple[str, ...] = ("mu", "sigma", "floor", "peak")
 
 Envelope = Callable[..., np.ndarray]
 Values = Union[Sequence[float], np.ndarray]
+
+#: The response rates shared by the ``floor`` and ``peak`` grids: finer near 0
+#: and 1, where lapse rates sit, and spanning any flat responder.
+RATES = np.array([0.03, 0.1, 0.2, 0.35, 0.5, 0.65, 0.8, 0.9, 0.97])
 
 
 def gaussian_envelope(
@@ -67,12 +74,16 @@ def default_grids(
     median intervals on the method of constant stimuli ran from 152 to 373 ms
     (Brener and Ring, 2016). The grids cover those with room to spare, because
     the point of estimating the location is not to assume it.
+
+    ``floor`` and ``peak`` share :data:`RATES`, so every flat response rate
+    from 0.03 to 0.97 is a grid point (``peak == floor``), whatever the bias
+    of the responder. The pairs with ``peak < floor`` get no prior mass.
     """
     return {
         "mu": np.arange(0.0, max_delay + mu_step / 2, mu_step),
         "sigma": np.geomspace(20.0, 300.0, n_sigma),
-        "floor": np.array([0.0, 0.05, 0.1, 0.2, 0.3, 0.4]),
-        "peak": np.array([0.5, 0.6, 0.7, 0.8, 0.9, 0.97]),
+        "floor": RATES.copy(),
+        "peak": RATES.copy(),
     }
 
 
@@ -114,6 +125,11 @@ class SynchronyPsi:
         :func:`gaussian_envelope`.
     rng
         Generator used for tie breaking and exploration trials.
+    rise_range
+        ``(low, high)``, the delays over which :meth:`detection_evidence`
+        and :meth:`detection_bayes_factor` measure the rise of the envelope.
+        ``None`` measures it over the delays presented so far; see
+        :meth:`rise_range`.
     """
 
     def __init__(
@@ -128,6 +144,7 @@ class SynchronyPsi:
         explore: float = 0.0,
         envelope: Envelope = gaussian_envelope,
         rng: Optional[np.random.Generator] = None,
+        rise_range: Optional[Tuple[float, float]] = None,
     ) -> None:
         self.delays = np.asarray(delays, dtype=float)
         if self.delays.ndim != 1 or self.delays.size == 0:
@@ -171,8 +188,9 @@ class SynchronyPsi:
             name: m.reshape(-1) for name, m in zip(PARAMETERS, mesh)
         }
         # A peak below the floor would be an inverted envelope. Give those
-        # grid points zero prior mass rather than refusing the grid, so a
-        # floor of 0.4 and a peak of 0.5 (a weak detector) stays allowed.
+        # grid points zero prior mass rather than refusing the grid, so the
+        # floor and the peak can share one grid. A peak equal to the floor is
+        # a flat responder.
         valid = self.theta["peak"] >= self.theta["floor"]
 
         # P(yes | delay, theta) for every candidate delay: (n_delays, n_theta).
@@ -196,6 +214,14 @@ class SynchronyPsi:
         self.prior = full / full.sum()
         self.posterior = self.prior.copy()
         self.history: List[Tuple[float, int, bool]] = []
+        span: Optional[Tuple[float, float]] = None
+        if rise_range is not None:
+            low, high = (float(v) for v in rise_range)
+            if not (np.isfinite(low) and np.isfinite(high) and low < high):
+                raise ValueError("rise_range must be finite, with low < high")
+            span = (low, high)
+        self._rise_range = span
+        self._rise_cache: Optional[Tuple[Tuple[float, float], np.ndarray]] = None
 
     # ------------------------------------------------------------------ model
 
@@ -270,10 +296,12 @@ class SynchronyPsi:
     def update(self, delay: float, response: bool, explored: bool = False) -> None:
         """Condition the posterior on one judgement.
 
-        ``delay`` is the delay actually realized, in ms, which need not be one
-        of the candidates: the likelihood is recomputed from the envelope, so
-        the posterior reflects what the participant heard, not what was asked
-        for.
+        ``delay`` is the delay the trial is credited with, in engine units,
+        which need not be one of the candidates: the likelihood is recomputed
+        from the envelope at that value. The task passes the realized delay
+        its scheduler reports, which differs from the request only when a
+        tone started late. It is not a measurement of what the participant
+        heard (see :mod:`cardioception.HSD._outcome`).
         """
         delay = float(delay)
         if not np.isfinite(delay):
@@ -340,34 +368,82 @@ class SynchronyPsi:
         """True once the credible interval for ``name`` is at most ``width``."""
         return self.ci_width(name, ci) <= width
 
+    def rise_range(self) -> Tuple[float, float]:
+        """The delay range over which the envelope's rise is measured.
+
+        ``rise_range`` if one was given to the constructor. Otherwise the
+        range of the delays the posterior has been updated with, which is
+        what the task could present to this participant: the latency floor,
+        the ceiling set by their heart period, and any late tone. Before two
+        different delays have been presented it is the candidate range.
+        """
+        if self._rise_range is not None:
+            return self._rise_range
+        presented = [h[0] for h in self.history]
+        if presented and min(presented) < max(presented):
+            return float(min(presented)), float(max(presented))
+        return float(self.delays.min()), float(self.delays.max())
+
+    def visible_rise(self) -> np.ndarray:
+        """Rise of the envelope inside :meth:`rise_range`, per grid point.
+
+        The largest minus the smallest ``P(yes | d)`` over the range,
+        evaluated at both ends and at every ``mu`` grid value and candidate
+        delay inside. For the Gaussian envelope that is exact: the maximum
+        is at ``mu`` or at an end, the minimum at an end. So a bump whose
+        ``mu`` lies outside what the task can present, and whose flank does
+        not reach into it, rises by about 0 here however high its peak sits
+        above its floor, and a very wide ``sigma`` rises only by the part of
+        the bump the range covers. Cached until the range changes.
+        """
+        lo, hi = self.rise_range()
+        if self._rise_cache is not None and self._rise_cache[0] == (lo, hi):
+            return self._rise_cache[1]
+        inside = np.concatenate([self.grids["mu"], self.delays])
+        inside = inside[(inside > lo) & (inside < hi)]
+        points = np.unique(np.concatenate([[lo, hi], inside]))
+        top = np.full(self.posterior.size, -np.inf)
+        bottom = np.full(self.posterior.size, np.inf)
+        for d in points:
+            p = self._p_yes(d)
+            np.maximum(top, p, out=top)
+            np.minimum(bottom, p, out=bottom)
+        rise = top - bottom
+        self._rise_cache = ((lo, hi), rise)
+        return rise
+
     def _rises(self, rise: float) -> np.ndarray:
-        """Grid points whose envelope rises by more than ``rise``."""
-        # The tolerance makes the boundary explicit: on the default grids a
-        # difference of 0.2 computes as 0.2 or as 0.19999999999999996
-        # depending on the pair, and both should count as "not above".
-        return (self.theta["peak"] - self.theta["floor"]) > rise + 1e-9
+        """Grid points whose envelope rises by more than ``rise`` in range."""
+        # The tolerance makes the boundary explicit: a rise of exactly 0.2
+        # can compute as 0.2 or as 0.19999999999999996 depending on the
+        # pair, and both should count as "not above".
+        return self.visible_rise() > rise + 1e-9
 
     def detection_evidence(self, rise: float = 0.2) -> float:
-        """Posterior probability that the envelope rises above its floor.
+        """Posterior probability that the envelope rises inside the range.
 
-        A non-detector answers at a rate that does not depend on delay. On the
-        grid that is a peak equal to the floor, which is never exactly present,
-        so the evidence is the posterior mass with ``peak - floor`` above
-        ``rise``. It is a sanity check, not a classification. Its prior value
-        is not 0.5 (about 0.92 on the default grids), so read it against
-        :meth:`detection_bayes_factor`, which removes the prior.
+        A non-detector answers at a rate that does not depend on delay. On
+        the grid that is a peak equal to the floor, at any of the shared
+        rates, or a bump that does not reach into the delays presented
+        (:meth:`visible_rise`). The evidence is the posterior mass on a rise
+        of more than ``rise`` inside :meth:`rise_range`. It is a sanity
+        check, not a classification. Its prior value depends on the range:
+        on the default grids it is about 0.57 over 0 to 600 ms and 0.47 over
+        140 to 500 ms. Read it against :meth:`detection_bayes_factor`, which
+        removes the prior.
         """
         return float(self.posterior[self._rises(rise)].sum())
 
     def detection_bayes_factor(self, rise: float = 0.2) -> float:
         """Bayes factor for a rise of more than ``rise`` against a flatter one.
 
-        The posterior odds of ``peak - floor > rise`` divided by its prior
+        The posterior odds of a rise above ``rise`` inside
+        :meth:`rise_range` (see :meth:`visible_rise`) divided by its prior
         odds, so values above 1 mean the data favour an envelope that rises
-        and values below 1 favour a (nearly) flat responder, whatever the
-        grid puts in the prior. NaN if the prior gives either side no mass:
-        the grid then cannot express the comparison, and the data cannot move
-        odds that are fixed at zero or infinity.
+        across the delays presented and values below 1 favour a (nearly)
+        flat responder, at whatever rate they answer. NaN if the prior gives
+        either side no mass: the grid then cannot express the comparison,
+        and the data cannot move odds that are fixed at zero or infinity.
         """
         rises = self._rises(rise)
         prior_yes = float(self.prior[rises].sum())
@@ -395,6 +471,7 @@ class SynchronyPsi:
             "grids": {k: v.tolist() for k, v in self.grids.items()},
             "targets": list(self.targets),
             "explore": self.explore,
+            "rise_range": list(self.rise_range()),
             "posterior": self.posterior.reshape(self.shape).tolist(),
             "history": [list(h) for h in self.history],
         }
