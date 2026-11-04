@@ -90,11 +90,11 @@ this page, because we could not open the papers to check them.
 The design does not depend on either claim.
 ```
 
-## Relation to the phase adjustment task
+## Relation to the Phase Adjustment Task
 
-The ECG-based phase adjustment task (PAT-ECG) of Hodgetts and colleagues
+The ECG-based Phase Adjustment Task (PAT-ECG) of Hodgetts and colleagues
 {cite:p}`2026:hodgetts` is the closest current method. It descends from the
-smartphone phase adjustment task {cite:p}`2021:plans`. In the PAT-ECG,
+smartphone Phase Adjustment Task {cite:p}`2021:plans`. In the PAT-ECG,
 91 participants completed 28 trials in about 30 minutes, turning a dial until
 tones felt synchronous with their heartbeat. Consistency of the chosen delays
 was scored as the mean resultant length and tested against a Monte Carlo null;
@@ -116,7 +116,7 @@ psychophysical method.
 | Lapses and bias | Not modelled; confidence weighting offered instead | Floor and peak parameters absorb lapses, and are marginalized out |
 | Stopping | Fixed 28 trials, justified by simulation (15 to 20 enough for classification) | Credible-interval width on `mu`, with a maximum |
 
-The phase adjustment task was built for smartphone photoplethysmography,
+The Phase Adjustment Task was built for smartphone photoplethysmography,
 where the participant's own exploration replaces a controlled stimulus
 schedule and a consistency score needs no psychometric model. That choice has
 costs. Adjustment mixes perception with search strategy: a participant can be

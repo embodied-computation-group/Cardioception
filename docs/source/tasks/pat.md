@@ -1,13 +1,13 @@
 ---
 myst:
   html_meta:
-    description: "The phase adjustment task (PAT) in Cardioception: an ECG-triggered heartbeat synchrony task over LSL, its output files, and how to score phase consistency."
+    description: "The Phase Adjustment Task (PAT) in Cardioception: an ECG-triggered heartbeat synchrony task over LSL, its output files, and how to score phase consistency."
     keywords: "phase adjustment task, PAT, PAT-ECG, heartbeat perception, cardiac interoception, mean resultant length, ECG, LSL, cardioception"
 ---
 
-# Phase adjustment task
+# Phase Adjustment Task
 
-The phase adjustment task (PAT) {cite:p}`2021:plans` measures how consistently a person can place a tone at the same point of their own cardiac cycle. Participants hear one tone per heartbeat. They turn a dial that moves the tone earlier or later after each heartbeat until tone and heartbeat feel simultaneous, then press space to lock in their choice. There is no correct answer on a single trial: what is scored is whether the choices cluster at one phase of the cycle across trials, more than they would by chance.
+The Phase Adjustment Task (PAT) {cite:p}`2021:plans` measures how consistently a person can place a tone at the same point of their own cardiac cycle. Participants hear one tone per heartbeat. They turn a dial that moves the tone earlier or later after each heartbeat until tone and heartbeat feel simultaneous, then press space to lock in their choice. There is no correct answer on a single trial: what is scored is whether the choices cluster at one phase of the cycle across trials, more than they would by chance.
 
 Cardioception's version follows the ECG-based implementation of {cite:t}`2026:hodgetts` (PAT-ECG), which triggers the tones from the R-wave of the electrocardiogram rather than from a finger pulse, adds an online relative-delay (phase) mode and an exteroceptive control task, and scores every participant on a grid of eight consistency measures. The PAT 2.0 refinements of {cite:t}`2026:palmer` provide the fixed-mapping score and the Monte Carlo thresholds.
 

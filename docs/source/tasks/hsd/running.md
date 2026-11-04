@@ -80,7 +80,7 @@ run(parameters, confidenceRating=True, runTutorial=True)
 ```
 
 ```{important}
-With `setup="behavioral"` the beats are found online in the ECG by `cardioception.devices.beat_source.LSLBeatSource`, and the tones are scheduled on the audio device by `cardioception.devices.tone_player.TonePlayer` (PsychPortAudio, latency class 1). Both are shared with the phase adjustment task. A script can pass its own `beat_source=` and `tone_player=` to `getParameters` instead, which is what the headless tests do.
+With `setup="behavioral"` the beats are found online in the ECG by `cardioception.devices.beat_source.LSLBeatSource`, and the tones are scheduled on the audio device by `cardioception.devices.tone_player.TonePlayer` (PsychPortAudio, latency class 1). Both are shared with the Phase Adjustment Task. A script can pass its own `beat_source=` and `tone_player=` to `getParameters` instead, which is what the headless tests do.
 ```
 
 ## What a session saves
@@ -97,7 +97,7 @@ Results go to `data/sub-<participant>/ses-<session>/run-<timestamp>/` under the 
 | `manifest.json` | The task, axis, configuration, clock and devices, written before the first trial |
 | `*_behaviour.txt`, `*_parameters.pickle`, `session.log` | The rows written after every trial, the parameters at the end, and the session's log |
 
-The run directory holds no ECG. The beat source is the only reader of the LSL stream, so the task keeps no copy of the signal: the ECG is in the LabRecorder file. The HSD writes no trigger codes into a `Channel_0` as the HRD does. Its triggers go to the `HSD` marker stream as JSON instead, one string per marker (for example `{"kind": "trigger", "name": "TRIAL_START", "code": 1, "trial": 0}`), together with a marker for every beat, every tone scheduled, played or skipped, and every decision and rating. The beat and tone markers use the field names of the phase adjustment task's dry run.
+The run directory holds no ECG. The beat source is the only reader of the LSL stream, so the task keeps no copy of the signal: the ECG is in the LabRecorder file. The HSD writes no trigger codes into a `Channel_0` as the HRD does. Its triggers go to the `HSD` marker stream as JSON instead, one string per marker (for example `{"kind": "trigger", "name": "TRIAL_START", "code": 1, "trial": 0}`), together with a marker for every beat, every tone scheduled, played or skipped, and every decision and rating. The beat and tone markers use the field names of the Phase Adjustment Task's dry run.
 
 ## The latency bias and the 130 ms floor
 
