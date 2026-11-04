@@ -10,25 +10,46 @@ the estimate or starve the tails of data (García-Pérez, 2014)?
 Simulated observers answer "synchronous" with the probability given by an
 envelope over delay. Detectors have a Gaussian envelope of the model's own
 form; asymmetric observers have a right-hand width twice the left-hand one,
-so the fitted model is misspecified; non-detectors answer at a flat rate.
-Every method runs for the same number of trials and records its posterior
-after every trial, so accuracy can be read off at any trial count.
+so the fitted model is misspecified; non-detectors answer at a flat rate,
+from always "no" to always "yes". Every method runs for the same number of
+trials and records its posterior after every trial, so accuracy can be read
+off at any trial count.
 
-Run from the repository root::
+By default the study simulates the task as it runs, not an ideal one:
+
+- ``--min-delay`` (default 130 ms) is the shortest delay the adaptive
+  methods may choose, the task's ``TaskConfig.minDelay``. On the 20 ms grid
+  the shortest presented is 140 ms.
+- ``--period LOW HIGH`` (default 0.8 1.1 s): each simulated participant has a
+  resting heart period drawn uniformly from this range, the same for every
+  method, and the adaptive methods take their ceiling from
+  :meth:`TaskConfig.bounds <cardioception.HSD.config.TaskConfig.bounds>` at
+  that period, about 0.71 of it. ``--no-ceiling`` removes it.
+- ``--jitter-sd`` (default 26 ms) adds Gaussian noise to the delay the
+  observer responds to, while the engine is updated with the nominal one.
+  The stamped R-wave the task times from jitters by about that much on the
+  test desktop's Bluetooth link, and by about 6 ms on the lab PC. One draw per
+  trial, which is pessimistic if the five tones of a train average out.
+- ``--train-loss`` (default 0.07) is the probability that a trial yields no
+  update, as when no tone of a train can be delivered. The trial still counts
+  towards the trial number. The dry run lost 4 of 60 trains.
+
+MCS keeps its published levels of 0 to 500 ms, as the historical comparator,
+whatever ``--min-delay`` and the ceiling say; jitter and train loss apply to
+it too. Run from the repository root::
 
     python -m cardioception.HSD.simulate --out results/hsd --reps 10
 
 ``--processes`` sets the worker count (default one fewer than the CPUs),
 ``--trials`` the trials per run (default 120), ``--methods`` a subset of
-:data:`METHODS`, ``--min-delay`` the shortest delay the adaptive methods may
-choose (default 80 ms: on the PLUX ECG over LSL chain a beat is known 20 ms
-median, 31 ms p95, after the R-wave, and the audio needs a 50 ms scheduling
-lead). MCS keeps its published levels of 0 to 500 ms, as the historical
-comparator, whatever ``--min-delay`` says. The script writes ``trials.csv`` (one row per trial per run),
-``summary.csv`` (accuracy per method and trial count), ``delays.csv`` (how
-often each delay was presented), ``figure.png`` and ``table.md``. Each run is
-seeded from the study seed, the observer index, the method name and the rep,
-so results do not depend on how the runs are scheduled across processes.
+:data:`METHODS`. The script writes ``trials.csv`` (one row per trial per run),
+``summary.csv`` (accuracy per method and trial count), ``evidence.csv``
+(detection evidence per observer group), ``stopping.csv`` (the stopping rule
+applied to every run), ``delays.csv`` (how often each delay was presented),
+``figure.png`` and ``table.md``. Each run is seeded from the study seed, the
+observer index, the method name and the rep, so results do not depend on how
+the runs are scheduled across processes; the heart period is seeded from the
+study seed, the observer and the rep only.
 
 Nothing here imports PsychoPy.
 """
@@ -48,14 +69,23 @@ import pandas as pd
 
 from cardioception._rng import make_rng
 
+from .config import TaskConfig
 from .psi import SynchronyPsi, Values
 
 DEFAULT_DELAYS = np.arange(0.0, 601.0, 20.0)
 MCS_LEVELS: Tuple[float, ...] = (0.0, 100.0, 200.0, 300.0, 400.0, 500.0)
-TABLE_TRIALS: Tuple[int, ...] = (20, 30, 40, 60, 120)
-# Shortest realizable R-to-tone delay, in ms: beat detection latency (31 ms
-# at p95 on the PLUX ECG over LSL) plus a 50 ms audio scheduling lead.
-DEFAULT_MIN_DELAY = 80.0
+TABLE_TRIALS: Tuple[int, ...] = (15, 20, 30, 40, 60, 120)
+# The task's floor, TaskConfig.minDelay, in ms: the 31 ms (p95) it takes to
+# know of a beat, the 50 ms audio lead and the 50 ms latency bias.
+DEFAULT_MIN_DELAY = 130.0
+# Range of resting heart periods, s, one drawn per simulated participant.
+DEFAULT_PERIOD: Tuple[float, float] = (0.8, 1.1)
+# SD of the timing error of the stamped R-wave on the test desktop, ms.
+DEFAULT_JITTER_SD = 26.0
+# Probability that a trial delivers no train and so gives no update.
+DEFAULT_TRAIN_LOSS = 0.07
+# Stopping widths, ms, at which stopping.csv reports the median trial.
+STOP_WIDTHS: Tuple[float, ...] = (150.0, 100.0, 80.0, 60.0, 40.0)
 
 # Each adaptive objective with and without 10 percent exploration trials.
 METHODS: Dict[str, Dict[str, Any]] = {
@@ -129,21 +159,40 @@ class Observer:
         bump = np.exp(-0.5 * ((d - self.mu) / width) ** 2)
         return self.floor + (self.peak - self.floor) * bump
 
-    def respond(self, d: float, rng: np.random.Generator) -> bool:
-        """One simulated judgement at delay ``d``: True for "synchronous"."""
+    def respond(
+        self, d: float, rng: np.random.Generator, jitter_sd: float = 0.0
+    ) -> bool:
+        """One simulated judgement at delay ``d``: True for "synchronous".
+
+        With ``jitter_sd`` above 0 the observer responds to ``d`` plus
+        Gaussian noise of that SD, the error in timing the tones from a
+        jittered R-wave stamp. No noise is drawn at 0, so the random stream
+        is that of an exact delivery.
+        """
+        if jitter_sd > 0:
+            d = d + rng.normal(0.0, jitter_sd)
         return bool(rng.random() < float(self.p_yes(d)))
 
 
 def _row(
-    psi: SynchronyPsi, trial: int, delay: float, response: bool, explored: bool
+    psi: SynchronyPsi,
+    trial: int,
+    delay: float,
+    response: Optional[bool],
+    explored: bool,
 ) -> Dict[str, Any]:
-    """Per-trial record: the stimulus, the answer and the posterior after it."""
+    """Per-trial record: the stimulus, the answer and the posterior after it.
+
+    ``response`` is None for a lost train: the trial gave no update.
+    """
     mu = psi.estimate("mu")
     sigma = psi.estimate("sigma")
     return {
         "trial": trial,
         "delay": delay,
-        "response": int(response),
+        "response": float("nan") if response is None else int(response),
+        "lost": response is None,
+        "n_updates": len(psi.history),
         "explored": bool(explored),
         "mu_mean": mu["mean"],
         "mu_median": mu["median"],
@@ -154,6 +203,7 @@ def _row(
         "sigma_median": sigma["median"],
         "sigma_ci_low": sigma["ci_low"],
         "sigma_ci_high": sigma["ci_high"],
+        "mu_conditional": psi.rise_supported(),
         "floor_mean": psi.estimate("floor")["mean"],
         "peak_mean": psi.estimate("peak")["mean"],
         "detection_evidence": psi.detection_evidence(),
@@ -170,12 +220,17 @@ def run_adaptive(
     delays: Optional[Values] = None,
     min_delay: Optional[float] = DEFAULT_MIN_DELAY,
     max_delay: Optional[float] = None,
+    jitter_sd: float = 0.0,
+    train_loss: float = 0.0,
 ) -> List[Dict[str, Any]]:
     """One adaptive session; one row per trial.
 
     ``min_delay`` is the shortest delay the system can realize after a
-    detected R-wave: 80 ms by default, from the measured detection latency of
-    the acquisition chain plus the audio scheduling lead.
+    detected R-wave, 130 ms by default (``TaskConfig.minDelay``), and
+    ``max_delay`` the ceiling the heart period sets. ``jitter_sd`` and
+    ``train_loss`` are as for :meth:`Observer.respond` and the module
+    docstring; both default to an exact delivery here, and :func:`study`
+    passes the task's values.
     """
     psi = SynchronyPsi(
         DEFAULT_DELAYS if delays is None else delays,
@@ -186,8 +241,10 @@ def run_adaptive(
     rows = []
     for trial in range(1, n_trials + 1):
         delay, explored = psi.next_delay(min_delay=min_delay, max_delay=max_delay)
-        response = observer.respond(delay, rng)
-        psi.update(delay, response, explored)
+        response: Optional[bool] = None
+        if not (train_loss > 0 and rng.random() < train_loss):
+            response = observer.respond(delay, rng, jitter_sd)
+            psi.update(delay, response, explored)
         rows.append(_row(psi, trial, delay, response, explored))
     return rows
 
@@ -214,6 +271,8 @@ def run_mcs(
     levels: Sequence[float] = MCS_LEVELS,
     delays: Optional[Values] = None,
     n_trials: Optional[int] = None,
+    jitter_sd: float = 0.0,
+    train_loss: float = 0.0,
 ) -> List[Dict[str, Any]]:
     """Method of constant stimuli, analyzed on the same grid posterior.
 
@@ -229,7 +288,9 @@ def run_mcs(
     runs, but plays no part in choosing the delay. The rows carry two extra
     columns, ``mi`` and ``iqr``, the classical measures over the trials
     delivered; they are NaN on every row but the last, because the classical
-    analysis is defined on the whole session only.
+    analysis is defined on the whole session only. ``jitter_sd`` and
+    ``train_loss`` are as for :func:`run_adaptive`; a lost trial is left out
+    of the classical measures too.
     """
     psi = SynchronyPsi(DEFAULT_DELAYS if delays is None else delays, rng=rng)
     level_values = np.asarray(levels, dtype=float)
@@ -247,16 +308,23 @@ def run_mcs(
             stimuli = np.concatenate([stimuli, topped])
     order = rng.permutation(stimuli)
     responses = np.zeros(order.size, dtype=bool)
+    kept = np.ones(order.size, dtype=bool)
     rows = []
     for i, delay in enumerate(order):
-        response = observer.respond(float(delay), rng)
-        responses[i] = response
-        psi.update(float(delay), response)
+        response: Optional[bool] = None
+        if train_loss > 0 and rng.random() < train_loss:
+            kept[i] = False
+        else:
+            response = observer.respond(float(delay), rng, jitter_sd)
+            responses[i] = response
+            psi.update(float(delay), response)
         row = _row(psi, i + 1, float(delay), response, False)
         row["mi"], row["iqr"] = float("nan"), float("nan")
         rows.append(row)
     if rows:
-        rows[-1]["mi"], rows[-1]["iqr"] = classical_measures(order, responses)
+        rows[-1]["mi"], rows[-1]["iqr"] = classical_measures(
+            order[kept], responses[kept]
+        )
     return rows
 
 
@@ -265,16 +333,21 @@ def default_observers() -> List[Observer]:
 
     30 Gaussian detectors (mu 150 to 350 ms, sigma 50, 100 or 150 ms, and a
     clean or a noisy floor and peak), two non-detectors answering at a flat
-    0.3 and 0.5, and two asymmetric observers at mu 200 and 300 ms.
+    0.3 and 0.5, two asymmetric observers at mu 200 and 300 ms, and four
+    biased non-detectors: always "yes", always "no", and a flat 0.1 and 0.9.
+    The biased non-detectors come last, so the indices, and the run seeds,
+    of the first 34 are those of the earlier studies.
     """
+    nan = float("nan")
     bank = [
         Observer(mu, sigma, floor, peak)
         for mu in (150.0, 200.0, 250.0, 300.0, 350.0)
         for sigma in (50.0, 100.0, 150.0)
         for floor, peak in ((0.05, 0.95), (0.2, 0.8))
     ]
-    bank += [Observer(float("nan"), float("nan"), r, r) for r in (0.3, 0.5)]
+    bank += [Observer(nan, nan, r, r) for r in (0.3, 0.5)]
     bank += [Observer(mu, 100.0, 0.05, 0.95, "asymmetric") for mu in (200.0, 300.0)]
+    bank += [Observer(nan, nan, r, r) for r in (1.0, 0.0, 0.1, 0.9)]
     return bank
 
 
@@ -288,22 +361,53 @@ def _run_seed(seed: int, observer_index: int, method: str, rep: int) -> int:
     return int(np.random.SeedSequence(key).generate_state(1)[0])
 
 
+def _period(
+    seed: int, observer_index: int, rep: int, period: Optional[Tuple[float, float]]
+) -> float:
+    """The resting heart period of one simulated participant, in s.
+
+    Seeded from the study seed, the observer and the rep, not the method, so
+    every method meets the same participants. NaN without a period range.
+    """
+    if period is None:
+        return float("nan")
+    key = [seed, observer_index, rep, zlib.crc32(b"period")]
+    rng = np.random.default_rng(np.random.SeedSequence(key))
+    return float(rng.uniform(*period))
+
+
 def _run_job(
-    job: Tuple[int, Observer, str, int, int, int, Optional[float]],
+    job: Tuple[int, Observer, str, int, int, int, Dict[str, Any]],
 ) -> pd.DataFrame:
     """Worker: one observer, one method, one rep. Module level for spawn.
 
-    The ``min_delay`` column records the floor the adaptive methods used; it
-    is NaN for MCS, which presents its fixed levels regardless.
+    The ``min_delay`` and ``max_delay`` columns record the bounds the
+    adaptive methods used; they are NaN for MCS, which presents its fixed
+    levels regardless. ``period`` is the participant's heart period (NaN
+    without a ceiling).
     """
-    index, observer, method, rep, seed, n_trials, min_delay = job
+    index, observer, method, rep, seed, n_trials, options = job
+    min_delay = options.get("min_delay")
+    jitter_sd = float(options.get("jitter_sd", 0.0))
+    train_loss = float(options.get("train_loss", 0.0))
     run_seed = _run_seed(seed, index, method, rep)
     rng, _ = make_rng(run_seed)
+    period = _period(seed, index, rep, options.get("period"))
     spec = METHODS[method]
     if spec["kind"] == "mcs":
-        rows = run_mcs(observer, 0, rng, n_trials=n_trials)
-        floor_used = float("nan")
+        rows = run_mcs(
+            observer,
+            0,
+            rng,
+            n_trials=n_trials,
+            jitter_sd=jitter_sd,
+            train_loss=train_loss,
+        )
+        floor_used = ceiling_used = float("nan")
     else:
+        ceiling: Optional[float] = None
+        if np.isfinite(period):
+            ceiling = TaskConfig().bounds(period)[1]
         rows = run_adaptive(
             observer,
             n_trials,
@@ -311,8 +415,12 @@ def _run_job(
             targets=spec["targets"],
             explore=spec["explore"],
             min_delay=min_delay,
+            max_delay=ceiling,
+            jitter_sd=jitter_sd,
+            train_loss=train_loss,
         )
         floor_used = float("nan") if min_delay is None else float(min_delay)
+        ceiling_used = float("nan") if ceiling is None else float(ceiling)
     df = pd.DataFrame(rows)
     params = asdict(observer)
     df.insert(0, "observer", index)
@@ -324,6 +432,10 @@ def _run_job(
     df.insert(8, "rep", rep)
     df.insert(9, "run_seed", run_seed)
     df.insert(10, "min_delay", floor_used)
+    df.insert(11, "max_delay", ceiling_used)
+    df.insert(12, "period", period)
+    df.insert(13, "jitter_sd", jitter_sd)
+    df.insert(14, "train_loss", train_loss)
     return df
 
 
@@ -335,13 +447,20 @@ def study(
     processes: int = 1,
     n_trials: int = 120,
     min_delay: Optional[float] = DEFAULT_MIN_DELAY,
+    period: Optional[Tuple[float, float]] = DEFAULT_PERIOD,
+    jitter_sd: float = DEFAULT_JITTER_SD,
+    train_loss: float = DEFAULT_TRAIN_LOSS,
 ) -> pd.DataFrame:
     """Every observer under every method, ``reps`` times; one row per trial.
 
     MCS presents exactly ``n_trials`` trials at its published levels, the
     floor or the ceiling of ``n_trials / 6`` per level (20 each at the
-    default of 120); ``min_delay`` applies to the adaptive methods only. The run seed does not depend on
-    ``min_delay``, so studies at different floors share their random draws.
+    default of 120). ``min_delay`` and the ceiling that ``period`` sets
+    apply to the adaptive methods only; ``jitter_sd`` and ``train_loss`` to
+    every method. The defaults are the task as it runs (see the module
+    docstring); ``period=None``, ``jitter_sd=0`` and ``train_loss=0`` give
+    an exact delivery with no ceiling. The run seed does not depend on these
+    options, so studies under different options share their seeds.
     ``processes`` of 1 runs serially in this process.
     """
     if not isinstance(seed, (int, np.integer)) or seed < 0:
@@ -351,8 +470,18 @@ def study(
     unknown = [m for m in methods if m not in METHODS]
     if unknown:
         raise ValueError(f"unknown methods {unknown}; choose from {list(METHODS)}")
+    if period is not None and not 0 < period[0] <= period[1]:
+        raise ValueError(f"period must be (low, high) seconds, not {period!r}")
+    if jitter_sd < 0 or not 0 <= train_loss < 1:
+        raise ValueError("need jitter_sd >= 0 and 0 <= train_loss < 1")
+    options = {
+        "min_delay": min_delay,
+        "period": None if period is None else tuple(period),
+        "jitter_sd": jitter_sd,
+        "train_loss": train_loss,
+    }
     jobs = [
-        (i, obs, method, rep, seed, n_trials, min_delay)
+        (i, obs, method, rep, seed, n_trials, options)
         for i, obs in enumerate(observers)
         for method in methods
         for rep in range(reps)
@@ -475,6 +604,141 @@ def summarize(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     return summary, counts
 
 
+def _group(df: pd.DataFrame) -> pd.Series:
+    """Observer group per row: clean or noisy detector, asymmetric, or the
+    non-detector's response rate ("always no", "flat 0.3", "always yes")."""
+
+    def label(kind: str, floor: float) -> str:
+        if kind == "detector":
+            return "clean detector" if floor < 0.1 else "noisy detector"
+        if kind == "asymmetric":
+            return "asymmetric"
+        if floor <= 0.0:
+            return "always no"
+        if floor >= 1.0:
+            return "always yes"
+        return f"flat {floor:g}"
+
+    return pd.Series(
+        [label(k, f) for k, f in zip(df["kind"], df["true_floor"])],
+        index=df.index,
+        name="group",
+    )
+
+
+def evidence(df: pd.DataFrame, trials: Sequence[int] = TABLE_TRIALS) -> pd.DataFrame:
+    """Detection evidence per method, trial count and observer group.
+
+    For each group: the number of runs, the median log10 detection Bayes
+    factor, the share of runs above 0 (the data favour a rise) and above 1
+    (a factor of 10), and the mean posterior detection evidence.
+    """
+    sub = df[df["trial"].isin(list(trials))].copy()
+    sub["group"] = _group(sub)
+    with np.errstate(divide="ignore"):
+        sub["log10_bf"] = np.log10(sub["detection_bf"])
+    g = sub.groupby(["method", "group", "trial"], sort=False)
+    out = pd.DataFrame(
+        {
+            "n_runs": g.size(),
+            "median_log10_bf": g["log10_bf"].median(),
+            "share_log10_bf_above_0": g["log10_bf"].apply(lambda v: np.mean(v > 0)),
+            "share_log10_bf_above_1": g["log10_bf"].apply(lambda v: np.mean(v > 1)),
+            "mean_evidence": g["detection_evidence"].mean(),
+        }
+    )
+    return out.reset_index()
+
+
+def stopping(
+    df: pd.DataFrame,
+    min_trials: Optional[int] = None,
+    max_trials: Optional[int] = None,
+    ci_width: Optional[float] = None,
+    widths: Sequence[float] = STOP_WIDTHS,
+) -> pd.DataFrame:
+    """The stopping rule applied to every run, per method and observer group.
+
+    The rule is the task's: stop at the first trial with at least
+    ``min_trials`` updates (lost trains do not count) and a 95 percent
+    interval on ``mu`` no wider than ``ci_width``, or at ``max_trials``.
+    ``None`` takes :class:`~cardioception.HSD.config.TaskConfig`'s default.
+    Columns: runs; median trial and share of runs stopped before the
+    maximum; RMSE of the posterior mean of ``mu`` at the stop, at
+    ``min_trials`` and at ``max_trials`` (NaN for non-detectors); the median
+    interval width at ``min_trials`` and ``max_trials``; and, for each of
+    ``widths``, the first trial at which the median width over the group's
+    runs is at most that width (NaN if never, within the runs).
+    """
+    config = TaskConfig()
+    min_trials = config.minTrials if min_trials is None else min_trials
+    max_trials = config.maxTrials if max_trials is None else max_trials
+    ci_width = config.ciWidth if ci_width is None else ci_width
+    df = df.copy()
+    df["group"] = _group(df)
+    detector_groups = df.loc[df["kind"] != "non-detector", "group"].unique()
+    df["err"] = df["mu_mean"] - df["true_mu"]
+    run = ["method", "group", "observer", "rep"]
+    rows = []
+    for (method, group), sub in df.groupby(["method", "group"], sort=False):
+        meets = (
+            (sub["n_updates"] >= min_trials)
+            & (sub["mu_ci_width"] <= ci_width)
+            & (sub["trial"] <= max_trials)
+        )
+        at_max = sub[sub["trial"] == max_trials].set_index(run[2:])
+        first = sub[meets].groupby(run[2:])["trial"].min()
+        stop = first.reindex(at_max.index).fillna(max_trials).astype(int)
+        stopped = sub.set_index(run[2:] + ["trial"]).loc[
+            [(o, r, t) for (o, r), t in stop.items()]
+        ]
+        at_min = sub[sub["trial"] == min_trials]
+        median_width = sub.groupby("trial")["mu_ci_width"].median()
+        is_detector = group in detector_groups
+        row: Dict[str, Any] = {
+            "method": method,
+            "group": group,
+            "n_runs": len(stop),
+            "median_stop_trial": float(stop.median()),
+            "share_stopped_early": float(np.mean(stop < max_trials)),
+            "rmse_at_stop": _rmse(stopped["err"]) if is_detector else float("nan"),
+            f"rmse_at_{min_trials}": (
+                _rmse(at_min["err"]) if is_detector else float("nan")
+            ),
+            f"rmse_at_{max_trials}": (
+                _rmse(at_max["err"]) if is_detector else float("nan")
+            ),
+            f"median_width_at_{min_trials}": float(at_min["mu_ci_width"].median()),
+            f"median_width_at_{max_trials}": float(at_max["mu_ci_width"].median()),
+        }
+        for width in widths:
+            reached = median_width.index[median_width <= width]
+            row[f"trial_median_width_{width:g}"] = (
+                float(reached.min()) if reached.size else float("nan")
+            )
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def _markdown(df: pd.DataFrame, formats: Dict[str, str]) -> str:
+    """A Markdown table of the ``formats`` columns of ``df``; NaN is blank."""
+    columns = [c for c in formats if c in df.columns]
+    lines = [
+        "| " + " | ".join(columns) + " |",
+        "|" + "|".join("---" for _ in columns) + "|",
+    ]
+    for _, row in df.iterrows():
+        cells = []
+        for key in columns:
+            value = row[key]
+            if isinstance(value, (float, np.floating)) and not np.isfinite(value):
+                cells.append("")
+            else:
+                cells.append(formats[key].format(value))
+        lines.append("| " + " | ".join(cells) + " |")
+    return "\n".join(lines) + "\n"
+
+
 def plot(summary: pd.DataFrame, path: str) -> None:
     """RMSE of mu and mean 95 percent interval width against trial number.
 
@@ -579,6 +843,29 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         default=DEFAULT_MIN_DELAY,
         help="shortest delay (ms) the adaptive methods may choose",
     )
+    parser.add_argument(
+        "--period",
+        type=float,
+        nargs=2,
+        default=list(DEFAULT_PERIOD),
+        metavar=("LOW", "HIGH"),
+        help="range of resting heart periods (s) that set the delay ceiling",
+    )
+    parser.add_argument(
+        "--no-ceiling", action="store_true", help="no period-based delay ceiling"
+    )
+    parser.add_argument(
+        "--jitter-sd",
+        type=float,
+        default=DEFAULT_JITTER_SD,
+        help="SD (ms) of the timing error of each trial's delay",
+    )
+    parser.add_argument(
+        "--train-loss",
+        type=float,
+        default=DEFAULT_TRAIN_LOSS,
+        help="probability that a trial delivers no train and gives no update",
+    )
     parser.add_argument("--methods", nargs="+", choices=list(METHODS), default=None)
     args = parser.parse_args(argv)
 
@@ -590,14 +877,42 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         processes=args.processes,
         n_trials=args.trials,
         min_delay=args.min_delay,
+        period=None if args.no_ceiling else (args.period[0], args.period[1]),
+        jitter_sd=args.jitter_sd,
+        train_loss=args.train_loss,
     )
     summary, delays = summarize(df)
+    ev = evidence(df)
+    stops = stopping(df)
     df.to_csv(os.path.join(args.out, "trials.csv"), index=False)
     summary.to_csv(os.path.join(args.out, "summary.csv"), index=False)
+    ev.to_csv(os.path.join(args.out, "evidence.csv"), index=False)
+    stops.to_csv(os.path.join(args.out, "stopping.csv"), index=False)
     delays.to_csv(os.path.join(args.out, "delays.csv"), index=False)
     plot(summary, os.path.join(args.out, "figure.png"))
     with open(os.path.join(args.out, "table.md"), "w", encoding="utf-8") as f:
         f.write(table(summary))
+        f.write("\n")
+        f.write(
+            _markdown(
+                ev,
+                {
+                    "method": "{}",
+                    "group": "{}",
+                    "trial": "{:d}",
+                    "n_runs": "{:d}",
+                    "median_log10_bf": "{:+.2f}",
+                    "share_log10_bf_above_0": "{:.2f}",
+                    "share_log10_bf_above_1": "{:.2f}",
+                    "mean_evidence": "{:.2f}",
+                },
+            )
+        )
+        f.write("\n")
+        formats = {c: "{:.1f}" for c in stops.columns}
+        formats.update({"method": "{}", "group": "{}", "n_runs": "{:d}"})
+        formats["share_stopped_early"] = "{:.2f}"
+        f.write(_markdown(stops, formats))
     n_runs = df.groupby(["observer", "method", "rep"]).ngroups
     print(f"{n_runs} runs written to {args.out}")
 

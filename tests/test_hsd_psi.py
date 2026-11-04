@@ -8,12 +8,16 @@ import unittest
 import numpy as np
 
 from cardioception._rng import make_rng
-from cardioception.HSD.psi import PARAMETERS, SynchronyPsi, gaussian_envelope
+from cardioception.HSD.config import TaskConfig
+from cardioception.HSD.psi import PARAMETERS, RATES, SynchronyPsi, gaussian_envelope
 from cardioception.HSD.simulate import (
     DEFAULT_DELAYS,
     Observer,
+    default_observers,
+    evidence,
     run_adaptive,
     run_mcs,
+    stopping,
     study,
 )
 
@@ -224,8 +228,8 @@ class TestRecovery(unittest.TestCase):
 
         Observer mu 250, sigma 80, floor 0.05, peak 0.95. The posterior mean
         must be within 40 ms and the 95 percent interval must contain 250.
-        Seeds 0 to 7 all pass at the 80 ms floor; seed 1 gives about 255
-        [240, 270].
+        Seeds 0 to 7 all pass at the 130 ms floor; seed 1 gives about 258
+        [240, 280].
         """
         observer = Observer(250.0, 80.0, 0.05, 0.95)
         last = run_adaptive(observer, 80, make_rng(1)[0])[-1]
@@ -238,23 +242,161 @@ class TestRecovery(unittest.TestCase):
     def test_detection_bayes_factor_starts_at_one(self):
         """The Bayes factor removes the prior, so before any data it is 1.
 
-        The posterior mass is not: 33 of the 36 default (floor, peak) pairs
-        rise by more than 0.2, so detection_evidence starts at 0.92.
+        The posterior mass is not. On the default grids over the candidate
+        range, 0 to 600 ms, about 0.57 of the prior rises by more than 0.2:
+        an honest prior, near even, where the old floor and peak grids put
+        0.92 on a rise because they could not express most flat responders.
         """
         psi = SynchronyPsi(DEFAULT_DELAYS)
-        self.assertAlmostEqual(psi.detection_evidence(), 33 / 36, places=6)
+        self.assertGreater(psi.detection_evidence(), 0.45)
+        self.assertLess(psi.detection_evidence(), 0.6)
         self.assertAlmostEqual(psi.detection_bayes_factor(), 1.0, places=9)
         # No grid point rises by more than 0.2: there is nothing to compare,
         # and the answer must not read as evidence for detection.
         flat = SynchronyPsi(DEFAULT_DELAYS, floor=[0.4], peak=[0.5])
         self.assertTrue(math.isnan(flat.detection_bayes_factor()))
 
+    def test_every_flat_rate_is_on_the_grid(self):
+        """A flat responder at any rate from 0.03 to 0.97 is a grid point
+        (peak equal to floor) with prior mass, so a biased non-detector does
+        not have to be explained as a rise."""
+        psi = SynchronyPsi(DEFAULT_DELAYS)
+        self.assertEqual(psi.grids["floor"].tolist(), RATES.tolist())
+        self.assertEqual(psi.grids["peak"].tolist(), RATES.tolist())
+        self.assertLessEqual(RATES.min(), 0.03)
+        self.assertGreaterEqual(RATES.max(), 0.97)
+        for rate in RATES:
+            flat = (psi.theta["floor"] == rate) & (psi.theta["peak"] == rate)
+            self.assertGreater(psi.prior[flat].sum(), 0.0)
+            # A flat envelope never rises, wherever mu and sigma sit.
+            self.assertTrue(np.all(psi.visible_rise()[flat] < 1e-12))
+
+    def test_a_rise_outside_the_presented_range_is_not_a_rise(self):
+        """A bump the task cannot present counts as flat.
+
+        Over 140 to 500 ms, a narrow bump at 0 or 600 ms rises by almost
+        nothing, whatever its peak; the same bump at 300 ms rises by the
+        whole of peak minus floor. Without a fixed range the rise is measured
+        over the delays presented so far.
+        """
+        psi = SynchronyPsi(DEFAULT_DELAYS, rise_range=(140.0, 500.0))
+        rise = psi.visible_rise()
+        point = (
+            (psi.theta["floor"] == 0.03)
+            & (psi.theta["peak"] == 0.97)
+            & np.isclose(psi.theta["sigma"], psi.grids["sigma"][0])
+        )
+        for mu, expected in ((0.0, 0.0), (600.0, 0.0), (300.0, 0.94)):
+            with self.subTest(mu=mu):
+                at = point & (psi.theta["mu"] == mu)
+                self.assertAlmostEqual(float(rise[at][0]), expected, delta=1e-4)
+        self.assertEqual(psi.state()["rise_range"], [140.0, 500.0])
+        free = SynchronyPsi(DEFAULT_DELAYS)
+        self.assertEqual(free.rise_range(), (0.0, 600.0))
+        free.update(200.0, True)
+        self.assertEqual(free.rise_range(), (0.0, 600.0))
+        free.update(460.0, False)
+        self.assertEqual(free.rise_range(), (200.0, 460.0))
+        for bad in ((500.0, 140.0), (0.0, float("inf"))):
+            with self.assertRaises(ValueError):
+                SynchronyPsi(DEFAULT_DELAYS, rise_range=bad)
+
+    def test_flat_responders_do_not_look_like_detectors(self):
+        """Seeds 0 to 2, 60 trials of the task's own configuration.
+
+        Bounds 130 to 513 ms (a 0.72 s heart period), explore 0.1. Answering
+        always "yes", always "no", or at a flat 0.1 or 0.9, the log10
+        detection Bayes factor must be at most 0: biased non-detectors used
+        to reach +3 to +10, because the old grids could express a flat rate
+        only from about 0.3 to 0.6. A detector (mu 250, sigma 50, floor 0.1,
+        peak 0.9) must be clearly positive. Seeds 0 to 7 gave -2.0 (all no),
+        -4.3 (all yes), -1.5 to -0.7 (0.1), -3.2 to -0.5 (0.9) and +1.9 to
+        +3.2 (the detector).
+        """
+        config = TaskConfig()
+        low, high = config.bounds(0.72)
+        nan = float("nan")
+        cases = {
+            "all no": (Observer(nan, nan, 0.0, 0.0), None, 0.0),
+            "all yes": (Observer(nan, nan, 1.0, 1.0), None, 0.0),
+            "flat 0.1": (Observer(nan, nan, 0.1, 0.1), None, 0.0),
+            "flat 0.9": (Observer(nan, nan, 0.9, 0.9), None, 0.0),
+            "detector": (Observer(250.0, 50.0, 0.1, 0.9), 1.0, None),
+        }
+        for name, (observer, above, below) in cases.items():
+            for seed in range(3):
+                with self.subTest(observer=name, seed=seed):
+                    rng = np.random.default_rng(seed)
+                    psi = config.engine(rng=rng)
+                    for _ in range(60):
+                        delay, explored = psi.next_delay(low, high)
+                        psi.update(delay, observer.respond(delay, rng), explored)
+                    log_bf = np.log10(psi.detection_bayes_factor())
+                    if above is not None:
+                        self.assertGreater(log_bf, above)
+                    if below is not None:
+                        self.assertLessEqual(log_bf, below)
+
+    def test_mu_is_estimated_given_a_rise(self):
+        """mu and sigma come from the posterior conditioned on a rise.
+
+        A sharp observer (mu 250, sigma 40, floor 0.02, peak 0.98) after 12
+        trials of the task's configuration at a 0.6 s period, seed 0. While
+        a flat envelope keeps mass, the marginal mu is spread over the grid;
+        the conditional one is not. The estimate matches the masked and
+        renormalized posterior, floor and peak stay marginal, and the
+        stopping rule reads the conditional width. Seeds 0 to 2 gave
+        conditional widths of 70 to 170 ms against marginal ones of 160 to
+        420 ms.
+        """
+        config = TaskConfig()
+        low, high = config.bounds(0.6)
+        rng = np.random.default_rng(0)
+        observer = Observer(250.0, 40.0, 0.02, 0.98)
+        psi = config.engine(rng=rng)
+        for _ in range(12):
+            delay, explored = psi.next_delay(low, high)
+            psi.update(delay, observer.respond(delay, rng), explored)
+        self.assertTrue(psi.rise_supported())
+        conditional = psi.estimate("mu")
+        marginal = psi.estimate("mu", conditional=False)
+        width = conditional["ci_high"] - conditional["ci_low"]
+        self.assertLess(width, marginal["ci_high"] - marginal["ci_low"])
+        self.assertLessEqual(conditional["ci_low"], 250.0)
+        self.assertGreaterEqual(conditional["ci_high"], 250.0)
+        self.assertEqual(psi.ci_width(), width)
+        self.assertEqual(psi.converged(width), True)
+        weights = np.where(psi.visible_rise() > 0.2 + 1e-9, psi.posterior, 0.0)
+        weights = weights.reshape(psi.shape).sum(axis=(1, 2, 3))
+        weights = weights / weights.sum()
+        self.assertAlmostEqual(
+            conditional["mean"], float(np.sum(psi.grids["mu"] * weights)), places=9
+        )
+        floor = psi.estimate("floor")
+        self.assertEqual(floor, psi.estimate("floor", conditional=False))
+        self.assertTrue(psi.summary()["conditional"])
+
+    def test_conditional_estimate_falls_back_without_a_rise(self):
+        """With no mass on a rise the estimates are the marginal ones, and
+        the summary says so."""
+        flat = SynchronyPsi(DEFAULT_DELAYS, floor=[0.4], peak=[0.5])
+        self.assertFalse(flat.rise_supported())
+        self.assertEqual(flat.estimate("mu"), flat.estimate("mu", conditional=False))
+        self.assertFalse(flat.summary()["conditional"])
+        config = TaskConfig()
+        psi = config.engine(rng=np.random.default_rng(0))
+        for delay in np.linspace(140.0, 500.0, 60):
+            psi.update(float(delay), True)
+        self.assertLess(psi.detection_evidence(), 0.01)
+        self.assertFalse(psi.rise_supported())
+        self.assertEqual(psi.estimate("mu"), psi.estimate("mu", conditional=False))
+
     def test_non_detector_gives_a_bayes_factor_below_one(self):
         """Seeds 1 to 5: a flat 0.4 responder favours no rise after 80 trials.
 
         log10 of the detection Bayes factor must be below 0 for every seed,
         so the check is on the procedure rather than on one lucky draw. At the
-        80 ms floor seeds 0 to 12 gave log10 values from -1.30 to -0.09.
+        130 ms floor seeds 0 to 12 gave log10 values from -0.94 to -0.05.
         """
         observer = Observer(float("nan"), float("nan"), 0.4, 0.4)
         for seed in range(1, 6):
@@ -311,21 +453,92 @@ class TestSimulation(unittest.TestCase):
 
     def test_adaptive_runs_respect_the_latency_floor(self):
         """No adaptive trial, explored or chosen, may ask for a delay the
-        acquisition chain cannot realize (80 ms by default); the floor is
-        recorded per row, and is NaN for MCS, which keeps its 0 ms level."""
+        acquisition chain cannot realize (130 ms by default, the task's
+        floor) or one above the ceiling the participant's heart period sets;
+        both are recorded per row, and are NaN for MCS, which keeps its
+        levels of 0 to 500 ms."""
         observer = Observer(150.0, 50.0, 0.05, 0.95)
         for explore in (0.0, 1.0):
             rows = run_adaptive(observer, 15, make_rng(9)[0], explore=explore)
-            self.assertGreaterEqual(min(row["delay"] for row in rows), 80.0)
-        df = study([observer], ["mcs", "psi_mu_x10"], reps=1, seed=3, n_trials=12)
+            self.assertGreaterEqual(min(row["delay"] for row in rows), 130.0)
+        df = study([observer], ["mcs", "psi_mu_x10"], reps=2, seed=3, n_trials=12)
         adaptive = df[df["method"] == "psi_mu_x10"]
-        self.assertTrue((adaptive["min_delay"] == 80.0).all())
-        self.assertTrue((adaptive["delay"] >= 80.0).all())
+        self.assertTrue((adaptive["min_delay"] == 130.0).all())
+        self.assertTrue((adaptive["delay"] >= 130.0).all())
+        self.assertTrue((adaptive["delay"] <= adaptive["max_delay"]).all())
         self.assertTrue(df.loc[df["method"] == "mcs", "min_delay"].isna().all())
+        self.assertTrue(df.loc[df["method"] == "mcs", "max_delay"].isna().all())
         lower = study(
             [observer], ["psi_mu_x10"], reps=1, seed=3, n_trials=12, min_delay=40.0
         )
         self.assertTrue((lower["min_delay"] == 40.0).all())
+
+    def test_heart_period_sets_the_ceiling_per_participant(self):
+        """Each simulated participant has one heart period in 0.8 to 1.1 s,
+        shared by every method, and the adaptive ceiling is the task's
+        bound at that period; without a period range there is no ceiling."""
+        observer = Observer(250.0, 80.0, 0.05, 0.95)
+        df = study([observer], ["mcs", "psi_mu"], reps=3, seed=5, n_trials=3)
+        periods = df.groupby("rep")["period"].agg(["min", "max"])
+        self.assertTrue((periods["min"] == periods["max"]).all())
+        self.assertTrue(periods["min"].between(0.8, 1.1).all())
+        self.assertEqual(periods["min"].nunique(), 3)
+        adaptive = df[df["method"] == "psi_mu"]
+        for period, ceiling in zip(adaptive["period"], adaptive["max_delay"]):
+            self.assertEqual(ceiling, TaskConfig().bounds(period)[1])
+        free = study([observer], ["psi_mu"], reps=1, seed=5, n_trials=3, period=None)
+        self.assertTrue(free["max_delay"].isna().all())
+        self.assertTrue(free["period"].isna().all())
+
+    def test_jitter_and_train_loss(self):
+        """Jitter moves the delay the observer responds to, not the one the
+        engine is updated with; at 0 it draws nothing, so the run is the
+        exact one. A lost train gives no response and no update."""
+        observer = Observer(250.0, 20.0, 0.0, 1.0)
+        rng = make_rng(4)[0]
+        exact = [observer.respond(250.0, rng) for _ in range(200)]
+        self.assertTrue(all(exact))
+        jittered = [observer.respond(250.0, rng, 60.0) for _ in range(200)]
+        self.assertLess(np.mean(jittered), 0.6)
+        a = run_adaptive(observer, 10, make_rng(6)[0])
+        b = run_adaptive(observer, 10, make_rng(6)[0], jitter_sd=0.0, train_loss=0.0)
+        self.assertEqual(a, b)
+        rows = run_adaptive(observer, 30, make_rng(6)[0], train_loss=0.5)
+        lost = [row for row in rows if row["lost"]]
+        self.assertGreater(len(lost), 5)
+        self.assertTrue(all(math.isnan(row["response"]) for row in lost))
+        self.assertEqual(rows[-1]["n_updates"], 30 - len(lost))
+        for before, after in zip(rows, rows[1:]):
+            if after["lost"]:
+                self.assertEqual(before["mu_mean"], after["mu_mean"])
+        with self.assertRaises(ValueError):
+            study([observer], ["psi_mu"], reps=1, n_trials=2, train_loss=1.0)
+
+    def test_observer_bank_includes_biased_non_detectors(self):
+        """The four biased non-detectors come after the original 34, so the
+        earlier observers keep their indices and run seeds."""
+        bank = default_observers()
+        self.assertEqual(len(bank), 38)
+        self.assertEqual([o.floor for o in bank[34:]], [1.0, 0.0, 0.1, 0.9])
+        self.assertTrue(all(o.kind == "non-detector" for o in bank[34:]))
+        self.assertEqual(bank[32].kind, "asymmetric")
+
+    def test_evidence_and_stopping_tables(self):
+        """The stopping rule never runs past the maximum, counts only
+        updates towards the minimum, and the evidence table has one row per
+        method, group and trial count."""
+        observers = [Observer(250.0, 50.0, 0.05, 0.95), Observer(0, 0, 1.0, 1.0)]
+        df = study(observers, ["psi_mu"], reps=2, seed=1, n_trials=12)
+        stops = stopping(df, min_trials=5, max_trials=10, ci_width=600.0)
+        self.assertEqual(sorted(stops["group"]), ["always yes", "clean detector"])
+        self.assertTrue((stops["median_stop_trial"] <= 10).all())
+        self.assertTrue((stops["median_stop_trial"] >= 5).all())
+        self.assertTrue(
+            math.isnan(stops.set_index("group").loc["always yes", "rmse_at_stop"])
+        )
+        ev = evidence(df, trials=(5, 10))
+        self.assertEqual(len(ev), 2 * 2)
+        self.assertTrue((ev["n_runs"] == 2).all())
 
     def test_study_is_reproducible(self):
         """Each run is seeded from (seed, observer, method, rep), not from order.

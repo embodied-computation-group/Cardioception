@@ -873,6 +873,7 @@ class TestOutcome(unittest.TestCase):
         "SigmaMedian",
         "SigmaCILow",
         "SigmaCIHigh",
+        "MuConditional",
         "FloorMean",
         "PeakMean",
         "DetectionEvidence",

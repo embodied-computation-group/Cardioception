@@ -37,10 +37,13 @@ N_TRIALS = 6
 MIN_TRIALS = 3
 # The convergence session: a sharp observer, and a credible-interval width
 # that this seed reaches after more than CONVERGE_MIN trials and before
-# CONVERGE_MAX.
+# CONVERGE_MAX. The interval of mu is conditioned on a rise across the delays
+# presented, which already rules out locations no presented delay could show,
+# so it starts near 540 ms after two trials; 450 ms needs real information.
+# This seed converges after 8 trials, at 400 ms.
 CONVERGE_MIN = 2
 CONVERGE_MAX = 10
-CONVERGE_WIDTH = 550.0
+CONVERGE_WIDTH = 450.0
 
 EXPECTED_COLUMNS = [
     "Trial",
@@ -78,6 +81,7 @@ EXPECTED_COLUMNS = [
     "SigmaMedian",
     "SigmaCILow",
     "SigmaCIHigh",
+    "MuConditional",
     "FloorMean",
     "PeakMean",
     "DetectionEvidence",

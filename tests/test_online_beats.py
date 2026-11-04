@@ -1,28 +1,30 @@
 # Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """OnlineRDetector against the offline detector, and on a synthetic ECG.
 
-The recorded files are a biosignalsplux chest ECG streamed over LSL. They live
-outside the repository, and the tests that need them skip when they are
-missing.
+The recorded ECG is a biosignalsplux chest ECG streamed over LSL: the
+committed 60 s excerpt always, and the two lab recordings when
+``CARDIOCEPTION_RECORDINGS`` points at them (see ecg_recordings.py).
 """
-
-from pathlib import Path
 
 import numpy as np
 import pytest
+from ecg_recordings import LAB, SFREQ, load
 
 from cardioception.devices._beats import snap_to_qrs
 from cardioception.devices._online_beats import Beat, OnlineRDetector
 
-SFREQ = 1000
-DATA = Path(r"C:\Users\stim\Desktop\cannabodies\plux-lsl\data\sub-test")
-RECORDINGS = {
-    "hrd20": DATA / "ses-hrd20" / "sub-test_ses-hrd20_task-hrd_physio.xdf",
-    "lsl07": DATA / "ses-lsl07" / "sub-test_ses-lsl07_task-hrd_physio.xdf",
-}
-
 #: Seconds within which an online beat counts as the offline one.
 TOLERANCE = 0.05
+#: On the excerpt, ms. Both detectors take the largest deflection of the same
+#: unfiltered samples, so on a clean QRS they pick the same sample; one sample
+#: of slack is for a peak whose top two samples differ by less than the two
+#: baselines do.
+EXCERPT_ERROR = 1
+#: On the excerpt, median and 95th percentile commit lag, ms. The detector
+#: commits once the R wave has fallen back to FALL of its height, 13 to 15 ms
+#: after the peak on this ECG. A detector that waited out its search window
+#: (150 ms), or kept waiting because it had not learnt the polarity, fails.
+EXCERPT_LAG = (20, 30)
 
 
 def in_chunks(detector, samples, stamps, seed=0):
@@ -64,24 +66,10 @@ def compare(beats, reference, n_samples, warmup=2.0, end=0.5):
 # -- recorded ECG --------------------------------------------------------------
 
 
-@pytest.fixture(scope="module", params=sorted(RECORDINGS))
+@pytest.fixture(scope="module", params=["excerpt", *sorted(LAB)])
 def recording(request):
-    """ECG2 of the PLUX stream, its timestamps, and the offline beats."""
-    path = RECORDINGS[request.param]
-    if not path.exists():
-        pytest.skip(f"{path} not found")
-    pyxdf = pytest.importorskip("pyxdf")
-    pytest.importorskip("systole")
-    from cardioception.devices._beats import detect_beats
-
-    streams, _ = pyxdf.load_xdf(str(path))
-    plux = next(s for s in streams if s["info"]["name"][0] == "PLUX")
-    labels = [c["label"][0] for c in plux["info"]["desc"][0]["channels"][0]["channel"]]
-    ecg = np.asarray(plux["time_series"][:, labels.index("ECG2")])
-    stamps = np.asarray(plux["time_stamps"])
-    _, peaks = detect_beats(ecg.astype(float), SFREQ, "ecg", SFREQ)
-    assert peaks.size == ecg.size
-    return request.param, ecg, stamps, np.flatnonzero(peaks)
+    """The ECG, its timestamps as the inlet gives them, and the offline beats."""
+    return load(request.param)
 
 
 @pytest.fixture(scope="module")
@@ -107,6 +95,37 @@ def test_matches_offline_detector(recording, whole):
     assert np.median(lags) < 80
     for beat in whole:
         assert beat.r_time == stamps[beat.r_index]
+    if name == "excerpt":
+        # Beat for beat: every reference beat found, nothing else, and on
+        # the same sample or the next.
+        assert result["sensitivity"] == 1.0
+        assert result["ppv"] == 1.0
+        assert errors.max() <= EXCERPT_ERROR
+        assert np.median(lags) < EXCERPT_LAG[0]
+        assert np.percentile(lags, 95) < EXCERPT_LAG[1]
+
+
+def test_anticipated_period_follows_the_rr():
+    """Fed as an inlet would, the anticipated period is the mean of the last
+    three RR, and on the excerpt's steady heart it stays near the mean RR."""
+    _, ecg, stamps, reference = load("excerpt")
+    detector = OnlineRDetector(SFREQ)
+    beats, periods = [], []
+    for start in range(0, ecg.size, 10):
+        chunk = slice(start, start + 10)
+        for beat in detector.process(ecg[chunk], stamps[chunk]):
+            beats.append(beat)
+            periods.append(detector.anticipated_period)
+    rr = np.diff([b.r_time for b in beats])
+    assert periods[:3] == [None, None, None]
+    for k, period in enumerate(periods[3:], start=3):
+        assert period == pytest.approx(rr[slice(k - 3, k)].mean())
+    # The reference counts samples and the stamps keep the PC's clock, by
+    # which the hub sampled at 1000.5 Hz: half a millisecond apart per RR.
+    same = reference[reference >= beats[0].r_index]
+    mean_rr = np.diff(same).mean() / SFREQ
+    assert rr.mean() == pytest.approx(mean_rr, abs=0.002)
+    assert np.all(np.abs(np.array(periods[3:]) - mean_rr) < 0.1 * mean_rr)
 
 
 def test_chunk_size_does_not_matter(recording, whole):

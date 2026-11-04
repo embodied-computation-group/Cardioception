@@ -162,6 +162,24 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - The keyboard confidence rating uses `visual.Slider`. `visual.RatingScale`
   moved to the `psychopy-legacy` plugin in PsychoPy 2026 and now raises.
 - A crash or an abort still saves everything the session produced.
+- The HSD detection evidence (`DetectionEvidence`, `DetectionBF`) no longer
+  rewards biased non-detectors. The floor grid stopped at 0.4 and the peak
+  grid started at 0.5, so a flat responder could be expressed only at yes
+  rates of about 0.3 to 0.6, and anyone else was explained as a rise: in 60
+  trials, answering always "yes" gave a log10 Bayes factor of +10, always
+  "no" +9 and a flat 0.9 +4 to +7, more than a true detector (+2). The floor
+  and the peak now share one grid of rates from 0.03 to 0.97, so a flat
+  envelope exists at every rate, and the rise is measured inside the range of
+  delays presented, so a bump the task cannot present carries no evidence.
+  The prior on a rise of more than 0.2 is about 0.5, not 0.92. The same
+  responders now give -4.3 to -0.2, the detector +2.2 to +2.7. `FloorMean`
+  and `PeakMean` keep their names; the grid is larger (98,820 points) and a
+  stimulus selection takes about 20 ms. Because a flat envelope now keeps
+  posterior mass, and leaves `mu` unidentified, `mu` and `sigma` (so
+  `MuMean`, `MuCILow`, `MuCIHigh`, the `Sigma` columns and the stopping rule)
+  come from the posterior conditioned on a rise of more than 0.2, falling back
+  to the marginal below 0.01 of mass on a rise; the new `MuConditional`
+  column says which. Delay placement still uses the marginal `mu`.
 - A missed R peak or a T wave taken for one no longer skews the anticipated
   period of the live beat source (PAT, HSD) by a third for three beats. An RR
   interval outside 0.6 to 1.6 times the median of the last five accepted ones
@@ -265,9 +283,24 @@ code it replaced rather than read over.
   `on_every_frame`, validated triggers, and an autopilot that runs whole
   sessions headless. Its phase arithmetic, scheduling, scoring and data
   columns are unchanged.
+- The HSD simulation (`python -m cardioception.HSD.simulate`) models the task
+  as it runs: a 130 ms floor (`--min-delay`, was 80), a heart period per
+  simulated participant that sets the task's ceiling (`--period`,
+  `--no-ceiling`), Gaussian timing noise on the delay heard (`--jitter-sd`,
+  26 ms) and trials that deliver no train (`--train-loss`, 0.07). The observer
+  bank gains four biased non-detectors, and the script writes
+  `evidence.csv` and `stopping.csv`. Rerun this way, with 26 and 6 ms of
+  jitter, the design page's results describe the task as it runs. The HSD
+  stopping defaults (`minTrials` 15, `maxTrials` 60, `ciWidth` 100 ms) are
+  unchanged: the median detector reaches a 100 ms interval only at 75 to 89
+  trials, but running to 90 would lower the RMSE of `mu` by about 2 ms.
 - The live tests of the beat-locked tone player, which play through the
   sound card at its own volume, are marked `audio` and run only with
   `pytest --run-audio`, as `blocking` tests run only with `--run-blocking`.
+- The online R detector, the beat source and the PAT engine are tested on a
+  committed 60 s ECG excerpt (`tests/data/ecg_excerpt.npz`) instead of
+  skipping everywhere but the lab PC, and on the full lab recordings too when
+  `CARDIOCEPTION_RECORDINGS` points at their directory.
 
 **`responseDecision` returns five values, not six.** The second, a
 `responseTrigger` timestamp, was unpacked by its only caller and never read.

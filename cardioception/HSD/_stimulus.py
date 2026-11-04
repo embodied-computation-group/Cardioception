@@ -204,6 +204,8 @@ class ToneRecord:
     #: delay, less the latency bias), or ``None`` if no target was computed.
     target: Optional[float]
     #: When the device reported the tone started, ``None`` if it did not play.
+    #: The PsychToolbox player reports the start time it scheduled, not the
+    #: sound, so this equals ``target`` unless the tone started late.
     onset: Optional[float] = None
     #: ``onset - r_time``, as the recordings show it: ``latency_bias`` short
     #: of the physical delay.
