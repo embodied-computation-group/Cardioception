@@ -21,8 +21,10 @@ This is a design document for an experimental task. The estimation engine,
 [simulation study](#simulation-study) has run. The task runner
 (`cardioception.HSD.parameters` and `cardioception.HSD.task`), its English
 instructions and `wrappers/hsd_lsl.py` exist and run headlessly against a
-virtual heart and against a synthetic ECG over LSL. The hardware dry run has
-not been done yet; see [what comes next](#what-comes-next).
+virtual heart and against a synthetic ECG over LSL. One
+[hardware dry run](#hardware-dry-run) has been done, a single 60-trial session
+on a real ECG. The task has not been validated in a study; see
+[what comes next](#what-comes-next).
 ```
 
 ## Why a new task
@@ -154,8 +156,9 @@ $$
 
 The grids cover the published range of observers with room to spare
 {cite:p}`1988:brener,2016:brener`, because the point of estimating the
-location is not to assume it. The candidate delays are 0 to 600 ms in 20 ms
-steps, of which the current hardware can realize those from 80 ms (see
+location is not to assume it. The simulations offer candidate delays from 0
+to 600 ms in 20 ms steps and the task runner from 80 to 600 ms, of which the
+current hardware can realize those from 130 ms (see
 [delay limits](#realized-delays-and-per-trial-constraints)). The posterior is discrete on the outer product of the four grids,
 about 44,000 points; one stimulus selection takes about 13 ms.
 
@@ -267,9 +270,11 @@ That adds the beat-to-beat variability of the heart period to the delay as
 jitter, and is not implemented. A sensation earlier than 130 ms can still be
 located, but only from the falling side of the envelope.
 
-The simulations in the [results](#results) used an 80 ms floor, the reactive
-floor before the latency bias was accounted for. A rerun at 130 ms is in
-progress and will be added here.
+The main simulation study used an 80 ms floor, the reactive floor before the
+latency bias was accounted for. A rerun at the 130 ms floor is reported under
+[results at the 130 ms floor](#results-at-the-130-ms-floor): the higher floor
+costs accuracy for sensations at 250 ms and earlier, most of all at 150 to
+200 ms.
 
 The latency bias is an estimate. The LabRecorder file remains the ground
 truth for checking it: with the ECG and the tone markers on one clock, the
@@ -278,7 +283,8 @@ less the speaker.
 
 **Stopping rule candidates.** Stop when the 95 percent credible interval on
 `mu` is at most a target width, with a minimum and a maximum number of trials.
-The [simulations](#results) show that the width an observer can reach depends
+The [simulations](#results-at-the-80-ms-floor), run with the 80 ms floor, show
+that the width an observer can reach depends
 mostly on how noisy their answers are. The table gives the trial at which the
 median credible-interval width under Psi-marginal on `mu` first reaches each
 value, over 150 runs per class.
@@ -360,7 +366,9 @@ trials so that estimates can be compared at every trial count. An
 inward-outward staircase arm after García-Pérez was optional and was not run.
 The adaptive methods use a `min_delay` of 80 ms, the reactive floor measured
 above before the latency bias was accounted for, so their candidates run from
-80 to 600 ms. The runner's floor is now 130 ms; the rerun is in progress. The MCS keeps its published
+80 to 600 ms. The runner's floor is now 130 ms, and four of the methods were
+rerun with it (see [results at the 130 ms floor](#results-at-the-130-ms-floor)).
+The MCS keeps its published
 levels from 0 to 500 ms as the classical benchmark, although 0 ms cannot be
 realized on current hardware.
 
@@ -382,10 +390,11 @@ the distribution of sampled delays, which is the check on clustering.
 credible-interval width against trial count by method, and a table at 20, 30,
 40, 60 and 120 trials. The simulation script regenerates all three.
 
-### Results
+### Results at the 80 ms floor
 
-Error and interval width are over the 30 detectors (300 runs per method) unless
-stated otherwise. In the method labels, `psi_mu` targets `mu`, `psi_mu_sigma`
+These are the results of the main study, in which the adaptive methods could
+present any candidate delay from 80 ms. Error and interval width are over the
+30 detectors (300 runs per method) unless stated otherwise. In the method labels, `psi_mu` targets `mu`, `psi_mu_sigma`
 targets `mu` and `sigma`, `psi_joint` targets all four parameters, and `_x10`
 marks an `explore` fraction of 0.1.
 
@@ -393,7 +402,8 @@ marks an `explore` fraction of 0.1.
 :alt: Two panels against trial number, 1 to 120. Left, RMSE of the posterior mean of mu falls from about 85 ms for all methods; MCS stays highest until about trial 75, and all methods end between 16 and 23 ms. Right, mean 95 percent credible-interval width falls from about 570 ms to between 70 and 86 ms, with MCS widest throughout.
 
 RMSE of the posterior mean of `mu` (left) and mean width of its 95 percent
-credible interval (right) against trial count, by method, for the 30 detectors.
+credible interval (right) against trial count, by method, for the 30 detectors,
+with the 80 ms floor.
 ```
 
 | `mu` RMSE (ms) at trial | 20 | 30 | 40 | 60 | 120 |
@@ -468,12 +478,127 @@ off the rising side of the envelope, so the lowest allowed delay is the most
 informative one left. The longest delays, 520 to 600 ms, receive 3 percent of
 trials without exploration and 5 percent with it.
 
+### Results at the 130 ms floor
+
+The rerun used the runner's 130 ms floor, with the same 34 observers, the same
+10 repetitions and the same seed (2026) as the main study, for four methods:
+MCS, `psi_mu`, `psi_mu_x10` and `psi_mu_sigma`, 1,360 runs in all. The
+adaptive candidates now start at 140 ms. MCS keeps its published levels from
+0 to 500 ms, which the floor does not touch, so its figures are those of the
+main study.
+
+| `mu` RMSE (ms) at trial, 130 ms floor | 20 | 30 | 40 | 60 | 120 |
+|---|---|---|---|---|---|
+| MCS (levels 0 to 500 ms, unaffected) | 58.8 | 54.8 | 45.4 | 35.5 | 20.7 |
+| `psi_mu` | 39.0 | 33.0 | 31.6 | 29.4 | 25.8 |
+| `psi_mu_x10` | 40.6 | 34.7 | 33.3 | 30.3 | 26.9 |
+| `psi_mu_sigma` | 40.4 | 35.9 | 34.2 | 29.6 | 24.6 |
+| Bias of `mu`, `psi_mu` | -8.5 | -9.2 | -11.1 | -10.7 | -10.0 |
+| Mean CI width, `psi_mu` | 283 | 219 | 185 | 135 | 85 |
+
+Against the 80 ms floor, `psi_mu` is no worse early on: its RMSE is lower up to
+about trial 40 (39.0 against 46.8 ms at 20 trials). From about trial 45 it is
+higher, by 4 ms at 60 trials and by 9 ms at 120, where it rises from 17.1 to
+25.8 ms. A bias of about -10 ms appears from the first trials and stays,
+against -2.6 ms at 120 trials with the 80 ms floor. The adaptive methods still
+beat MCS up to about trial 75, but at 120 trials all three are worse than MCS
+(24.6 to 26.9 ms against 20.7 ms), because the MCS levels are not held to the
+floor.
+
+The loss sits in the observers whose sensation is early. Split by the true
+`mu`, at trial 120 (60 runs per cell):
+
+| `psi_mu` at trial 120, true `mu` | 150 ms | 200 ms | 250 ms | 300 ms | 350 ms |
+|---|---|---|---|---|---|
+| RMSE (ms), 80 ms floor | 24.0 | 15.6 | 12.6 | 12.8 | 17.8 |
+| RMSE (ms), 130 ms floor | 34.3 | 38.3 | 17.7 | 12.2 | 14.6 |
+| Bias (ms), 80 ms floor | -13.0 | -1.6 | +1.0 | +1.4 | -1.0 |
+| Bias (ms), 130 ms floor | -24.1 | -20.5 | -5.7 | -1.1 | +1.6 |
+
+At `mu` of 300 and 350 ms the two floors agree within a few milliseconds. At
+150 and 200 ms the RMSE rises by 10 and 23 ms and the bias reaches about
+-20 ms. Within those observers it is the wide sensations that suffer: at a
+`mu` of 200 ms the bias is -4 ms for a `sigma` of 50 ms, and -25 and -33 ms for
+100 and 150 ms. A wide envelope centred at 150 or 200 ms has much of its rising
+flank below 130 ms, so the falling flank carries most of what the data say
+about it, and the falling flank alone is consistent with an earlier `mu`,
+which pulls the posterior mean down.
+
+Lowering the floor is therefore worth real accuracy, for the observers whose
+sensation comes early in the cycle. That is the case for roadmap items C1 to
+C3 under [what comes next](#what-comes-next): C1 brings the floor to about
+100 ms on the current hardware and C3 to about 60 ms with a wired ECG, and C2
+removes the transport jitter that the [hardware dry run](#hardware-dry-run)
+found.
+
+## Hardware dry run
+
+On 2026-11-03 the runner was run for one full session on the test desktop: a
+PLUX ECG streamed over Bluetooth into LSL by the PLUX bridge, the wrapper's
+settings (absolute axis, at most 60 trials), and LabRecorder recording the ECG
+and the `HSD` marker stream. The participant wore a tight finger pulse
+oximeter throughout, as a positive control, so that there was a clear pulse
+sensation to locate. One session on one person checks the pipeline. It says
+nothing yet about heartbeat perception.
+
+| Check | Measured |
+|---|---|
+| Session | 60 trials in 7 minutes |
+| Tones | 305 scheduled and 305 played, the practice trials included; onsets within 1 ms of the schedule |
+| Online R detector | Commits a beat 13 ms (median) and 14 ms (95th percentile) after the stamped R-wave |
+| ECG stream | No dropped samples |
+| Online beats against offline R-waves from the recording | Sensitivity 0.996, positive predictive value 1.0 |
+| Realized delay against the stamped R-wave | 50 ms below the request on every trial, by design (the latency bias) |
+| Tone onsets against the offline R-wave | Interquartile range of 23 ms on the raw LSL timestamps, 44 ms on the dejittered ones |
+| Bluetooth arrival jitter of the ECG samples | SD 26 ms on the test desktop, against 6 ms on the stimulus PC |
+
+The scheduling itself was exact: every tone landed within 1 ms of the time it
+was given. The scatter against the offline R-wave comes from before the
+scheduler. The online detector times each R-wave from the timestamps its
+samples carry when they arrive, and on that desktop the Bluetooth arrival
+times jittered with an SD of 26 ms, against 6 ms on the stimulus PC. Against
+the recording's dejittered timestamps, which are closer to when the hub took
+each sample, the tones therefore scattered more widely (44 ms) than against
+its raw ones (23 ms). Jitter of this size widens the measured `sigma`, which is
+what roadmap items C2 and C3 address.
+
+```{figure} images/hsd_dryrun_session.png
+:alt: Three panels from the 60-trial dry run. Left, each answer (1 synchronous, 0 not) against the realized delay from 140 to 540 ms, coloured by confidence, with the proportion of synchronous answers per 50 ms bin as squares and the posterior-mean envelope, which rises from a floor of about 0.32 to a peak of about 0.75 near 270 ms. Middle, the posterior mean of mu settles near 270 ms over trials while its 95 percent credible interval narrows from 0 to 600 ms to 150 to 400 ms. Right, the log10 Bayes factor for detection wanders between -0.6 and +0.3 and ends near 0.
+
+The dry run session. Left: each answer against the realized delay, coloured by
+confidence, with the proportion of "synchronous" answers in each 50 ms bin
+(squares, sized by the number of trials) and the posterior-mean envelope.
+Middle: posterior mean of `mu` and its 95 percent credible interval after each
+trial. Right: log10 Bayes factor for detection after each trial.
+```
+
+After 60 trials, the session's maximum, the posterior put `mu` at 272 ms with
+a 95 percent credible interval of 150 to 400 ms, `sigma` at 98 ms, the floor
+at 0.32 and the peak at 0.75. The log10 Bayes factor for detection was about 0.
+The interval never came down to the 100 ms stopping width, so the session ran
+to its maximum.
+
+| Realized delay (ms) | 100 to 150 | 150 to 200 | 200 to 250 | 250 to 300 | 300 to 350 | 350 to 400 | 400 to 450 | 450 to 500 | 500 to 550 |
+|---|---|---|---|---|---|---|---|---|---|
+| P(synchronous) | 0.33 | none | 0.62 | 0.84 | 0.57 | 0.20 | 0.00 | 0.33 | 0.62 |
+| Trials | 9 | 0 | 8 | 19 | 7 | 5 | 1 | 3 | 8 |
+
+The answers rise to a clear peak at 250 to 300 ms and fall away by 350 to
+400 ms. But the participant also answered "synchronous" on 5 of the 8 trials
+at 500 to 550 ms. The model has one bump, so it absorbed those long-delay
+answers as a high floor, 0.32, rather than as a second rise. A floor that high
+leaves the envelope a rise of only 0.43 from floor to peak, and the posterior
+mass on a rise of more than 0.2 stayed at 0.92, the same as its prior. That is
+why the Bayes factor stayed near 1 even though `mu` was located. Whether the
+long-delay answers were heard against the next beat, the periodicity the model
+ignores, cannot be told from one session.
+
 ## What comes next
 
 | Phase | Status | Content |
 |---|---|---|
 | B. Task runner | Implemented | The task, its parameters and configuration, English instructions, an autopilot observer, the train scheduler with both stimulus axes, a headless test on a virtual heart, an LSL test on a synthetic ECG through `LSLRecorder` and the shared `LSLBeatSource`, the wrapper and a user guide section. `setup="behavioral"` uses the shared `LSLBeatSource` and `TonePlayer` in `cardioception.devices` |
-| B. Hardware dry run | Done, 2026-11-03 | The Plux-to-LSL bridge installed on the test desktop and 60 trials run on a real ECG in 7 minutes, recorded with LabRecorder. All 305 tones were scheduled and played, onsets matched their schedule within 1 ms, the detector committed 13 ms after each R, no samples were dropped, and the realized delay sat 50 ms below the request by design. Against the offline R-wave the tones scattered with an interquartile range of 23 to 44 ms, because the Bluetooth arrival stamps of the ECG samples jitter (SD 26 ms on that desktop, 6 ms on the stimulus PC). The session put the sensation of a participant wearing a tight finger pulse oximeter at 272 ms, interval 150 to 400 ms |
+| B. Hardware dry run | Done, 2026-11-03 | The Plux-to-LSL bridge installed on the test desktop and 60 trials run on a real ECG in 7 minutes, recorded with LabRecorder. All 305 tones were scheduled and played, onsets matched their schedule within 1 ms, the detector committed 13 ms after each R, no samples were dropped, and the realized delay sat 50 ms below the request by design. Against the offline R-wave the tones scattered with an interquartile range of 23 to 44 ms, because the Bluetooth arrival stamps of the ECG samples jitter (SD 26 ms on that desktop, 6 ms on the stimulus PC). The session put the sensation of a participant wearing a tight finger pulse oximeter at 272 ms, interval 150 to 400 ms. See [hardware dry run](#hardware-dry-run) |
 | C1. Audio lead and output calibration | Planned, software only | Cut the audio scheduling lead from 50 to 20 ms (the bench showed 20 ms still lands within 1 ms) and measure the output offset of the speaker or headphones with the microphone loopback in `bench/audio_onset.py`, so the latency bias becomes a measured constant per setup. Lowers the physical floor from 130 to about 100 ms and makes `mu` comparable across laboratories |
 | C2. Re-time Plux samples from the hub's counter | Planned, bridge change shared with PAT | The hub samples at exactly 1000 Hz, so a running fit of its sample counter to the clock in the bridge removes the Bluetooth arrival jitter down to the chunk period, about 10 ms, without touching the constant lag. Jitter is the error that inflates `sigma`: 26 ms of it turns a true width of 40 ms into a measured 48 ms |
 | C3. Wired ECG into LSL | Recommended configuration | Biopac, ADInstruments and Brain Products all have LSL paths. Jitter falls to a millisecond or two, the transport lag to a few milliseconds, and with the shorter lead the floor to about 60 ms. The simulations put the gain of a lower floor at 26 to 17 ms RMSE on `mu` at 120 trials and remove a 10 ms bias, because sensations at 150 to 200 ms regain their rising flank |

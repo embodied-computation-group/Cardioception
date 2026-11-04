@@ -8,12 +8,12 @@ og:description: "Official documentation for Cardioception, the Aarhus University
 myst:
   html_meta:
     description: "Official documentation for Cardioception, the Aarhus University toolbox that measures cardiac interoception in PsychoPy with the Heart Rate Discrimination task."
-    keywords: "cardioception, interoception, cardiac interoception, heart rate discrimination, HRD, heartbeat counting, psychophysics, metacognition, PsychoPy"
+    keywords: "cardioception, interoception, cardiac interoception, heart rate discrimination, HRD, heartbeat counting, heartbeat synchrony, psychophysics, metacognition, PsychoPy"
 ---
 
 # Cardioception Toolbox
 
-Cardioception measures cardiac interoception in [Psychopy](https://www.psychopy.org/). The package is built around the Heart Rate Discrimination task (HRD), a psychophysical method that estimates how accurately and how precisely people judge their own heart rate. It also ships the classic Heartbeat Counting task.
+Cardioception measures cardiac interoception in [Psychopy](https://www.psychopy.org/). The package is built around the Heart Rate Discrimination task (HRD), a psychophysical method that estimates how accurately and how precisely people judge their own heart rate. It also ships the classic Heartbeat Counting task, and an experimental third, the Heartbeat Synchrony Discrimination task.
 
 [![GitHub release](https://img.shields.io/github/v/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/) [![pip](https://img.shields.io/pypi/v/cardioception-toolbox)](https://pypi.org/project/cardioception-toolbox/) [![GitHub license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22139105.svg)](https://doi.org/10.5281/zenodo.22139105)
 
@@ -47,6 +47,10 @@ The HBC {cite:p}`1978:dale,1981:schandry`, also known as the heartbeat tracking 
 
 The package keeps this task because much of the literature rests on it. For new studies we would point you to the HRD, which separates interoceptive bias from precision and is less confounded by beliefs about heart rate. The [theory page](measuring.md) sets out that argument in full.
 
+### Heartbeat Synchrony Discrimination task
+
+**Experimental.** The HSD is an adaptive Bayesian version of the heartbeat detection task {cite:p}`1993:brener`. Participants hear tones a chosen delay after each R-wave and judge whether they were synchronous with their heartbeat, and the delays are placed to estimate where in the cardiac cycle the heartbeat is felt and how sharply. It needs an ECG over Lab Streaming Layer and has so far been run on hardware once. The [design page](hsd_design.md) describes the method and the evidence, and the [user guide](user_guide.md#heartbeat-synchrony-discrimination) explains how to run it.
+
 ## Recording devices
 
 The default setup uses the [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) with [Nonin 8000SM 'soft-clip' fingertip sensors](https://www.nonin.com/products/8000s/), which plugs into the stimulus PC over USB and needs no extra code. Any ECG or PPG device that streams over [Lab Streaming Layer](https://labstreaminglayer.org/) also works, through `cardioception.devices.LSLRecorder`, and other devices can be added by supplying a recorder object to `getParameters`. The [user guide](user_guide.md) has the details.
@@ -58,7 +62,8 @@ For HRD data we recommend the [Hierarchical Interoception toolbox](https://githu
 ## Where to go next
 
 - [User guide](user_guide.md) for installation, dependencies and running a task
-- [Theory](measuring.md) for what the two tasks measure and why
+- [Theory](measuring.md) for what the HRD and the HBC measure and why
+- [HSD design](hsd_design.md) for the experimental Heartbeat Synchrony Discrimination task
 - [Tutorials](tutorials/index.md) for inspecting your data, then modelling it
 - [API](api.rst) for the parameters and task functions
 - [Cite](cite.md) for the references to use in a publication

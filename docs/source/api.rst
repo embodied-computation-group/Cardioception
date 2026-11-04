@@ -87,8 +87,9 @@ Languages
 Heartbeat Synchrony Discrimination task
 =======================================
 
-Experimental, not yet run on hardware; see the
-:doc:`design document <hsd_design>`.
+Experimental, run on hardware once so far; see the
+:doc:`design document <hsd_design>` and the
+:doc:`user guide <user_guide>`.
 
 Parameters
 **********
