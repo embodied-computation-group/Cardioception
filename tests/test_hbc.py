@@ -27,6 +27,19 @@ class TestHBC(TestCase):
         # Get parameters
         parameters = getParameters(setup="test", resultPath=self.tmp)
         parameters["win"].close()
+        assert parameters["language"] == "english"
+        assert parameters["labelsRating"] == ["Guess", "Certain"]
+
+        # German instructions, and the scale labelled in German
+        parameters = getParameters(
+            participant="German", setup="test", resultPath=self.tmp, language="german"
+        )
+        parameters["win"].close()
+        assert parameters["language"] == "german"
+        assert parameters["labelsRating"] == ["Geraten", "Sicher"]
+
+        with self.assertRaises(ValueError):
+            getParameters(setup="test", resultPath=self.tmp, language="klingon")
 
     @pytest.mark.blocking
     def test_run(self):

@@ -1,0 +1,43 @@
+language: german
+texts:
+  Count: Wenn Sie START hören, versuchen Sie, Ihre Herzschläge zu zählen, indem Sie sich auf
+    Ihre Körperempfindungen konzentrieren. Hören Sie auf zu zählen, wenn Sie STOP hören
+  Rest: Bitte sitzen Sie ruhig bis zum nächsten Abschnitt
+  Training: Wenn Sie START hören, versuchen Sie, Ihre Herzschläge zu zählen, indem Sie sich
+    auf Ihre Körperempfindungen konzentrieren. Hören Sie auf zu zählen, wenn Sie STOP hören
+  Tutorial1: In diesem Experiment bitten wir Sie, Ihre Herzschläge über unterschiedlich lange
+    Zeitabschnitte still für sich zu zählen.
+  Tutorial2: Wenn Sie dieses "Herz"-Symbol sehen, zählen Sie still Ihre Herzschläge, indem
+    Sie sich auf Ihre Körperempfindungen konzentrieren.
+  Tutorial3: Manchmal sehen Sie auch dieses "Ruhe"-Symbol. In diesem Fall besteht Ihre Aufgabe
+    nur darin, bis zum nächsten Abschnitt ruhig sitzen zu bleiben.
+  Tutorial4: Beginn und Ende jedes Zählabschnitts werden durch die Wörter 'START' und 'STOP'
+    angekündigt. Während Sie Ihre Herzschläge zählen, können Sie die Augen schließen, wenn
+    Ihnen das hilft. Bitte halten Sie Ihre Hand während des Zählens still, damit die Aufzeichnung
+    des Herzschlags nicht gestört wird.
+  Tutorial5: Nach dem Zählen werden Sie gebeten, die genaue Anzahl der Herzschläge anzugeben,
+    die Sie zwischen 'START' und 'STOP' gespürt haben. Bitte schätzen Sie die Anzahl nicht,
+    sondern geben Sie nur die Herzschläge an, die Sie in diesem Zeitraum tatsächlich gespürt
+    haben. Geben Sie Ihre Antwort über den Ziffernblock ein und drücken Sie anschließend die
+    Eingabetaste. Mit der Rücktaste können Sie Ihre Antwort korrigieren.
+  Tutorial6: Nach Ihrer Antwort schätzen Sie ein, wie sicher Sie sich sind, dass Ihre Zählung
+    für diesen Abschnitt genau war. Ein hoher Wert bedeutet, dass Sie sich vollkommen sicher
+    sind, genau die Anzahl der tatsächlichen Herzschläge gezählt zu haben. Ein niedriger Wert
+    bedeutet, dass Sie sich vollkommen unsicher sind oder das Gefühl hatten, die Anzahl der
+    Herzschläge zu raten. Wählen Sie Ihre Antwort mit den Tasten RECHTS und LINKS aus und
+    bestätigen Sie mit der Taste NACH UNTEN.
+  Tutorial7: Vor Beginn der Hauptaufgabe gibt es eine kurze Ruhephase von einigen Minuten,
+    in der wir die Aufzeichnung des Herzschlags kalibrieren. Bitte sitzen Sie in dieser Zeit
+    ruhig und halten Sie Ihre Hände still, damit die Kalibrierung nicht gestört wird. Danach
+    beginnt die Zählaufgabe, die insgesamt etwa 6 Minuten dauert.
+  Tutorial8: Sie absolvieren nun eine kurze Übungsaufgabe. Wenn Sie Fragen haben, wenden Sie
+    sich bitte an die Versuchsleitung, bevor Sie mit dem Hauptexperiment fortfahren.
+  Tutorial9: Gut gemacht! Wenn Sie Fragen haben, wenden Sie sich bitte jetzt an die Versuchsleitung.
+    Andernfalls drücken Sie die LEERTASTE, um mit dem Experiment fortzufahren.
+  confidence: Wie sicher sind Sie sich bei Ihrer Zählung? Wählen Sie mit den Tasten RECHTS/LINKS
+    aus und bestätigen Sie mit der Taste NACH UNTEN
+  labelsRating:
+  - Geraten
+  - Sicher
+  nCount: Wie viele Herzschläge haben Sie gezählt? Geben Sie eine Zahl ein und bestätigen
+    Sie mit ENTER.
