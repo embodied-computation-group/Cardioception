@@ -28,6 +28,8 @@ from typing import Any, Dict, Mapping, Optional, Tuple
 
 import numpy as np
 
+from ..devices._online_beats import REFRACTORY
+from ..devices.tone_player import TONE_CLEARANCE, min_tone_spacing
 from ._constants import (
     AUDIO_LEAD,
     AXES,
@@ -170,6 +172,17 @@ class TaskConfig:
             low, high, step = getattr(self, name)
             if not (step > 0 and high >= low):
                 raise ValueError(f"{name} should be (low, high, step) with step > 0")
+        # One tone per R-wave, at one delay per train: tones are an RR interval
+        # apart, never less than the detector's refractory period.
+        if not self.toneSecs > 0:
+            raise ValueError(f"toneSecs should be above 0, got {self.toneSecs}")
+        if min_tone_spacing(self.toneSecs) > REFRACTORY:
+            raise ValueError(
+                f"toneSecs should be at most {REFRACTORY - TONE_CLEARANCE:g} s, "
+                f"got {self.toneSecs}: tones can come {REFRACTORY:g} s apart, "
+                f"one R-wave after another, and the tone player needs a tone's "
+                f"duration plus {TONE_CLEARANCE:g} s between starts."
+            )
 
     @property
     def allowedKeys(self):

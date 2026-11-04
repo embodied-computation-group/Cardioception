@@ -192,11 +192,12 @@ def test_lsl_beat_source_replay(recorded_ecg):
     assert source.period is None
     source.start()
     assert inlet.flushed == 1
-    beats, lags = [], []
+    beats, lags, rejected = [], [], []
     while not inlet.exhausted:
         for b in source.poll():
             beats.append(b)
             lags.append(clock.t - b.r_time)
+            rejected.append(source.n_rejected)
     r = np.array([b.r_time for b in beats])
     rr = np.diff(r)
     print(
@@ -208,11 +209,13 @@ def test_lsl_beat_source_replay(recorded_ecg):
     nearest = np.min(np.abs(ref[:, None] - r[None, :]), axis=1)
     assert np.mean(nearest < 0.05) > 0.98
     assert abs(len(beats) - ref.size) <= 0.02 * ref.size + 2
-    # Periods: None for the first three beats, then the mean of the last 3 RR.
+    # Periods: None for the first three beats, then the mean of the last 3
+    # RR, away from any interval rejected as a missed or extra beat (an extra
+    # beat moves the next interval back to the beat before it).
     assert [b.period for b in beats[:3]] == [None, None, None]
     for i in range(3, len(beats)):
         expected = (r[i] - r[i - 3]) / 3
-        if np.all(rr[i - 3 : i] <= 2.0):
+        if np.all(rr[i - 3 : i] <= 2.0) and rejected[i] == rejected[max(i - 4, 0)]:
             assert beats[i].period == pytest.approx(expected)
     periods = np.array([b.period for b in beats[3:] if b.period is not None])
     assert np.all((periods > 0.4) & (periods < 1.6))
@@ -283,3 +286,53 @@ def test_lsl_beat_source_gap_resets_period():
     assert source.period == pytest.approx(1.0)
     source._on_beat(30.0, 26.0)  # a 26 s hole in the signal
     assert source.period is None
+
+
+def feed(source, r_times):
+    """Hand ``r_times`` to the source as the detector would, with its RR."""
+    beats, previous = [], None
+    for r in r_times:
+        source._on_beat(r, None if previous is None else r - previous, r + 0.03)
+        previous = r
+        beats.append(source._pending[-1])
+    return beats
+
+
+def test_lsl_beat_source_rejects_missed_and_extra_beats():
+    """At 70 bpm, one dropped beat and one T wave taken for a beat leave the
+    anticipated period where it was, and each is counted once."""
+    clock = FakeClock()
+    source = LSLBeatSource(FakeRecorder(FakeInlet(np.zeros((0, 2)), [], clock), 1))
+    rr = 60 / 70 + np.random.default_rng(0).uniform(-0.02, 0.02, 40)
+    r_times = list(1.0 + np.cumsum(rr))
+    missed = r_times.pop(15)
+    r_times.insert(28, r_times[27] + 0.3)  # a T wave, 0.3 s after its R
+    beats = feed(source, r_times)
+    periods = np.array([b.period for b in beats if b.period is not None])
+    assert len(periods) == len(beats) - 3
+    assert np.all((periods > 0.95 * 60 / 70) & (periods < 1.05 * 60 / 70))
+    assert source.n_rejected == 2
+    # Every beat is still reported, the extra one included.
+    assert [b.r_time for b in beats] == r_times
+    assert missed not in r_times
+    # Under the old rule (mean of the last three RR whatever they are) the
+    # missed beat pushed the period a third high.
+    old = np.convolve(np.diff(r_times), np.ones(3) / 3, "valid")
+    assert old.max() > 1.25 * 60 / 70
+
+
+def test_lsl_beat_source_follows_a_real_change_of_rate():
+    """A gradual change is followed without rejections, and a rate that jumps
+    out of the band for good is learnt again rather than locked out."""
+    clock = FakeClock()
+    source = LSLBeatSource(FakeRecorder(FakeInlet(np.zeros((0, 2)), [], clock), 1))
+    rr = list(np.linspace(1.0, 0.5, 30)) + [0.5] * 5
+    feed(source, list(np.cumsum(rr)))
+    assert source.n_rejected == 0
+    assert source.period == pytest.approx(0.5)
+
+    source = LSLBeatSource(FakeRecorder(FakeInlet(np.zeros((0, 2)), [], clock), 1))
+    rr = [0.5] * 10 + [1.0] * 10
+    beats = feed(source, list(np.cumsum(rr)))
+    assert source.n_rejected == 3
+    assert beats[-1].period == pytest.approx(1.0)

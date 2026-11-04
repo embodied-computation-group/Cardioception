@@ -98,7 +98,7 @@ The defaults of `getParameters` are those of the paper, except where noted:
 | `language` | `"english"` | `"english"` or `"danish"` |
 | `dialGainDeg`, `dialGainMs` | 10, 25 | Degrees per wheel notch in relative mode, ms per notch in absolute mode |
 | `latencyBias`, `audioLead` | 0.05, 0.05 s | See [timing](#timing-and-latency) |
-| `minToneGap` | 0.3 s | A tone less than this after the previous one is skipped |
+| `minToneGap` | 0.3 s | A tone less than this after the previous one is skipped. At least `toneDuration` plus 0.05 s |
 | `showDial` | `True` | The ring and pointer around the fixation cross |
 | `exteroPeriod` | `"simulated"` | The vibration's period in the exteroceptive variant |
 | `vibrationVolume` | 0 | The vibration burst is silent unless raised |

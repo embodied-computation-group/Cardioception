@@ -162,6 +162,19 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 - The keyboard confidence rating uses `visual.Slider`. `visual.RatingScale`
   moved to the `psychopy-legacy` plugin in PsychoPy 2026 and now raises.
 - A crash or an abort still saves everything the session produced.
+- A missed R peak or a T wave taken for one no longer skews the anticipated
+  period of the live beat source (PAT, HSD) by a third for three beats. An RR
+  interval outside 0.6 to 1.6 times the median of the last five accepted ones
+  is left out of the period and counted in `LSLBeatSource.n_rejected`.
+- The online R-peak detector restarts its filters after a gap in the ECG
+  timestamps and reports nothing for one period after it, instead of taking
+  the resume transient for a beat. Without beats, its QRS estimate is no
+  longer halved without limit, so electrode-off noise is not taken for beats.
+- Two tones closer than a tone's duration plus about 30 ms played the second
+  late, because the tone player starts a sound only after the previous one of
+  its kind has ended. `TonePlayer.schedule` now refuses such a tone (logged,
+  NaN onset), the PAT's `minToneGap` must be at least `toneDuration` plus
+  0.05 s (it allowed 0), and the HSD's `toneSecs` at most 0.2 s.
 
 ### Internal
 
@@ -206,6 +219,9 @@ code it replaced rather than read over.
   `on_every_frame`, validated triggers, and an autopilot that runs whole
   sessions headless. Its phase arithmetic, scheduling, scoring and data
   columns are unchanged.
+- The live tests of the beat-locked tone player, which play through the
+  sound card at its own volume, are marked `audio` and run only with
+  `pytest --run-audio`, as `blocking` tests run only with `--run-blocking`.
 
 **`responseDecision` returns five values, not six.** The second, a
 `responseTrigger` timestamp, was unpacked by its only caller and never read.
