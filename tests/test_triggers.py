@@ -91,8 +91,13 @@ class TestNoBareLookupsRemain(unittest.TestCase):
             for node in ast.walk(tree):
                 if not isinstance(node, ast.Expr):
                     continue
-                # A bare expression is only meaningful as a docstring or a call.
-                if isinstance(node.value, (ast.Constant, ast.Call, ast.Await)):
+                # A bare expression is only meaningful as a docstring, a call,
+                # or a yield: a generator's `yield x` is a statement that
+                # produces a value for the caller, not a value thrown away.
+                if isinstance(
+                    node.value,
+                    (ast.Constant, ast.Call, ast.Await, ast.Yield, ast.YieldFrom),
+                ):
                     continue
                 offenders.append(
                     f"{path.name}:{node.lineno}: " f"{ast.dump(node.value)[:60]}"
