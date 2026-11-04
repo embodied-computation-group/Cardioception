@@ -93,7 +93,7 @@ if __name__ == "__main__":
         # matched nothing. A wheel built from this shipped no sounds at all;
         # only MANIFEST.in was keeping the sdist usable.
         package_data={
-            "cardioception.HBC": ["Images/*.png", "Sounds/*.wav"],
+            "cardioception.HBC": ["Images/*.png", "Sounds/*.wav", "texts/*.yaml"],
             "cardioception.HRD": [
                 "Images/*.png",
                 "Images/*.svg",
