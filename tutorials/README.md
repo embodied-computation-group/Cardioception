@@ -24,6 +24,8 @@ R/
   05_single_subject.R  fit the worked participant in the psychophysics tutorial
 plot_psi_adaptation.py  Psi theory figures plus the fitted participant's posterior plots
 plot_inspecting_data.py participant and collection-level quality-control figures
+plot_hrd_overview.py    the HRD page figure: task screens, staircase, psychometric functions
+render_hrd_screens.py   renders the HRD screens it uses (needs PsychoPy; plays no sound)
 slurm/            how we ran these on a cluster. Not needed to follow the tutorials.
 data/             input trial data
 results/          posterior summaries, diagnostics and figures

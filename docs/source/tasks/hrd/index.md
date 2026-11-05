@@ -15,10 +15,10 @@ A trial begins with a fixation cross for 0.25 s. The participant then attends to
 
 Half the trials by default are an exteroceptive control. The participant listens for 5 s to a tone sequence at a random rate between 40 and 100 BPM instead of their heart, then judges a second sequence against it. Everything else is the same.
 
-```{figure} ../../images/HeartRateDiscrimination.png
-:alt: Panel a, the interoceptive and exteroceptive trial sequences, fixation, listening, decision and confidence rating. Panel b, the Psi staircase traces for both conditions over 80 trials, with the fitted psychometric functions and their threshold and slope.
+```{figure} ../../images/hrd_overview.png
+:alt: Panel a, the task's screens for one interoceptive and one exteroceptive trial, fixation 0.25 s, listening 5 s, decision up to 5 s and confidence 0.5 to 5 s. Panel b, the Psi staircase over 60 trials in each condition for one participant, with each stimulus marked by the answer given and the threshold estimate converging. Panel c, the psychometric functions at the final estimates, interoceptive alpha -3.2 and sigma 9.2, exteroceptive alpha +2.4 and sigma 4.8.
 
-The HRD trial (a) and the Psi staircase with the psychometric functions it estimates (b). Panel a shows the exteroceptive listening window as 3 to 7 s and the decision window as up to 8 s; the current defaults are 5 s for both listening windows and 5 s to decide.
+(a) The task's screens for one trial in each condition, with the default durations; a 0.5 s fixation precedes the decision. (b) The Psi staircase for one participant from the Visceral Mind Project: each trial's ΔBPM, marked by the answer given, and the threshold estimate with its 95 percent interval. (c) The psychometric functions at the staircase's final online estimates, with the threshold (α) at 50 percent "faster". The tutorials fit these properly.
 ```
 
 A Psi staircase {cite:p}`1999:kontsevich`, one per condition, chooses `Alpha` on each trial between -50.5 and 50.5 ΔBPM, where the answer is most informative about the participant's threshold and slope. A trial with no answer in time is written with `DecisionProvided` false, does not update the staircase, and is put back at the end of the queue (`onMissedTrial="represent"`, at most three presentations).
