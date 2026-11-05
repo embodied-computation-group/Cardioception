@@ -277,7 +277,7 @@ def getParameters(
     """Create Heart Rate Discrimination task parameters.
 
     Many task parameters, aesthetics, and options are controlled by the
-    parameters dictonary defined herein. These are intended to provide
+    parameters dictionary defined herein. These are intended to provide
     flexibility and modularity to task. In many cases, unique versions of the
     task (e.g., with or without confidence ratings or choice feedback) can be
     created simply by changing these parameters, with no further interaction
@@ -297,9 +297,6 @@ def getParameters(
         `"german"`.
     nBreaking : int
         Number of trials to run before the break.
-    nStaircase : int
-        Number of staircase to use per condition (exteroceptive and
-        interoceptive).
     nTrials : int
         The number of trials to run.
 
@@ -327,11 +324,11 @@ def getParameters(
         when `onMissedTrial="represent"`. Defaults to `3`. Without a cap, a
         participant who stops responding would never reach the end.
     participant : str
-        Subject ID. Default is 'Participant'.
+        Subject ID. Default is 'SubjectTest'.
     catchTrials : float
         Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with some
         jitter) to control for range of stimuli presented. Default to `0.0` (no catch
-        trials). If not `0.0`, recomended value is `0.2`.
+        trials). If not `0.0`, recommended value is `0.2`.
     recorder : object | None
         A recording device to use instead of the one `setup` would open, e.g.
         :class:`cardioception.devices.LSLRecorder` to read ECG from an LSL
@@ -348,15 +345,15 @@ def getParameters(
         0-100 visual analogue scale for the mouse and ten discrete steps for the
         keyboard. See :mod:`cardioception.scales`.
     screenNb : int
-        Screen number. Used to parametrize py:func:`psychopy.visual.Window`. Defaults
+        Screen number. Used to parametrize :py:class:`psychopy.visual.Window`. Defaults
         to `0`.
     serialPort: str
         The USB port where the pulse oximeter is plugged. Should be written as a string
         e.g. `"COM3"` for USB ports on Windows.
-    session : int
+    session : str
         Session number. Default to '001'.
     setup : str
-        Context of oximeter recording. `"ehavioral"` will record through a Nonin
+        Context of oximeter recording. `"behavioral"` will record through a Nonin
         pulse oximeter and `"test"` will use pre-recorded pulse time series (for
         testing only).
     stairType : str
@@ -364,7 +361,7 @@ def getParameters(
         1.0.0 and now raises. Kept as an argument so scripts passing it fail
         with an explanation rather than a TypeError.
     systole_kw : dict
-        Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.
+        Additional keyword arguments for :py:class:`systole.recording.Oximeter`.
 
     Attributes
     ----------
@@ -407,7 +404,7 @@ def getParameters(
     nTrials : int
         The number of trials to run. See the parameter of the same name.
     participant : str
-        Subject ID. Default is 'Participant'.
+        Subject ID. Default is 'SubjectTest'.
     path : str
         The task working directory.
     resultPath : str | None
@@ -428,14 +425,14 @@ def getParameters(
         Mapping from trial conditions to keyboard response keys.
     respMax : float
         The maximum time for decision (in seconds).
-    session : int
+    session : str
         Session number. Default to '001'.
     setup : str
         The context of recording. Can be `'behavioral'` or `'test'`.
     texts : dict
         Long text elements.
     textSize : float
-        Scalling parameter for text size.
+        Scaling parameter for text size.
     triggers : dict
         Dictionary {str, callable or None}. The function will be executed
         before the corresponding trial sequence. The default values are
