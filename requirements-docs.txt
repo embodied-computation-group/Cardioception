@@ -1,6 +1,6 @@
 # The package itself is installed separately with --no-deps: the API pages only
 # need the docstrings, and PsychoPy's GUI stack does not build on the runner.
-# cardioception.reports and the parameters modules still import these at module
+# The parameters modules still import these at module
 # level, so autodoc needs them present (the rest are mocked in conf.py).
 numpy
 pandas
@@ -35,4 +35,4 @@ graphviz
 # Note: Removed problematic packages that cause dependency conflicts
 # - xarray (conflicts with numpy version)
 # - bokeh (conflicts with systole requirements)
-# - pymc, metadpy, watermark (optional packages)
+# - watermark (optional package)

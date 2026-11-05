@@ -889,9 +889,9 @@ These checks form a useful specification for a future automated report.
 | Did cardiac measurement look plausible? | `listenBPM` trace, followed by PPG inspection when needed |
 | Did Psi learn within its grid? | Threshold and slope trajectories with posterior intervals and boundary checks |
 
-The legacy `cardioception.reports.preprocessing` and
-`cardioception.reports.report` helpers are being deprecated. They mix quality
-control with outdated analysis choices, so this tutorial does not use them. A
+Version 1.0 removed the legacy `cardioception.reports.preprocessing` and
+`cardioception.reports.report` helpers. They mixed quality control with
+outdated analysis choices, so this tutorial does not use them. A
 rebuilt report can later automate the checks above while keeping the trial data
 and diagnostic plots visible.
 

@@ -273,16 +273,3 @@ Confidence scales
    :toctree: ../generated/scales
 
     ConfidenceScale
-
-Reports
--------
-
-.. currentmodule:: cardioception.reports
-
-.. _reports:
-
-.. autosummary::
-   :toctree: ../generated/reports
-
-    report
-    preprocessing

@@ -97,10 +97,9 @@ Detect the beats in each `*_ppg-<n>.txt` file, count them, and score each window
    Accuracy = 1-\frac{\left | N_{real} - N_{reported} \right |}{\frac{N_{real} + N_{reported}}{2}}
 ```
 
-The [legacy report notebook](hrd/reports.md) computes this score with `report(..., task="HBC")`. A score near 1 is consistent with feeling every beat, and also with knowing one's resting heart rate; the score cannot separate the two.
+A score near 1 is consistent with feeling every beat, and also with knowing one's resting heart rate; the score cannot separate the two.
 
 ## Where to go next
 
 - [What heartbeat counting can establish](theory.md#what-heartbeat-counting-can-establish): the evidence on what a counting score identifies.
-- [HTML reports (legacy)](hrd/reports.md): the notebook report of a session.
 - [API](../reference/api.rst): every argument of `getParameters`.

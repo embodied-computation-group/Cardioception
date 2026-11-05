@@ -43,8 +43,6 @@ cardioception/
   PAT/          the Phase Adjustment Task (beta)
   HSD/          the Heartbeat Synchrony Discrimination task (beta)
   devices/      recorders, and the beat source and tone player the PAT and HSD share
-  notebooks/    report templates executed by reports.report()
-  reports.py    preprocessing and HTML reports (legacy, due to be rebuilt)
   _resources.py locates bundled images and sounds
 docs/source/    Sphinx documentation (MyST markdown, furo theme)
 R_analysis/     legacy R scripts, maintained for existing pipelines
@@ -57,7 +55,7 @@ tests/
 - Sentence case headings in documentation. No decorative emoji anywhere.
 - No em dashes or en dashes in prose. Page ranges inside citations keep theirs.
 - Spelling: US for the `-ize`/`-yze` family (`analyze`, `visualization`), British for
-  `-our` and `modelling`/`behavioural`. This matches the existing code and notebooks.
+  `-our` and `modelling`/`behavioural`. This matches the existing code.
   `setup='behavioral'` is a code literal, not prose. Do not change it.
 - Python is formatted with black, imports sorted with isort, and checked with flake8
   and mypy, on **Python 3.11**. The package supports **3.10 and 3.11**: the upper

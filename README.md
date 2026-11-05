@@ -16,12 +16,12 @@ This is the official Cardioception, developed by Micah Allen and the Embodied Co
 
 | Task | What participants do | Main measures | Reference | Status |
 |---|---|---|---|---|
-| Heart Rate Discrimination (HRD) | Judge whether a sequence of tones is faster or slower than their own heart rate | Bias and precision of heart rate judgements, with optional confidence ratings | [Legrand et al., 2022](https://doi.org/10.1016/j.biopsycho.2021.108239) | Established |
-| Heartbeat Counting (HBC) | Count their heartbeats during intervals of different lengths | Reported heartbeat counts relative to recorded counts | [Schandry, 1981](https://doi.org/10.1111/j.1469-8986.1981.tb02486.x) | Established |
-| Phase Adjustment Task (PAT) | Adjust the delay of tones until they match their perceived heartbeat | The delay chosen, and its consistency across trials | [Plans et al., 2021](https://doi.org/10.1016/j.biopsycho.2021.108171); ECG version after [Hodgetts et al., 2026](https://doi.org/10.1111/psyp.70415) | Beta |
-| Heartbeat Synchrony Discrimination (HSD) | Judge whether tones played at different delays after each heartbeat are synchronous with it | Perceived timing of the heartbeat, and its temporal precision | New in Cardioception; see the [design page](https://www.the-ecg.org/Cardioception/dev/tasks/hsd/design.html) | Beta |
-| Whitehead method | Judge which of two tone sequences, one at a short and one at a longer delay after each heartbeat, is simultaneous with it | Discrimination of synchronous from delayed tones | [Whitehead et al., 1977](https://doi.org/10.1007/BF00998623) | Coming soon |
-| Method of constant stimuli (Brener) | Judge whether tones at one of several fixed delays, from 0 to 500 ms after each heartbeat, are simultaneous with it | Proportion of tones judged simultaneous at each delay | [Brener, Liu & Ring, 1993](https://doi.org/10.1111/j.1469-8986.1993.tb02091.x) | Coming soon |
+| [Heart Rate Discrimination (HRD)](https://www.the-ecg.org/Cardioception/dev/tasks/hrd/index.html) | Judge whether a sequence of tones is faster or slower than their own heart rate | Bias and precision of heart rate judgements, with optional confidence ratings | [Legrand et al., 2022](https://doi.org/10.1016/j.biopsycho.2021.108239) | Established |
+| [Heartbeat Counting (HBC)](https://www.the-ecg.org/Cardioception/dev/tasks/hbc.html) | Count their heartbeats during intervals of different lengths | Reported heartbeat counts relative to recorded counts | [Schandry, 1981](https://doi.org/10.1111/j.1469-8986.1981.tb02486.x) | Established |
+| [Phase Adjustment Task (PAT)](https://www.the-ecg.org/Cardioception/dev/tasks/pat.html) | Adjust the delay of tones until they match their perceived heartbeat | The delay chosen, and its consistency across trials | [Plans et al., 2021](https://doi.org/10.1016/j.biopsycho.2021.108171); ECG version after [Hodgetts et al., 2026](https://doi.org/10.1111/psyp.70415) | Beta |
+| [Heartbeat Synchrony Discrimination (HSD)](https://www.the-ecg.org/Cardioception/dev/tasks/hsd/index.html) | Judge whether tones played at different delays after each heartbeat are synchronous with it | Perceived timing of the heartbeat, and its temporal precision | New in Cardioception; see the [design page](https://www.the-ecg.org/Cardioception/dev/tasks/hsd/design.html) | Beta |
+| [Whitehead method](https://www.the-ecg.org/Cardioception/dev/tasks/whitehead.html) | Judge which of two tone sequences, one at a short and one at a longer delay after each heartbeat, is simultaneous with it | Discrimination of synchronous from delayed tones | [Whitehead et al., 1977](https://doi.org/10.1007/BF00998623) | Coming soon |
+| [Method of constant stimuli (Brener)](https://www.the-ecg.org/Cardioception/dev/tasks/constant-stimuli.html) | Judge whether tones at one of several fixed delays, from 0 to 500 ms after each heartbeat, are simultaneous with it | Proportion of tones judged simultaneous at each delay | [Brener, Liu & Ring, 1993](https://doi.org/10.1111/j.1469-8986.1993.tb02091.x) | Coming soon |
 
 Tasks in beta are close to feature complete and are still being rigorously validated.
 
@@ -66,7 +66,7 @@ Every task writes to `data/sub-<participant>/ses-<session>/run-<timestamp>/`, wi
 
 ## Analysis
 
-For hierarchical modelling and power analysis of HRD data, see the companion [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), described in [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3). It provides validated psychometric models and normative priors. The R scripts in [`R_analysis/`](R_analysis/) are kept working for existing pipelines, and the older Python report notebooks in `cardioception/notebooks/` remain for reference.
+For hierarchical modelling and power analysis of HRD data, see the companion [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), described in [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3). It provides validated psychometric models and normative priors. The R scripts in [`R_analysis/`](R_analysis/) are kept working for existing pipelines.
 
 ## Documentation
 
