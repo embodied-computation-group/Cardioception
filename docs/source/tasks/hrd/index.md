@@ -7,7 +7,7 @@ myst:
 
 # Heart Rate Discrimination task
 
-The Heart Rate Discrimination task (HRD) {cite:p}`2022:legrand` measures how a person judges their own heart rate. On each trial the participant hears tones slightly faster or slower than their heart and says which. The threshold of the resulting psychometric function is their bias, its slope their precision, and the confidence rating on every trial measures their metacognition. The task is established. The [theory page](theory.md) sets out what it can and cannot establish.
+The Heart Rate Discrimination task (HRD) {cite:p}`2022:legrand` measures how a person judges their own heart rate. On each trial the participant hears tones slightly faster or slower than their heart and says which. The threshold of the resulting psychometric function is their bias, its slope their precision, and the confidence rating on every trial measures their metacognition. The task is established. [Measuring cardiac interoception](../theory.md) sets out what it can and cannot establish.
 
 ## What a trial looks like
 
@@ -147,7 +147,7 @@ Fit the trials instead, `Decision` against `Alpha` by `Modality`, with the [Hier
 
 ## Where to go next
 
-- [Theory](theory.md): why the HRD measures beliefs about heart rate, and what you may conclude from it.
+- [Measuring cardiac interoception](../theory.md): why the HRD measures beliefs about heart rate, and what you may conclude from it.
 - [Tutorials](tutorials/index.md): inspecting a session, fitting psychometric functions, hierarchical models and metacognition.
 - [HTML reports (legacy)](reports.md): the notebook report of a session.
 - [API](../../reference/api.rst): every argument of `getParameters` and every field of `TaskConfig`.
@@ -156,7 +156,6 @@ Fit the trials instead, `Decision` against `Alpha` by `Modality`, with the [Hier
 ---
 hidden:
 ---
-Theory <theory.md>
 Tutorials <tutorials/index.md>
 HTML reports (legacy) <reports.md>
 ```

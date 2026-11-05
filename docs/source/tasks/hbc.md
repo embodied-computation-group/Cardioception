@@ -7,7 +7,7 @@ myst:
 
 # Heartbeat Counting task
 
-The Heartbeat Counting task (HBC) {cite:p}`1981:schandry,1978:dale` compares the number of heartbeats a person reports over a fixed window with the number recorded. The score is usually taken to index interoceptive accuracy. The task is established, and the package keeps it because much of the literature rests on it. A good score can come from a plausible estimate of heart rate rather than from feeling beats; [what heartbeat counting can establish](index.md#what-heartbeat-counting-can-establish) sets out the evidence.
+The Heartbeat Counting task (HBC) {cite:p}`1981:schandry,1978:dale` compares the number of heartbeats a person reports over a fixed window with the number recorded. The score is usually taken to index interoceptive accuracy. The task is established, and the package keeps it because much of the literature rests on it. A good score can come from a plausible estimate of heart rate rather than from feeling beats; [what heartbeat counting can establish](theory.md#what-heartbeat-counting-can-establish) sets out the evidence.
 
 ## What a trial looks like
 
@@ -101,6 +101,6 @@ The [legacy report notebook](hrd/reports.md) computes this score with `report(..
 
 ## Where to go next
 
-- [What heartbeat counting can establish](index.md#what-heartbeat-counting-can-establish): the evidence on what a counting score identifies.
+- [What heartbeat counting can establish](theory.md#what-heartbeat-counting-can-establish): the evidence on what a counting score identifies.
 - [HTML reports (legacy)](hrd/reports.md): the notebook report of a session.
 - [API](../reference/api.rst): every argument of `getParameters`.

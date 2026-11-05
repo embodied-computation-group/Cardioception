@@ -213,13 +213,14 @@ ogp_social_cards = {
 # restructure. These stubs keep the old URLs, which the README on PyPI, papers
 # and the workshop notebooks link to, landing on the new pages. A redirect
 # drops the #fragment, so links in this repository point at the new pages
-# directly. user_guide.md was dissolved and measuring.md split, so each goes
-# to the page that took most of it. Targets are relative to the old page.
+# directly. user_guide.md was dissolved, so it goes to the page that took most
+# of it. measuring.md is tasks/theory.md, which also absorbed the short-lived
+# tasks/hrd/theory.md. Targets are relative to the old page.
 redirects = {
     "installation": "getting-started/installation.html",
     "user_guide": "getting-started/running-a-session.html",
     "tasks": "tasks/index.html",
-    "measuring": "tasks/hrd/theory.html",
+    "measuring": "tasks/theory.html",
     "pat": "tasks/pat.html",
     "hsd_design": "tasks/hsd/design.html",
     "api": "reference/api.html",
@@ -233,6 +234,7 @@ redirects = {
     # The "Running the HRD" and "Running the HSD" pages were folded into the
     # task pages themselves.
     "tasks/hrd/running": "index.html",
+    "tasks/hrd/theory": "../theory.html",
     "tasks/hsd/running": "index.html",
 }
 

@@ -68,6 +68,7 @@ caption: Tasks
 hidden:
 ---
 tasks/index.md
+tasks/theory.md
 tasks/hrd/index.md
 tasks/hbc.md
 tasks/pat.md

@@ -327,5 +327,5 @@ The two hierarchical tutorials now provide complementary descriptions of HRD
 performance. The [psychophysical model](hierarchical.md) estimates cardiac bias,
 precision, and lapse rate from choices. The ordered beta model estimates
 confidence bias and metacognitive calibration from ratings. The [theory
-page](../theory.md) explains how these measurements fit into the broader
+page](../../theory.md) explains how these measurements fit into the broader
 account of cardiac interoception.
