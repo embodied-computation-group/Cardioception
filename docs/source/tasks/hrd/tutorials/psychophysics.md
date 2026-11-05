@@ -58,7 +58,7 @@ $-10$ ΔBPM. This is their subjective match even though the tones are objectivel
 slower than the measured heart rate. Accuracy is therefore low near the
 participant's subjective threshold and high for sufficiently extreme stimuli.
 
-![Response probability is monotonic, whereas objective accuracy is not](../images/tutorials/fig_response_vs_accuracy.png)
+![Response probability is monotonic, whereas objective accuracy is not](../../../images/tutorials/fig_response_vs_accuracy.png)
 
 The left panel is the monotonic function fitted by the model. The right panel is
 what happens if those same responses are scored against the sign of ΔBPM.
@@ -122,7 +122,7 @@ $$
 This expression makes the direction of $\beta$ explicit: larger $\beta$ means a
 steeper curve.
 
-![How threshold, slope, and lapse rate change the psychometric function](../images/tutorials/fig_parameters.png)
+![How threshold, slope, and lapse rate change the psychometric function](../../../images/tutorials/fig_parameters.png)
 
 The dark curve is held fixed in each panel. Threshold moves the function
 horizontally, slope changes the width of its transition, and lapse rate pulls
@@ -224,7 +224,7 @@ slope. Psi evaluates the expected information gain at every available ΔBPM. It
 selects $+11.5$ ΔBPM, having averaged over the posterior that would follow a
 "slower" response and the posterior that would follow a "faster" response.
 
-![Psi chooses a stimulus by expected information gain](../images/tutorials/fig_psi_information.png)
+![Psi chooses a stimulus by expected information gain](../../../images/tutorials/fig_psi_information.png)
 
 This is more efficient than drawing intensities uniformly. Trials are allocated
 where they are expected to distinguish plausible psychometric functions. Some
@@ -242,7 +242,7 @@ the evolving marginal posterior for the threshold. The middle panel retains the
 joint uncertainty in threshold and slope. The right panel maps that posterior
 through the psychometric function.
 
-![The adaptive trace, joint Psi posterior, and resulting psychometric function](../images/tutorials/fig_psi_adaptation.png)
+![The adaptive trace, joint Psi posterior, and resulting psychometric function](../../../images/tutorials/fig_psi_adaptation.png)
 
 At the end of this session the online posterior is centred near
 $\alpha=+9.9$ ΔBPM and $\sigma=15.5$ ΔBPM. These are summaries of a distribution,
@@ -255,7 +255,7 @@ initial family of plausible functions contracts as responses accumulate. An
 unexpected response can widen or move the posterior temporarily, which is an
 appropriate revision of uncertainty rather than a failure to converge.
 
-![Animation of the Psi posterior and psychometric function updating over 48 trials](../images/tutorials/fig_psi_adaptation.gif)
+![Animation of the Psi posterior and psychometric function updating over 48 trials](../../../images/tutorials/fig_psi_adaptation.gif)
 
 The example also contains catch trials, but they are omitted here because they
 do not update Psi. The figure and animation can be regenerated with
@@ -479,7 +479,7 @@ computational diagnostic, not a record of how the participant learned during
 the task. All four chains should explore the same region without trends or long
 periods of sticking.
 
-![From priors to the sampled posterior for one participant](../images/tutorials/fig_single_subject_sampling.png)
+![From priors to the sampled posterior for one participant](../../../images/tutorials/fig_single_subject_sampling.png)
 
 The cached `brms` object can be large. Keep it out of version control. The script
 used for this example, including its cache and compact output tables, is
@@ -531,7 +531,7 @@ curve <- tibble(
 )
 ```
 
-![One participant's observed responses and posterior psychometric function](../images/tutorials/fig_single_subject_brms.png)
+![One participant's observed responses and posterior psychometric function](../../../images/tutorials/fig_single_subject_brms.png)
 
 Each point is the observed proportion of "faster" responses at one exact
 intensity; larger points represent repeated presentations. The line is the

@@ -92,7 +92,7 @@ and its uncertainty; they should not be treated as stable participant-level
 measurements.
 
 After the adaptive-sampling exercise in notebook 1, pause and open the
-[psychophysical model tutorial](https://www.the-ecg.org/Cardioception/tutorials/psychophysics.html#part-ii-adaptive-measurement-with-psi).
+[psychophysical model tutorial](https://www.the-ecg.org/Cardioception/tasks/hrd/tutorials/psychophysics.html#part-ii-adaptive-measurement-with-psi).
 Its animation shows the Psi posterior and implied response function after every trial,
 which is clearer in the rendered documentation than in a static workshop cell.
 

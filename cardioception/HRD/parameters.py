@@ -106,8 +106,9 @@ def _build_staircases(
     # If UpDown is selected, 1 or 2 interleaved staircases are used (see
     # options in parameters dictionary), one is initalized 'high' and the other
     # 'low'.
-    def psiHandler():
-        """One psi staircase over the full stimulus range."""
+    def psiHandler(modality: str):
+        """One psi staircase, with the settings the config gives this modality."""
+        psi = parameters["psi"][modality]
         return data.PsiHandler(
             # Every next() appends to the handler's `intensities`, and it
             # raises StopIteration once that reaches nTrials. A re-presented
@@ -117,23 +118,23 @@ def _build_staircases(
             # onMissedTrial is "represent". A trial can be presented at most
             # maxRepresentations times, so this is the true upper bound.
             nTrials=nTrials * parameters["maxRepresentations"],
-            intensRange=list(parameters["intensRange"]),
-            alphaRange=list(parameters["alphaRange"]),
-            betaRange=list(parameters["betaRange"]),
-            # Grid resolution of the psi posterior. Not configurable: this is
-            # a memory/resolution tradeoff, and the array it sizes is the one
-            # that used to leak 2.6 GB over a session.
+            intensRange=list(psi["intensRange"]),
+            alphaRange=list(psi["alphaRange"]),
+            betaRange=list(psi["betaRange"]),
+            # Grid resolution of the psi posterior. Set only through a preset:
+            # it is a memory/resolution tradeoff, and the array it sizes is the
+            # one that used to leak 2.6 GB over a session.
             intensPrecision=1,
             alphaPrecision=1,
-            betaPrecision=0.1,
-            delta=parameters["delta"],
+            betaPrecision=psi["betaPrecision"],
+            delta=psi["delta"],
             stepType="lin",
             expectedMin=0,
         )
 
-    parameters["stairCase"] = {"Intero": psiHandler()}
+    parameters["stairCase"] = {"Intero": psiHandler("Intero")}
     if exteroception is True:
-        parameters["stairCase"]["Extero"] = psiHandler()
+        parameters["stairCase"]["Extero"] = psiHandler("Extero")
 
 
 def _open_recording(
@@ -277,7 +278,7 @@ def getParameters(
     """Create Heart Rate Discrimination task parameters.
 
     Many task parameters, aesthetics, and options are controlled by the
-    parameters dictonary defined herein. These are intended to provide
+    parameters dictionary defined herein. These are intended to provide
     flexibility and modularity to task. In many cases, unique versions of the
     task (e.g., with or without confidence ratings or choice feedback) can be
     created simply by changing these parameters, with no further interaction
@@ -297,9 +298,6 @@ def getParameters(
         `"german"`.
     nBreaking : int
         Number of trials to run before the break.
-    nStaircase : int
-        Number of staircase to use per condition (exteroceptive and
-        interoceptive).
     nTrials : int
         The number of trials to run.
 
@@ -327,11 +325,12 @@ def getParameters(
         when `onMissedTrial="represent"`. Defaults to `3`. Without a cap, a
         participant who stops responding would never reach the end.
     participant : str
-        Subject ID. Default is 'Participant'.
+        Subject ID. Default is 'SubjectTest'.
     catchTrials : float
-        Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with some
-        jitter) to control for range of stimuli presented. Default to `0.0` (no catch
-        trials). If not `0.0`, recomended value is `0.2`.
+        Ratio of Psi trials replaced by catch trials at fixed differences, cycling
+        through -30, +10, -20, +20, -10 and +30 BPM, to control for the range of
+        stimuli presented. Default to `0.0` (no catch trials). If not `0.0`,
+        recommended value is `0.2`.
     recorder : object | None
         A recording device to use instead of the one `setup` would open, e.g.
         :class:`cardioception.devices.LSLRecorder` to read ECG from an LSL
@@ -348,15 +347,15 @@ def getParameters(
         0-100 visual analogue scale for the mouse and ten discrete steps for the
         keyboard. See :mod:`cardioception.scales`.
     screenNb : int
-        Screen number. Used to parametrize py:func:`psychopy.visual.Window`. Defaults
+        Screen number. Used to parametrize :py:class:`psychopy.visual.Window`. Defaults
         to `0`.
     serialPort: str
         The USB port where the pulse oximeter is plugged. Should be written as a string
         e.g. `"COM3"` for USB ports on Windows.
-    session : int
+    session : str
         Session number. Default to '001'.
     setup : str
-        Context of oximeter recording. `"ehavioral"` will record through a Nonin
+        Context of oximeter recording. `"behavioral"` will record through a Nonin
         pulse oximeter and `"test"` will use pre-recorded pulse time series (for
         testing only).
     stairType : str
@@ -364,7 +363,7 @@ def getParameters(
         1.0.0 and now raises. Kept as an argument so scripts passing it fail
         with an explanation rather than a TypeError.
     systole_kw : dict
-        Additional keyword arguments for :py:class:`systole.recorder.Oxmeter`.
+        Additional keyword arguments for :py:class:`systole.recording.Oximeter`.
 
     Attributes
     ----------
@@ -407,7 +406,7 @@ def getParameters(
     nTrials : int
         The number of trials to run. See the parameter of the same name.
     participant : str
-        Subject ID. Default is 'Participant'.
+        Subject ID. Default is 'SubjectTest'.
     path : str
         The task working directory.
     resultPath : str | None
@@ -428,14 +427,14 @@ def getParameters(
         Mapping from trial conditions to keyboard response keys.
     respMax : float
         The maximum time for decision (in seconds).
-    session : int
+    session : str
         Session number. Default to '001'.
     setup : str
         The context of recording. Can be `'behavioral'` or `'test'`.
     texts : dict
         Long text elements.
     textSize : float
-        Scalling parameter for text size.
+        Scaling parameter for text size.
     triggers : dict
         Dictionary {str, callable or None}. The function will be executed
         before the corresponding trial sequence. The default values are

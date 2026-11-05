@@ -141,7 +141,10 @@ else:
         lo_s = f"{lo.group(1)}.{lo.group(2)}"
         hi_minor = int(hi.group(2)) - 1
         top_s = f"{hi.group(1)}.{hi_minor}"
-        for doc in ("README.md", os.path.join("docs", "source", "installation.md")):
+        for doc in (
+            "README.md",
+            os.path.join("docs", "source", "getting-started", "installation.md"),
+        ):
             text = read(*doc.split(os.sep))
             mentions = (lo_s in text) and (top_s in text)
             check(

@@ -32,7 +32,7 @@ def get_version():
 
 # -- Project information -----------------------------------------------------
 project = "cardioception"
-copyright = "2020–2025, Micah Allen, Embodied Computation Group, Aarhus University"
+copyright = "2019-2026, Micah Allen and the Embodied Computation Group, Aarhus University"
 author = "Micah Allen"
 release = get_version()
 
@@ -64,6 +64,7 @@ extensions = [
     "sphinx_design",
     "sphinx_sitemap",
     "sphinxext.opengraph",
+    "sphinx_reredirects",
 ]
 
 bibtex_bibfiles = ['refs.bib']
@@ -93,6 +94,10 @@ autodoc_mock_imports = [
     "pingouin",
 ]
 numpydoc_show_class_members = False
+# The numpydoc docstrings carry the types. Sphinx 5.3 printed the annotations
+# into the signatures with unresolved `~typing.` prefixes, which made the
+# SynchronyPsi and TaskConfig signatures unreadable.
+autodoc_typehints = "none"
 
 # Include the example source for plots in API docs
 plot_include_source = True
@@ -135,7 +140,7 @@ html_theme_options = {
     # footer entry, and the badges that name the project live on the landing
     # page alone.
     "source_repository": "https://github.com/embodied-computation-group/Cardioception",
-    "source_branch": "master",
+    "source_branch": "main",
     "source_directory": "docs/source/",
     "light_css_variables": {
         "color-brand-primary": "#1f3352",
@@ -186,6 +191,39 @@ sitemap_url_scheme = "{link}"
 # list of links, so neither is worth pointing a crawler at.
 sitemap_excludes = ["search.html", "genindex.html"]
 
+# -- Released and development docs ------------------------------------------
+
+# The docs workflow builds main into the site root and dev into /dev/, and sets
+# DOCS_CHANNEL=dev for the second. A development build says so on every page,
+# keeps itself out of search results so that it never outranks the released
+# docs, and drops the sitemap that would invite crawlers in. Built locally,
+# with no variable set, the docs are the released ones.
+DOCS_CHANNEL = os.environ.get("DOCS_CHANNEL", "stable")
+if DOCS_CHANNEL == "dev":
+    html_baseurl = "https://www.the-ecg.org/Cardioception/dev/"
+    extensions.remove("sphinx_sitemap")
+    html_theme_options["announcement"] = (
+        "These are the docs for Cardioception 1.0, in development and not yet "
+        "on PyPI. "
+        '<a href="https://www.the-ecg.org/Cardioception/">'
+        "The docs for the current release are here.</a>"
+    )
+    # Lets a page carry text for the development build only, with the
+    # `only` directive: ```{only} dev
+    tags.add("dev")  # noqa: F821 (Sphinx injects `tags` into conf.py)
+
+
+def _noindex(app, pagename, templatename, context, doctree):
+    context["metatags"] = (
+        context.get("metatags", "") + '\n<meta name="robots" content="noindex">'
+    )
+
+
+def setup(app):
+    if DOCS_CHANNEL == "dev":
+        app.connect("html-page-context", _noindex)
+
+
 ogp_site_url = html_baseurl
 ogp_site_name = "Cardioception Toolbox"
 ogp_type = "website"
@@ -203,6 +241,38 @@ ogp_social_cards = {
     "enable": True,
     "site_url": "the-ecg.org/Cardioception",
     "line_color": "#1f3352",
+}
+
+
+# -- Redirects from the old flat layout --------------------------------------
+
+# The pages moved into getting-started/, tasks/ and reference/ in the 1.0
+# restructure. These stubs keep the old URLs, which the README on PyPI, papers
+# and the workshop notebooks link to, landing on the new pages. A redirect
+# drops the #fragment, so links in this repository point at the new pages
+# directly. user_guide.md was dissolved, so it goes to the page that took most
+# of it. measuring.md is tasks/theory.md, which also absorbed the short-lived
+# tasks/hrd/theory.md. Targets are relative to the old page.
+redirects = {
+    "installation": "getting-started/installation.html",
+    "user_guide": "getting-started/running-a-session.html",
+    "tasks": "tasks/index.html",
+    "measuring": "tasks/theory.html",
+    "pat": "tasks/pat.html",
+    "hsd_design": "tasks/hsd/design.html",
+    "api": "reference/api.html",
+    "cite": "reference/cite.html",
+    "references": "reference/references.html",
+    "tutorials/index": "../tasks/hrd/tutorials/index.html",
+    "tutorials/inspecting-data": "../tasks/hrd/tutorials/inspecting-data.html",
+    "tutorials/psychophysics": "../tasks/hrd/tutorials/psychophysics.html",
+    "tutorials/hierarchical": "../tasks/hrd/tutorials/hierarchical.html",
+    "tutorials/metacognition": "../tasks/hrd/tutorials/metacognition.html",
+    # The "Running the HRD" and "Running the HSD" pages were folded into the
+    # task pages themselves.
+    "tasks/hrd/running": "index.html",
+    "tasks/hrd/theory": "../theory.html",
+    "tasks/hsd/running": "index.html",
 }
 
 

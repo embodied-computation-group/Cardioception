@@ -1,7 +1,7 @@
 # Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University
 """Heartbeat Synchrony Discrimination task, with ECG read from an LSL stream.
 
-Experimental. Start the device's streaming program first. Needs
+Beta. Start the device's streaming program first. Needs
 `pip install cardioception-toolbox[lsl]`.
 
 Beats are found online by `cardioception.devices.beat_source.LSLBeatSource`

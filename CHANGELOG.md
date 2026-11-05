@@ -4,8 +4,8 @@
 
 1.0.0 is the first release of the rewritten package. It runs four tasks under
 one output layout: the Heart Rate Discrimination and Heartbeat Counting tasks,
-and the experimental Heartbeat Synchrony Discrimination and Phase Adjustment
-tasks. It changes the output schema and the output layout, so analysis scripts
+and the Heartbeat Synchrony Discrimination and Phase Adjustment tasks, both
+in beta. It changes the output schema and the output layout, so analysis scripts
 written against 0.7.x need the migration notes under Breaking below. The 0.7
 line stays installable from the `legacy/0.7` branch and the `v0.7.2` tag.
 
@@ -56,6 +56,15 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 
 ### Added
 
+- `TaskConfig(psiPreset=...)` for the Heart Rate Discrimination task.
+  - `"legacy"`, the default, keeps the Psi settings of the original paper.
+  - `"courtin"` uses the per-condition threshold and slope ranges and the
+    0.01 lapse rate from the hierarchical refit of the Visceral Mind Project
+    data (Courtin et al., 2026).
+  - `intensRange`, `alphaRange`, `betaRange` and `delta` still override the
+    preset, in both conditions.
+  - The settings each staircase used are written to `manifest.json` under
+    `config.psi`.
 - German instructions for the Heart Rate Discrimination task, `language="german"`,
   addressing the participant formally. The texts shipped in 0.7.2 as a Python
   function and move here to `HRD/texts/german.yaml`, checked against that
@@ -99,14 +108,14 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   they are `HBC/texts/english.yaml` and `german.yaml`, checked against those
   functions by a snapshot test, and an unknown language fails before a window
   opens. The German confidence scale reads "Geraten" to "Sicher".
-- `cardioception.HSD.psi.SynchronyPsi`, the estimation engine for an
-  experimental Heartbeat Synchrony Discrimination task: an adaptive Bayesian
+- `cardioception.HSD.psi.SynchronyPsi`, the estimation engine for the
+  Heartbeat Synchrony Discrimination task: an adaptive Bayesian
   version of the Brener, Liu and Ring method of constant stimuli that chooses
   each R-wave-to-tone delay by expected information gain and estimates where
   in the cardiac cycle the heartbeat is felt, and how sharply. Plain NumPy, no
   PsychoPy or device. The design is documented
-  in `docs/source/hsd_design.md`.
-- The Heartbeat Synchrony Discrimination task runner, experimental:
+  in `docs/source/tasks/hsd/design.md`.
+- The Heartbeat Synchrony Discrimination task runner, in beta:
   `cardioception.HSD.parameters.getParameters` and `cardioception.HSD.task.run`,
   with English instructions, a tutorial with three practice trials, both
   stimulus axes (ms after the R-wave, or a fraction of the interbeat
@@ -117,11 +126,13 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   `setup="behavioral"` uses the shared `LSLBeatSource` and `TonePlayer` in
   `cardioception.devices`. Every tone is scheduled a 50 ms latency bias early
   (`TaskConfig.latencyBias`), for the transport and speaker delays the
-  recordings cannot see, so the shortest delay played is 130 ms. One hardware
+  recordings cannot see, so no delay below 130 ms is played and the
+  shortest on the default grid is 140 ms. One hardware
   dry run, 60 trials on a PLUX ECG over Bluetooth, is recorded in the design
-  document, with a simulation rerun at the 130 ms floor. The user guide has a
-  how-to for running a session and reading its results.
-- The Phase Adjustment Task, experimental: `cardioception.PAT`, after the
+  document, with a simulation rerun at the 130 ms floor. Running the HSD
+  (`docs/source/tasks/hsd/index.md`) is a how-to for running a session and
+  reading its results.
+- The Phase Adjustment Task, in beta: `cardioception.PAT`, after the
   PAT-ECG variant of Hodgetts et al. (2026, *Psychophysiology* 63:e70415).
   One tone per heartbeat, timed from the R-waves of an LSL ECG stream, at a
   delay the participant moves with the mouse wheel until tones and heartbeats
@@ -131,7 +142,7 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   and `wrappers/pat_lsl.py`. A session writes `final`, `tones` and
   `parameters`; `cardioception.PAT.scoring` gives the paper's 2 x 2 x 2 grid
   of phase-consistency scores with Monte Carlo chance thresholds. See
-  `docs/source/pat.md`.
+  `docs/source/tasks/pat.md`.
 - The ECG channel is a required field in `wrappers/pat_lsl.py` and
   `wrappers/hsd_lsl.py`, with no default: its label is not the same on every
   hub (`ECG1` on one, `ECG2` on another), so it has to be typed in, and the

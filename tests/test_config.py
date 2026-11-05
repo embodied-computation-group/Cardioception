@@ -49,6 +49,44 @@ class TestTaskConfig(unittest.TestCase):
         with self.assertRaises(Exception):
             TaskConfig().respMax = 99
 
+    def test_the_default_psi_settings_are_the_original_papers(self):
+        for modality in ("Intero", "Extero"):
+            psi = TaskConfig().psi(modality)
+            self.assertEqual(psi["intensRange"], (-50.5, 50.5))
+            self.assertEqual(psi["alphaRange"], (-50.5, 50.5))
+            self.assertEqual(psi["betaRange"], (0.1, 25.0))
+            self.assertEqual(psi["betaPrecision"], 0.1)
+            self.assertEqual(psi["delta"], 0.02)
+
+    def test_the_courtin_preset_differs_by_modality(self):
+        """Values from Courtin et al.'s updated HRD parameters.py."""
+        c = TaskConfig(psiPreset="courtin")
+        intero, extero = c.psi("Intero"), c.psi("Extero")
+        self.assertEqual(intero["alphaRange"], (-42.0, 26.0))
+        self.assertEqual(intero["betaRange"], (3.2, 29.0))
+        self.assertEqual(extero["alphaRange"], (-9.0, 9.0))
+        self.assertEqual(extero["betaRange"], (2.5, 15.2))
+        for psi in (intero, extero):
+            self.assertEqual(psi["intensRange"], (-50.5, 50.5))
+            self.assertEqual(psi["betaPrecision"], 0.2)
+            self.assertEqual(psi["delta"], 0.01)
+
+    def test_an_explicit_range_overrides_the_preset_in_both_modalities(self):
+        c = TaskConfig(psiPreset="courtin", alphaRange=(-20.0, 20.0), delta=0.05)
+        for modality in ("Intero", "Extero"):
+            self.assertEqual(c.psi(modality)["alphaRange"], (-20.0, 20.0))
+            self.assertEqual(c.psi(modality)["delta"], 0.05)
+        self.assertEqual(c.psi("Extero")["betaRange"], (2.5, 15.2))
+
+    def test_an_unknown_preset_is_refused(self):
+        with self.assertRaises(ValueError):
+            TaskConfig(psiPreset="optimal")
+
+    def test_the_manifest_records_the_settings_each_staircase_used(self):
+        described = TaskConfig(psiPreset="courtin").describe()
+        self.assertEqual(described["psiPreset"], "courtin")
+        self.assertEqual(described["psi"]["Extero"]["alphaRange"], (-9.0, 9.0))
+
 
 class TestConfigReachesTheSession(unittest.TestCase):
     def setUp(self):
@@ -58,12 +96,12 @@ class TestConfigReachesTheSession(unittest.TestCase):
         shutil.rmtree(self.tmp, ignore_errors=True)
 
     def build(self, **kwargs):
+        kwargs.setdefault("exteroception", False)
         return getParameters(
             participant="CONFIG",
             session="1",
             setup="test",
             nTrials=2,
-            exteroception=False,
             resultPath=self.tmp,
             **kwargs
         )
@@ -90,6 +128,21 @@ class TestConfigReachesTheSession(unittest.TestCase):
         parameters["win"].close()
         grid = parameters["stairCase"]["Intero"]._psi.x
         self.assertEqual((grid.min(), grid.max()), (-20.0, 20.0))
+
+    def test_each_staircase_gets_its_presets_grid(self):
+        parameters = self.build(
+            config=TaskConfig(psiPreset="courtin"), exteroception=True
+        )
+        parameters["win"].close()
+        for modality, alpha, beta in (
+            ("Intero", (-42.0, 26.0), (3.2, 29.0)),
+            ("Extero", (-9.0, 9.0), (2.5, 15.2)),
+        ):
+            psi = parameters["stairCase"][modality]._psi
+            self.assertEqual((psi.alpha.min(), psi.alpha.max()), alpha, modality)
+            self.assertAlmostEqual(psi.beta.min(), beta[0], places=6)
+            self.assertAlmostEqual(psi.beta.max(), beta[1], places=6)
+            self.assertAlmostEqual(psi.delta, 0.01)
 
     def test_an_unconfigured_session_is_unchanged(self):
         parameters = self.build()

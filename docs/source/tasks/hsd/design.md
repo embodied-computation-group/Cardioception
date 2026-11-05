@@ -5,7 +5,7 @@ myst:
     keywords: "heartbeat detection, heartbeat synchrony, method of constant stimuli, Psi-marginal, adaptive psychophysics, cardiac interoception"
 ---
 
-# Heartbeat Synchrony Discrimination task
+# HSD design and validation
 
 The Heartbeat Synchrony Discrimination task (HSD) is an adaptive Bayesian
 version of the heartbeat detection task of Brener, Liu and Ring
@@ -16,14 +16,14 @@ chosen to be as informative as possible about where in the cardiac cycle the
 sensation lies and how sharp it is.
 
 ```{note}
-This is a design document for an experimental task. The estimation engine,
+This is a design document for a task in beta. The estimation engine,
 `cardioception.HSD.psi`, exists and is tested, and its
 [simulation study](#simulation-study) has run. The task runner
 (`cardioception.HSD.parameters` and `cardioception.HSD.task`), its English
 instructions and `wrappers/hsd_lsl.py` exist and run headlessly against a
-virtual heart and against a synthetic ECG over LSL. One
-[hardware dry run](#hardware-dry-run) has been done, a single 60-trial session
-on a real ECG. The task has not been validated in a study; see
+virtual heart and against a synthetic ECG over LSL. A
+[hardware dry run](#hardware-dry-run), a single 60-trial session on a real
+ECG, is recorded below. The task has not been validated in a study; see
 [what comes next](#what-comes-next).
 ```
 
@@ -46,10 +46,10 @@ spends the trials where they are informative.
 
 ## What the classical task established
 
-The [theory page](measuring.md) already covers
-[what fixed-delay synchrony tasks can establish](measuring.md#what-fixed-delay-synchrony-tasks-can-establish)
+[Measuring cardiac interoception](../theory.md) already covers
+[what fixed-delay synchrony tasks can establish](../theory.md#what-fixed-delay-synchrony-tasks-can-establish)
 and why the MCS is
-[a stronger measure of heartbeat timing](measuring.md#a-stronger-measure-of-heartbeat-timing).
+[a stronger measure of heartbeat timing](../theory.md#a-stronger-measure-of-heartbeat-timing).
 This section adds the findings that shaped the HSD design. It follows the
 review by Brener and Ring {cite:p}`2016:brener`.
 
@@ -90,11 +90,11 @@ this page, because we could not open the papers to check them.
 The design does not depend on either claim.
 ```
 
-## Relation to the phase adjustment task
+## Relation to the Phase Adjustment Task
 
-The ECG-based phase adjustment task (PAT-ECG) of Hodgetts and colleagues
+The ECG-based Phase Adjustment Task (PAT-ECG) of Hodgetts and colleagues
 {cite:p}`2026:hodgetts` is the closest current method. It descends from the
-smartphone phase adjustment task {cite:p}`2021:plans`. In the PAT-ECG,
+smartphone Phase Adjustment Task {cite:p}`2021:plans`. In the PAT-ECG,
 91 participants completed 28 trials in about 30 minutes, turning a dial until
 tones felt synchronous with their heartbeat. Consistency of the chosen delays
 was scored as the mean resultant length and tested against a Monte Carlo null;
@@ -103,20 +103,14 @@ was scored as the mean resultant length and tested against a Monte Carlo null;
 version, and an exteroceptive control in which a tactor vibrates on the hand.
 
 The two tasks share the trigger (the R-wave), the stimulus (a tone at a
-delay), the two possible timing axes (milliseconds or cardiac phase), a
-confidence rating and an exteroceptive control. They differ in the
-psychophysical method.
+delay), the two possible timing axes (milliseconds or cardiac phase) and a
+confidence rating. An exteroceptive control like the PAT's is planned for the
+HSD (roadmap item D). They differ in the psychophysical method.
 
-| | PAT-ECG | HSD |
-|---|---|---|
-| Method | Adjustment: the participant turns a dial until the tones feel synchronous, then presses space | Constant stimuli made adaptive: the procedure sets the delay, the participant answers yes or no |
-| Who samples the delays | The participant, freely, for as long as they like (about 1 minute per trial, 28 trials in 30 minutes) | The algorithm, by expected information gain; a trial is five beats plus a response |
-| Measure | Circular consistency of the chosen delays across trials (mean resultant length), tested against a Monte Carlo null | Posterior over the location, width, floor and peak of a response envelope; credible intervals; posterior evidence that the envelope rises at all |
-| Width of the sensation | Not separable from consistency | An explicit parameter, `sigma` |
-| Lapses and bias | Not modelled; confidence weighting offered instead | Floor and peak parameters absorb lapses, and are marginalized out |
-| Stopping | Fixed 28 trials, justified by simulation (15 to 20 enough for classification) | Credible-interval width on `mu`, with a maximum |
+The [tasks overview](../index.md#the-pat-and-the-hsd) sets the two side by
+side.
 
-The phase adjustment task was built for smartphone photoplethysmography,
+The Phase Adjustment Task was built for smartphone photoplethysmography,
 where the participant's own exploration replaces a controlled stimulus
 schedule and a consistency score needs no psychometric model. That choice has
 costs. Adjustment mixes perception with search strategy: a participant can be
@@ -159,8 +153,8 @@ The grids cover the published range of observers with room to spare
 location is not to assume it. The simulations offer candidate delays from 0
 to 600 ms in 20 ms steps and the task runner from 80 to 600 ms. With the
 130 ms floor of the current hardware the shortest delay presented is 140 ms,
-the first candidate above it, and the ceiling of about 0.71 of the heart
-period allows 600 ms only at periods over 0.84 s (see
+the first candidate above it, and the ceiling of about 0.68 of the heart
+period allows 600 ms only at periods over 0.89 s (see
 [delay limits](#realized-delays-and-per-trial-constraints)). The posterior is discrete on the outer product of the four grids,
 98,820 points, of which the 54,900 with the peak at or above the floor carry
 prior mass; one stimulus selection takes about 20 ms.
@@ -278,7 +272,7 @@ from the LabRecorder file (`bench/pat_dryrun_report.py --markers HSD`).
 | Limit | Set by | Why |
 |---|---|---|
 | `min_delay` | The system's R-to-tone latency | No tone can be scheduled before the system knows about the R-wave. 130 ms of physical delay on current hardware (below), so 140 ms is the shortest candidate presented |
-| `max_delay` | 0.75 of the anticipated interbeat interval, less a 5 percent margin: about 0.71 of it on the absolute axis | Keeps the last tone clear of the next beat. The envelope is periodic in the cardiac cycle and the model ignores that, so delays near the next beat would be misread. 600 ms is allowed only at periods over 0.84 s |
+| `max_delay` | 0.75 of the anticipated interbeat interval, less a 10 percent margin: about 0.68 of it on the absolute axis | Keeps the last tone clear of the next beat. The envelope is periodic in the cardiac cycle and the model ignores that, so delays near the next beat would be misread. 600 ms is allowed only at periods over 0.89 s |
 
 If no candidate lies between the two limits, the engine raises an error
 rather than presenting a delay outside them.
@@ -394,7 +388,7 @@ posterior spreads `mu` over the whole grid.
 ## Trial structure and saved data
 
 This section describes the task as `cardioception.HSD.task` runs it. The
-[user guide](user_guide.md#heartbeat-synchrony-discrimination) lists the
+[HSD page](index.md#what-it-saves) lists the
 files a session writes.
 
 1. Five tones, each at the chosen delay after a detected R-wave.
@@ -479,7 +473,7 @@ credible-interval width against trial count by method, and a table at 15, 20,
 Error and interval width are over the 30 detectors (300 runs per method)
 unless stated otherwise.
 
-```{figure} images/hsd_simulation.png
+```{figure} ../../images/hsd_simulation.png
 :alt: Two panels against trial number, 1 to 120, with 26 ms of jitter. Left, RMSE of the posterior mean of mu falls from about 80 ms; the adaptive methods are below MCS until about trial 60, after which MCS keeps falling to 24 ms while the adaptive methods level off between 27 and 32 ms. Right, mean 95 percent credible-interval width falls from about 580 ms to between 106 and 116 ms, with MCS widest until about trial 80.
 
 RMSE of the posterior mean of `mu` (left) and mean width of its 95 percent
@@ -655,7 +649,7 @@ each sample, the tones therefore scattered more widely (44 ms) than against
 its raw ones (23 ms). Jitter of this size widens the measured `sigma`, which is
 what roadmap items C2 and C3 address.
 
-```{figure} images/hsd_dryrun_session.png
+```{figure} ../../images/hsd_dryrun_session.png
 :alt: Three panels from the 60-trial dry run. Left, each answer (1 synchronous, 0 not) against the realized delay from 140 to 540 ms, coloured by confidence, with the proportion of synchronous answers per 50 ms bin as squares and the posterior-mean envelope, which rises from a floor of about 0.32 to a peak of about 0.75 near 270 ms. Middle, the posterior mean of mu settles near 270 ms over trials while its 95 percent credible interval narrows from 0 to 600 ms to 150 to 400 ms. Right, the log10 Bayes factor for detection wanders between -0.6 and +0.3 and ends near 0.
 
 The dry run session. Left: each answer against the realized delay, coloured by
@@ -702,14 +696,14 @@ than the old interval said.
 
 | Phase | Status | Content |
 |---|---|---|
-| B. Task runner | Implemented | The task, its parameters and configuration, English instructions, an autopilot observer, the train scheduler with both stimulus axes, a headless test on a virtual heart, an LSL test on a synthetic ECG through `LSLRecorder` and the shared `LSLBeatSource`, the wrapper and a user guide section. `setup="behavioral"` uses the shared `LSLBeatSource` and `TonePlayer` in `cardioception.devices` |
-| B. Hardware dry run | Done, 2026-11-03 | The Plux-to-LSL bridge installed on the test desktop and 60 trials run on a real ECG in 7 minutes, recorded with LabRecorder. 290 tones were delivered on the 60 trials (6 skipped as late, 4 trains short), every reported start within 1 ms of its schedule, the detector committed 13 ms after each R, no samples were dropped, and the realized delay sat 50 ms below the request by design. Against the offline R-wave the tones scattered with an interquartile range of 23 to 44 ms, because the Bluetooth arrival stamps of the ECG samples jitter (SD 26 ms on that desktop, 6 ms on the stimulus PC). The session put the sensation of a participant wearing a tight finger pulse oximeter at 272 ms, interval 150 to 400 ms. See [hardware dry run](#hardware-dry-run) |
+| B. Task runner | Implemented | The task, its parameters and configuration, English instructions, an autopilot observer, the train scheduler with both stimulus axes, a headless test on a virtual heart, an LSL test on a synthetic ECG through `LSLRecorder` and the shared `LSLBeatSource`, the wrapper and the [HSD page](index.md). `setup="behavioral"` uses the shared `LSLBeatSource` and `TonePlayer` in `cardioception.devices` |
+| B. Hardware dry run | Done, 2026-11-03 | The PLUX-to-LSL bridge installed on the test desktop and 60 trials run on a real ECG in 7 minutes, recorded with LabRecorder. 290 tones were delivered on the 60 trials (6 skipped as late, 4 trains short), every reported start within 1 ms of its schedule, the detector committed 13 ms after each R, no samples were dropped, and the realized delay sat 50 ms below the request by design. Against the offline R-wave the tones scattered with an interquartile range of 23 to 44 ms, because the Bluetooth arrival stamps of the ECG samples jitter (SD 26 ms on that desktop, 6 ms on the stimulus PC). The session put the sensation of a participant wearing a tight finger pulse oximeter at 272 ms, interval 150 to 400 ms. See [hardware dry run](#hardware-dry-run) |
 | C1. Audio lead and output calibration | Planned, software only | Cut the audio scheduling lead from 50 to 20 ms (the bench showed 20 ms still lands within 1 ms) and measure the output offset of the speaker or headphones with the microphone loopback in `bench/audio_onset.py`, so the latency bias becomes a measured constant per setup. Lowers the physical floor from 130 to about 100 ms and makes `mu` comparable across laboratories |
-| C2. Re-time Plux samples from the hub's counter | Planned, bridge change shared with PAT | The hub samples at exactly 1000 Hz, so a running fit of its sample counter to the clock in the bridge removes the Bluetooth arrival jitter down to the chunk period, about 10 ms, without touching the constant lag. Jitter is the error that inflates `sigma`: 26 ms of it turns a true width of 40 ms into a measured 48 ms. In the simulations as the task runs, 6 rather than 26 ms of jitter lowers the RMSE of `mu` at 60 trials from 34 to 30 ms |
+| C2. Re-time PLUX samples from the hub's counter | Planned, bridge change shared with PAT | The hub samples at exactly 1000 Hz, so a running fit of its sample counter to the clock in the bridge removes the Bluetooth arrival jitter down to the chunk period, about 10 ms, without touching the constant lag. Jitter is the error that inflates `sigma`: 26 ms of it turns a true width of 40 ms into a measured 48 ms. In the simulations as the task runs, 6 rather than 26 ms of jitter lowers the RMSE of `mu` at 60 trials from 34 to 30 ms |
 | C3. Wired ECG into LSL | Recommended configuration | Biopac, ADInstruments and Brain Products all have LSL paths. Jitter falls to a millisecond or two, the transport lag to a few milliseconds, and with the shorter lead the floor to about 60 ms. In the earlier exact-delivery simulations an 80 ms rather than a 130 ms floor lowered the RMSE of `mu` at 120 trials from 26 to 17 ms and removed a 10 ms bias, because sensations at 150 to 200 ms regain their rising flank |
 | D. Exteroceptive validation | Not started | The same adaptive procedure on a tone and vibration (or light) stimulus with a known delay, as a screening condition and as a ground-truth check of the engine |
 
 ## References
 
 Full entries for the citations on this page are on the
-[references page](references.md).
+[references page](../../reference/references.md).

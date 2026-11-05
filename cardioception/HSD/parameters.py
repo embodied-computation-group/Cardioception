@@ -184,7 +184,7 @@ def getParameters(
 ) -> Dict[str, Any]:
     """Create Heartbeat Synchrony Discrimination task parameters.
 
-    Experimental. The design is documented in ``docs/source/hsd_design.md``.
+    Beta. The design is documented in ``docs/source/tasks/hsd/design.md``.
 
     Parameters
     ----------

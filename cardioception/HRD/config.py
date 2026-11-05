@@ -27,14 +27,53 @@ at session start, so a change is recorded with the data it produced::
 Where the line is drawn: these are values someone changing the design would
 reasonably want to set. Session identifiers belong in the call, stimulus
 timings that define the protocol are deliberately fixed, and the psi solver's
-grid precision stays in the code — it is a memory/resolution tradeoff rather
-than a design choice, and every knob here costs a reader something.
+grid precision is not a knob of its own — it is a memory/resolution tradeoff
+rather than a design choice, and every knob here costs a reader something. It
+moves only as part of a named psi preset.
 """
 
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, Mapping, Tuple
+from typing import Any, Dict, Mapping, Optional, Tuple
 
 from ._constants import LISTENING_DURATION
+
+_LEGACY_PSI: Dict[str, Any] = {
+    "intensRange": (-50.5, 50.5),
+    "alphaRange": (-50.5, 50.5),
+    "betaRange": (0.1, 25.0),
+    "betaPrecision": 0.1,
+    "delta": 0.02,
+}
+
+#: Psi staircase settings, per modality, selected by ``TaskConfig.psiPreset``.
+#:
+#: ``"legacy"`` is the setting of the original HRD paper (Legrand et al.,
+#: 2022) and of every release before 1.0: uniform over the full stimulus range
+#: in both conditions. ``"courtin"`` narrows the threshold and slope ranges to
+#: what the hierarchical refit of the Visceral Mind Project data found
+#: plausible, separately for each condition, and halves the lapse rate
+#: (Courtin et al., 2026). PsychoPy's psi method only takes a uniform prior, so
+#: a narrower range is the way to concentrate it. The ranges are hard bounds: a
+#: participant whose threshold lies outside them is estimated at the edge.
+PSI_PRESETS: Dict[str, Dict[str, Dict[str, Any]]] = {
+    "legacy": {"Intero": dict(_LEGACY_PSI), "Extero": dict(_LEGACY_PSI)},
+    "courtin": {
+        "Intero": {
+            "intensRange": (-50.5, 50.5),
+            "alphaRange": (-42.0, 26.0),
+            "betaRange": (3.2, 29.0),
+            "betaPrecision": 0.2,
+            "delta": 0.01,
+        },
+        "Extero": {
+            "intensRange": (-50.5, 50.5),
+            "alphaRange": (-9.0, 9.0),
+            "betaRange": (2.5, 15.2),
+            "betaPrecision": 0.2,
+            "delta": 0.01,
+        },
+    },
+}
 
 
 @dataclass(frozen=True)
@@ -95,14 +134,20 @@ class TaskConfig:
     exteroBPMRange: Tuple[float, float, float] = (40.0, 100.0, 0.5)
 
     # --- staircase -----------------------------------------------------------
+    #: Named psi settings for both staircases, from :data:`PSI_PRESETS`:
+    #: ``"legacy"`` (the default, as in the original paper) or ``"courtin"``.
+    psiPreset: str = "legacy"
     #: Bounds of the psi staircase, in delta-BPM. These set the range of
     #: stimuli a participant can be shown, so they are a design decision.
-    intensRange: Tuple[float, float] = (-50.5, 50.5)
-    alphaRange: Tuple[float, float] = (-50.5, 50.5)
-    betaRange: Tuple[float, float] = (0.1, 25.0)
+    #: ``None`` takes the preset's value; a value overrides it in both
+    #: conditions.
+    intensRange: Optional[Tuple[float, float]] = None
+    alphaRange: Optional[Tuple[float, float]] = None
+    betaRange: Optional[Tuple[float, float]] = None
     #: Lapse rate, held fixed rather than estimated. A modelling choice, and
-    #: one people reasonably disagree about, so it is settable.
-    delta: float = 0.02
+    #: one people reasonably disagree about, so it is settable. ``None`` takes
+    #: the preset's value.
+    delta: Optional[float] = None
 
     # --- presentation --------------------------------------------------------
     #: Text height, in height units.
@@ -112,17 +157,37 @@ class TaskConfig:
     #: half to one degree.
     fixationSize: float = 0.04
 
+    def __post_init__(self) -> None:
+        if self.psiPreset not in PSI_PRESETS:
+            raise ValueError(
+                f"psiPreset should be one of {sorted(PSI_PRESETS)}, "
+                f"got {self.psiPreset!r}"
+            )
+
     @property
     def allowedKeys(self):
         """The keys the decision screen listens for."""
         return list(self.response_keys.values())
 
+    def psi(self, modality: str) -> Dict[str, Any]:
+        """The psi settings one staircase runs with: the preset, then overrides."""
+        settings = dict(PSI_PRESETS[self.psiPreset][modality])
+        for name in ("intensRange", "alphaRange", "betaRange", "delta"):
+            value = getattr(self, name)
+            if value is not None:
+                settings[name] = value
+        return settings
+
     def describe(self) -> Dict[str, Any]:
-        """The whole configuration, for the manifest."""
-        return asdict(self)
+        """The whole configuration, for the manifest, with the psi settings
+        each staircase actually used."""
+        described = asdict(self)
+        described["psi"] = {m: self.psi(m) for m in ("Intero", "Extero")}
+        return described
 
     def apply(self, parameters: Dict[str, Any]) -> None:
         """Write these factors into a parameters dictionary."""
         for name, value in asdict(self).items():
             parameters[name] = value
+        parameters["psi"] = {m: self.psi(m) for m in ("Intero", "Extero")}
         parameters["allowedKeys"] = self.allowedKeys

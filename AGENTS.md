@@ -5,27 +5,34 @@ it useful too, but the audience is agents.
 
 ## What this project is
 
-Cardioception is a Python package that runs two psychophysical tasks in PsychoPy:
+Cardioception is a Python package that runs four psychophysical tasks in PsychoPy:
 
-- **Heart Rate Discrimination task (HRD)** — the primary task. Participants judge
+- **Heart Rate Discrimination task (HRD)**, established. Participants judge
   whether tones are faster or slower than their own heart, under an adaptive staircase.
-- **Heartbeat Counting task (HBC)** — the classic counting task, kept because the
-  literature rests on it. Not recommended for new studies.
+- **Heartbeat Counting task (HBC)**, established. The classic counting task, kept
+  because the literature rests on it.
+- **Phase Adjustment Task (PAT)**, beta. Participants turn a dial until tones
+  timed from each R-wave feel synchronous with their heartbeat. Needs an ECG over LSL.
+- **Heartbeat Synchrony Discrimination task (HSD)**, beta. Participants judge
+  whether tones at a delay chosen by Bayesian adaptive placement are synchronous
+  with their heartbeat. Needs an ECG over LSL.
+
+The docs describe each task's strengths and limits and do not tell readers which
+task to use; keep it that way.
 
 The package **collects** data. It does not analyse it. Modelling happens in R with the
 [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception).
 
-## Naming, and a trap
+## Naming
 
 | Thing | Value |
 |---|---|
 | PyPI distribution | `cardioception-toolbox` |
 | Python import name | `cardioception` |
 
-These differ deliberately. `pip install cardioception` installs a **different,
-third-party package**. Any instruction, script, environment file or doc that says
-`pip install cardioception` is a bug. Never "fix" `cardioception-toolbox` back to
-`cardioception` in an install command.
+These differ deliberately. The install name is `cardioception-toolbox`. An
+install command, script, environment file or doc that installs under any other
+name is a bug. Never change `cardioception-toolbox` in an install command.
 
 ## Layout
 
@@ -33,6 +40,9 @@ third-party package**. Any instruction, script, environment file or doc that say
 cardioception/
   HRD/          the Heart Rate Discrimination task (parameters.py, task.py)
   HBC/          the Heartbeat Counting task
+  PAT/          the Phase Adjustment Task (beta)
+  HSD/          the Heartbeat Synchrony Discrimination task (beta)
+  devices/      recorders, and the beat source and tone player the PAT and HSD share
   notebooks/    report templates executed by reports.report()
   reports.py    preprocessing and HTML reports (legacy, due to be rebuilt)
   _resources.py locates bundled images and sounds
@@ -52,8 +62,8 @@ tests/
 - Python is formatted with black, imports sorted with isort, and checked with flake8
   and mypy, on **Python 3.11**. The package supports **3.10 and 3.11**: the upper
   bound is `pywinhook`, which ships wheels only to cp311, not PsychoPy, which
-  allows 3.12. Note that CI runs `black` and `isort` *before* `flake8`, so
-  formatting findings are reformatted away rather than reported.
+  allows 3.12. CI runs `black --check` and `isort --check` before `flake8`, so
+  a formatting finding fails the build.
 - Use `cardioception._resources.resource_filename` rather than
   `importlib.resources.files` for shipped data files. Not for version reasons any
   more, just so there is one way of doing it.
@@ -93,8 +103,10 @@ Two rules worth stating here because they are the most common errors:
 
 ## Before you commit
 
-- Docs changes: the build runs on every push to `master` and deploys to
-  <https://www.the-ecg.org/Cardioception/>. It takes about a minute. Check the run.
+- Docs changes: the build runs with `-W`, so a warning fails it. A push to `main`
+  deploys to <https://www.the-ecg.org/Cardioception/>, a push to `dev` to
+  <https://www.the-ecg.org/Cardioception/dev/> (with a development banner and
+  `noindex`). It takes about a minute. Check the run.
 - Do not commit large fitted model objects. Cache them locally with brms `file =`.
 - Participant-level data with demographics is sensitive. Do not move it from a private
   repository into this public one without an explicit instruction that acknowledges the

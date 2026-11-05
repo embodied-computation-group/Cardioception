@@ -5,11 +5,11 @@ myst:
     keywords: "cardiac interoception, heart rate discrimination, heartbeat counting, interoceptive accuracy, interoceptive precision, psychophysics"
 ---
 
-# Theory
+# Measuring cardiac interoception
 
 Author: Micah G. Allen
 
-Before you analyse an HRD dataset, you need to be clear about what the task can
+Before you analyze an HRD dataset, you need to be clear about what the task can
 measure. Cardiac interoception is often described as the ability to perceive
 one's heartbeat accurately. That description sounds straightforward until we
 ask what an experimental score actually identifies.
@@ -151,7 +151,7 @@ This design addresses the main ambiguity of fixed-delay tasks and shows good
 agreement with related multi-interval procedures {cite:p}`2016:brener`.
 
 Its practical demands are substantial. A standard session takes about 35 minutes,
-and implementations can take considerably longer once familiarisation is included
+and implementations can take considerably longer once familiarization is included
 {cite:p}`2016:brener,2022:legrand`. The task also requires precise synchronization
 of cardiac and external events. Participants must attend to both streams and make
 a temporal judgement, which adds demands beyond sensing the heartbeat itself.
@@ -212,7 +212,7 @@ together:
   the parameterization when reporting a model because the online Psi value and
   the offline model encode slope in opposite directions.
 
-![Bias and precision in the Heart Rate Discrimination task](images/bias_precision_dartboard.png)
+![Bias and precision in the Heart Rate Discrimination task](../images/bias_precision_dartboard.png)
 
 The dartboard is an analogy for these two properties. The centre of a cluster
 represents bias and its spread represents precision. Although the diagram uses
@@ -245,7 +245,7 @@ for d-prime and meta-d-prime becomes increasingly unbalanced. The resulting
 ratio is least stable for participants with the largest cardiac biases. Our
 current analysis models the 0 to 100 ratings directly with ordered beta regression,
 retaining responses at both bounds {cite:p}`2023:kubinec`. The
-[metacognition tutorial](tutorials/metacognition.md) develops this analysis.
+[metacognition tutorial](hrd/tutorials/metacognition.md) develops this analysis.
 
 ### The exteroceptive condition provides a within-person comparison
 
@@ -291,14 +291,14 @@ variables for a group analysis.
 
 The tutorials follow the analysis from one session to a group model:
 
-- [Inspecting and plotting data](tutorials/inspecting-data.md) explains the trial
+- [Inspecting and plotting data](hrd/tutorials/inspecting-data.md) explains the trial
   files and the checks we use during data collection.
-- [The psychophysical model](tutorials/psychophysics.md) introduces threshold,
+- [The psychophysical model](hrd/tutorials/psychophysics.md) introduces threshold,
   slope, lapse rate, and a single-participant fit.
-- [Hierarchical modelling](tutorials/hierarchical.md) estimates participant and
+- [Hierarchical modelling](hrd/tutorials/hierarchical.md) estimates participant and
   population effects in one model.
-- [Metacognition](tutorials/metacognition.md) models confidence bias and
+- [Metacognition](hrd/tutorials/metacognition.md) models confidence bias and
   metacognitive calibration.
 
 For task administration and staircase settings, see the
-[user guide](user_guide.md).
+[HRD page](hrd/index.md).

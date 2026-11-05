@@ -90,3 +90,14 @@ code.literal {
 body[data-theme="dark"] code.literal {
   border-color: #2b3949;
 }
+
+/* Autosummary puts every generated API page in the navigation, which buried
+   the rest of the sidebar under API. The API page lists them all, so the
+   sidebar shows the API page alone. Furo ignores a toctree's maxdepth. */
+.sidebar-tree li:has(> a[href*="generated/"]) {
+  display: none;
+}
+
+.sidebar-tree li:has(> ul > li > a[href*="generated/"]) > label {
+  display: none;
+}

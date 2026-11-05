@@ -1,28 +1,46 @@
 name: Build and Deploy
 
+# Two sites from one gh-pages branch:
+#
+#   main -> https://www.the-ecg.org/Cardioception/      the released version
+#   dev  -> https://www.the-ecg.org/Cardioception/dev/  the development version
+#
+# Pull requests build but never deploy, so no PR can replace live documentation
+# before review. master holds 0.7.2 and no longer deploys: a push there would
+# replace the released 1.0 docs with 0.7 ones.
+
 on:
   push:
     branches:
-      - master
       - main
       - dev
   pull_request:
     branches:
-      - master
       - main
       - dev
 permissions:
   contents: write
 
+# A push to main and a push to dev both write to gh-pages. Run deploys one at a
+# time so the second does not fail on a stale branch head; never cancel one
+# halfway through.
+concurrency:
+  group: docs-deploy
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      # Read by conf.py: "dev" adds the development banner, marks every page
+      # noindex and points canonical URLs at /dev/.
+      DOCS_CHANNEL: ${{ (github.ref == 'refs/heads/dev' || github.base_ref == 'dev') && 'dev' || 'stable' }}
     steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
           cache: pip
@@ -35,20 +53,30 @@ jobs:
           pip install --no-deps -e .
           pip install -r requirements-docs.txt
 
+      # -W turns warnings into errors, so a broken cross-reference or a missing
+      # page fails the build instead of shipping. --keep-going reports all of
+      # them in one run.
       - name: Build documentation
         run: |
-          sphinx-build -b html docs/source docs/build/html
+          sphinx-build -W --keep-going -b html docs/source docs/build/html
 
-      # Build on every push and pull request to master or dev, publish only
-      # from a push to master. Without this guard a pull request deployed
-      # straight to gh-pages, so any PR could replace the live documentation
-      # before anyone reviewed it, and a push to dev would publish unreleased
-      # documentation. `main` exists and is built, but the site still deploys
-      # from master until the 1.0.0 release: on release day, change the ref
-      # below to refs/heads/main.
-      - name: Deploy 🚀
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      # The root deploy cleans out files the new build no longer has, which
+      # would include the whole dev/ folder. clean-exclude keeps it, and the
+      # CNAME that serves the site at www.the-ecg.org.
+      - name: Deploy the released docs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs/build/html
-          BRANCH: gh-pages
+          branch: gh-pages
+          clean-exclude: |
+            dev
+            CNAME
+
+      - name: Deploy the development docs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs/build/html
+          branch: gh-pages
+          target-folder: dev

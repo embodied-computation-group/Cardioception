@@ -1,268 +1,107 @@
-[![GitHub license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE) [![GitHub release](https://img.shields.io/github/v/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/) [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit) [![pip](https://img.shields.io/pypi/v/cardioception-toolbox)](https://pypi.org/project/cardioception-toolbox/) [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/) [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22139105.svg)](https://doi.org/10.5281/zenodo.22139105)
+[![PyPI](https://img.shields.io/pypi/v/cardioception-toolbox)](https://pypi.org/project/cardioception-toolbox/) [![Tests](https://github.com/embodied-computation-group/Cardioception/actions/workflows/tests.yml/badge.svg?branch=dev)](https://github.com/embodied-computation-group/Cardioception/actions/workflows/tests.yml) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/embodied-computation-group/Cardioception/blob/main/LICENSE) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22139105.svg)](https://doi.org/10.5281/zenodo.22139105)
 
-# Cardioception Toolbox
+# Cardioception
 
-<img src="images/cardioception_icon.png" align="left" alt="cardioception" height="230" HSPACE=30>
+<img src="images/cardioception_icon.png" align="right" alt="Cardioception" height="160">
 
-Cardioception measures cardiac interoception in [PsychoPy](https://www.psychopy.org/). The package is built around the Heart Rate Discrimination task (HRD), a psychophysical method that estimates how accurately and how precisely people judge their own heart rate. It also includes the older Heartbeat Counting task, described [further down](#the-heartbeat-counting-task), and two experimental tasks, the [Heartbeat Synchrony Discrimination task](#the-heartbeat-synchrony-discrimination-task) and the [Phase Adjustment Task](#the-phase-adjustment-task). [The tasks](https://www.the-ecg.org/Cardioception/tasks.html) page in the documentation compares all four.
+**Cardioception is an all-in-one, open-source Python toolbox for studying how people perceive their own heartbeat.**
 
-You do not need much equipment. A computer and a device that reads the participant's pulse is enough to run a study, and the tasks slot into richer setups (ECG, M/EEG, fMRI) when you have them.
+Version 1.0 rebuilds the package around a shared core and brings the most widely used methods for measuring cardiac interoception together in one place: heart rate discrimination, heartbeat counting, the Phase Adjustment Task, and a new adaptive Heartbeat Synchrony Discrimination task for the perceived timing of individual heartbeats. The classic Whitehead and Brener synchrony methods come next. One installation, one output layout and one set of tutorials let you study perceptual bias, precision and confidence across methods, and compare them in the same participants.
 
-Documentation lives at <https://www.the-ecg.org/Cardioception/>.
+Built on [PsychoPy](https://www.psychopy.org/), Cardioception combines task presentation with physiological recording, from a USB pulse oximeter or from compatible ECG and PPG devices connected through [Lab Streaming Layer](https://labstreaminglayer.org/) (LSL). Ready-to-run scripts, participant tutorials and [documentation](https://www.the-ecg.org/Cardioception/dev/) help you set up and run an experiment.
 
-> **Official repository.** This is the original Cardioception, created by Micah Allen and the Embodied Computation Group at Aarhus University between 2019 and 2022, funded by a Lundbeckfonden Fellowship to Micah Allen. It is the version used in the papers listed below. We cannot vouch for unofficial forks, so we recommend working from this repository for research, installation and citation.
+This is the official Cardioception, developed by Micah Allen and the Embodied Computation Group at Aarhus University, and the version used in the publications listed below.
 
-## Contents
+## The tasks
 
-- [The Heart Rate Discrimination task](#the-heart-rate-discrimination-task)
-- [Installation](#installation)
-- [Recording devices](#recording-devices)
-- [Running a task](#running-a-task)
-- [Analysing your data](#analysing-your-data)
-- [The Heartbeat Counting task](#the-heartbeat-counting-task)
-- [The Heartbeat Synchrony Discrimination task (experimental)](#the-heartbeat-synchrony-discrimination-task)
-- [The Phase Adjustment Task (experimental)](#the-phase-adjustment-task)
-- [Getting help](#getting-help)
-- [How to cite](#how-to-cite)
-- [Publications using the HRD](#publications-using-the-hrd)
-- [References](#references)
-- [Development and credit](#development-and-credit)
+| Task | What participants do | Main measures | Reference | Status |
+|---|---|---|---|---|
+| Heart Rate Discrimination (HRD) | Judge whether a sequence of tones is faster or slower than their own heart rate | Bias and precision of heart rate judgements, with optional confidence ratings | [Legrand et al., 2022](https://doi.org/10.1016/j.biopsycho.2021.108239) | Established |
+| Heartbeat Counting (HBC) | Count their heartbeats during intervals of different lengths | Reported heartbeat counts relative to recorded counts | [Schandry, 1981](https://doi.org/10.1111/j.1469-8986.1981.tb02486.x) | Established |
+| Phase Adjustment Task (PAT) | Adjust the delay of tones until they match their perceived heartbeat | The delay chosen, and its consistency across trials | [Plans et al., 2021](https://doi.org/10.1016/j.biopsycho.2021.108171); ECG version after [Hodgetts et al., 2026](https://doi.org/10.1111/psyp.70415) | Beta |
+| Heartbeat Synchrony Discrimination (HSD) | Judge whether tones played at different delays after each heartbeat are synchronous with it | Perceived timing of the heartbeat, and its temporal precision | New in Cardioception; see the [design page](https://www.the-ecg.org/Cardioception/dev/tasks/hsd/design.html) | Beta |
+| Whitehead method | Judge which of two tone sequences, one at a short and one at a longer delay after each heartbeat, is simultaneous with it | Discrimination of synchronous from delayed tones | [Whitehead et al., 1977](https://doi.org/10.1007/BF00998623) | Coming soon |
+| Method of constant stimuli (Brener) | Judge whether tones at one of several fixed delays, from 0 to 500 ms after each heartbeat, are simultaneous with it | Proportion of tones judged simultaneous at each delay | [Brener, Liu & Ring, 1993](https://doi.org/10.1111/j.1469-8986.1993.tb02091.x) | Coming soon |
 
-## The Heart Rate Discrimination task
+Tasks in beta are close to feature complete and are still being rigorously validated.
 
-<img src= "images/HeartRateDiscrimination.png">
+The HRD and the HBC run with a USB pulse oximeter or with an ECG or PPG device over LSL. The synchrony tasks time each tone from the R-wave, so they need an ECG over LSL.
 
-On each trial the participant listens to their own body for five seconds and forms an estimate of their heart rate <sup>3</sup>. They then hear five tones played at some frequency, set to their estimated BPM plus or minus an intensity that an adaptive staircase (up/down or psi) keeps adjusting, and they judge whether the tones were faster or slower than their heart.
-
-Because the tone frequency is placed relative to the participant's true heart rate, the procedure separates two things that heartbeat counting confounds: the bias in what people believe their heart rate to be (the threshold of the psychometric function) and how finely they can discriminate it (the slope). You can estimate both online during the task or offline afterwards, along with metacognitive efficiency.
+[The tasks](https://www.the-ecg.org/Cardioception/dev/tasks/index.html) page compares the four available tasks in detail. The [theory](https://www.the-ecg.org/Cardioception/dev/tasks/theory.html) page explains what each can and cannot establish.
 
 ## Installation
 
-> ### Install `cardioception-toolbox`
+Cardioception needs Python 3.10 or 3.11.
+
+> **1.0 is in development and not on PyPI yet.** `pip install cardioception-toolbox` installs the current release, 0.7.2, documented at <https://www.the-ecg.org/Cardioception/>. To try 1.0, install from this branch:
 >
 > ```
-> pip install cardioception-toolbox
+> pip install "cardioception-toolbox[lsl] @ git+https://github.com/embodied-computation-group/Cardioception@dev"
 > ```
->
-> This is the official package, maintained by the Embodied Computation Group at Aarhus University, and the one used in the papers below. Check that the name you install is exactly `cardioception-toolbox`.
 
-Until the next release, PyPI has the 0.7 line (0.7.2). The rewritten package this repository describes, with the new output layout and the experimental Heartbeat Synchrony Discrimination and Phase Adjustment tasks, reaches PyPI with that release; until then, install it from the `dev` branch as shown below. The [changelog](https://github.com/embodied-computation-group/Cardioception/blob/HEAD/CHANGELOG.md) lists what changes from 0.7.x and how to migrate analysis scripts.
-
-The import name has not changed, so scripts written against earlier versions keep working:
-
-```python
-from cardioception.HRD import task
-```
-
-To install the development branch instead:
+Once 1.0 is released:
 
 ```
-pip install git+https://github.com/embodied-computation-group/Cardioception.git@dev
-```
-
-### Step by step, from a fresh machine
-
-If you are installing for the first time, or helping someone who is, follow the
-**[installation guide](https://www.the-ecg.org/Cardioception/installation.html)**.
-It walks through the five steps from installing Python to confirming the pulse
-oximeter is producing a real signal, shows the expected output at each step, and
-ends with a troubleshooting table covering the errors that actually come up.
-
-The short version, on a machine that already has Python 3.10 or 3.11:
-
-```
-python -m venv cardioception-env
-cardioception-env\Scripts\activate       # Windows
-source cardioception-env/bin/activate    # macOS and Linux
 pip install cardioception-toolbox
-python -c "from cardioception.HRD import task; print('ok')"
 ```
 
-### The conda environment file
+Check that the name you install is exactly `cardioception-toolbox`. For ECG or PPG over LSL, install the extra as well: `pip install "cardioception-toolbox[lsl]"`.
 
-`environment.yml` is an **alternative** to the three commands above, not an extra step. It is worth using if you already have Anaconda or Miniconda, because it pins the interpreter to 3.10 for you and installs `pywinhook` from conda-forge, which on Windows saves building it from source:
+The [installation guide](https://www.the-ecg.org/Cardioception/dev/getting-started/installation.html) goes step by step from a fresh machine to a checked pulse signal, and covers conda, earlier versions and troubleshooting.
 
-```
-conda env create -f environment.yml
-conda activate cardioception
-```
-
-`environment_linux.yml` is the same with the Linux-specific packages. If you do not already use conda, the `venv` route above works and involves one fewer tool.
-
-If you use the desktop shortcut described below, point it at whichever environment you created rather than at `base`.
-
-### Dependencies
-
-**Python 3.10 or 3.11 is required.** The upper bound comes from `pywinhook`, which publishes wheels only up to 3.11 and otherwise has to be compiled from source on Windows. PsychoPy itself allows 3.12.
-
-Pip installs everything you need. The two that matter are [PsychoPy](https://www.psychopy.org/) for stimulus delivery and [systole](https://github.com/embodied-computation-group/systole) for reading the pulse oximeter, alongside numpy, scipy, pandas and pyserial. [`requirements.txt`](requirements.txt) records the versions we test against.
-
-Analysing the data needs a few extras that are not installed by default: [papermill](https://papermill.readthedocs.io/en/latest/), [matplotlib](https://matplotlib.org/), [seaborn](https://seaborn.pydata.org/), [pingouin](https://pingouin-stats.org/), [metadpy](https://github.com/Embodi3dComputationGroup/metadpy) and [pymc](https://www.pymc.io/welcome.html).
-
-Installing the package also copies about 140 MB of images and sounds that the tasks play, most of it the 370 pre-generated tone files used by the Heart Rate Discrimination task. `pip uninstall cardioception-toolbox` removes them again.
-
-### Legacy versions
-
-The 0.7 line, the last before the 2026 rewrite, is kept as the `legacy/0.7` branch and the `v0.7.2` tag, and installs with `pip install cardioception-toolbox==0.7.2`; the 0.4 line, from the period of the HRD paper, is tagged `v0.4.0` to `v0.4.5`. Both write to the old flat `data/<participant><session>/` layout, and the [installation guide](https://www.the-ecg.org/Cardioception/installation.html#legacy-versions) and the [changelog](https://github.com/embodied-computation-group/Cardioception/blob/HEAD/CHANGELOG.md) cover installing them and migrating their output.
-
-## Recording devices
-
-The HRD and the HBC read the participant's cardiac signal while the task runs, either to estimate heart rate or to count beats in a time window. Two setups work out of the box:
-
-* The [Nonin 3012LP Xpod USB pulse oximeter](https://www.nonin.com/products/xpod/) with [Nonin 8000SM soft-clip fingertip sensors](https://www.nonin.com/products/8000s/), which plugs into the stimulus PC over USB and needs no extra code.
-* Any ECG or PPG device that streams over [Lab Streaming Layer](https://labstreaminglayer.org/) (LSL), through `cardioception.devices.LSLRecorder`. Install the optional dependency with `pip install cardioception-toolbox[lsl]`, start the device's own streaming program, and pass the recorder to `getParameters(recorder=...)`. The [user guide](https://www.the-ecg.org/Cardioception/user_guide.html#ecg-or-ppg-over-lsl) has the details.
-
-The experimental Heartbeat Synchrony Discrimination task and Phase Adjustment Task time each tone from the R-wave, so they need an ECG over LSL; a pulse oximeter cannot drive them.
-
-Other hardware can be added by writing a recorder and passing it to `getParameters(recorder=...)`, which bypasses the built-in setup entirely. It needs to supply a real-time estimate of cardiac frequency during the trial, since that is what sets the tone frequency; a device that only records for later analysis is not enough on its own. `cardioception.devices.ReplayRecorder` is a worked example, and is what the test suite runs against.
-
-## Running a task
-
-Each task splits into a `parameters` submodule, which holds the experimental settings, and a `task` submodule, which holds the PsychoPy script. Most of what you will want to change can be passed as an argument to the parameters function; the API documentation covers the full set.
-
-### From a script
+## Try the HRD without recording hardware
 
 ```python
 from cardioception.HRD.parameters import getParameters
 from cardioception.HRD import task
 
-# Set global task parameters
-parameters = getParameters(
-    participant='Subject_01', session='Test', serialPort=None,
-    setup='behavioral', nTrials=10, screenNb=0)
-
-# Run task
+# setup="test" replays a recorded pulse, so this runs without hardware.
+# For a real session, use setup="behavioral" and the oximeter's serial port.
+parameters = getParameters(participant="sub01", session="pilot", setup="test", nTrials=10)
 task.run(parameters, confidenceRating=True, runTutorial=True)
-
-parameters['win'].close()
+parameters["win"].close()
 ```
 
-That runs ten HRD trials with a Psi staircase. The [wrappers](https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers) folder has fuller scripts for each task. Copy one into your own task folder, adjust the parameters to suit your design, and run it from a terminal.
+Every task writes to `data/sub-<participant>/ses-<session>/run-<timestamp>/`, with one row per trial in `*_final.txt`. The [wrappers](wrappers/) folder has a ready-to-run script for each task. [Running a session](https://www.the-ecg.org/Cardioception/dev/getting-started/running-a-session.html) covers what every session shares: the wrappers, the output layout, languages and confidence scales. [Recording devices](https://www.the-ecg.org/Cardioception/dev/getting-started/recording-devices.html) covers the oximeter and LSL devices, and each task's page its own settings.
 
-### Making a desktop shortcut on Windows
+## Analysis
 
-Once your wrapper script is ready, a `.bat` file lets whoever is running the session start the task with a double click, with no terminal involved:
+For hierarchical modelling and power analysis of HRD data, see the companion [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), described in [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3). It provides validated psychometric models and normative priors. The R scripts in [`R_analysis/`](R_analysis/) are kept working for existing pipelines, and the older Python report notebooks in `cardioception/notebooks/` remain for reference.
 
-```
-call [path to your environment */conda.bat] activate
-[path to your local */python.exe] [path to your wrapper */hrd.py]
-pause
-```
+## Documentation
 
-## Analysing your data
-
-### Hierarchical Interoception toolbox
-
-For HRD data we now recommend the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), described in [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3), which covers the models, the validation work and where the priors come from. It gives you hierarchical psychometric models for HRD and RRST data in Stan and BRMS, tested with parameter recovery; normative priors drawn from large reference datasets that you can drop into your own models; and a power analysis suite as an R Markdown document and a Shiny app for working out how many participants and trials you need.
-
-To get going, clone that repository and run `setup.R`, then open `app & demo/BRMS demo.Rmd` for a worked HRD analysis, or `app & demo/shiny app.R` to plan a study. Please cite Courtin et al. (2026) for the modelling and Cardioception for the data collection.
-
-### R scripts
-
-The R code in `R_analysis/` is kept working for people with existing pipelines. It covers single-subject analysis with reaction times and signal detection measures, group level hierarchical models, Bayesian fits in Stan, and the accompanying plots. The example scripts are a good starting point:
-
-* Single subject: `R_analysis/Example scripts/Example_analysis_simple.Rmd`
-* Group level: `R_analysis/Example scripts/Example_analysis_Hierarchical.Rmd`
-* Bayesian: `R_analysis/Example scripts/Example_analysis_bayesian.Rmd`
-
-The [R analysis README](R_analysis/README.md) documents them properly.
-
-### Python notebooks
-
-These notebooks are kept for reference and are no longer maintained. For hierarchical modelling, use the toolbox or the R scripts above.
-
-#### Task reports
-
-Results are written to the `'resultPath'` folder you set in the parameters dictionary. For each task there is a notebook that walks through the main results, quality checks and basic preprocessing, and you can generate an HTML report from it:
-
-```python
-from cardioception.reports import report
-
-resultPath = "./"  # the folder containing the result files
-reportPath = "./"  # the folder where you want to save the HTML report
-
-report(resultPath, reportPath, task='HRD')
-```
-
-This writes the HRD report into `reportPath` using the result files in `resultPath`, and needs [papermill](https://papermill.readthedocs.io/en/latest/) installed.
-
-You can also run the notebooks in [Google Colab](https://colab.research.google.com/) and upload your result folder there.
-
-| Notebook | Colab | nbViewer |
-| --- | ---| --- |
-| Heartbeat Counting task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb) | [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb)
-| Heart Rate Discrimination task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb) | [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb)
-
-#### Bayesian modelling
-
-These notebooks fit the psychometric function at the subject and group level. They are superseded by the Hierarchical Interoception toolbox, which handles the same problem with better validated models.
-
-| Notebook | Colab | nbViewer |
-| --- | ---| --- |
-| Fitting the psychometric function (single subject) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb)
-| Fitting the psychometric function (group level) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb)
-
-## The Heartbeat Counting task
-
-<img src= "images/HeartBeatCounting.png">
-
-Cardioception also implements the heartbeat counting task <sup>1,2</sup>, where participants attend to their heartbeats over intervals of different lengths and report how many they counted. Accuracy comes from comparing that report against the true number of beats. Schandry's original version <sup>1</sup> opened with 60 seconds of rest, then three counting windows (25, 35 and 45 seconds) separated by 30 second rests. Cardioception defaults to the variant used in more recent work <sup>3</sup>: six counting trials (25, 30, 35, 40, 45 and 50 seconds) in random order. Trial length, condition (`'Rest'`, `'Count'`, `'Training'`) and randomisation are all set in the parameters dictionary.
-
-We keep the task available because a good deal of the literature rests on it and people need to run replications. For new studies, we would point you to the HRD instead. Counting scores are strongly shaped by what participants believe their heart rate to be and by how they interpret the instructions, which makes them hard to read as a measure of interoceptive sensitivity on their own.
-
-## The Heartbeat Synchrony Discrimination task
-
-**Experimental.** The Heartbeat Synchrony Discrimination task (HSD) is an adaptive Bayesian version of the heartbeat detection task of Brener, Liu and Ring. Participants hear five tones, each a chosen delay after an R-wave detected online in the ECG, and judge whether they were synchronous with their heartbeat; the delays are placed to estimate where in the cardiac cycle the heartbeat is felt and how sharply. It needs an ECG streamed over LSL, has so far been run on hardware once, and its stopping rule is provisional. The [design page](https://www.the-ecg.org/Cardioception/hsd_design.html) describes the method and the evidence so far, and the [user guide](https://www.the-ecg.org/Cardioception/user_guide.html#heartbeat-synchrony-discrimination) explains how to run it with `wrappers/hsd_lsl.py`.
-
-## The Phase Adjustment Task
-
-**Experimental.** The Phase Adjustment Task (PAT) follows the ECG version of Hodgetts and colleagues (2026). Participants hear one tone per heartbeat and turn a dial, the mouse wheel, that moves the tone earlier or later after each R-wave until tone and heartbeat feel simultaneous. There is no correct answer on a single trial: the score is how consistently the choices fall at one phase of the cardiac cycle across 28 trials, tested against chance with `cardioception.PAT.scoring`. It needs an ECG streamed over LSL and detects the R-wave in software, which changes the timing of the hardware original. The [PAT page](https://www.the-ecg.org/Cardioception/pat.html) explains how to run and score it with `wrappers/pat_lsl.py`.
-
-## Getting help
-
-For questions about the tasks, contact Micah Allen directly. For bugs, open an issue on the [GitHub page](https://github.com/embodied-computation-group/Cardioception/issues).
+- [Installation](https://www.the-ecg.org/Cardioception/dev/getting-started/installation.html): from a fresh machine to a first session
+- [Recording devices](https://www.the-ecg.org/Cardioception/dev/getting-started/recording-devices.html) and [running a session](https://www.the-ecg.org/Cardioception/dev/getting-started/running-a-session.html): connecting a device, and what every session shares
+- [The tasks](https://www.the-ecg.org/Cardioception/dev/tasks/index.html) and [theory](https://www.the-ecg.org/Cardioception/dev/tasks/theory.html): what each task measures and when to use it
+- [Phase Adjustment Task](https://www.the-ecg.org/Cardioception/dev/tasks/pat.html) and [HSD design](https://www.the-ecg.org/Cardioception/dev/tasks/hsd/design.html): the two tasks in beta
+- [API reference](https://www.the-ecg.org/Cardioception/dev/reference/api.html)
+- [Changelog](CHANGELOG.md): what changed in 1.0, and how to migrate scripts written for 0.7
 
 ## How to cite
 
-If you use Cardioception in a publication, please cite:
+If you use Cardioception, please cite:
 
->Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., &amp; Allen, M. (2021). The Heart Rate Discrimination Task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 108239. <https://doi.org/10.1016/j.biopsycho.2021.108239>
+> Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., & Allen, M. (2022). The heart rate discrimination task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. *Biological Psychology*, 168, 108239. <https://doi.org/10.1016/j.biopsycho.2021.108239>
 
-If you use [systole](https://github.com/embodied-computation-group/systole) to talk to your recording device, which is what Cardioception does by default, you may also want to cite:
-
-> Legrand, N. & Allen, M. (2022). Systole: A python package for cardiac signal synchrony and analysis. Journal of Open Source Software, 7(69), 3832, <https://doi.org/10.21105/joss.03832>
+To refer to a specific version of the software, use its [Zenodo DOI](https://doi.org/10.5281/zenodo.22139105). [`CITATION.cff`](CITATION.cff) has both, and the [citation page](https://www.the-ecg.org/Cardioception/dev/reference/cite.html) has BibTeX entries.
 
 ## Publications using the HRD
 
-The studies below have used the Heart Rate Discrimination task. If your work is missing, open a pull request or an issue and we will add it.
-
-**2026**
+If your work is missing, open an issue or a pull request and we will add it.
 
 - Banellis, L., Nikolova, N., Ehmsen, J. F., Courtin, A. S., Vejlø, M., Tyrer, A., Böhme, R. A., Bavato, F., Hoogervorst, K., Fardo, F., & Allen, M. G. (2026). Interoceptive performance is unrelated to mental health symptoms in a large multi-domain psychophysical investigation. *Nature Mental Health*, 1–15. <https://doi.org/10.1038/s44220-026-00688-4>
 - Courtin, A. S., Ehmsen, J. F., Banellis, L., Fardo, F., & Allen, M. G. (2026). Hierarchical Bayesian modeling of interoceptive psychophysics. *Behavior Research Methods*, 58(9), 260. <https://doi.org/10.3758/s13428-026-03137-3>
 - Desdentado, L., Allen, M. G., Schultze, J., Banellis, L., Navarro-Siurana, J., Nikolova, N., Baños, R. M., & Pollatos, O. (2026). Cardiac interoception in action: Modulation after a stress induction with a speech task. *Biological Psychology*, 205, 109228. <https://doi.org/10.1016/j.biopsycho.2026.109228>
-
-**2025**
-
 - Jeganathan, J., Campbell, M. E. J., Legrand, N., Allen, M., & Breakspear, M. (2025). Aberrant cardiac interoception in psychosis. *Schizophrenia Bulletin*, 51(1), 208–216. <https://doi.org/10.1093/schbul/sbae078>
-- Tyrer, A., Ehmsen, J. F., Hoogervorst, K., Nikolova, N., Pando-Naude, V., Steenkjær, C. H., Courtin, A. S., Fardo, F., Hauser, T., Bavato, F., & Allen, M. (2025). Peripheral beta-blockade differentially enhances cardiac and respiratory interoception (p. 2025.02.28.640776). *bioRxiv*. <https://doi.org/10.1101/2025.02.28.640776>
-
-**2024**
-
+- Tyrer, A., Ehmsen, J. F., Hoogervorst, K., Nikolova, N., Pando-Naude, V., Steenkjær, C. H., Courtin, A. S., Fardo, F., Hauser, T., Bavato, F., & Allen, M. (2025). Peripheral beta-blockade differentially enhances cardiac and respiratory interoception. *bioRxiv*. <https://doi.org/10.1101/2025.02.28.640776>
 - Leganes-Fonteneau, M. (2024). Alcohol effects on interoception shape expectancies and subjective effects: A registered report using the heart rate discrimination task. *Alcohol and Alcoholism*, 59(4), agae025. <https://doi.org/10.1093/alcalc/agae025>
 
-## References
+## Help
 
-1. Dale, A., & Anderson, D. (1978). Information Variables in Voluntary Control and Classical Conditioning of Heart Rate: Field Dependence and Heart-Rate Perception. Perceptual and Motor Skills, 47(1), 79–85. <https://doi.org/10.2466/pms.1978.47.1.79>
-2. Schandry, R. (1981). Heart Beat Perception and Emotional Experience. Psychophysiology, 18(4), 483–488. <https://doi.org/10.1111/j.1469-8986.1981.tb02486.x>
-3. Legrand, N., Nikolova, N., Correa, C., Brændholt, M., Stuckert, A., Kildahl, N., Vejlø, M., Fardo, F., & Allen, M. (2022). The heart rate discrimination task: A psychophysical method to estimate the accuracy and precision of interoceptive beliefs. In Biological Psychology (Vol. 168, p. 108239). Elsevier BV. <https://doi.org/10.1016/j.biopsycho.2021.108239>
-4. Leganes-Fonteneau, M., Cheang, Y., Lam, Y., Garfinkel, S., & Duka, T. (2019). Interoceptive awareness is associated with acute alcohol-induced changes in subjective effects. Pharmacology Biochemistry and Behavior, 181, 69–76. <https://doi.org/10.1016/j.pbb.2019.03.007>
-5. Hart, N., McGowan, J., Minati, L., & Critchley, H. D. (2013). Emotional Regulation and Bodily Sensation: Interoceptive Awareness Is Intact in Borderline Personality Disorder. Journal of Personality Disorders, 27(4), 506–518. <https://doi.org/10.1521/pedi_2012_26_049>
+Report bugs and ask questions in the [issue tracker](https://github.com/embodied-computation-group/Cardioception/issues). For questions about the tasks and study design, contact Micah Allen at micah@cfin.au.dk. To contribute code or documentation, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Development and credit
+## Credit
 
-Written by Micah Allen and the Embodied Computation Group, Aarhus University. Contact: micah@cfin.au.dk.
+Cardioception is developed by Micah Allen and the Embodied Computation Group, Aarhus University, and was originally funded by a Lundbeckfonden Fellowship to Micah Allen. It is released under the [Apache 2.0 licence](LICENSE). Some icons come from [Flaticon](https://www.flaticon.com).
 
-Some of the icons in the figures and in the tasks themselves come from **Flaticon** [www.flaticon.com](www.flaticon.com).
-
-<img src = "images/LabLogo.png" height ="100">
+<img src="images/LabLogo.png" height="100" alt="Embodied Computation Group">
