@@ -22,7 +22,7 @@ np <- import("numpy")
 ## **If you also have access to the posterior files then these can be added as below. Remember to change the directory!**
 ```{r message=FALSE}
 #This line reads in a subject result file:
-df = read_csv("https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/examples/templates/data/HRD/HRD_final.txt")
+df = read_csv("https://raw.githubusercontent.com/embodied-computation-group/Cardioception/main/docs/source/examples/templates/data/HRD/HRD_final.txt")
 
 #These next lines read in the psi posterior distributions for each modality. 
 #These will be saved with names depending on your conditions, so modify as needed. 

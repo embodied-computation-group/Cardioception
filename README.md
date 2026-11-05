@@ -1,4 +1,4 @@
-[![GitHub license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE) [![GitHub release](https://img.shields.io/github/v/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/) [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit) [![pip](https://img.shields.io/pypi/v/cardioception-toolbox)](https://pypi.org/project/cardioception-toolbox/) [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/) [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22139105.svg)](https://doi.org/10.5281/zenodo.22139105)
+[![GitHub license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/embodied-computation-group/Cardioception/blob/main/LICENSE) [![GitHub release](https://img.shields.io/github/v/release/embodied-computation-group/Cardioception)](https://github.com/embodied-computation-group/Cardioception/releases/) [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit) [![pip](https://img.shields.io/pypi/v/cardioception-toolbox)](https://pypi.org/project/cardioception-toolbox/) [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/) [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22139105.svg)](https://doi.org/10.5281/zenodo.22139105)
 
 # Cardioception Toolbox
 
@@ -12,8 +12,19 @@ Documentation lives at <https://www.the-ecg.org/Cardioception/>.
 
 > **Official repository.** This is the original Cardioception, created by Micah Allen and the Embodied Computation Group at Aarhus University between 2019 and 2022, funded by a Lundbeckfonden Fellowship to Micah Allen. It is the version used in the papers listed below. We cannot vouch for unofficial forks, so we recommend working from this repository for research, installation and citation.
 
+## Cardioception 1.0 is coming
+
+A major rebuild of Cardioception is under way on the [`dev`](https://github.com/embodied-computation-group/Cardioception/tree/dev) branch. Version 1.0 rebuilds the package around a shared core and brings the most widely used methods for measuring cardiac interoception together in one toolbox: revised versions of the Heart Rate Discrimination and Heartbeat Counting tasks, the Phase Adjustment Task, and a new adaptive Heartbeat Synchrony Discrimination task. It is not on PyPI yet. To try it:
+
+```
+pip install "git+https://github.com/embodied-computation-group/Cardioception@dev"
+```
+
+Its documentation is at <https://www.the-ecg.org/Cardioception/dev/>. Version 0.7.2, described below, remains the release on PyPI.
+
 ## Contents
 
+- [Cardioception 1.0 is coming](#cardioception-10-is-coming)
 - [The Heart Rate Discrimination task](#the-heart-rate-discrimination-task)
 - [Installation](#installation)
 - [Recording devices](#recording-devices)
@@ -128,7 +139,7 @@ task.run(parameters, confidenceRating=True, runTutorial=True)
 parameters['win'].close()
 ```
 
-That runs ten HRD trials with a Psi staircase. The [wrappers](https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers) folder has fuller scripts for both tasks. Copy one into your own task folder, adjust the parameters to suit your design, and run it from a terminal.
+That runs ten HRD trials with a Psi staircase. The [wrappers](https://github.com/embodied-computation-group/Cardioception/tree/main/wrappers) folder has fuller scripts for both tasks. Copy one into your own task folder, adjust the parameters to suit your design, and run it from a terminal.
 
 ### Making a desktop shortcut on Windows
 
@@ -181,8 +192,8 @@ You can also run the notebooks in [Google Colab](https://colab.research.google.c
 
 | Notebook | Colab | nbViewer |
 | --- | ---| --- |
-| Heartbeat Counting task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb) | [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartBeatCounting.ipynb)
-| Heart Rate Discrimination task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb) | [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/cardioception/notebooks/HeartRateDiscrimination.ipynb)
+| Heartbeat Counting task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/main/cardioception/notebooks/HeartBeatCounting.ipynb) | [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/main/cardioception/notebooks/HeartBeatCounting.ipynb)
+| Heart Rate Discrimination task report | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/main/cardioception/notebooks/HeartRateDiscrimination.ipynb) | [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/main/cardioception/notebooks/HeartRateDiscrimination.ipynb)
 
 #### Bayesian modelling
 
@@ -190,8 +201,8 @@ These notebooks fit the psychometric function at the subject and group level. Th
 
 | Notebook | Colab | nbViewer |
 | --- | ---| --- |
-| Fitting the psychometric function (single subject) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb)
-| Fitting the psychometric function (group level) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/master/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb)
+| Fitting the psychometric function (single subject) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/main/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/embodied-computation-group/Cardioception/blob/main/docs/source/examples/psychophysics/1-psychophysics_subject_level.ipynb)
+| Fitting the psychometric function (group level) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/embodied-computation-group/Cardioception/blob/main/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb) |  [![View the notebook](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/embodied-computation-group/Cardioception/blob/main/docs/source/examples/psychophysics/2-psychophysics_group_level.ipynb)
 
 ## The Heartbeat Counting task
 
