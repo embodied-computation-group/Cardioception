@@ -90,7 +90,7 @@ If your work is missing, open an issue or a pull request and we will add it.
 
 ## Help
 
-Report bugs and ask questions in the [issue tracker](https://github.com/embodied-computation-group/Cardioception/issues). For questions about the tasks and study design, contact Micah Allen at micah@cfin.au.dk.
+Report bugs and ask questions in the [issue tracker](https://github.com/embodied-computation-group/Cardioception/issues). For questions about the tasks and study design, contact Micah Allen at micah@cfin.au.dk. To contribute code or documentation, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Credit
 
