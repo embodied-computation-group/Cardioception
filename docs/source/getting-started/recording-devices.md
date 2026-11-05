@@ -77,7 +77,7 @@ The ECG setup used to develop the synchrony tasks is a PLUX hub with a chest lea
 python plux_lsl.py --ports 1
 ```
 
-It publishes the stream as `PLUX`, which is the wrappers' default. The ECG channel's label is not the same on every hub (`ECG1` on one, `ECG2` on another), so read it from the stream before the session; the HSD and PAT wrappers have no default for it and will not start without one.
+It publishes the stream as `PLUX`, which is the wrappers' default. The ECG channel's label is not the same on every hub (`ECG1` on one, `ECG2` on another), so read it from the stream before the session; the PAT and HSD wrappers have no default for it and will not start without one.
 
 Electrodes follow {cite:t}`2026:hodgetts`: right clavicle, lowest left rib, reference on the left clavicle or hip. With the PLUX lead set, upright R-waves came from black on the lowest left rib and red on the right clavicle; swap them if the trace is inverted.
 

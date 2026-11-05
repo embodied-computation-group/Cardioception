@@ -67,7 +67,13 @@ Running a session <getting-started/running-a-session.md>
 caption: Tasks
 hidden:
 ---
-The tasks <tasks/index.md>
+tasks/index.md
+tasks/hrd/index.md
+tasks/hbc.md
+tasks/pat.md
+tasks/hsd/index.md
+tasks/whitehead.md
+tasks/constant-stimuli.md
 ```
 
 ```{toctree}

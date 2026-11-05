@@ -65,8 +65,8 @@ models and the priors, and Cardioception for the data collection. See the
 ---
 hidden:
 ---
-Inspecting data <inspecting-data.md>
-Psychophysical model <psychophysics.md>
-Hierarchical modelling <hierarchical.md>
-Metacognition <metacognition.md>
+inspecting-data.md
+psychophysics.md
+hierarchical.md
+metacognition.md
 ```
