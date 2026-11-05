@@ -2,8 +2,8 @@
 
 .. meta::
    :description: The Cardioception API: parameters and task functions for the
-      Heart Rate Discrimination, Heartbeat Counting, Heartbeat Synchrony
-      Discrimination and Phase Adjustment tasks in PsychoPy.
+      Heart Rate Discrimination, Heartbeat Counting, Phase Adjustment and
+      Heartbeat Synchrony Discrimination tasks in PsychoPy.
    :keywords: cardioception API, heart rate discrimination, heartbeat counting,
       PsychoPy, python interoception
 
@@ -15,43 +15,6 @@ API
 
 Tasks
 -----
-
-Heartbeat Counting task
-========================
-
-Parameters
-**********
-
-.. currentmodule:: cardioception.HBC.parameters
-
-.. autosummary::
-   :toctree: ../generated/HBC.parameters
-
-    getParameters
-
-Scripts
-*******
-
-.. currentmodule:: cardioception.HBC.task
-
-.. autosummary::
-   :toctree: ../generated/HBC.task
-    
-    run
-    trial
-    tutorial
-    rest
-
-Languages
-*********
-
-.. currentmodule:: cardioception.HBC.languages
-
-.. autosummary::
-   :toctree: ../generated/HBC.languages
-
-    available
-    get_texts
 
 Heart Rate Discrimination task
 ==============================
@@ -88,9 +51,7 @@ Scripts
 
     run
     trial
-    waitInput
     tutorial
-    responseDecision
     confidenceRatingTask
 
 Languages
@@ -103,70 +64,40 @@ Languages
 
     available
     get_texts
-    english
-    danish
-    danish_children
-    french
-    german
 
-Heartbeat Synchrony Discrimination task
-=======================================
-
-Beta; see the
-:doc:`design document </tasks/hsd/design>` and the
-:doc:`HSD page </tasks/hsd/index>`.
+Heartbeat Counting task
+========================
 
 Parameters
 **********
 
-.. currentmodule:: cardioception.HSD.parameters
+.. currentmodule:: cardioception.HBC.parameters
 
 .. autosummary::
-   :toctree: ../generated/HSD.parameters
+   :toctree: ../generated/HBC.parameters
 
     getParameters
-
-Configuration
-*************
-
-.. currentmodule:: cardioception.HSD.config
-
-.. autosummary::
-   :toctree: ../generated/HSD.config
-
-    TaskConfig
 
 Scripts
 *******
 
-.. currentmodule:: cardioception.HSD.task
+.. currentmodule:: cardioception.HBC.task
 
 .. autosummary::
-   :toctree: ../generated/HSD.task
-
+   :toctree: ../generated/HBC.task
+    
     run
     trial
     tutorial
-
-Engine
-******
-
-.. currentmodule:: cardioception.HSD.psi
-
-.. autosummary::
-   :toctree: ../generated/HSD.psi
-
-    SynchronyPsi
-    gaussian_envelope
-    default_grids
+    rest
 
 Languages
 *********
 
-.. currentmodule:: cardioception.HSD.languages
+.. currentmodule:: cardioception.HBC.languages
 
 .. autosummary::
-   :toctree: ../generated/HSD.languages
+   :toctree: ../generated/HBC.languages
 
     available
     get_texts
@@ -238,6 +169,68 @@ Languages
     available
     get_texts
 
+Heartbeat Synchrony Discrimination task
+=======================================
+
+Beta; see the
+:doc:`design document </tasks/hsd/design>` and the
+:doc:`HSD page </tasks/hsd/index>`.
+
+Parameters
+**********
+
+.. currentmodule:: cardioception.HSD.parameters
+
+.. autosummary::
+   :toctree: ../generated/HSD.parameters
+
+    getParameters
+
+Configuration
+*************
+
+.. currentmodule:: cardioception.HSD.config
+
+.. autosummary::
+   :toctree: ../generated/HSD.config
+
+    TaskConfig
+
+Scripts
+*******
+
+.. currentmodule:: cardioception.HSD.task
+
+.. autosummary::
+   :toctree: ../generated/HSD.task
+
+    run
+    trial
+    tutorial
+
+Engine
+******
+
+.. currentmodule:: cardioception.HSD.psi
+
+.. autosummary::
+   :toctree: ../generated/HSD.psi
+
+    SynchronyPsi
+    gaussian_envelope
+    default_grids
+
+Languages
+*********
+
+.. currentmodule:: cardioception.HSD.languages
+
+.. autosummary::
+   :toctree: ../generated/HSD.languages
+
+    available
+    get_texts
+
 Recording devices
 -----------------
 
@@ -253,8 +246,8 @@ Recording devices
 Beat sources and tone player
 ============================
 
-Shared by the Heartbeat Synchrony Discrimination task and the Phase Adjustment
-Task, which time their tones from the R-wave.
+Shared by the Phase Adjustment Task and the Heartbeat Synchrony Discrimination
+task, which time their tones from the R-wave.
 
 .. currentmodule:: cardioception.devices.beat_source
 

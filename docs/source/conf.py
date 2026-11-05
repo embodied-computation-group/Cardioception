@@ -94,6 +94,10 @@ autodoc_mock_imports = [
     "pingouin",
 ]
 numpydoc_show_class_members = False
+# The numpydoc docstrings carry the types. Sphinx 5.3 printed the annotations
+# into the signatures with unresolved `~typing.` prefixes, which made the
+# SynchronyPsi and TaskConfig signatures unreadable.
+autodoc_typehints = "none"
 
 # Include the example source for plots in API docs
 plot_include_source = True
