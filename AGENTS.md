@@ -93,7 +93,7 @@ Two rules worth stating here because they are the most common errors:
 
 ## Before you commit
 
-- Docs changes: the build runs on every push to `master` and deploys to
+- Docs changes: the build runs on every push to `main` and deploys to
   <https://www.the-ecg.org/Cardioception/>. It takes about a minute. Check the run.
 - Do not commit large fitted model objects. Cache them locally with brms `file =`.
 - Participant-level data with demographics is sensitive. Do not move it from a private

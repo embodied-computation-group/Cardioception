@@ -1,24 +1,34 @@
 name: Build and Deploy
 
+# main holds the released 0.7 line and deploys to the site root,
+# https://www.the-ecg.org/Cardioception/. The 1.0 development docs are built
+# from dev into /dev/ by dev's own copy of this workflow.
+
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 permissions:
   contents: write
+
+# main and dev both write to gh-pages. Run deploys one at a time so the second
+# does not fail on a stale branch head; never cancel one halfway through.
+concurrency:
+  group: docs-deploy
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
           cache: pip
@@ -35,8 +45,17 @@ jobs:
         run: |
           sphinx-build -b html docs/source docs/build/html
 
-      - name: Deploy 🚀
+      # Pull requests build but never deploy: before this guard any pull
+      # request to the branch published straight to the live site. The deploy
+      # cleans out files the new build no longer has, which would include the
+      # dev/ folder of the 1.0 docs; clean-exclude keeps it, and the CNAME that
+      # serves the site at www.the-ecg.org.
+      - name: Deploy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs/build/html
-          BRANCH: gh-pages
+          branch: gh-pages
+          clean-exclude: |
+            dev
+            CNAME

@@ -129,7 +129,7 @@ parameters['win'].close()
 
 This minimal example runs the Heart Rate Discrimination task with 10 trials and a Psi staircase.
 
-Standard scripts are available in the [wrappers](https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers) folder. Copy the one you need into your local task folder and edit it there. A task can then be run by executing its wrapper file, for example from a terminal.
+Standard scripts are available in the [wrappers](https://github.com/embodied-computation-group/Cardioception/tree/main/wrappers) folder. Copy the one you need into your local task folder and edit it there. A task can then be run by executing its wrapper file, for example from a terminal.
 
 ### The two tasks
 
