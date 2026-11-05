@@ -25,13 +25,13 @@ each one assumes the data preparation from the one before.
 ## What you need
 
 Data inspection works in either Python or R. **Model fitting is done in R**, with
-[brms](https://paul-buerkner.github.io/brms/) and a Stan backend, using the
+[brms](https://paulbuerkner.com/brms/) and a Stan backend, using the
 [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception).
 
 The modelling tutorials assume you have met brms before: that a formula like
 `y ~ x + (x | subject)` means something to you, and that you know roughly what a
 posterior is. If that is new, the
-[brms vignettes](https://paul-buerkner.github.io/brms/articles/) and
+[brms vignettes](https://paulbuerkner.com/brms/articles/) and
 [Bürkner (2017)](https://doi.org/10.18637/jss.v080.i01) are the place to start,
 and you will get much more out of these pages afterwards.
 

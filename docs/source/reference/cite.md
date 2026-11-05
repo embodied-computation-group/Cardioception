@@ -60,7 +60,7 @@ If you analyze HRD data with the hierarchical models and priors of the [Hierarch
 
 ## Systole
 
-If you also use [Systole](https://embodied-computation-group.github.io/systole/index.html) to read the pulse oximeter (the default in Cardioception) or to analyze physiological recordings, cite:
+If you also use [Systole](https://www.the-ecg.org/systole/) to read the pulse oximeter (the default in Cardioception) or to analyze physiological recordings, cite:
 
 * Legrand N., Allen, M., (2022). Systole: A python package for cardiac signal synchrony and analysis. Journal of Open Source Software, 7(69), 3832, <https://doi.org/10.21105/joss.03832>
 
