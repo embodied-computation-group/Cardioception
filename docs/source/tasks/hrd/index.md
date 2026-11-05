@@ -23,7 +23,7 @@ The HRD trial (a) and the Psi staircase with the psychometric functions it estim
 
 A Psi staircase {cite:p}`1999:kontsevich`, one per condition, chooses `Alpha` on each trial between -50.5 and 50.5 ΔBPM, where the answer is most informative about the participant's threshold and slope. A trial with no answer in time is written with `DecisionProvided` false, does not update the staircase, and is put back at the end of the queue (`onMissedTrial="represent"`, at most three presentations).
 
-A session starts with a tutorial when `runTutorial=True`: instruction screens, five practice trials per condition with feedback at an easy difference of 20 BPM (`nFeedback`), then eight per condition with a confidence rating and no feedback (`nConfidence`). The main task runs 120 trials by default, 60 per condition, with a break every 20. The four example sessions in the documentation took 20 to 22 minutes without the tutorial.
+A session starts with a tutorial when `runTutorial=True`: instruction screens, five practice trials per condition with feedback at an easy difference of 20 BPM (`nFeedback`), then eight per condition with a confidence rating and no feedback (`nConfidence`). The main task runs 120 trials by default, 60 per condition, with a break every 20. The four example sessions in the documentation took 20 to 22 minutes without the tutorial, about 10 s a trial; at that pace the tutorial's 26 trials add about 5 minutes, plus the instruction screens.
 
 ## What you need
 
@@ -90,15 +90,22 @@ The arguments of `getParameters` that change the task:
 | `device` | `"mouse"` | `"mouse"` or `"keyboard"` |
 | `language` | `"english"` | `"english"`, `"danish"`, `"danish_children"`, `"french"` or `"german"`. The wrappers offer a subset |
 | `confidenceScale` | by device | A `cardioception.scales.ConfidenceScale`: 0 to 100 for the mouse, ten steps for the keyboard. The end labels follow the language |
-| `catchTrials` | 0.0 | Share of trials at an extreme difference of about 20 BPM, to control the range of stimuli. 0.2 if used |
+| `catchTrials` | 0.0 | Share of trials at a fixed difference instead of the staircase's, cycling through -30, +10, -20, +20, -10 and +30 BPM, to control the range of stimuli. They do not update the staircase. 0.2 if used |
 | `onMissedTrial` | `"represent"` | Re-present a trial with no answer (`"represent"`, up to `maxRepresentations`, 3) or move on (`"skip"`) |
 | `nBreaking` | 20 | Trials between breaks |
+| `screenNb` | 0 | The screen the task window opens on |
 | `resultPath` | `data` | Root of the run directories |
 | `overwrite` | `False` | Allow writing into a run directory that already holds results |
 | `seed` | drawn | Seeds the session's random generator; recorded in the manifest |
 | `stairType` | `"psi"` | The only staircase. The nUp/nDown staircase was removed in 1.0.0, so `"updown"` raises; the [changelog](../../reference/changelog.md) explains why |
 
 Timing and the staircase bounds are on a `TaskConfig`, passed as `config=`:
+
+```python
+from cardioception.HRD.config import TaskConfig
+
+parameters = getParameters(..., config=TaskConfig(respMax=8, nFeedback=10))
+```
 
 | Field | Default | Meaning |
 |---|---|---|
@@ -110,7 +117,7 @@ Timing and the staircase bounds are on a `TaskConfig`, passed as `config=`:
 | `intensRange`, `alphaRange` | -50.5 to 50.5 | The stimuli the staircase may present, and the thresholds it considers, in ΔBPM |
 | `delta` | 0.02 | The lapse rate, held fixed |
 
-The staircase is response-coded, so it converges on the point of subjective equality between faster and slower, which is the participant's bias, not on a target level of accuracy. That is what the task is designed to measure, but it has consequences for any measure scored against the true heart rate; see the [metacognition tutorial](tutorials/metacognition.md). Tones exist for 15 to 199 BPM, so a rate outside that range is clamped and the staircase is told the clamped value.
+The staircase is response-coded, so it converges on the point of subjective equality between faster and slower, which is the participant's bias, not on a target level of accuracy. That is what the task is designed to measure, but it has consequences for any measure scored against the true heart rate; see the [metacognition tutorial](tutorials/metacognition.md). Tone sequences exist for 15 to 199 BPM, so a rate outside that range is clamped and the staircase is told the clamped value.
 
 ## What it saves
 
@@ -135,7 +142,9 @@ The columns of `*_final.txt` that matter:
 | `ResponseCorrect` | Whether the decision matched the sign of `Alpha` |
 | `Confidence` | The rating on the scale shown. `ConfidenceUnit` holds it on 0 to 1 |
 | `DecisionProvided`, `RatingProvided` | Whether the answer and the rating were given in time |
-| `EstimatedThreshold`, `EstimatedSlope` | The staircase's own running estimates |
+| `EstimatedThreshold`, `EstimatedSlope` | The staircase's own running estimates. `EstimatedSlope` is the standard deviation of the psychometric function, so a larger value means less precise judgements |
+
+`listenBPM` is the rate over the listening window, `60000 / mean(IBI)`. Before 1.0 it was the mean of the per-beat rates, about 0.33 BPM higher on real PPG, so sessions run with 1.0 are not directly comparable to published ones on this column; the old value is kept as `listenBPM_arithmetic`.
 
 The [inspecting data tutorial](tutorials/inspecting-data.md#the-trial-table) describes every column.
 
@@ -144,6 +153,10 @@ The [inspecting data tutorial](tutorials/inspecting-data.md#the-trial-table) des
 `EstimatedThreshold` and `EstimatedSlope` are a by-product of the staircase. Plot them to check that a session converged. They are not an analysis and must not be used as a dependent variable in a group-level test.
 
 Fit the trials instead, `Decision` against `Alpha` by `Modality`, with the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception) {cite:p}`2026:courtin`. The [tutorials](tutorials/index.md) go from opening a session to a hierarchical model with confidence ratings.
+
+### Reliability
+
+In the validation study, 190 participants ran the task a second time, about seven weeks after the first session. The test-retest correlation was r = 0.51 for the threshold and r = 0.10 for the slope {cite:p}`2022:legrand`.
 
 ## Where to go next
 
