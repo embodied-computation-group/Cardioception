@@ -4,25 +4,21 @@
 # it. The released version is deliberately not repeated here: it is in the
 # <title>, which reads it from the package and so cannot go stale.
 og:title: "Cardioception Toolbox - Cardiac Interoception in PsychoPy"
-og:description: "Official documentation for Cardioception, the Aarhus University toolbox that measures cardiac interoception in PsychoPy with the Heart Rate Discrimination task."
+og:description: "Official documentation for Cardioception, the Aarhus University toolbox that brings the most widely used cardiac interoception tasks together in PsychoPy."
 myst:
   html_meta:
-    description: "Official documentation for Cardioception, the Aarhus University toolbox that measures cardiac interoception in PsychoPy with the Heart Rate Discrimination task."
-    keywords: "cardioception, interoception, cardiac interoception, heart rate discrimination, HRD, heartbeat counting, heartbeat synchrony, psychophysics, metacognition, PsychoPy"
+    description: "Official documentation for Cardioception, the Aarhus University toolbox that brings the most widely used cardiac interoception tasks together in PsychoPy."
+    keywords: "cardioception, interoception, cardiac interoception, heart rate discrimination, HRD, heartbeat counting, heartbeat synchrony, phase adjustment task, psychophysics, metacognition, PsychoPy"
 ---
 
 # Cardioception Toolbox
 
-Cardioception measures cardiac interoception in [PsychoPy](https://www.psychopy.org/). The package is built around the Heart Rate Discrimination task (HRD), a psychophysical method that estimates how accurately and how precisely people judge their own heart rate. It also ships the classic Heartbeat Counting task and two tasks in beta, the Heartbeat Synchrony Discrimination task and the Phase Adjustment Task. [The tasks](tasks/index.md) compares all four.
+Cardioception is an open-source Python toolbox for studying how people perceive their own heartbeat. It brings the most widely used methods for measuring cardiac interoception together in one place, built on [PsychoPy](https://www.psychopy.org/): heart rate discrimination, heartbeat counting, the Phase Adjustment Task, and a new adaptive task for the perceived timing of individual heartbeats. One installation, one output layout and one set of tutorials let you study perceptual bias, precision and confidence across methods, and compare them in the same participants.
 
 [![GitHub release](https://img.shields.io/github/v/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/) [![pip](https://img.shields.io/pypi/v/cardioception-toolbox)](https://pypi.org/project/cardioception-toolbox/) [![GitHub license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22139105.svg)](https://doi.org/10.5281/zenodo.22139105)
 
-The tasks run with minimal equipment: a computer and a device that reads the participant's pulse. They also work with richer setups (ECG, M/EEG, fMRI) when you have them.
-
-```{important}
-Install the package as **`cardioception-toolbox`**:
-
-    pip install cardioception-toolbox
+```{note}
+This is the official Cardioception, developed by Micah Allen and the Embodied Computation Group at Aarhus University, and originally funded by a Lundbeckfonden Fellowship to Micah Allen. It is the version cited in the publications listed on the [cite page](reference/cite.md).
 ```
 
 ## The tasks
@@ -36,29 +32,23 @@ Install the package as **`cardioception-toolbox`**:
 | [Whitehead method](tasks/whitehead.md) | Judge which of two tone sequences, one at a short and one at a longer delay after each heartbeat, is simultaneous with it | Discrimination of synchronous from delayed tones | [Whitehead et al., 1977](https://doi.org/10.1007/BF00998623) | Coming soon |
 | [Method of constant stimuli (Brener)](tasks/constant-stimuli.md) | Judge whether tones at one of several fixed delays, from 0 to 500 ms after each heartbeat, are simultaneous with it | Proportion of tones judged simultaneous at each delay | [Brener, Liu & Ring, 1993](https://doi.org/10.1111/j.1469-8986.1993.tb02091.x) | Coming soon |
 
+Tasks in beta are close to feature complete and are still being rigorously validated.
+
+The HRD and the HBC run with a USB pulse oximeter or with an ECG or PPG device over Lab Streaming Layer. The synchrony tasks time each tone from the R-wave, so they need an ECG over LSL. [The tasks](tasks/index.md) page sets the four available tasks side by side and explains what each can and cannot establish.
+
+## Where to go
+
+Getting started is three pages, read in order: [install the package](getting-started/installation.md), [connect a recording device](getting-started/recording-devices.md) and [run a session](getting-started/running-a-session.md). Each task page then covers its own procedure, parameters and output files.
+
+The [changelog](reference/changelog.md) lists what changed in 1.0 and how to migrate scripts written for 0.7.
+
 ## Analyzing your data
 
-For HRD data we recommend the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), described in [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3). The [tutorials](tasks/hrd/tutorials/index.md) walk through the workflow, from checking your data to fitting hierarchical models with covariates.
+Cardioception collects data; it does not analyze it. For HRD data, the companion [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception), described in [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3), provides validated psychometric models and normative priors. The [tutorials](tasks/hrd/tutorials/index.md) walk through the workflow, from checking your data to fitting hierarchical models with covariates.
 
-## Where to go next
+## Help
 
-- [Installation](getting-started/installation.md), [Recording devices](getting-started/recording-devices.md) and [Running a session](getting-started/running-a-session.md) for setting up and running a task
-- [The tasks](tasks/index.md) for the tasks side by side, and what each can establish
-- [Heart Rate Discrimination](tasks/hrd/index.md) for running the HRD, its theory, the tutorials and the legacy reports
-- [Heartbeat Counting](tasks/hbc.md), [Phase Adjustment Task](tasks/pat.md) and [Heartbeat Synchrony Discrimination](tasks/hsd/index.md) for the other tasks
-- [API](reference/api.rst) for the parameters and task functions
-- [Cite](reference/cite.md) for the references to use in a publication
-- [Changelog](reference/changelog.md) for what changed in 1.0
-
-## Getting help
-
-For questions about the tasks or about data analysis, contact Micah Allen directly. To report a bug, open an issue on the [GitHub page](https://github.com/embodied-computation-group/Cardioception/issues).
-
-```{note}
-This is the official Cardioception, developed by Micah Allen and the Embodied Computation Group at Aarhus University, and originally funded by a Lundbeckfonden Fellowship to Micah Allen. It is the version cited in the peer-reviewed publications listed on the [cite page](reference/cite.md).
-```
-
-Written and maintained by Micah Allen and the Embodied Computation Group, Aarhus University. Contact: micah@cfin.au.dk
+Report bugs and ask questions in the [issue tracker](https://github.com/embodied-computation-group/Cardioception/issues). For questions about the tasks and study design, contact Micah Allen at micah@cfin.au.dk.
 
 <img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/LabLogo.png" height ="100"><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/AU.png" height ="100">
 
