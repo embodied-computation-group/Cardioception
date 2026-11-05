@@ -41,6 +41,16 @@ On Windows, keep this folder somewhere short, such as `C:\Users\you\cardio`. Som
 
 ## 3. Install Cardioception
 
+```{only} dev
+:::{important}
+Version 1.0 is not on PyPI yet, so `pip install cardioception-toolbox` still installs 0.7.2. Until 1.0 is released, install it from the `dev` branch, with the LSL extra if you need it:
+
+    pip install "cardioception-toolbox[lsl] @ git+https://github.com/embodied-computation-group/Cardioception@dev"
+
+The commands below are the ones that will apply once 1.0 is released.
+:::
+```
+
 ```bash
 pip install cardioception-toolbox
 ```

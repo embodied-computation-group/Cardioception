@@ -203,10 +203,14 @@ if DOCS_CHANNEL == "dev":
     html_baseurl = "https://www.the-ecg.org/Cardioception/dev/"
     extensions.remove("sphinx_sitemap")
     html_theme_options["announcement"] = (
-        "You are reading the docs for the unreleased development version. "
+        "These are the docs for Cardioception 1.0, in development and not yet "
+        "on PyPI. "
         '<a href="https://www.the-ecg.org/Cardioception/">'
-        "The docs for the released version are here.</a>"
+        "The docs for the current release are here.</a>"
     )
+    # Lets a page carry text for the development build only, with the
+    # `only` directive: ```{only} dev
+    tags.add("dev")  # noqa: F821 (Sphinx injects `tags` into conf.py)
 
 
 def _noindex(app, pagename, templatename, context, doctree):
