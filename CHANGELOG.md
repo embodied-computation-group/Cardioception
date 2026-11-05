@@ -56,6 +56,15 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
 
 ### Added
 
+- `TaskConfig(psiPreset=...)` for the Heart Rate Discrimination task.
+  - `"legacy"`, the default, keeps the Psi settings of the original paper.
+  - `"courtin"` uses the per-condition threshold and slope ranges and the
+    0.01 lapse rate from the hierarchical refit of the Visceral Mind Project
+    data (Courtin et al., 2026).
+  - `intensRange`, `alphaRange`, `betaRange` and `delta` still override the
+    preset, in both conditions.
+  - The settings each staircase used are written to `manifest.json` under
+    `config.psi`.
 - German instructions for the Heart Rate Discrimination task, `language="german"`,
   addressing the participant formally. The texts shipped in 0.7.2 as a Python
   function and move here to `HRD/texts/german.yaml`, checked against that

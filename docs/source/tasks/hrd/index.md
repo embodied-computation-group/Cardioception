@@ -114,8 +114,23 @@ parameters = getParameters(..., config=TaskConfig(respMax=8, nFeedback=10))
 | `minRatingTime`, `maxRatingTime` | 0.5, 5.0 s | Bounds on the confidence rating |
 | `HRcutOff` | 40 to 120 BPM | A heart rate outside this range is treated as artefact and the window retaken, up to `maxHeartRateAttempts` (10) times |
 | `exteroBPMRange` | 40 to 100 by 0.5 | The rates the exteroceptive reference is drawn from |
-| `intensRange`, `alphaRange` | -50.5 to 50.5 | The stimuli the staircase may present, and the thresholds it considers, in ΔBPM |
-| `delta` | 0.02 | The lapse rate, held fixed |
+| `psiPreset` | `"legacy"` | The Psi settings for both staircases, below |
+| `intensRange`, `alphaRange`, `betaRange` | From the preset | The stimuli the staircase may present, and the thresholds and slopes it considers, in ΔBPM. A value set here applies to both conditions |
+| `delta` | From the preset | The lapse rate, held fixed |
+
+`psiPreset` chooses between two sets of Psi settings. `"legacy"` is the setting of the original paper and of every earlier release: the same uniform ranges in both conditions. `"courtin"` narrows the ranges separately for each condition, to what the hierarchical refit of the Visceral Mind Project data found plausible, and halves the lapse rate {cite:p}`2026:courtin`.
+
+| | Stimuli | Threshold α | Slope σ | Lapse |
+|---|---|---|---|---|
+| `"legacy"`, both conditions | -50.5 to 50.5 | -50.5 to 50.5 | 0.1 to 25 | 0.02 |
+| `"courtin"`, interoceptive | -50.5 to 50.5 | -42 to 26 | 3.2 to 29 | 0.01 |
+| `"courtin"`, exteroceptive | -50.5 to 50.5 | -9 to 9 | 2.5 to 15.2 | 0.01 |
+
+PsychoPy's Psi method takes only a uniform prior, so the narrower ranges concentrate it, and the staircase spends fewer trials on implausible values. The ranges are also hard bounds: a participant whose threshold lies outside them is estimated at the edge. Sessions run with `"legacy"` remain directly comparable with published data. The settings each staircase used are written to `manifest.json`.
+
+```python
+parameters = getParameters(..., config=TaskConfig(psiPreset="courtin"))
+```
 
 The staircase is response-coded, so it converges on the point of subjective equality between faster and slower, which is the participant's bias, not on a target level of accuracy. That is what the task is designed to measure, but it has consequences for any measure scored against the true heart rate; see the [metacognition tutorial](tutorials/metacognition.md). Tone sequences exist for 15 to 199 BPM, so a rate outside that range is clamped and the staircase is told the clamped value.
 

@@ -106,8 +106,9 @@ def _build_staircases(
     # If UpDown is selected, 1 or 2 interleaved staircases are used (see
     # options in parameters dictionary), one is initalized 'high' and the other
     # 'low'.
-    def psiHandler():
-        """One psi staircase over the full stimulus range."""
+    def psiHandler(modality: str):
+        """One psi staircase, with the settings the config gives this modality."""
+        psi = parameters["psi"][modality]
         return data.PsiHandler(
             # Every next() appends to the handler's `intensities`, and it
             # raises StopIteration once that reaches nTrials. A re-presented
@@ -117,23 +118,23 @@ def _build_staircases(
             # onMissedTrial is "represent". A trial can be presented at most
             # maxRepresentations times, so this is the true upper bound.
             nTrials=nTrials * parameters["maxRepresentations"],
-            intensRange=list(parameters["intensRange"]),
-            alphaRange=list(parameters["alphaRange"]),
-            betaRange=list(parameters["betaRange"]),
-            # Grid resolution of the psi posterior. Not configurable: this is
-            # a memory/resolution tradeoff, and the array it sizes is the one
-            # that used to leak 2.6 GB over a session.
+            intensRange=list(psi["intensRange"]),
+            alphaRange=list(psi["alphaRange"]),
+            betaRange=list(psi["betaRange"]),
+            # Grid resolution of the psi posterior. Set only through a preset:
+            # it is a memory/resolution tradeoff, and the array it sizes is the
+            # one that used to leak 2.6 GB over a session.
             intensPrecision=1,
             alphaPrecision=1,
-            betaPrecision=0.1,
-            delta=parameters["delta"],
+            betaPrecision=psi["betaPrecision"],
+            delta=psi["delta"],
             stepType="lin",
             expectedMin=0,
         )
 
-    parameters["stairCase"] = {"Intero": psiHandler()}
+    parameters["stairCase"] = {"Intero": psiHandler("Intero")}
     if exteroception is True:
-        parameters["stairCase"]["Extero"] = psiHandler()
+        parameters["stairCase"]["Extero"] = psiHandler("Extero")
 
 
 def _open_recording(
