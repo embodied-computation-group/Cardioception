@@ -103,8 +103,10 @@ Two rules worth stating here because they are the most common errors:
 
 ## Before you commit
 
-- Docs changes: the build runs on every push to `main` and deploys to
-  <https://www.the-ecg.org/Cardioception/>. It takes about a minute. Check the run.
+- Docs changes: the build runs with `-W`, so a warning fails it. A push to `main`
+  deploys to <https://www.the-ecg.org/Cardioception/>, a push to `dev` to
+  <https://www.the-ecg.org/Cardioception/dev/> (with a development banner and
+  `noindex`). It takes about a minute. Check the run.
 - Do not commit large fitted model objects. Cache them locally with brms `file =`.
 - Participant-level data with demographics is sensitive. Do not move it from a private
   repository into this public one without an explicit instruction that acknowledges the

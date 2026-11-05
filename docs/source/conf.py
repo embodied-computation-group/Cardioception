@@ -191,6 +191,35 @@ sitemap_url_scheme = "{link}"
 # list of links, so neither is worth pointing a crawler at.
 sitemap_excludes = ["search.html", "genindex.html"]
 
+# -- Released and development docs ------------------------------------------
+
+# The docs workflow builds main into the site root and dev into /dev/, and sets
+# DOCS_CHANNEL=dev for the second. A development build says so on every page,
+# keeps itself out of search results so that it never outranks the released
+# docs, and drops the sitemap that would invite crawlers in. Built locally,
+# with no variable set, the docs are the released ones.
+DOCS_CHANNEL = os.environ.get("DOCS_CHANNEL", "stable")
+if DOCS_CHANNEL == "dev":
+    html_baseurl = "https://www.the-ecg.org/Cardioception/dev/"
+    extensions.remove("sphinx_sitemap")
+    html_theme_options["announcement"] = (
+        "You are reading the docs for the unreleased development version. "
+        '<a href="https://www.the-ecg.org/Cardioception/">'
+        "The docs for the released version are here.</a>"
+    )
+
+
+def _noindex(app, pagename, templatename, context, doctree):
+    context["metatags"] = (
+        context.get("metatags", "") + '\n<meta name="robots" content="noindex">'
+    )
+
+
+def setup(app):
+    if DOCS_CHANNEL == "dev":
+        app.connect("html-page-context", _noindex)
+
+
 ogp_site_url = html_baseurl
 ogp_site_name = "Cardioception Toolbox"
 ogp_type = "website"
