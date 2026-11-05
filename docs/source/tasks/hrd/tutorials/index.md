@@ -43,7 +43,7 @@ The models take hours to sample. A page you are reading cannot wait for that, so
 the tutorials show the code and then load results that were fitted in advance.
 
 The scripts that produced those results live in
-[`tutorials/`](https://github.com/embodied-computation-group/Cardioception/tree/master/tutorials)
+[`tutorials/`](https://github.com/embodied-computation-group/Cardioception/tree/main/tutorials)
 in the repository, and they run on an ordinary machine. If you want to reproduce
 a fit rather than read about it, start there. Every number quoted in these pages
 came out of those scripts.
