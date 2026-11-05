@@ -50,7 +50,10 @@ came out of those scripts.
 
 ## The example data
 
-The figures come from a study of 512 participants, each completing the HRD in two
+The figures come from the Visceral Mind Project {cite:p}`2026:banellis`. Its
+trial data are public as `data/raw_hrd.csv` in the
+[Hierarchical Interoception repository](https://github.com/embodied-computation-group/Hierarchical-Interoception),
+and the tutorials use 512 of its participants, each completing the HRD in two
 conditions, with age, gender and BMI recorded. That is a larger sample than most
 studies will have, which is deliberate: it makes the group-level structure visible.
 The methods apply unchanged to a sample of thirty.
