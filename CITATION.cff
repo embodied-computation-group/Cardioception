@@ -31,11 +31,13 @@ identifiers:
 repository-code: 'https://github.com/embodied-computation-group/Cardioception'
 url: 'https://www.the-ecg.org/Cardioception/'
 abstract: >-
-  Cardioception measures cardiac interoception in PsychoPy. It implements the
-  Heart Rate Discrimination task, a psychophysical method that separates the
-  bias in what people believe their heart rate to be from the precision with
-  which they can discriminate it, together with the older Heartbeat Counting
-  task.
+  Cardioception is an open-source Python toolbox for studying how people
+  perceive their own heartbeat. Built on PsychoPy, it brings the most widely
+  used methods for measuring cardiac interoception together under one
+  installation and one output layout: the Heart Rate Discrimination task, the
+  Heartbeat Counting task, the Phase Adjustment Task and the Heartbeat
+  Synchrony Discrimination task. The pulse is recorded from a USB pulse
+  oximeter, or from ECG and PPG devices over Lab Streaming Layer.
 keywords:
   - interoception
   - heart rate discrimination
@@ -44,6 +46,9 @@ keywords:
   - metacognition
   - cardiac
   - psychopy
+  - heartbeat synchrony
+  - phase adjustment task
+  - lab streaming layer
 license: Apache-2.0
 version: 1.0.0
 # Set on the day of the release.
