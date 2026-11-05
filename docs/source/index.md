@@ -83,7 +83,7 @@ caption: Reference
 hidden:
 ---
 API <reference/api.rst>
-Cite <reference/cite.md>
+reference/cite.md
 References <reference/references.md>
 Changelog <reference/changelog.md>
 ```
