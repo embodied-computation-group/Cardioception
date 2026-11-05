@@ -11,7 +11,7 @@ Every task is run the same way. Its `parameters` submodule builds a dictionary f
 
 ## The wrappers
 
-The [wrappers](https://github.com/embodied-computation-group/Cardioception/tree/master/wrappers) folder of the repository has a ready-to-run script for each task. Each opens a dialog for the session settings, then runs the task with the defaults of the published version:
+The [wrappers](https://github.com/embodied-computation-group/Cardioception/tree/main/wrappers) folder of the repository has a ready-to-run script for each task. Each opens a dialog for the session settings, then runs the task with the defaults of the published version:
 
 ```bash
 python wrappers/hrd.py
@@ -19,13 +19,20 @@ python wrappers/hrd.py
 
 | Wrapper | Task | Device | Dialog fields |
 |---|---|---|---|
-| `hrd.py` | HRD | pulse oximeter | participant, session, serial port, setup, response device, language |
-| `hrd_lsl.py` | HRD | ECG or PPG over LSL | participant, session, stream, channel, signal type, response device, language |
-| `hbc.py` | HBC | pulse oximeter | participant, session, serial port, setup, language |
-| `pat_lsl.py` | PAT | ECG over LSL | participant, session, stream, channel, mode, exteroceptive control, language |
-| `hsd_lsl.py` | HSD | ECG over LSL | participant, session, stream, channel, axis, response device, language |
+| [`hrd.py`](https://raw.githubusercontent.com/embodied-computation-group/Cardioception/main/wrappers/hrd.py) | HRD | pulse oximeter | participant, session, serial port, setup, response device, language |
+| [`hrd_lsl.py`](https://raw.githubusercontent.com/embodied-computation-group/Cardioception/main/wrappers/hrd_lsl.py) | HRD | ECG or PPG over LSL | participant, session, stream, channel, signal type, response device, language |
+| [`hbc.py`](https://raw.githubusercontent.com/embodied-computation-group/Cardioception/main/wrappers/hbc.py) | HBC | pulse oximeter | participant, session, serial port, setup, language |
+| [`pat_lsl.py`](https://raw.githubusercontent.com/embodied-computation-group/Cardioception/main/wrappers/pat_lsl.py) | PAT | ECG over LSL | participant, session, stream, channel, mode, exteroceptive control, language |
+| [`hsd_lsl.py`](https://raw.githubusercontent.com/embodied-computation-group/Cardioception/main/wrappers/hsd_lsl.py) | HSD | ECG over LSL | participant, session, stream, channel, axis, response device, language |
 
-Copy the one you need into your own folder and edit it there.
+A `pip` install does not include this folder. Download the one you need from the table, save it in your own folder and edit it there.
+
+## Before each session
+
+- Check the recording device: `python -m cardioception.check_device` for the oximeter, or the live stream in the device's own program for LSL.
+- Do a dry run before the participant arrives, with the `test` setup of the HRD and HBC wrappers or on yourself, to confirm the task starts and saves.
+- Set the volume with the participant's headphones on.
+- Confirm the serial port or the stream name and channel the wrapper will ask for.
 
 ## Where the data goes
 
