@@ -54,7 +54,7 @@ task.run(parameters, confidenceRating=True, runTutorial=True)
 parameters["win"].close()
 ```
 
-Every task writes to `data/sub-<participant>/ses-<session>/run-<timestamp>/`, with one row per trial in `*_final.txt`. The [wrappers](wrappers/) folder has a ready-to-run script for each task. The [running a session](https://www.the-ecg.org/Cardioception/getting-started/running-a-session.html) and [recording devices](https://www.the-ecg.org/Cardioception/getting-started/recording-devices.html) pages cover the task parameters, recording devices and running a session.
+Every task writes to `data/sub-<participant>/ses-<session>/run-<timestamp>/`, with one row per trial in `*_final.txt`. The [wrappers](wrappers/) folder has a ready-to-run script for each task. [Running a session](https://www.the-ecg.org/Cardioception/getting-started/running-a-session.html) covers what every session shares: the wrappers, the output layout, languages and confidence scales. [Recording devices](https://www.the-ecg.org/Cardioception/getting-started/recording-devices.html) covers the oximeter and LSL devices, and each task's page its own settings.
 
 ## Analysis
 
@@ -63,7 +63,7 @@ For hierarchical modelling and power analysis of HRD data, see the companion [Hi
 ## Documentation
 
 - [Installation](https://www.the-ecg.org/Cardioception/getting-started/installation.html): from a fresh machine to a first session
-- [Recording devices](https://www.the-ecg.org/Cardioception/getting-started/recording-devices.html) and [running a session](https://www.the-ecg.org/Cardioception/getting-started/running-a-session.html): parameters, recording devices and running the tasks
+- [Recording devices](https://www.the-ecg.org/Cardioception/getting-started/recording-devices.html) and [running a session](https://www.the-ecg.org/Cardioception/getting-started/running-a-session.html): connecting a device, and what every session shares
 - [The tasks](https://www.the-ecg.org/Cardioception/tasks/index.html) and [theory](https://www.the-ecg.org/Cardioception/tasks/theory.html): what each task measures and when to use it
 - [Phase Adjustment Task](https://www.the-ecg.org/Cardioception/tasks/pat.html) and [HSD design](https://www.the-ecg.org/Cardioception/tasks/hsd/design.html): the two tasks in beta
 - [API reference](https://www.the-ecg.org/Cardioception/reference/api.html)
