@@ -22,7 +22,7 @@ The device is chosen when the parameters are built. `setup="behavioral"` with a 
 
 ## The Nonin pulse oximeter
 
-The oximeter Cardioception supports directly is the [Nonin 3012LP Xpod](https://www.nonin.com/products/xpod/) with [Nonin 8000SM soft-clip fingertip sensors](https://www.nonin.com/products/8000s/). It plugs into the stimulus PC over USB, appears as a serial port, and needs no extra software.
+The oximeter Cardioception supports directly is the [Nonin 3012LP Xpod](https://www.nonin.com/products/xpod/) with [Nonin 8000SM soft-clip fingertip sensors](https://www.nonin.com/products/8000s/). It plugs into the stimulus PC over USB, appears as a serial port, and needs no extra software. It is the only Nonin model the package has been tested with.
 
 ```python
 parameters = getParameters(..., setup="behavioral", serialPort="COM3")
@@ -36,11 +36,13 @@ Check the signal before every session:
 python -m cardioception.check_device
 ```
 
-It records for twenty seconds and reaches one of three verdicts:
+It records for twenty seconds and reaches one of five verdicts:
 
 | Verdict | What it means |
 |---|---|
+| `no data` | The device is connected but sent nothing. Check the cable. |
 | `no finger in the sensor` | Amplitude below 20. The trace is flat and any beats reported are noise. |
+| `signal present but no pulse detected` | A signal, but fewer than three beats. Check that the sensor is on a fingertip and not too loose. |
 | `signal present but detection unreliable` | Real signal, but the intervals between beats are too scattered to trust. Reseat the sensor, keep the hand still and below heart level. |
 | `clean physiological signal` | Amplitude in the hundreds, intervals between 0.4 and 1.2 s with little spread. Ready. |
 
@@ -68,6 +70,8 @@ parameters = getParameters(..., recorder=recorder)
 The trigger codes a task writes are also pushed, as they happen, to an LSL marker stream named `Cardioception` by default (`marker_stream=` renames it, `None` turns it off), labelled by event name. Record that stream and the device's with [LabRecorder](https://github.com/labstreaminglayer/App-LabRecorder) to get the physiology and the task events on one clock. The signal file a task writes carries each sample's LSL timestamp as well.
 
 The HRD and HBC take the recorder as above. The HSD wrapper names its marker stream `HSD`, and the task builds its beat source and tone player over the recorder. The PAT opens its own `PAT` marker stream, so its recorder is given `marker_stream=None`. The task pages show each call.
+
+For the synchrony tasks, a wired ECG with an LSL path (Biopac, ADInstruments and Brain Products all have one) gives less timing jitter than a Bluetooth hub; the [HSD roadmap](../tasks/hsd/design.md#what-comes-next) has the numbers.
 
 ### A PLUX hub
 
