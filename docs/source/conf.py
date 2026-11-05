@@ -230,6 +230,10 @@ redirects = {
     "tutorials/psychophysics": "../tasks/hrd/tutorials/psychophysics.html",
     "tutorials/hierarchical": "../tasks/hrd/tutorials/hierarchical.html",
     "tutorials/metacognition": "../tasks/hrd/tutorials/metacognition.html",
+    # The "Running the HRD" and "Running the HSD" pages were folded into the
+    # task pages themselves.
+    "tasks/hrd/running": "index.html",
+    "tasks/hsd/running": "index.html",
 }
 
 

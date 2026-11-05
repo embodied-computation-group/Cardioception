@@ -121,7 +121,7 @@ varies. Set `onMissedTrial="skip"` for a fixed number of presentations.
   shortest on the default grid is 140 ms. One hardware
   dry run, 60 trials on a PLUX ECG over Bluetooth, is recorded in the design
   document, with a simulation rerun at the 130 ms floor. Running the HSD
-  (`docs/source/tasks/hsd/running.md`) is a how-to for running a session and
+  (`docs/source/tasks/hsd/index.md`) is a how-to for running a session and
   reading its results.
 - The Phase Adjustment Task, in beta: `cardioception.PAT`, after the
   PAT-ECG variant of Hodgetts et al. (2026, *Psychophysiology* 63:e70415).
