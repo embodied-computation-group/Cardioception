@@ -394,7 +394,7 @@ posterior spreads `mu` over the whole grid.
 ## Trial structure and saved data
 
 This section describes the task as `cardioception.HSD.task` runs it. The
-[Running the HSD](running.md#what-a-session-saves) page lists the
+[HSD page](index.md#what-it-saves) lists the
 files a session writes.
 
 1. Five tones, each at the chosen delay after a detected R-wave.
@@ -702,7 +702,7 @@ than the old interval said.
 
 | Phase | Status | Content |
 |---|---|---|
-| B. Task runner | Implemented | The task, its parameters and configuration, English instructions, an autopilot observer, the train scheduler with both stimulus axes, a headless test on a virtual heart, an LSL test on a synthetic ECG through `LSLRecorder` and the shared `LSLBeatSource`, the wrapper and the [Running the HSD](running.md) page. `setup="behavioral"` uses the shared `LSLBeatSource` and `TonePlayer` in `cardioception.devices` |
+| B. Task runner | Implemented | The task, its parameters and configuration, English instructions, an autopilot observer, the train scheduler with both stimulus axes, a headless test on a virtual heart, an LSL test on a synthetic ECG through `LSLRecorder` and the shared `LSLBeatSource`, the wrapper and the [HSD page](index.md). `setup="behavioral"` uses the shared `LSLBeatSource` and `TonePlayer` in `cardioception.devices` |
 | B. Hardware dry run | Done, 2026-11-03 | The Plux-to-LSL bridge installed on the test desktop and 60 trials run on a real ECG in 7 minutes, recorded with LabRecorder. 290 tones were delivered on the 60 trials (6 skipped as late, 4 trains short), every reported start within 1 ms of its schedule, the detector committed 13 ms after each R, no samples were dropped, and the realized delay sat 50 ms below the request by design. Against the offline R-wave the tones scattered with an interquartile range of 23 to 44 ms, because the Bluetooth arrival stamps of the ECG samples jitter (SD 26 ms on that desktop, 6 ms on the stimulus PC). The session put the sensation of a participant wearing a tight finger pulse oximeter at 272 ms, interval 150 to 400 ms. See [hardware dry run](#hardware-dry-run) |
 | C1. Audio lead and output calibration | Planned, software only | Cut the audio scheduling lead from 50 to 20 ms (the bench showed 20 ms still lands within 1 ms) and measure the output offset of the speaker or headphones with the microphone loopback in `bench/audio_onset.py`, so the latency bias becomes a measured constant per setup. Lowers the physical floor from 130 to about 100 ms and makes `mu` comparable across laboratories |
 | C2. Re-time Plux samples from the hub's counter | Planned, bridge change shared with PAT | The hub samples at exactly 1000 Hz, so a running fit of its sample counter to the clock in the bridge removes the Bluetooth arrival jitter down to the chunk period, about 10 ms, without touching the constant lag. Jitter is the error that inflates `sigma`: 26 ms of it turns a true width of 40 ms into a measured 48 ms. In the simulations as the task runs, 6 rather than 26 ms of jitter lowers the RMSE of `mu` at 60 trials from 34 to 30 ms |

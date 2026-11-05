@@ -114,7 +114,7 @@ Heartbeat Synchrony Discrimination task
 
 Beta; see the
 :doc:`design document </tasks/hsd/design>` and the
-:doc:`Running the HSD </tasks/hsd/running>`.
+:doc:`HSD page </tasks/hsd/index>`.
 
 Parameters
 **********
