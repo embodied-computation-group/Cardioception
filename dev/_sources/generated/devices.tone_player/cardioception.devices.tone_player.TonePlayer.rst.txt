@@ -1,0 +1,32 @@
+﻿cardioception.devices.tone\_player.TonePlayer
+=============================================
+
+.. currentmodule:: cardioception.devices.tone_player
+
+.. autoclass:: TonePlayer
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TonePlayer.__init__
+      ~TonePlayer.close
+      ~TonePlayer.poll_onsets
+      ~TonePlayer.schedule
+      ~TonePlayer.stop_all
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~TonePlayer.busy
+   
+   

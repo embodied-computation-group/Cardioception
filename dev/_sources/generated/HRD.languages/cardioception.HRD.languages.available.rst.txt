@@ -1,0 +1,6 @@
+﻿cardioception.HRD.languages.available
+=====================================
+
+.. currentmodule:: cardioception.HRD.languages
+
+.. autofunction:: available

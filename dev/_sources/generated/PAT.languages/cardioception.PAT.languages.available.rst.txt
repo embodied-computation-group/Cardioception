@@ -1,0 +1,6 @@
+﻿cardioception.PAT.languages.available
+=====================================
+
+.. currentmodule:: cardioception.PAT.languages
+
+.. autofunction:: available

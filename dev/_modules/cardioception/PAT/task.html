@@ -1,0 +1,1479 @@
+
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+        <link rel="canonical" href="https://www.the-ecg.org/Cardioception/dev/_modules/cardioception/PAT/task.html" />
+
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>cardioception.PAT.task - Cardioception Toolbox</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: #1f3352;
+  --color-brand-content: #2f4b73;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     These are the docs for Cardioception 1.0, in development and not yet on PyPI. <a href="https://www.the-ecg.org/Cardioception/">The docs for the current release are here.</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">Cardioception Toolbox</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/cardioception_icon.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started/recording-devices.html">Recording devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started/running-a-session.html">Running a session</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tasks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/index.html">The tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/theory.html">Measuring cardiac interoception</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tasks/hrd/index.html">Heart Rate Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../tasks/hrd/tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tasks/hrd/tutorials/inspecting-data.html">Inspecting and plotting an HRD session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tasks/hrd/tutorials/psychophysics.html">The psychophysical model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tasks/hrd/tutorials/hierarchical.html">Hierarchical modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tasks/hrd/tutorials/metacognition.html">Metacognition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tasks/hrd/reports.html">HTML reports (legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/hbc.html">Heartbeat Counting task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/pat.html">Phase Adjustment Task</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tasks/hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tasks/hsd/design.html">HSD design and validation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/constant-stimuli.html">Method of constant stimuli</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html">cardioception.HRD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.config/cardioception.HRD.config.TaskConfig.html">cardioception.HRD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.run.html">cardioception.HRD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.trial.html">cardioception.HRD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.tutorial.html">cardioception.HRD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.confidenceRatingTask.html">cardioception.HRD.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.available.html">cardioception.HRD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.get_texts.html">cardioception.HRD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html">cardioception.HBC.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.run.html">cardioception.HBC.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.tutorial.html">cardioception.HBC.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.rest.html">cardioception.HBC.task.rest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.available.html">cardioception.HBC.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.get_texts.html">cardioception.HBC.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.parameters/cardioception.PAT.parameters.getParameters.html">cardioception.PAT.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.parameters/cardioception.PAT.parameters.startPhaseSequence.html">cardioception.PAT.parameters.startPhaseSequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.run.html">cardioception.PAT.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.trial.html">cardioception.PAT.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.tutorial.html">cardioception.PAT.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.dialLoop.html">cardioception.PAT.task.dialLoop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.confidenceRatingTask.html">cardioception.PAT.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.engine/cardioception.PAT.engine.PhaseEngine.html">cardioception.PAT.engine.PhaseEngine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.consistency_grid.html">cardioception.PAT.scoring.consistency_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.mean_resultant_length.html">cardioception.PAT.scoring.mean_resultant_length</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.phase_angles.html">cardioception.PAT.scoring.phase_angles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.monte_carlo_threshold.html">cardioception.PAT.scoring.monte_carlo_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.extero_threshold.html">cardioception.PAT.scoring.extero_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.mad_outliers.html">cardioception.PAT.scoring.mad_outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.languages/cardioception.PAT.languages.available.html">cardioception.PAT.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.languages/cardioception.PAT.languages.get_texts.html">cardioception.PAT.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.parameters/cardioception.HSD.parameters.getParameters.html">cardioception.HSD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.config/cardioception.HSD.config.TaskConfig.html">cardioception.HSD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.task/cardioception.HSD.task.run.html">cardioception.HSD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.task/cardioception.HSD.task.trial.html">cardioception.HSD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.task/cardioception.HSD.task.tutorial.html">cardioception.HSD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.psi/cardioception.HSD.psi.SynchronyPsi.html">cardioception.HSD.psi.SynchronyPsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.psi/cardioception.HSD.psi.gaussian_envelope.html">cardioception.HSD.psi.gaussian_envelope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.psi/cardioception.HSD.psi.default_grids.html">cardioception.HSD.psi.default_grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.languages/cardioception.HSD.languages.available.html">cardioception.HSD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.languages/cardioception.HSD.languages.get_texts.html">cardioception.HSD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices/cardioception.devices.ContinuousOximeter.html">cardioception.devices.ContinuousOximeter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices/cardioception.devices.LSLRecorder.html">cardioception.devices.LSLRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices/cardioception.devices.ReplayRecorder.html">cardioception.devices.ReplayRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices.beat_source/cardioception.devices.beat_source.LSLBeatSource.html">cardioception.devices.beat_source.LSLBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices.beat_source/cardioception.devices.beat_source.VirtualBeatSource.html">cardioception.devices.beat_source.VirtualBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices.tone_player/cardioception.devices.tone_player.TonePlayer.html">cardioception.devices.tone_player.TonePlayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/scales/cardioception.scales.ConfidenceScale.html">cardioception.scales.ConfidenceScale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/cite.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/changelog.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for cardioception.PAT.task</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University</span>
+<span class="sd">"""The PsychoPy side of the Phase Adjustment Task.</span>
+
+<span class="sd">During a trial the participant sees a fixation cross inside a ring whose</span>
+<span class="sd">pointer turns with the mouse wheel, from twelve o'clock at every trial start,</span>
+<span class="sd">and flashes with each beep. The wheel moves the beeps relative to the</span>
+<span class="sd">heartbeat through ``parameters["engine"]`` (see</span>
+<span class="sd">:mod:`cardioception.PAT.engine`), which is polled on every frame and does all</span>
+<span class="sd">the timing. Space ends the trial, then comes the</span>
+<span class="sd">confidence rating. The experimenter gets one status line per second in the</span>
+<span class="sd">console.</span>
+
+<span class="sd">Between trials the engine keeps detecting beats, without tones: :func:`run`</span>
+<span class="sd">installs ``engine.idle_poll`` as the window's per-frame hook</span>
+<span class="sd">(:func:`cardioception._present.on_every_frame`), so every frame held through</span>
+<span class="sd">:func:`cardioception._present.hold` polls it, and the rating polls it on</span>
+<span class="sd">every frame of its own loop.</span>
+
+<span class="sd">With ``parameters["autopilot"]`` set (see</span>
+<span class="sd">:class:`cardioception.PAT._autopilot.PATAutopilot`) a simulated participant</span>
+<span class="sd">turns the dial, presses and rates, so a whole session runs without anyone at</span>
+<span class="sd">the keyboard.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._log</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._present</span><span class="w"> </span><span class="kn">import</span> <span class="n">hold</span><span class="p">,</span> <span class="n">on_every_frame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._screens</span><span class="w"> </span><span class="kn">import</span> <span class="n">Screen</span><span class="p">,</span> <span class="n">text</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._session</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_screen</span> <span class="k">as</span> <span class="n">_show_screen</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._triggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">fire</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..devices.beat_source</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_clock</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+
+<span class="c1">#: Columns of final.txt, in order. Extra fields from the engine follow them.</span>
+<span class="n">FINAL_COLUMNS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"Trial"</span><span class="p">,</span>
+    <span class="s2">"Block"</span><span class="p">,</span>
+    <span class="s2">"TrialStatus"</span><span class="p">,</span>
+    <span class="s2">"Mode"</span><span class="p">,</span>
+    <span class="s2">"Extero"</span><span class="p">,</span>
+    <span class="s2">"StartPhaseDeg"</span><span class="p">,</span>
+    <span class="s2">"ChosenPhaseDeg"</span><span class="p">,</span>
+    <span class="s2">"ChosenDelayMs"</span><span class="p">,</span>
+    <span class="s2">"AnticipatedPeriodMs"</span><span class="p">,</span>
+    <span class="s2">"ObservedPeriodMs"</span><span class="p">,</span>
+    <span class="s2">"LastRTime"</span><span class="p">,</span>
+    <span class="s2">"PressTime"</span><span class="p">,</span>
+    <span class="s2">"LastToneIndex"</span><span class="p">,</span>
+    <span class="s2">"LastToneAnchor"</span><span class="p">,</span>
+    <span class="s2">"LastToneRTime"</span><span class="p">,</span>
+    <span class="s2">"LastToneDelayMs"</span><span class="p">,</span>
+    <span class="s2">"Confidence"</span><span class="p">,</span>
+    <span class="s2">"ConfidenceRT"</span><span class="p">,</span>
+    <span class="s2">"ConfidenceUnit"</span><span class="p">,</span>
+    <span class="s2">"Device"</span><span class="p">,</span>
+    <span class="s2">"ConfidenceScale"</span><span class="p">,</span>
+    <span class="s2">"ConfidenceLow"</span><span class="p">,</span>
+    <span class="s2">"ConfidenceHigh"</span><span class="p">,</span>
+    <span class="s2">"ConfidenceGranularity"</span><span class="p">,</span>
+    <span class="s2">"ConfidenceLevels"</span><span class="p">,</span>
+    <span class="s2">"ConfidenceSigned"</span><span class="p">,</span>
+    <span class="s2">"nTonesReal"</span><span class="p">,</span>
+    <span class="s2">"nTonesPredicted"</span><span class="p">,</span>
+    <span class="s2">"nTonesSkipped"</span><span class="p">,</span>
+    <span class="s2">"TrialDuration"</span><span class="p">,</span>
+    <span class="s2">"nDialMoves"</span><span class="p">,</span>
+    <span class="s2">"WallTime"</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1">#: Columns of tones.txt, in order.</span>
+<span class="n">TONE_COLUMNS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"ToneIndex"</span><span class="p">,</span>
+    <span class="s2">"Trial"</span><span class="p">,</span>
+    <span class="s2">"Block"</span><span class="p">,</span>
+    <span class="s2">"RTime"</span><span class="p">,</span>
+    <span class="s2">"PeriodS"</span><span class="p">,</span>
+    <span class="s2">"PhaseDeg"</span><span class="p">,</span>
+    <span class="s2">"DelayMs"</span><span class="p">,</span>
+    <span class="s2">"Target"</span><span class="p">,</span>
+    <span class="s2">"Anchor"</span><span class="p">,</span>
+    <span class="s2">"Onset"</span><span class="p">,</span>
+    <span class="s2">"Kind"</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1">#: Trial number given to the engine during the tutorial. Its tones are not saved.</span>
+<span class="n">TUTORIAL_TRIAL</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1">#: Before the practice trials.</span>
+<span class="n">PRACTICE_SCREEN</span> <span class="o">=</span> <span class="n">Screen</span><span class="p">([(</span><span class="s2">"textPracticeStart"</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))],</span> <span class="n">seconds</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="c1">#: Before the main trials.</span>
+<span class="n">TASK_SCREEN</span> <span class="o">=</span> <span class="n">Screen</span><span class="p">([(</span><span class="s2">"textTaskStart"</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))],</span> <span class="n">seconds</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="c1">#: Between two trials.</span>
+<span class="n">NEXT_TRIAL_SCREEN</span> <span class="o">=</span> <span class="n">Screen</span><span class="p">([(</span><span class="s2">"textNextTrial"</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))],</span> <span class="n">seconds</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="c1">#: Before the dial tutorial, with the "press space" line.</span>
+<span class="n">TUTORIAL_INTRO</span> <span class="o">=</span> <span class="n">Screen</span><span class="p">([(</span><span class="s2">"tutorialIntro"</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))],</span> <span class="n">seconds</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="c1">#: After the dial tutorial.</span>
+<span class="n">TUTORIAL_END</span> <span class="o">=</span> <span class="n">Screen</span><span class="p">([(</span><span class="s2">"tutorialEnd"</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))],</span> <span class="n">seconds</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskAbort</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Raised when the experimenter presses Esc."""</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_clock</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The clock the beat sources default to.</span>
+
+<span class="sd">    ``pylsl.local_clock``, or PsychToolbox's ``GetSecs`` without pylsl (see</span>
+<span class="sd">    :func:`cardioception.devices.beat_source.default_clock`). The dial loop</span>
+<span class="sd">    reads the engine's own clock rather than this one, so that it compares</span>
+<span class="sd">    times on the clock the tones were scheduled on.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">default_clock</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_checkEscape</span><span class="p">(</span><span class="n">keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"escape"</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">TaskAbort</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_pushMarker</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">fields</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Push a JSON marker through the engine's outlet, or the task's own."""</span>
+    <span class="n">mark</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">],</span> <span class="s2">"mark"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mark</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mark</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="o">**</span><span class="n">fields</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">outlet</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"outlet"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">outlet</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">outlet</span><span class="o">.</span><span class="n">push_sample</span><span class="p">([</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">"kind"</span><span class="p">:</span> <span class="n">kind</span><span class="p">,</span> <span class="o">**</span><span class="n">fields</span><span class="p">})])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_plain</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">))</span> <span class="ow">or</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">_plain</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_write</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Write a table atomically, so a crash never leaves half a file."""</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">".tmp"</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">saveParameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Write the plain settings to parameters.txt, one per line."""</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">"Parameter"</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">"Value"</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">_plain</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"texts"</span><span class="p">,</span> <span class="s2">"tones"</span><span class="p">,</span> <span class="s2">"labelsRating"</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">_write</span><span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Parameter"</span><span class="p">,</span> <span class="s2">"Value"</span><span class="p">]),</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">"parameters"</span><span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">toneTable</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The engine's tone rows for logged trials, with their block."""</span>
+    <span class="n">blocks</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"trialBlocks"</span><span class="p">]</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">tone</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span><span class="o">.</span><span class="n">tones</span><span class="p">:</span>
+        <span class="n">trial</span> <span class="o">=</span> <span class="n">tone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Trial"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">:</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">tone</span><span class="p">)</span>
+            <span class="n">row</span><span class="p">[</span><span class="s2">"Block"</span><span class="p">]</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="n">trial</span><span class="p">]</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"tones"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rows</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+    <span class="n">extra</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TONE_COLUMNS</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">TONE_COLUMNS</span> <span class="o">+</span> <span class="n">extra</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">saveResults</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Write the final and tones files. Called after every trial.</span>
+
+<span class="sd">    Nothing is written before the first trial is complete, so a run stopped</span>
+<span class="sd">    during the instructions leaves no empty results behind.</span>
+<span class="sd">    """</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">extra</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">FINAL_COLUMNS</span><span class="p">]</span>
+    <span class="n">_write</span><span class="p">(</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">FINAL_COLUMNS</span> <span class="o">+</span> <span class="n">extra</span><span class="p">),</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">"final"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">_write</span><span class="p">(</span><span class="n">toneTable</span><span class="p">(</span><span class="n">parameters</span><span class="p">),</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">"tones"</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../generated/PAT.task/cardioception.PAT.task.run.html#cardioception.PAT.task.run">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">runTutorial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">confidenceRating</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Run the Phase Adjustment Task.</span>
+
+<span class="sd">    Instructions, the dial tutorial, `nPractice` practice trials, then</span>
+<span class="sd">    `nTrials` main trials with a break every `nBreaking`. Results are saved</span>
+<span class="sd">    after every trial. Esc at any point stops the task and keeps what was</span>
+<span class="sd">    saved; the window and the engine stay open for the caller to close.</span>
+
+<span class="sd">    The engine's ``idle_poll`` is the window's per-frame hook for the length</span>
+<span class="sd">    of the session, so beats are detected on every screen between trials.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        Task parameters, from :func:`cardioception.PAT.parameters.getParameters`.</span>
+<span class="sd">    runTutorial : bool</span>
+<span class="sd">        If `True`, let the participant try the dial on a few free beats before</span>
+<span class="sd">        the practice trials.</span>
+<span class="sd">    confidenceRating : bool</span>
+<span class="sd">        If `True`, ask for a confidence rating after each trial.</span>
+
+<span class="sd">    """</span>
+    <span class="n">win</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"aborted"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">saveParameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="n">trialNumber</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">on_every_frame</span><span class="p">(</span><span class="n">win</span><span class="p">,</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span><span class="o">.</span><span class="n">idle_poll</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"instructions"</span><span class="p">]:</span>
+            <span class="n">showText</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">footer</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"textNext"</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">runTutorial</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">tutorial</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"nPractice"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">show_screen</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">PRACTICE_SCREEN</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">startPhase</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startPhasePractice"</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">show_screen</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">NEXT_TRIAL_SCREEN</span><span class="p">)</span>
+                <span class="n">trialNumber</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">trial</span><span class="p">(</span>
+                    <span class="n">parameters</span><span class="p">,</span>
+                    <span class="n">trialNumber</span><span class="p">,</span>
+                    <span class="s2">"practice"</span><span class="p">,</span>
+                    <span class="n">startPhase</span><span class="p">,</span>
+                    <span class="n">confidenceRating</span><span class="o">=</span><span class="n">confidenceRating</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">show_screen</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">TASK_SCREEN</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">startPhase</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startPhaseMain"</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"nBreaking"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">remain</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"... break after main trial </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'nTrials'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+                    <span class="p">)</span>
+                    <span class="n">showText</span><span class="p">(</span>
+                        <span class="n">parameters</span><span class="p">,</span>
+                        <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"textBreaks"</span><span class="p">],</span>
+                        <span class="n">header</span><span class="o">=</span><span class="sa">f</span><span class="s2">" ---- </span><span class="si">{</span><span class="n">remain</span><span class="si">}</span><span class="s2"> % ---- "</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">show_screen</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">NEXT_TRIAL_SCREEN</span><span class="p">)</span>
+            <span class="n">trialNumber</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">trial</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">,</span>
+                <span class="n">trialNumber</span><span class="p">,</span>
+                <span class="s2">"main"</span><span class="p">,</span>
+                <span class="n">startPhase</span><span class="p">,</span>
+                <span class="n">confidenceRating</span><span class="o">=</span><span class="n">confidenceRating</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">TaskAbort</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"aborted"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">"... Esc pressed: the task stops here. Completed trials are saved."</span>
+        <span class="p">)</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">on_every_frame</span><span class="p">(</span><span class="n">win</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">saveResults</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"... </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'results_df'</span><span class="p">])</span><span class="si">}</span><span class="s2"> trials saved in "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'resultPath'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"aborted"</span><span class="p">]:</span>
+        <span class="n">hold</span><span class="p">(</span><span class="n">win</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"done"</span><span class="p">],</span> <span class="n">wrapWidth</span><span class="o">=</span><span class="mf">1.2</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="trial"><a class="viewcode-back" href="../../../generated/PAT.task/cardioception.PAT.task.trial.html#cardioception.PAT.task.trial">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">trial</span><span class="p">(</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">trialNumber</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">block</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">startPhase</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">confidenceRating</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Run one trial of the Phase Adjustment Task.</span>
+
+<span class="sd">    The engine starts tones at `startPhase`; the mouse wheel (and the left and</span>
+<span class="sd">    right keys) moves them until the participant presses space. The engine</span>
+<span class="sd">    then waits for the next R-wave, for the observed period, and the</span>
+<span class="sd">    participant rates their confidence. The row is appended to</span>
+<span class="sd">    `parameters["results_df"]` and the files are saved.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        Task parameters.</span>
+<span class="sd">    trialNumber : int</span>
+<span class="sd">        Trial number, counted across practice and main trials so that it is</span>
+<span class="sd">        unique in the marker stream and in tones.txt.</span>
+<span class="sd">    block : str</span>
+<span class="sd">        `"practice"` or `"main"`.</span>
+<span class="sd">    startPhase : float</span>
+<span class="sd">        Start phase of the dial, in degrees.</span>
+<span class="sd">    confidenceRating : bool</span>
+<span class="sd">        If `False`, no confidence rating is asked.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    row : dict</span>
+<span class="sd">        The row added to final.txt.</span>
+
+<span class="sd">    """</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"confidenceScale"</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"trialBlocks"</span><span class="p">][</span><span class="n">trialNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">block</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"Starting </span><span class="si">{</span><span class="n">block</span><span class="si">}</span><span class="s2"> trial </span><span class="si">{</span><span class="n">trialNumber</span><span class="si">}</span><span class="s2"> - start phase </span><span class="si">{</span><span class="n">startPhase</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> deg "</span>
+        <span class="sa">f</span><span class="s2">"- mode </span><span class="si">{</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'mode'</span><span class="p">]</span><span class="si">}{</span><span class="s1">' - extero'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">parameters</span><span class="p">[</span><span class="s1">'extero'</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">"</span>
+    <span class="p">)</span>
+
+    <span class="n">fire</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">"trialStart"</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">press</span> <span class="o">=</span> <span class="n">dialLoop</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">trialNumber</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">startPhase</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">TaskAbort</span><span class="p">:</span>
+        <span class="c1"># Esc before the press: the trial gets no row, so its tones are left</span>
+        <span class="c1"># out of tones.txt too (the marker stream still has them).</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"trialBlocks"</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">trialNumber</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">raise</span>
+    <span class="c1"># Esc after the press keeps the trial, as in the rating, but asks no rating</span>
+    <span class="n">fields</span><span class="p">,</span> <span class="n">abort</span> <span class="o">=</span> <span class="n">endTrial</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="n">timedOut</span> <span class="o">=</span> <span class="n">press</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"timeout"</span>
+
+    <span class="n">confidence</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">confidenceRT</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="c1"># A trial that timed out has no choice, so nothing to be confident about</span>
+    <span class="k">if</span> <span class="n">confidenceRating</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">timedOut</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">abort</span><span class="p">:</span>
+        <span class="n">fire</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">"confidenceStart"</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rating</span><span class="p">,</span> <span class="n">ratingRT</span><span class="p">,</span> <span class="n">provided</span> <span class="o">=</span> <span class="n">confidenceRatingTask</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">TaskAbort</span><span class="p">:</span>
+            <span class="c1"># The trial itself is complete: keep it, without a rating</span>
+            <span class="n">abort</span><span class="p">,</span> <span class="n">provided</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="n">fire</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">"confidenceStop"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">provided</span><span class="p">:</span>
+            <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span> <span class="o">=</span> <span class="n">rating</span><span class="p">,</span> <span class="n">ratingRT</span>
+        <span class="n">_pushMarker</span><span class="p">(</span>
+            <span class="n">parameters</span><span class="p">,</span>
+            <span class="s2">"confidence"</span><span class="p">,</span>
+            <span class="n">trial</span><span class="o">=</span><span class="n">trialNumber</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">confidence</span> <span class="k">if</span> <span class="n">provided</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">rt</span><span class="o">=</span><span class="n">confidenceRT</span> <span class="k">if</span> <span class="n">provided</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Engine fields first, the task's own on top for what only the task knows,</span>
+    <span class="c1"># and the task's measurements as fallback for what the engine left out.</span>
+    <span class="n">row</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">FINAL_COLUMNS</span><span class="p">}</span>
+    <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">"TrialStatus"</span><span class="p">:</span> <span class="n">press</span><span class="p">[</span><span class="s2">"status"</span><span class="p">],</span>
+            <span class="s2">"ChosenPhaseDeg"</span><span class="p">:</span> <span class="n">press</span><span class="p">[</span><span class="s2">"phase_deg"</span><span class="p">],</span>
+            <span class="s2">"ChosenDelayMs"</span><span class="p">:</span> <span class="n">press</span><span class="p">[</span><span class="s2">"delay_ms"</span><span class="p">],</span>
+            <span class="s2">"PressTime"</span><span class="p">:</span> <span class="n">press</span><span class="p">[</span><span class="s2">"press_time"</span><span class="p">],</span>
+            <span class="s2">"TrialDuration"</span><span class="p">:</span> <span class="n">press</span><span class="p">[</span><span class="s2">"duration"</span><span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">})</span>
+    <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">"Trial"</span><span class="p">:</span> <span class="n">trialNumber</span><span class="p">,</span>
+            <span class="s2">"Block"</span><span class="p">:</span> <span class="n">block</span><span class="p">,</span>
+            <span class="s2">"Mode"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"mode"</span><span class="p">],</span>
+            <span class="s2">"Extero"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"extero"</span><span class="p">],</span>
+            <span class="s2">"StartPhaseDeg"</span><span class="p">:</span> <span class="n">startPhase</span><span class="p">,</span>
+            <span class="s2">"Confidence"</span><span class="p">:</span> <span class="n">confidence</span><span class="p">,</span>
+            <span class="s2">"ConfidenceRT"</span><span class="p">:</span> <span class="n">confidenceRT</span><span class="p">,</span>
+            <span class="s2">"ConfidenceUnit"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">scale</span><span class="o">.</span><span class="n">to_unit</span><span class="p">(</span><span class="n">confidence</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">confidence</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="p">),</span>
+            <span class="s2">"Device"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">],</span>
+            <span class="o">**</span><span class="n">scale</span><span class="o">.</span><span class="n">describe</span><span class="p">(),</span>
+            <span class="s2">"nDialMoves"</span><span class="p">:</span> <span class="n">press</span><span class="p">[</span><span class="s2">"n_dial_moves"</span><span class="p">],</span>
+            <span class="s2">"WallTime"</span><span class="p">:</span> <span class="n">press</span><span class="p">[</span><span class="s2">"wall_time"</span><span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">timedOut</span><span class="p">:</span>
+        <span class="c1"># Whatever the engine made of the dial, nobody chose it</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">TrialStatus</span><span class="o">=</span><span class="s2">"timeout"</span><span class="p">,</span> <span class="n">ChosenPhaseDeg</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">ChosenDelayMs</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+    <span class="n">fire</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">"trialStop"</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">row</span><span class="p">])],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">saveResults</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">abort</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">TaskAbort</span><span class="p">()</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"... trial </span><span class="si">{</span><span class="n">trialNumber</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">block</span><span class="si">}</span><span class="s2">): phase </span><span class="si">{</span><span class="n">_fmt</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">'ChosenPhaseDeg'</span><span class="p">])</span><span class="si">}</span><span class="s2"> deg, "</span>
+        <span class="sa">f</span><span class="s2">"delay </span><span class="si">{</span><span class="n">_fmt</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">'ChosenDelayMs'</span><span class="p">])</span><span class="si">}</span><span class="s2"> ms, anticipated "</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">_fmt</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">'AnticipatedPeriodMs'</span><span class="p">])</span><span class="si">}</span><span class="s2"> ms, observed "</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">_fmt</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">'ObservedPeriodMs'</span><span class="p">])</span><span class="si">}</span><span class="s2"> ms, confidence </span><span class="si">{</span><span class="n">_fmt</span><span class="p">(</span><span class="n">confidence</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">"TrialStatus"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"ok"</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"... trial </span><span class="si">{</span><span class="n">trialNumber</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">'TrialStatus'</span><span class="p">]</span><span class="si">}</span><span class="s2">: the scores will "</span>
+            <span class="s2">"leave it out (check the ECG)"</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">row</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">endTrial</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The engine's row of the trial, waiting on screen with Esc watched.</span>
+
+<span class="sd">    :meth:`cardioception.PAT.engine.PhaseEngine.end_trial` waits after the</span>
+<span class="sd">    press for the next R-wave and the last onsets, up to 3 s. Each pass of</span>
+<span class="sd">    that wait holds the fixation cross for one frame through</span>
+<span class="sd">    :func:`cardioception._present.hold`, so the window keeps flipping and</span>
+<span class="sd">    the per-frame hook keeps running, and looks for Esc, which stops the</span>
+<span class="sd">    wait at once.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fields : dict</span>
+<span class="sd">        The engine's row.</span>
+<span class="sd">    escaped : bool</span>
+<span class="sd">        Whether Esc was pressed during the wait.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">event</span><span class="p">,</span> <span class="n">visual</span>
+
+    <span class="n">win</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span>
+    <span class="n">fixation</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">GratingStim</span><span class="p">(</span><span class="n">win</span><span class="o">=</span><span class="n">win</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="s2">"cross"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sf</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">escaped</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_wait</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">nonlocal</span> <span class="n">escaped</span>
+        <span class="n">hold</span><span class="p">(</span><span class="n">win</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">fixation</span><span class="p">)</span>
+        <span class="n">escaped</span> <span class="o">=</span> <span class="n">escaped</span> <span class="ow">or</span> <span class="s2">"escape"</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">getKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="p">[</span><span class="s2">"escape"</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">escaped</span>
+
+    <span class="n">fields</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span><span class="o">.</span><span class="n">end_trial</span><span class="p">(</span><span class="n">on_wait</span><span class="o">=</span><span class="n">on_wait</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fields</span><span class="p">,</span> <span class="n">escaped</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_fmt</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"--"</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Stage</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""One screen of the dial loop.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    text : str | None</span>
+<span class="sd">        Shown above the dial. `None` in real trials, which show only the dial.</span>
+<span class="sd">    wheel : bool</span>
+<span class="sd">        Whether the wheel moves the beeps in this stage.</span>
+<span class="sd">    ready : callable</span>
+<span class="sd">        Takes the loop state and says whether space may end the stage. The</span>
+<span class="sd">        state holds `elapsed` (seconds in this stage), `tones` (beeps played in</span>
+<span class="sd">        this stage), `notches` (net notches in this stage, positive later), and</span>
+<span class="sd">        `later` and `earlier` (notches rolled each way in this stage, both</span>
+<span class="sd">        counted up, so rolling back does not undo them).</span>
+<span class="sd">    footer : str | callable | None</span>
+<span class="sd">        A text, shown below the dial once the stage is ready, or a function of</span>
+<span class="sd">        the loop state that returns the text to show on each frame (or None).</span>
+<span class="sd">    roll : int</span>
+<span class="sd">        The way the stage asks for the wheel to be rolled: `1` away (later),</span>
+<span class="sd">        `-1` towards (earlier), `0` to find the heartbeat. Only the autopilot</span>
+<span class="sd">        reads it.</span>
+<span class="sd">    """</span>
+
+    <span class="n">text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">wheel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">ready</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">dict</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">footer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">roll</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_newState</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"elapsed"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">"tones"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"notches"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"later"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"earlier"</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Dial</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A ring with a pointer around the fixation cross.</span>
+
+<span class="sd">    The pointer starts at twelve o'clock and turns by the same angle as the</span>
+<span class="sd">    phase, so it shows the change since the trial began and nothing about the</span>
+<span class="sd">    phase itself. It brightens for `flashDuration` after each beep.</span>
+<span class="sd">    """</span>
+
+    <span class="n">RING</span> <span class="o">=</span> <span class="s2">"#a8a8a8"</span>
+    <span class="n">POINTER</span> <span class="o">=</span> <span class="s2">"#303030"</span>
+    <span class="n">FLASH</span> <span class="o">=</span> <span class="s2">"white"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">visual</span>
+
+        <span class="n">win</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"showDial"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"dialRadius"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixation</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">GratingStim</span><span class="p">(</span>
+            <span class="n">win</span><span class="o">=</span><span class="n">win</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="s2">"cross"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sf</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ring</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">Circle</span><span class="p">(</span>
+            <span class="n">win</span><span class="p">,</span>
+            <span class="n">radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span>
+            <span class="n">edges</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+            <span class="n">lineColor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RING</span><span class="p">,</span>
+            <span class="n">fillColor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">lineWidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+            <span class="n">win</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.012</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">0.07</span><span class="p">,</span> <span class="n">fillColor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">POINTER</span><span class="p">,</span> <span class="n">lineColor</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dot</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">Circle</span><span class="p">(</span>
+            <span class="n">win</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.016</span><span class="p">,</span> <span class="n">edges</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">fillColor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">FLASH</span><span class="p">,</span> <span class="n">lineColor</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">degrees</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">+</span> <span class="n">degrees</span><span class="p">)</span> <span class="o">%</span> <span class="mf">360.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">)</span>  <span class="c1"># clockwise from twelve o'clock</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)),</span> <span class="nb">float</span><span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">flash</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show</span> <span class="ow">and</span> <span class="n">dial</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ring</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">-</span> <span class="mf">0.035</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="o">.</span><span class="n">ori</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angle</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="o">.</span><span class="n">fillColor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FLASH</span> <span class="k">if</span> <span class="n">flash</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">POINTER</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">flash</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dot</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dot</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixation</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_degreesPerNotch</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">engine</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">trialNumber</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""How far one notch turns the pointer, in degrees of the period."""</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"mode"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"relative"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"dialGainDeg"</span><span class="p">]</span>
+    <span class="n">period</span> <span class="o">=</span> <span class="n">_periodS</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">trialNumber</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"dialGainMs"</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">period</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="mi">360</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_periodS</span><span class="p">(</span><span class="n">engine</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">trialNumber</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The latest period the engine used in this trial, 1 s before any."""</span>
+    <span class="k">for</span> <span class="n">tone</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">engine</span><span class="o">.</span><span class="n">tones</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Trial"</span><span class="p">)</span> <span class="o">!=</span> <span class="n">trialNumber</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="n">tone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"PeriodS"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">tone</span><span class="p">[</span><span class="s2">"PeriodS"</span><span class="p">])</span>
+    <span class="k">return</span> <span class="mf">1.0</span>
+
+
+<div class="viewcode-block" id="dialLoop"><a class="viewcode-back" href="../../../generated/PAT.task/cardioception.PAT.task.dialLoop.html#cardioception.PAT.task.dialLoop">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">dialLoop</span><span class="p">(</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">trialNumber</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">block</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">startPhase</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">stages</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Stage</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">silenceTimeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Run the engine and the dial until space ends the last stage.</span>
+
+<span class="sd">    A trial is one stage: the dial and the fixation cross, and space ends it</span>
+<span class="sd">    after `minTrialTime`. The tutorial is several stages on the same beeps.</span>
+<span class="sd">    Until the first beep has played, the screen says that the task is</span>
+<span class="sd">    listening for the heartbeat, the dial is hidden and the wheel does</span>
+<span class="sd">    nothing. A stage still running after `maxTrialTime` seconds (a lost ECG,</span>
+<span class="sd">    say, when space would never work) ends the loop with no choice, status</span>
+<span class="sd">    `timeout`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        Task parameters.</span>
+<span class="sd">    trialNumber : int</span>
+<span class="sd">        Trial number given to the engine.</span>
+<span class="sd">    block : str</span>
+<span class="sd">        Shown in the experimenter status line.</span>
+<span class="sd">    startPhase : float</span>
+<span class="sd">        Start phase of the beeps, in degrees.</span>
+<span class="sd">    stages : list of Stage | None</span>
+<span class="sd">        The screens to go through. Default is one trial screen.</span>
+<span class="sd">    silenceTimeout : float | None</span>
+<span class="sd">        If no beep has played this many seconds after the loop started, the</span>
+<span class="sd">        loop ends without a press and logs a warning, as nothing on screen</span>
+<span class="sd">        can then progress. `None`, the default, waits for the first beep</span>
+<span class="sd">        however long it takes (the experimenter sees the warning in the</span>
+<span class="sd">        status line and can press Esc).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    press : dict</span>
+<span class="sd">        `phase_deg` and `delay_ms` (the dial at the press, NaN after a</span>
+<span class="sd">        timeout), `press_time` (LSL seconds), `wall_time` (`time.time()`),</span>
+<span class="sd">        `duration` (seconds from the start of the trial), `n_dial_moves`,</span>
+<span class="sd">        `status` (`ok`, or `timeout` when `maxTrialTime` or `silenceTimeout`</span>
+<span class="sd">        ran out) and `timed_out` (true when the loop ended on a timeout</span>
+<span class="sd">        rather than on a press).</span>
+
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">event</span>
+
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span>
+    <span class="n">win</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span>
+    <span class="n">mouse</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span>
+    <span class="n">pilot</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"autopilot"</span><span class="p">)</span>
+    <span class="c1"># Beep targets are on the engine's clock, so the loop reads that clock</span>
+    <span class="c1"># too. Another clock with another origin (``time.perf_counter`` against</span>
+    <span class="c1"># PsychToolbox's epoch-based ``GetSecs`` on Linux) never sees a beep play.</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="s2">"clock"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_clock</span><span class="p">()</span>
+    <span class="n">dialKeys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"dialKeys"</span><span class="p">])</span>
+    <span class="n">watched</span> <span class="o">=</span> <span class="p">[</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">],</span> <span class="s2">"escape"</span><span class="p">]</span> <span class="o">+</span> <span class="n">dialKeys</span>
+    <span class="n">maxTime</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"maxTrialTime"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stages</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">minTime</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"minTrialTime"</span><span class="p">]</span>
+        <span class="n">stages</span> <span class="o">=</span> <span class="p">[</span><span class="n">Stage</span><span class="p">(</span><span class="n">ready</span><span class="o">=</span><span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n">state</span><span class="p">[</span><span class="s2">"elapsed"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">minTime</span><span class="p">)]</span>
+
+    <span class="n">dial</span> <span class="o">=</span> <span class="n">_Dial</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="n">waiting</span> <span class="o">=</span> <span class="n">text</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"waitingFirstTone"</span><span class="p">],</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">))</span>
+    <span class="n">stageTexts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stages</span><span class="p">:</span>
+        <span class="n">above</span> <span class="o">=</span> <span class="n">below</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="n">above</span> <span class="o">=</span> <span class="n">text</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">),</span> <span class="n">wrapWidth</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">footer</span><span class="p">:</span>
+            <span class="n">below</span> <span class="o">=</span> <span class="n">text</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">,</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">footer</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">footer</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
+                <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.35</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="n">stageTexts</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">above</span><span class="p">,</span> <span class="n">below</span><span class="p">))</span>
+    <span class="n">win</span><span class="o">.</span><span class="n">mouseVisible</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Forget the press that started the trial, and wheel turns made before it</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">clearEvents</span><span class="p">()</span>
+    <span class="n">mouse</span><span class="o">.</span><span class="n">getWheelRel</span><span class="p">()</span>
+    <span class="n">wheel</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">nDialMoves</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">engine</span><span class="o">.</span><span class="n">start_trial</span><span class="p">(</span><span class="n">trialNumber</span><span class="p">,</span> <span class="n">startPhase</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+    <span class="n">tStart</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">_Status</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">trialNumber</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">tStart</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pilot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pilot</span><span class="o">.</span><span class="n">start_trial</span><span class="p">(</span><span class="n">trialNumber</span><span class="p">)</span>
+
+    <span class="c1"># Target times of this trial's beeps, to know when one has played</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">engine</span><span class="o">.</span><span class="n">tones</span><span class="p">)</span>
+    <span class="n">pending</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">nPlayed</span><span class="p">,</span> <span class="n">lastPlayed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+    <span class="n">stageIndex</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">_newState</span><span class="p">()</span>
+    <span class="n">tStage</span> <span class="o">=</span> <span class="n">tStart</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">engine</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span>
+
+        <span class="n">tones</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">tones</span>
+        <span class="k">for</span> <span class="n">tone</span> <span class="ow">in</span> <span class="n">tones</span><span class="p">[</span><span class="n">seen</span><span class="p">:]:</span>
+            <span class="k">if</span> <span class="n">tone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Trial"</span><span class="p">)</span> <span class="o">==</span> <span class="n">trialNumber</span> <span class="ow">and</span> <span class="n">tone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Kind"</span><span class="p">,</span> <span class="s2">"tone"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"tone"</span><span class="p">:</span>
+                <span class="n">pending</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">tone</span><span class="p">[</span><span class="s2">"Target"</span><span class="p">]))</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tones</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pending</span> <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">t</span><span class="p">]:</span>
+            <span class="n">pending</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="n">nPlayed</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">state</span><span class="p">[</span><span class="s2">"tones"</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">lastPlayed</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">lastPlayed</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="n">heard</span> <span class="o">=</span> <span class="n">nPlayed</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">stage</span> <span class="o">=</span> <span class="n">stages</span><span class="p">[</span><span class="n">stageIndex</span><span class="p">]</span>
+        <span class="n">state</span><span class="p">[</span><span class="s2">"elapsed"</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span> <span class="o">-</span> <span class="n">tStage</span>
+
+        <span class="n">notches</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">pressed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">pilot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># The simulated participant rolls and presses in place of the</span>
+            <span class="c1"># wheel and the keyboard, and only once the first beep is heard.</span>
+            <span class="k">if</span> <span class="n">heard</span><span class="p">:</span>
+                <span class="n">notches</span><span class="p">,</span> <span class="n">done</span> <span class="o">=</span> <span class="n">pilot</span><span class="o">.</span><span class="n">frame</span><span class="p">(</span>
+                    <span class="n">t</span><span class="p">,</span>
+                    <span class="n">engine</span><span class="o">.</span><span class="n">phase_deg</span><span class="p">,</span>
+                    <span class="n">_degreesPerNotch</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">engine</span><span class="p">,</span> <span class="n">trialNumber</span><span class="p">),</span>
+                    <span class="n">wheel</span><span class="o">=</span><span class="n">stage</span><span class="o">.</span><span class="n">wheel</span><span class="p">,</span>
+                    <span class="n">roll</span><span class="o">=</span><span class="n">stage</span><span class="o">.</span><span class="n">roll</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">pressed</span> <span class="o">=</span> <span class="n">done</span> <span class="ow">and</span> <span class="n">stage</span><span class="o">.</span><span class="n">ready</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">wheel</span> <span class="o">+=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"wheelDirection"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">mouse</span><span class="o">.</span><span class="n">getWheelRel</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">wheel</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">notches</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">wheel</span><span class="p">)</span>  <span class="c1"># whole notches, the rest carries over</span>
+                <span class="n">wheel</span> <span class="o">-=</span> <span class="n">notches</span>
+
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">getKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="n">watched</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"escape"</span><span class="p">:</span>
+                    <span class="n">engine</span><span class="o">.</span><span class="n">stop_tones</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">"abort"</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">TaskAbort</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">dialKeys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">==</span> <span class="n">dialKeys</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">notches</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">dialKeys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">==</span> <span class="n">dialKeys</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">notches</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">]:</span>
+                    <span class="n">pressed</span> <span class="o">=</span> <span class="n">heard</span> <span class="ow">and</span> <span class="n">stage</span><span class="o">.</span><span class="n">ready</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">heard</span> <span class="ow">and</span> <span class="n">stage</span><span class="o">.</span><span class="n">wheel</span><span class="p">):</span>
+            <span class="n">notches</span><span class="p">,</span> <span class="n">wheel</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="n">notches</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">turn</span> <span class="o">=</span> <span class="n">notches</span> <span class="o">*</span> <span class="n">_degreesPerNotch</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">engine</span><span class="p">,</span> <span class="n">trialNumber</span><span class="p">)</span>
+            <span class="n">engine</span><span class="o">.</span><span class="n">nudge</span><span class="p">(</span><span class="n">notches</span><span class="p">,</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"dialGainDeg"</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"dialGainMs"</span><span class="p">])</span>
+            <span class="n">dial</span><span class="o">.</span><span class="n">turn</span><span class="p">(</span><span class="n">turn</span><span class="p">)</span>
+            <span class="n">state</span><span class="p">[</span><span class="s2">"notches"</span><span class="p">]</span> <span class="o">+=</span> <span class="n">notches</span>
+            <span class="n">state</span><span class="p">[</span><span class="s2">"later"</span> <span class="k">if</span> <span class="n">notches</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"earlier"</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">notches</span><span class="p">)</span>
+            <span class="n">nDialMoves</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">silent</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">heard</span> <span class="ow">and</span> <span class="n">silenceTimeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">-</span> <span class="n">tStart</span> <span class="o">&gt;=</span> <span class="n">silenceTimeout</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">silent</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"No beep played in the first </span><span class="si">{</span><span class="n">silenceTimeout</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> s of </span><span class="si">{</span><span class="n">block</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"trial </span><span class="si">{</span><span class="n">trialNumber</span><span class="si">}</span><span class="s2">; ending it without a press."</span>
+            <span class="p">)</span>
+        <span class="n">timedOut</span> <span class="o">=</span> <span class="n">silent</span> <span class="ow">or</span> <span class="p">(</span><span class="n">maxTime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">state</span><span class="p">[</span><span class="s2">"elapsed"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">maxTime</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pressed</span> <span class="ow">and</span> <span class="n">stageIndex</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">stages</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">stageIndex</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">tStage</span> <span class="o">=</span> <span class="n">t</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">_newState</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">pressed</span> <span class="ow">or</span> <span class="n">timedOut</span><span class="p">:</span>
+            <span class="n">pressTime</span><span class="p">,</span> <span class="n">wallTime</span> <span class="o">=</span> <span class="n">now</span><span class="p">(),</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">outcome</span> <span class="o">=</span> <span class="s2">"ok"</span>
+            <span class="k">if</span> <span class="n">timedOut</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pressed</span><span class="p">:</span>
+                <span class="n">outcome</span> <span class="o">=</span> <span class="s2">"timeout"</span>
+            <span class="k">if</span> <span class="n">timedOut</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pressed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"... </span><span class="si">{</span><span class="n">block</span><span class="si">}</span><span class="s2"> trial </span><span class="si">{</span><span class="n">trialNumber</span><span class="si">}</span><span class="s2">: no press after </span><span class="si">{</span><span class="n">maxTime</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> s, "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">nPlayed</span><span class="si">}</span><span class="s2"> beeps heard. The trial ends without a choice."</span>
+                <span class="p">)</span>
+            <span class="n">engine</span><span class="o">.</span><span class="n">stop_tones</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">"press"</span> <span class="k">if</span> <span class="n">outcome</span> <span class="o">==</span> <span class="s2">"ok"</span> <span class="k">else</span> <span class="s2">"timeout"</span><span class="p">)</span>
+            <span class="n">press</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"phase_deg"</span><span class="p">:</span> <span class="n">engine</span><span class="o">.</span><span class="n">phase_deg</span> <span class="k">if</span> <span class="n">outcome</span> <span class="o">==</span> <span class="s2">"ok"</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                <span class="s2">"delay_ms"</span><span class="p">:</span> <span class="n">engine</span><span class="o">.</span><span class="n">delay_ms</span> <span class="k">if</span> <span class="n">outcome</span> <span class="o">==</span> <span class="s2">"ok"</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                <span class="s2">"press_time"</span><span class="p">:</span> <span class="n">pressTime</span><span class="p">,</span>
+                <span class="s2">"wall_time"</span><span class="p">:</span> <span class="n">wallTime</span><span class="p">,</span>
+                <span class="s2">"duration"</span><span class="p">:</span> <span class="n">pressTime</span> <span class="o">-</span> <span class="n">tStart</span><span class="p">,</span>
+                <span class="s2">"n_dial_moves"</span><span class="p">:</span> <span class="n">nDialMoves</span><span class="p">,</span>
+                <span class="s2">"status"</span><span class="p">:</span> <span class="n">outcome</span><span class="p">,</span>
+                <span class="s2">"timed_out"</span><span class="p">:</span> <span class="n">timedOut</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">dial</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">dial</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">win</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">press</span>
+
+        <span class="n">status</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">heard</span><span class="p">:</span>
+            <span class="n">above</span><span class="p">,</span> <span class="n">footer</span> <span class="o">=</span> <span class="n">stageTexts</span><span class="p">[</span><span class="n">stageIndex</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">above</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">above</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">stageFooter</span> <span class="o">=</span> <span class="n">stages</span><span class="p">[</span><span class="n">stageIndex</span><span class="p">]</span><span class="o">.</span><span class="n">footer</span>
+            <span class="k">if</span> <span class="n">footer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">stageFooter</span><span class="p">):</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">stageFooter</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">footer</span><span class="o">.</span><span class="n">text</span> <span class="o">!=</span> <span class="n">line</span><span class="p">:</span>
+                        <span class="n">footer</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">line</span>
+                    <span class="n">footer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">footer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">stages</span><span class="p">[</span><span class="n">stageIndex</span><span class="p">]</span><span class="o">.</span><span class="n">ready</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+                <span class="n">footer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">dial</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">flash</span><span class="o">=</span><span class="n">t</span> <span class="o">-</span> <span class="n">lastPlayed</span> <span class="o">&lt;</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"flashDuration"</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">waiting</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">dial</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">dial</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">win</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span></div>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Status</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""One console line per second for the experimenter."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">trialNumber</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tStart</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trial</span> <span class="o">=</span> <span class="n">trialNumber</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">block</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tStart</span> <span class="o">=</span> <span class="n">tStart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">tStart</span> <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"statusEvery"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nTones</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastNew</span> <span class="o">=</span> <span class="n">tStart</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tones</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span><span class="o">.</span><span class="n">tones</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Trial"</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"statusEvery"</span><span class="p">]</span>
+        <span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span>
+        <span class="n">tones</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tones</span><span class="p">()</span>
+        <span class="c1"># Skipped tones are beats too, so they count as signs of life</span>
+        <span class="n">activity</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tones</span><span class="p">)</span> <span class="o">+</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="s2">"counts"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"skipped"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">activity</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nTones</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nTones</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastNew</span> <span class="o">=</span> <span class="n">activity</span><span class="p">,</span> <span class="n">t</span>
+        <span class="n">tones</span> <span class="o">=</span> <span class="p">[</span><span class="n">tone</span> <span class="k">for</span> <span class="n">tone</span> <span class="ow">in</span> <span class="n">tones</span> <span class="k">if</span> <span class="n">tone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Kind"</span><span class="p">,</span> <span class="s2">"tone"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"tone"</span><span class="p">]</span>
+
+        <span class="n">hr</span> <span class="o">=</span> <span class="s2">"--"</span>
+        <span class="k">if</span> <span class="n">tones</span> <span class="ow">and</span> <span class="n">tones</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"PeriodS"</span><span class="p">):</span>
+            <span class="n">hr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mi">60</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">tones</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">'PeriodS'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">nReal</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">tone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Anchor"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"real"</span> <span class="k">for</span> <span class="n">tone</span> <span class="ow">in</span> <span class="n">tones</span><span class="p">)</span>
+        <span class="n">nPred</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">tone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Anchor"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"predicted"</span> <span class="k">for</span> <span class="n">tone</span> <span class="ow">in</span> <span class="n">tones</span><span class="p">)</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"  [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trial</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">tStart</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2"> s | HR </span><span class="si">{</span><span class="n">hr</span><span class="si">}</span><span class="s2"> bpm"</span>
+            <span class="sa">f</span><span class="s2">" | phase </span><span class="si">{</span><span class="n">engine</span><span class="o">.</span><span class="n">phase_deg</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2"> deg | delay </span><span class="si">{</span><span class="n">engine</span><span class="o">.</span><span class="n">delay_ms</span><span class="si">:</span><span class="s2">6.1f</span><span class="si">}</span><span class="s2"> ms"</span>
+            <span class="sa">f</span><span class="s2">" | tones real </span><span class="si">{</span><span class="n">nReal</span><span class="si">}</span><span class="s2"> / predicted </span><span class="si">{</span><span class="n">nPred</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+        <span class="n">silent</span> <span class="o">=</span> <span class="n">t</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastNew</span>
+        <span class="k">if</span> <span class="n">silent</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"noBeatWarning"</span><span class="p">]:</span>
+            <span class="n">what</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">"vibrations"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"extero"</span><span class="p">]</span> <span class="k">else</span> <span class="s2">"beats (check the ECG)"</span>
+            <span class="p">)</span>
+            <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" | NO </span><span class="si">{</span><span class="n">what</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2"> FOR </span><span class="si">{</span><span class="n">silent</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> s"</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_text</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">"""A text of an instruction screen, wrapped as the PAT's always were."""</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">wrapWidth</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_no_wait</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Stand-in for the shared wait, which would not redraw the screen."""</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">show_screen</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">Screen</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Show one instruction screen until the start key.</span>
+
+<span class="sd">    :func:`cardioception._session.show_screen` builds and holds it; the wait</span>
+<span class="sd">    is :func:`waitInput`, which redraws it on every frame so the per-frame</span>
+<span class="sd">    hook keeps polling the engine.</span>
+<span class="sd">    """</span>
+    <span class="n">stims</span> <span class="o">=</span> <span class="n">_show_screen</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">,</span> <span class="n">screen</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">text_fn</span><span class="o">=</span><span class="n">_text</span><span class="p">,</span> <span class="n">hold_fn</span><span class="o">=</span><span class="n">hold</span><span class="p">,</span> <span class="n">wait_fn</span><span class="o">=</span><span class="n">_no_wait</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">screen</span><span class="o">.</span><span class="n">wait</span><span class="p">:</span>
+        <span class="n">waitInput</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="o">*</span><span class="n">stims</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">stims</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">showText</span><span class="p">(</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">footer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">header</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Show a text, with an optional footer and header line, until the start key."""</span>
+    <span class="n">stims</span> <span class="o">=</span> <span class="p">[</span><span class="n">_text</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">message</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">footer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">stims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">footer</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">stims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)))</span>
+    <span class="n">waitInput</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="o">*</span><span class="n">stims</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">waitInput</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">*</span><span class="n">stims</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Hold `stims` on screen until the start key. Esc stops the task.</span>
+
+<span class="sd">    Every frame goes through :func:`cardioception._present.hold`, so the</span>
+<span class="sd">    window's per-frame hook (the engine's idle poll, during :func:`run`) keeps</span>
+<span class="sd">    detecting beats while the participant reads. The wheel does nothing here.</span>
+<span class="sd">    With an autopilot the screen is drawn once and passed at once.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">event</span>
+
+    <span class="n">win</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span>
+    <span class="n">pilot</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"autopilot"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pilot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">hold</span><span class="p">(</span><span class="n">win</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">stims</span><span class="p">)</span>
+        <span class="n">pilot</span><span class="o">.</span><span class="n">advance</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">getWheelRel</span><span class="p">()</span>
+        <span class="k">return</span>
+
+    <span class="n">event</span><span class="o">.</span><span class="n">clearEvents</span><span class="p">(</span><span class="n">eventType</span><span class="o">=</span><span class="s2">"keyboard"</span><span class="p">)</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">hold</span><span class="p">(</span><span class="n">win</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">stims</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">getKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="p">[</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">],</span> <span class="s2">"escape"</span><span class="p">])</span>
+        <span class="n">_checkEscape</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">]</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span><span class="o">.</span><span class="n">getWheelRel</span><span class="p">()</span>  <span class="c1"># drop turns made while waiting</span>
+            <span class="k">return</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_wheelNotches</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Wheel travel since the last call, away from the participant positive.</span>
+
+<span class="sd">    Turns made before the call (e.g. while the trial ended) are dropped.</span>
+<span class="sd">    """</span>
+    <span class="n">mouse</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span>
+    <span class="n">mouse</span><span class="o">.</span><span class="n">getWheelRel</span><span class="p">()</span>
+    <span class="k">return</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"wheelDirection"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">mouse</span><span class="o">.</span><span class="n">getWheelRel</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="tutorial"><a class="viewcode-back" href="../../../generated/PAT.task/cardioception.PAT.task.tutorial.html#cardioception.PAT.task.tutorial">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">tutorial</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Guide the participant through the wheel on free beats. Nothing is saved.</span>
+
+<span class="sd">    Four screens on the same beeps: listen to one beep per heartbeat; roll the</span>
+<span class="sd">    wheel away (beeps later); roll it towards you (beeps earlier); then find</span>
+<span class="sd">    the position that matches the heartbeat and press space.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        Task parameters.</span>
+
+<span class="sd">    """</span>
+    <span class="n">texts</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span>
+    <span class="n">nTones</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"tutorialListenTones"</span><span class="p">]</span>
+    <span class="n">nNotches</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"tutorialNotches"</span><span class="p">]</span>
+    <span class="n">minTime</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"minTrialTime"</span><span class="p">]</span>
+    <span class="n">timeout</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"tutorialStageTimeout"</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">rolled</span><span class="p">(</span><span class="n">direction</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">dict</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]:</span>
+        <span class="c1"># Notches rolled that way count, whatever was rolled back afterwards;</span>
+        <span class="c1"># after `timeout` space works anyway, so nobody can be stuck here.</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">state</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">nNotches</span> <span class="ow">or</span> <span class="n">state</span><span class="p">[</span><span class="s2">"elapsed"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">timeout</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">progress</span><span class="p">(</span><span class="n">direction</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">dict</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="n">ready</span> <span class="o">=</span> <span class="n">rolled</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">footer</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ready</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">texts</span><span class="p">[</span><span class="s2">"tutorialReady"</span><span class="p">]</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="n">direction</span><span class="p">],</span> <span class="n">nNotches</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">texts</span><span class="p">[</span><span class="s2">"tutorialProgress"</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">done</span><span class="o">=</span><span class="n">done</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">nNotches</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">footer</span>
+
+    <span class="n">show_screen</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">,</span>
+        <span class="n">TUTORIAL_INTRO</span><span class="p">,</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">text</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">texts</span><span class="p">[</span><span class="s2">"textNext"</span><span class="p">],</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">)),</span>
+    <span class="p">)</span>
+
+    <span class="n">stages</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Stage</span><span class="p">(</span>
+            <span class="n">texts</span><span class="p">[</span><span class="s2">"tutorialListen"</span><span class="p">],</span>
+            <span class="n">wheel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">ready</span><span class="o">=</span><span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">state</span><span class="p">[</span><span class="s2">"tones"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">nTones</span> <span class="ow">or</span> <span class="n">state</span><span class="p">[</span><span class="s2">"elapsed"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">timeout</span>
+            <span class="p">),</span>
+            <span class="n">footer</span><span class="o">=</span><span class="n">texts</span><span class="p">[</span><span class="s2">"textNext"</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Stage</span><span class="p">(</span>
+            <span class="n">texts</span><span class="p">[</span><span class="s2">"tutorialLater"</span><span class="p">],</span>
+            <span class="n">ready</span><span class="o">=</span><span class="n">rolled</span><span class="p">(</span><span class="s2">"later"</span><span class="p">),</span>
+            <span class="n">footer</span><span class="o">=</span><span class="n">progress</span><span class="p">(</span><span class="s2">"later"</span><span class="p">),</span>
+            <span class="n">roll</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">Stage</span><span class="p">(</span>
+            <span class="n">texts</span><span class="p">[</span><span class="s2">"tutorialEarlier"</span><span class="p">],</span>
+            <span class="n">ready</span><span class="o">=</span><span class="n">rolled</span><span class="p">(</span><span class="s2">"earlier"</span><span class="p">),</span>
+            <span class="n">footer</span><span class="o">=</span><span class="n">progress</span><span class="p">(</span><span class="s2">"earlier"</span><span class="p">),</span>
+            <span class="n">roll</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">Stage</span><span class="p">(</span>
+            <span class="n">texts</span><span class="p">[</span><span class="s2">"tutorialFree"</span><span class="p">],</span>
+            <span class="n">ready</span><span class="o">=</span><span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n">state</span><span class="p">[</span><span class="s2">"elapsed"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nb">min</span><span class="p">(</span><span class="n">minTime</span><span class="p">,</span> <span class="n">timeout</span><span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">startPhase</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">]</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startPhases"</span><span class="p">]))</span>
+    <span class="c1"># Every stage waits for a beep. Without one in the first `timeout`</span>
+    <span class="c1"># seconds there is nothing to teach, so the tutorial ends rather than</span>
+    <span class="c1"># waiting for ever.</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="n">dialLoop</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">,</span>
+        <span class="n">TUTORIAL_TRIAL</span><span class="p">,</span>
+        <span class="s2">"tutorial"</span><span class="p">,</span>
+        <span class="n">startPhase</span><span class="p">,</span>
+        <span class="n">stages</span><span class="o">=</span><span class="n">stages</span><span class="p">,</span>
+        <span class="n">silenceTimeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">escaped</span> <span class="o">=</span> <span class="n">endTrial</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">escaped</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">TaskAbort</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">press</span><span class="p">[</span><span class="s2">"timed_out"</span><span class="p">]:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"The tutorial was skipped: no beep played (check the ECG)."</span><span class="p">)</span>
+
+    <span class="n">show_screen</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">TUTORIAL_END</span><span class="p">)</span></div>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Prompt</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The rating question and the line saying how to answer, drawn as one."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">text</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"Confidence"</span><span class="p">],</span>
+                <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+                <span class="n">wrapWidth</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">text</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"ratingHelp"</span><span class="p">],</span>
+                <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">),</span>
+                <span class="n">height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.7</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="p">:</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_abort</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">TaskAbort</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="confidenceRatingTask"><a class="viewcode-back" href="../../../generated/PAT.task/cardioception.PAT.task.confidenceRatingTask.html#cardioception.PAT.task.confidenceRatingTask">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">confidenceRatingTask</span><span class="p">(</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Confidence rating, with the wheel and arrow keys or with the mouse.</span>
+
+<span class="sd">    The shared rating widgets of :mod:`cardioception._rating`, on</span>
+<span class="sd">    ``parameters["confidenceScale"]``. With ``device="keyboard"`` the mouse</span>
+<span class="sd">    wheel and the arrow keys move the marker and space confirms; with</span>
+<span class="sd">    ``device="mouse"`` the cursor moves it and a click confirms, once the</span>
+<span class="sd">    button that may still be down from the trial has been released. The</span>
+<span class="sd">    engine is polled on every frame, so beats keep being detected, and Esc</span>
+<span class="sd">    raises :class:`TaskAbort`, so the trial being rated is kept.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        Task parameters.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    confidence, confidenceRT : float | None</span>
+<span class="sd">        The rating and its response time in seconds, `None` if not given.</span>
+<span class="sd">    ratingProvided : bool</span>
+<span class="sd">        Whether a rating was given before `maxRatingTime`.</span>
+
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">event</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.._rating</span><span class="w"> </span><span class="kn">import</span> <span class="n">keyboard_rating</span><span class="p">,</span> <span class="n">mouse_rating</span>
+
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"confidenceScale"</span><span class="p">]</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">_Prompt</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="n">pilot</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"autopilot"</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pilot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># The scale is drawn once; the simulated participant answers on it.</span>
+        <span class="n">hold</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">pilot</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">scale</span><span class="o">.</span><span class="n">bounds</span><span class="p">,</span>
+            <span class="n">min_time</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"minRatingTime"</span><span class="p">],</span>
+            <span class="n">max_wait</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRatingTime"</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span><span class="p">,</span> <span class="n">provided</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">answer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># The widget can only stop on a step of the scale.</span>
+            <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span><span class="p">,</span> <span class="n">provided</span> <span class="o">=</span> <span class="n">scale</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">answer</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">answer</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"keyboard"</span><span class="p">:</span>
+        <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span><span class="p">,</span> <span class="n">provided</span> <span class="o">=</span> <span class="n">keyboard_rating</span><span class="p">(</span>
+            <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+            <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">scale</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">scale</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
+            <span class="n">labels</span><span class="o">=</span><span class="n">scale</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">granularity</span><span class="o">=</span><span class="n">scale</span><span class="o">.</span><span class="n">granularity</span><span class="p">,</span>
+            <span class="n">min_time</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"minRatingTime"</span><span class="p">],</span>
+            <span class="n">max_time</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRatingTime"</span><span class="p">],</span>
+            <span class="n">accept_keys</span><span class="o">=</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">],),</span>
+            <span class="n">label_height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.6</span><span class="p">,</span>
+            <span class="n">rng</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">],</span>
+            <span class="n">on_frame</span><span class="o">=</span><span class="n">engine</span><span class="o">.</span><span class="n">idle_poll</span><span class="p">,</span>
+            <span class="n">wheel</span><span class="o">=</span><span class="n">_wheelNotches</span><span class="p">(</span><span class="n">parameters</span><span class="p">),</span>
+            <span class="n">on_escape</span><span class="o">=</span><span class="n">_abort</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">on_frame</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">engine</span><span class="o">.</span><span class="n">idle_poll</span><span class="p">()</span>
+            <span class="c1"># The mouse rating reads no keys, so Esc is looked for here.</span>
+            <span class="n">_checkEscape</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">getKeys</span><span class="p">(</span><span class="n">keyList</span><span class="o">=</span><span class="p">[</span><span class="s2">"escape"</span><span class="p">]))</span>
+
+        <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span><span class="p">,</span> <span class="n">provided</span> <span class="o">=</span> <span class="n">mouse_rating</span><span class="p">(</span>
+            <span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span>
+            <span class="n">mouse</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">],</span>
+            <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+            <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+            <span class="n">min_time</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"minRatingTime"</span><span class="p">],</span>
+            <span class="n">max_time</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRatingTime"</span><span class="p">],</span>
+            <span class="n">label_height</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.6</span><span class="p">,</span>
+            <span class="n">rng</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">],</span>
+            <span class="n">on_frame</span><span class="o">=</span><span class="n">on_frame</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">provided</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"... confidence </span><span class="si">{</span><span class="n">confidence</span><span class="si">}</span><span class="s2"> after </span><span class="si">{</span><span class="n">confidenceRT</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"... no confidence rating"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRatingTime"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">late</span> <span class="o">=</span> <span class="n">text</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"tooLate"</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"red"</span><span class="p">)</span>
+            <span class="n">hold</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">],</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">late</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">confidenceRT</span><span class="p">,</span> <span class="n">provided</span></div>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2019-2026, Micah Allen and the Embodied Computation Group, Aarhus University
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/embodied-computation-group/Cardioception" aria-label="GitHub"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg></a>
+              <a class="muted-link " href="https://pypi.org/project/cardioception-toolbox/" aria-label="PyPI"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path d="M8.878.392a1.75 1.75 0 0 0-1.756 0l-5.25 3.045A1.75 1.75 0 0 0 1 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 0 0 1.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514ZM7.875 1.69a.25.25 0 0 1 .25 0l4.63 2.685L8 7.133 3.245 4.375Zm-5.375 9.36V5.677l4.75 2.755v5.339l-4.626-2.683a.25.25 0 0 1-.124-.216Zm6.25 2.755V8.432l4.75-2.755v5.372a.25.25 0 0 1-.124.216Z"></path></svg></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    </body>
+</html>

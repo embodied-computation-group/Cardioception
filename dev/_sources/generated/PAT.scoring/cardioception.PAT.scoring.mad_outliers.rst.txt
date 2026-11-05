@@ -1,0 +1,6 @@
+﻿cardioception.PAT.scoring.mad\_outliers
+=======================================
+
+.. currentmodule:: cardioception.PAT.scoring
+
+.. autofunction:: mad_outliers

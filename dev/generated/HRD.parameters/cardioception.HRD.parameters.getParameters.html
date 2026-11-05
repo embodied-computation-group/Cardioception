@@ -1,0 +1,601 @@
+
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="cardioception.HRD.parameters.getParameters" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html" />
+<meta property="og:site_name" content="Cardioception Toolbox" />
+<meta property="og:image:width" content="1146" />
+<meta property="og:image:height" content="600" />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_generated_HRD.parameters_cardioception.HRD.parameters.getParameters_e260f59b.png" />
+<meta property="og:image:alt" content="" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<meta name="robots" content="noindex"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="cardioception.HRD.config.TaskConfig" href="../HRD.config/cardioception.HRD.config.TaskConfig.html" /><link rel="prev" title="API" href="../../reference/api.html" />
+        <link rel="canonical" href="https://www.the-ecg.org/Cardioception/dev/generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html" />
+
+    <link rel="shortcut icon" href="../../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>cardioception.HRD.parameters.getParameters - Cardioception Toolbox</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: #1f3352;
+  --color-brand-content: #2f4b73;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     These are the docs for Cardioception 1.0, in development and not yet on PyPI. <a href="https://www.the-ecg.org/Cardioception/">The docs for the current release are here.</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">Cardioception Toolbox</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/cardioception_icon.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started/recording-devices.html">Recording devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started/running-a-session.html">Running a session</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tasks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tasks/index.html">The tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tasks/theory.html">Measuring cardiac interoception</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tasks/hrd/index.html">Heart Rate Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tasks/hrd/tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tasks/hrd/tutorials/inspecting-data.html">Inspecting and plotting an HRD session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tasks/hrd/tutorials/psychophysics.html">The psychophysical model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tasks/hrd/tutorials/hierarchical.html">Hierarchical modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tasks/hrd/tutorials/metacognition.html">Metacognition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../tasks/hrd/reports.html">HTML reports (legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tasks/hbc.html">Heartbeat Counting task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tasks/pat.html">Phase Adjustment Task</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tasks/hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tasks/hsd/design.html">HSD design and validation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tasks/whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tasks/constant-stimuli.html">Method of constant stimuli</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../reference/api.html">API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">cardioception.HRD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HRD.config/cardioception.HRD.config.TaskConfig.html">cardioception.HRD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HRD.task/cardioception.HRD.task.run.html">cardioception.HRD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HRD.task/cardioception.HRD.task.trial.html">cardioception.HRD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HRD.task/cardioception.HRD.task.tutorial.html">cardioception.HRD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HRD.task/cardioception.HRD.task.confidenceRatingTask.html">cardioception.HRD.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HRD.languages/cardioception.HRD.languages.available.html">cardioception.HRD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HRD.languages/cardioception.HRD.languages.get_texts.html">cardioception.HRD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HBC.parameters/cardioception.HBC.parameters.getParameters.html">cardioception.HBC.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HBC.task/cardioception.HBC.task.run.html">cardioception.HBC.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HBC.task/cardioception.HBC.task.tutorial.html">cardioception.HBC.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HBC.task/cardioception.HBC.task.rest.html">cardioception.HBC.task.rest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HBC.languages/cardioception.HBC.languages.available.html">cardioception.HBC.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HBC.languages/cardioception.HBC.languages.get_texts.html">cardioception.HBC.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.parameters/cardioception.PAT.parameters.getParameters.html">cardioception.PAT.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.parameters/cardioception.PAT.parameters.startPhaseSequence.html">cardioception.PAT.parameters.startPhaseSequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.task/cardioception.PAT.task.run.html">cardioception.PAT.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.task/cardioception.PAT.task.trial.html">cardioception.PAT.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.task/cardioception.PAT.task.tutorial.html">cardioception.PAT.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.task/cardioception.PAT.task.dialLoop.html">cardioception.PAT.task.dialLoop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.task/cardioception.PAT.task.confidenceRatingTask.html">cardioception.PAT.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.engine/cardioception.PAT.engine.PhaseEngine.html">cardioception.PAT.engine.PhaseEngine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.scoring/cardioception.PAT.scoring.consistency_grid.html">cardioception.PAT.scoring.consistency_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.scoring/cardioception.PAT.scoring.mean_resultant_length.html">cardioception.PAT.scoring.mean_resultant_length</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.scoring/cardioception.PAT.scoring.phase_angles.html">cardioception.PAT.scoring.phase_angles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.scoring/cardioception.PAT.scoring.monte_carlo_threshold.html">cardioception.PAT.scoring.monte_carlo_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.scoring/cardioception.PAT.scoring.extero_threshold.html">cardioception.PAT.scoring.extero_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.scoring/cardioception.PAT.scoring.mad_outliers.html">cardioception.PAT.scoring.mad_outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.languages/cardioception.PAT.languages.available.html">cardioception.PAT.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PAT.languages/cardioception.PAT.languages.get_texts.html">cardioception.PAT.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HSD.parameters/cardioception.HSD.parameters.getParameters.html">cardioception.HSD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HSD.config/cardioception.HSD.config.TaskConfig.html">cardioception.HSD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HSD.task/cardioception.HSD.task.run.html">cardioception.HSD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HSD.task/cardioception.HSD.task.trial.html">cardioception.HSD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HSD.task/cardioception.HSD.task.tutorial.html">cardioception.HSD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HSD.psi/cardioception.HSD.psi.SynchronyPsi.html">cardioception.HSD.psi.SynchronyPsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HSD.psi/cardioception.HSD.psi.gaussian_envelope.html">cardioception.HSD.psi.gaussian_envelope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HSD.psi/cardioception.HSD.psi.default_grids.html">cardioception.HSD.psi.default_grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HSD.languages/cardioception.HSD.languages.available.html">cardioception.HSD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../HSD.languages/cardioception.HSD.languages.get_texts.html">cardioception.HSD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devices/cardioception.devices.ContinuousOximeter.html">cardioception.devices.ContinuousOximeter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devices/cardioception.devices.LSLRecorder.html">cardioception.devices.LSLRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devices/cardioception.devices.ReplayRecorder.html">cardioception.devices.ReplayRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devices.beat_source/cardioception.devices.beat_source.LSLBeatSource.html">cardioception.devices.beat_source.LSLBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devices.beat_source/cardioception.devices.beat_source.VirtualBeatSource.html">cardioception.devices.beat_source.VirtualBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devices.tone_player/cardioception.devices.tone_player.TonePlayer.html">cardioception.devices.tone_player.TonePlayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scales/cardioception.scales.ConfidenceScale.html">cardioception.scales.ConfidenceScale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/cite.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/changelog.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/embodied-computation-group/Cardioception/edit/main/docs/source/generated/HRD.parameters/cardioception.HRD.parameters.getParameters.rst" title="Edit this page">
+    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+    </svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="cardioception-hrd-parameters-getparameters">
+<h1>cardioception.HRD.parameters.getParameters<a class="headerlink" href="#cardioception-hrd-parameters-getparameters" title="Permalink to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="cardioception.HRD.parameters.getParameters">
+<span class="sig-prename descclassname"><span class="pre">cardioception.HRD.parameters.</span></span><span class="sig-name descname"><span class="pre">getParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">participant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SubjectTest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'001'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialPort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'COM3'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'behavioral'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stairType</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'psi'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exteroception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchTrials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nTrials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mouse'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">screenNb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fullscr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nBreaking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resultPath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidenceScale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'english'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">systole_kw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autopilot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onMissedTrial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'represent'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxRepresentations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxHeartRateAttempts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triggers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/cardioception/HRD/parameters.html#getParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cardioception.HRD.parameters.getParameters" title="Permalink to this definition">#</a></dt>
+<dd><p>Create Heart Rate Discrimination task parameters.</p>
+<p>Many task parameters, aesthetics, and options are controlled by the
+parameters dictionary defined herein. These are intended to provide
+flexibility and modularity to task. In many cases, unique versions of the
+task (e.g., with or without confidence ratings or choice feedback) can be
+created simply by changing these parameters, with no further interaction
+with the underlying task code.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>device</strong><span class="classifier">str</span></dt><dd><p>Select how the participant provide responses. Can be <cite>‘mouse’</cite> or <cite>‘keyboard’</cite>.</p>
+</dd>
+<dt><strong>exteroception</strong><span class="classifier">bool</span></dt><dd><p>If <cite>True</cite>, the task will include an exteroceptive (half of the trials).</p>
+</dd>
+<dt><strong>fullscr</strong><span class="classifier">bool</span></dt><dd><p>If <cite>True</cite>, activate full screen mode.</p>
+</dd>
+<dt><strong>language</strong><span class="classifier">str</span></dt><dd><p>The language used for the instruction. Can be <cite>“english”</cite>, <cite>“danish”</cite>,
+<cite>“danish_children”</cite> (a slightly simplified danish version), <cite>“french”</cite> or
+<cite>“german”</cite>.</p>
+</dd>
+<dt><strong>nBreaking</strong><span class="classifier">int</span></dt><dd><p>Number of trials to run before the break.</p>
+</dd>
+<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This number indicates the total number of trials that will be presented
+during the experiment. If <cite>nTrials=50</cite> and <cite>exteroception=False</cite>, the task
+contains 50 interoceptive trials. If <cite>nTrials=50</cite> and <cite>exteroception=True</cite>,
+the task contains 25 interoceptive trials and 25 exteroceptive trials.</p>
+</div>
+</dd>
+<dt><strong>onMissedTrial</strong><span class="classifier">str</span></dt><dd><p>What to do when the participant does not respond in time. <cite>“represent”</cite>
+(the default) returns the trial to the end of the queue so the intended
+number of usable trials is collected, at the cost of a session whose
+length varies. <cite>“skip”</cite> moves on, giving a fixed number of presentations
+and a variable number of usable trials.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Under either setting the missed trial is written to the results with
+<cite>DecisionProvided=False</cite> and is <strong>not</strong> used to update the staircase.
+Before this was fixed, a missed trial entered the staircase as a
+fabricated <cite>“Less”</cite> response.</p>
+</div>
+</dd>
+<dt><strong>maxRepresentations</strong><span class="classifier">int</span></dt><dd><p>How many times in total a trial may be presented before it is abandoned,
+when <cite>onMissedTrial=”represent”</cite>. Defaults to <cite>3</cite>. Without a cap, a
+participant who stops responding would never reach the end.</p>
+</dd>
+<dt><strong>participant</strong><span class="classifier">str</span></dt><dd><p>Subject ID. Default is ‘SubjectTest’.</p>
+</dd>
+<dt><strong>catchTrials</strong><span class="classifier">float</span></dt><dd><p>Ratio of Psi trials replaced by catch trials at fixed differences, cycling
+through -30, +10, -20, +20, -10 and +30 BPM, to control for the range of
+stimuli presented. Default to <cite>0.0</cite> (no catch trials). If not <cite>0.0</cite>,
+recommended value is <cite>0.2</cite>.</p>
+</dd>
+<dt><strong>recorder</strong><span class="classifier">object | None</span></dt><dd><p>A recording device to use instead of the one <cite>setup</cite> would open, e.g.
+<a class="reference internal" href="../devices/cardioception.devices.LSLRecorder.html#cardioception.devices.LSLRecorder" title="cardioception.devices.LSLRecorder"><code class="xref py py-class docutils literal notranslate"><span class="pre">cardioception.devices.LSLRecorder</span></code></a> to read ECG from an LSL
+stream. Overrides <cite>setup</cite>’s choice of device but not its window.</p>
+</dd>
+<dt><strong>resultPath</strong><span class="classifier">str | None</span></dt><dd><p>Root directory holding every participant. Results go to
+<cite>&lt;resultPath&gt;/sub-&lt;participant&gt;/ses-&lt;session&gt;/run-&lt;timestamp&gt;/</cite>. Defaults
+to <cite>&lt;cwd&gt;/data</cite>.</p>
+</dd>
+<dt><strong>overwrite</strong><span class="classifier">bool</span></dt><dd><p>Allow writing into a run directory that already holds results. Off by
+default, so a repeated run cannot silently replace an earlier one.</p>
+</dd>
+<dt><strong>confidenceScale</strong><span class="classifier">ConfidenceScale | None</span></dt><dd><p>How confidence is collected and what its numbers mean. Defaults to a
+0-100 visual analogue scale for the mouse and ten discrete steps for the
+keyboard. See <code class="xref py py-mod docutils literal notranslate"><span class="pre">cardioception.scales</span></code>.</p>
+</dd>
+<dt><strong>screenNb</strong><span class="classifier">int</span></dt><dd><p>Screen number. Used to parametrize <code class="xref py py-class docutils literal notranslate"><span class="pre">psychopy.visual.Window</span></code>. Defaults
+to <cite>0</cite>.</p>
+</dd>
+<dt><strong>serialPort: str</strong></dt><dd><p>The USB port where the pulse oximeter is plugged. Should be written as a string
+e.g. <cite>“COM3”</cite> for USB ports on Windows.</p>
+</dd>
+<dt><strong>session</strong><span class="classifier">str</span></dt><dd><p>Session number. Default to ‘001’.</p>
+</dd>
+<dt><strong>setup</strong><span class="classifier">str</span></dt><dd><p>Context of oximeter recording. <cite>“behavioral”</cite> will record through a Nonin
+pulse oximeter and <cite>“test”</cite> will use pre-recorded pulse time series (for
+testing only).</p>
+</dd>
+<dt><strong>stairType</strong><span class="classifier">str</span></dt><dd><p>Staircase type. <cite>“psi”</cite> is the only value; <cite>“updown”</cite> was removed in
+1.0.0 and now raises. Kept as an argument so scripts passing it fail
+with an explanation rather than a TypeError.</p>
+</dd>
+<dt><strong>systole_kw</strong><span class="classifier">dict</span></dt><dd><p>Additional keyword arguments for <code class="xref py py-class docutils literal notranslate"><span class="pre">systole.recording.Oximeter</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When using the <cite>behavioral</cite> setup, triggers will be sent to the PPG  recording. The
+trigger channel is coding for different events during the task as follows:</p>
+<ul class="simple">
+<li><p>1: trial start</p></li>
+<li><p>2: listening window opens</p></li>
+<li><p>3: tone starts, decision begins</p></li>
+<li><p>4: confidence rating begins</p></li>
+<li><p>5: trial end</p></li>
+</ul>
+<p>See <code class="xref py py-class docutils literal notranslate"><span class="pre">cardioception.HRD._constants.Trigger</span></code>. The Heartbeat Counting
+task writes different meanings to the same channel, so a recording has to be
+read knowing which task produced it.</p>
+<p>Every one of these except the trial start also has a timestamp in the
+behavioural results.</p>
+<dl class="field-list">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl>
+<dt><strong>allowedKeys</strong><span class="classifier">list of str</span></dt><dd><p>The possible response keys.</p>
+</dd>
+<dt><strong>confidenceScale</strong><span class="classifier"><a class="reference internal" href="../scales/cardioception.scales.ConfidenceScale.html#cardioception.scales.ConfidenceScale" title="cardioception.scales.ConfidenceScale"><code class="xref py py-class docutils literal notranslate"><span class="pre">cardioception.scales.ConfidenceScale</span></code></a></span></dt><dd><p>The confidence scale in use, and the meaning of its numbers.</p>
+</dd>
+<dt><strong>device</strong><span class="classifier">str</span></dt><dd><p>The device used for response and rating scale. Can be <cite>“keyboard”</cite> or
+<cite>“mouse”</cite>.</p>
+</dd>
+<dt><strong>HRcutOff</strong><span class="classifier">list</span></dt><dd><p>Cut off for extreme heart rate values during recording.</p>
+</dd>
+<dt><strong>ExteroCondition</strong><span class="classifier">bool</span></dt><dd><p>If <cite>True</cite>, the task includes an exteroceptive (half of the trials).</p>
+</dd>
+<dt><strong>isi</strong><span class="classifier">tuple</span></dt><dd><p>Range of the inter-stimulus interval (seconds). Should be in the form of (low,
+high). At each trial the value is generated using a uniform distribution
+between these two values. Default is set to <cite>(0.25, 0.25)</cite> so the value is
+fixed at <cite>0.25</cite>.</p>
+</dd>
+<dt><strong>labelsRating</strong><span class="classifier">list</span></dt><dd><p>The labels of the confidence rating scale.</p>
+</dd>
+<dt><strong>listenLogo, heartLogo</strong><span class="classifier">Psychopy visual instance</span></dt><dd><p>Image used for the inference and recording phases, respectively.</p>
+</dd>
+<dt><strong>maxRatingTime</strong><span class="classifier">float</span></dt><dd><p>The maximum time for a confidence rating (in seconds).</p>
+</dd>
+<dt><strong>minRatingTime</strong><span class="classifier">float</span></dt><dd><p>The minimum time before a rating can be provided during the confidence
+rating (in seconds).</p>
+</dd>
+<dt><strong>monitor</strong><span class="classifier">str</span></dt><dd><p>The monitor used to present the task (Psychopy parameter).</p>
+</dd>
+<dt><strong>nBreaking</strong><span class="classifier">int</span></dt><dd><p>Number of trials to run before the break.</p>
+</dd>
+<dt><strong>nConfidence</strong><span class="classifier">int</span></dt><dd><p>Number of tutorial trials that ask for a confidence rating.</p>
+</dd>
+<dt><strong>nFeedback</strong><span class="classifier">int</span></dt><dd><p>Number of tutorial trials that show whether the answer was correct.</p>
+</dd>
+<dt><strong>nFinger</strong><span class="classifier">str or None</span></dt><dd><p>The finger number (“1”, “2”, “3”, “4” or “5”) where the participant
+decided to place the pulse oximeter (if relevant).</p>
+</dd>
+<dt><strong>nTrials</strong><span class="classifier">int</span></dt><dd><p>The number of trials to run. See the parameter of the same name.</p>
+</dd>
+<dt><strong>participant</strong><span class="classifier">str</span></dt><dd><p>Subject ID. Default is ‘SubjectTest’.</p>
+</dd>
+<dt><strong>path</strong><span class="classifier">str</span></dt><dd><p>The task working directory.</p>
+</dd>
+<dt><strong>resultPath</strong><span class="classifier">str | None</span></dt><dd><p>Where to save the results.</p>
+</dd>
+<dt><strong>screenNb</strong><span class="classifier">int</span></dt><dd><p>The screen number (Psychopy parameter). Default set to 0.</p>
+</dd>
+<dt><strong>signal_df</strong><span class="classifier">pandas.DataFrame instance</span></dt><dd><p>Dataframe where the pulse signal recorded during the interoception
+condition will be stored.</p>
+</dd>
+<dt><strong>stairCase</strong><span class="classifier">dict</span></dt><dd><p>One <cite>psychopy.data.PsiHandler</cite> per modality, keyed <cite>‘Intero’</cite> and,
+when the exteroceptive condition is included, <cite>‘Extero’</cite>.</p>
+</dd>
+<dt><strong>staircaseType</strong><span class="classifier">1d array-like</span></dt><dd><p>Which staircase drives each trial: <cite>‘psi’</cite> or <cite>‘CatchTrial’</cite>.</p>
+</dd>
+<dt><strong>startKey</strong><span class="classifier">str</span></dt><dd><p>The key to press to start the task and go to next steps.</p>
+</dd>
+<dt><strong>response_keys</strong><span class="classifier">dict</span></dt><dd><p>Mapping from trial conditions to keyboard response keys.</p>
+</dd>
+<dt><strong>respMax</strong><span class="classifier">float</span></dt><dd><p>The maximum time for decision (in seconds).</p>
+</dd>
+<dt><strong>session</strong><span class="classifier">str</span></dt><dd><p>Session number. Default to ‘001’.</p>
+</dd>
+<dt><strong>setup</strong><span class="classifier">str</span></dt><dd><p>The context of recording. Can be <cite>‘behavioral’</cite> or <cite>‘test’</cite>.</p>
+</dd>
+<dt><strong>texts</strong><span class="classifier">dict</span></dt><dd><p>Long text elements.</p>
+</dd>
+<dt><strong>textSize</strong><span class="classifier">float</span></dt><dd><p>Scaling parameter for text size.</p>
+</dd>
+<dt><strong>triggers</strong><span class="classifier">dict</span></dt><dd><p>Dictionary {str, callable or None}. The function will be executed
+before the corresponding trial sequence. The default values are
+<cite>None</cite> (no trigger sent).</p>
+<ul class="simple">
+<li><p><cite>“trialStart”</cite></p></li>
+<li><p><cite>“trialStop”</cite></p></li>
+<li><p><cite>“listeningStart”</cite></p></li>
+<li><p><cite>“listeningStop”</cite></p></li>
+<li><p><cite>“decisionStart”</cite></p></li>
+<li><p><cite>“decisionStop”</cite></p></li>
+<li><p><cite>“confidenceStart”</cite></p></li>
+<li><p><cite>“confidenceStop”</cite></p></li>
+</ul>
+</dd>
+<dt><strong>win</strong><span class="classifier"><cite>psychopy.visual.window</cite></span></dt><dd><p>The window in which to draw objects.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../HRD.config/cardioception.HRD.config.TaskConfig.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">cardioception.HRD.config.TaskConfig</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../../reference/api.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">API</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2019-2026, Micah Allen and the Embodied Computation Group, Aarhus University
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/embodied-computation-group/Cardioception" aria-label="GitHub"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg></a>
+              <a class="muted-link " href="https://pypi.org/project/cardioception-toolbox/" aria-label="PyPI"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path d="M8.878.392a1.75 1.75 0 0 0-1.756 0l-5.25 3.045A1.75 1.75 0 0 0 1 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 0 0 1.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514ZM7.875 1.69a.25.25 0 0 1 .25 0l4.63 2.685L8 7.133 3.245 4.375Zm-5.375 9.36V5.677l4.75 2.755v5.339l-4.626-2.683a.25.25 0 0 1-.124-.216Zm6.25 2.755V8.432l4.75-2.755v5.372a.25.25 0 0 1-.124.216Z"></path></svg></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cardioception.HRD.parameters.getParameters</a><ul>
+<li><a class="reference internal" href="#cardioception.HRD.parameters.getParameters"><code class="docutils literal notranslate"><span class="pre">getParameters()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    </body>
+</html>

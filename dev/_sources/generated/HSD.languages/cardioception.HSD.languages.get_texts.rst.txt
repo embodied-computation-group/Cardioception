@@ -1,0 +1,6 @@
+﻿cardioception.HSD.languages.get\_texts
+======================================
+
+.. currentmodule:: cardioception.HSD.languages
+
+.. autofunction:: get_texts

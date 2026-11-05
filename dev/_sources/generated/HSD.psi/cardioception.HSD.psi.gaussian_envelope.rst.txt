@@ -1,0 +1,6 @@
+﻿cardioception.HSD.psi.gaussian\_envelope
+========================================
+
+.. currentmodule:: cardioception.HSD.psi
+
+.. autofunction:: gaussian_envelope

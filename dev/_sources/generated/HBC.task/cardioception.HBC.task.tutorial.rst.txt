@@ -1,0 +1,6 @@
+﻿cardioception.HBC.task.tutorial
+===============================
+
+.. currentmodule:: cardioception.HBC.task
+
+.. autofunction:: tutorial

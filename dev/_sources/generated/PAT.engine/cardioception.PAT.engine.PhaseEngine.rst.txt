@@ -1,0 +1,39 @@
+﻿cardioception.PAT.engine.PhaseEngine
+====================================
+
+.. currentmodule:: cardioception.PAT.engine
+
+.. autoclass:: PhaseEngine
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PhaseEngine.__init__
+      ~PhaseEngine.close
+      ~PhaseEngine.end_trial
+      ~PhaseEngine.idle_poll
+      ~PhaseEngine.mark
+      ~PhaseEngine.nudge
+      ~PhaseEngine.poll
+      ~PhaseEngine.start_trial
+      ~PhaseEngine.stop_tones
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PhaseEngine.delay_ms
+      ~PhaseEngine.phase_deg
+      ~PhaseEngine.tones
+      ~PhaseEngine.counts
+   
+   

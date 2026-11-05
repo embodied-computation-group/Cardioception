@@ -1,0 +1,6 @@
+﻿cardioception.PAT.task.dialLoop
+===============================
+
+.. currentmodule:: cardioception.PAT.task
+
+.. autofunction:: dialLoop

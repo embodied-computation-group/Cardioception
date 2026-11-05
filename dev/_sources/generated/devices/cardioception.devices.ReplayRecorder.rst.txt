@@ -1,0 +1,33 @@
+﻿cardioception.devices.ReplayRecorder
+====================================
+
+.. currentmodule:: cardioception.devices
+
+.. autoclass:: ReplayRecorder
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ReplayRecorder.__init__
+      ~ReplayRecorder.close
+      ~ReplayRecorder.read
+      ~ReplayRecorder.readInWaiting
+      ~ReplayRecorder.save
+      ~ReplayRecorder.setup
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ReplayRecorder.trigger_codes
+   
+   

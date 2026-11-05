@@ -1,0 +1,30 @@
+﻿cardioception.devices.LSLRecorder
+=================================
+
+.. currentmodule:: cardioception.devices
+
+.. autoclass:: LSLRecorder
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LSLRecorder.__init__
+      ~LSLRecorder.close
+      ~LSLRecorder.describe
+      ~LSLRecorder.read
+      ~LSLRecorder.readInWaiting
+      ~LSLRecorder.reset
+      ~LSLRecorder.save
+      ~LSLRecorder.setup
+      ~LSLRecorder.waitBeat
+   
+   
+
+   
+   
+   

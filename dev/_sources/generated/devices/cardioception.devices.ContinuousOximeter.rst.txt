@@ -1,0 +1,36 @@
+﻿cardioception.devices.ContinuousOximeter
+========================================
+
+.. currentmodule:: cardioception.devices
+
+.. autoclass:: ContinuousOximeter
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ContinuousOximeter.__init__
+      ~ContinuousOximeter.add_paquet
+      ~ContinuousOximeter.read
+      ~ContinuousOximeter.reset
+      ~ContinuousOximeter.save
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ContinuousOximeter.times
+      ~ContinuousOximeter.diff
+      ~ContinuousOximeter.peaks
+      ~ContinuousOximeter.instant_rr
+      ~ContinuousOximeter.recording
+   
+   

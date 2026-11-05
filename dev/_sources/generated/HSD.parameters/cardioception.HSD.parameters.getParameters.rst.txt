@@ -1,0 +1,6 @@
+﻿cardioception.HSD.parameters.getParameters
+==========================================
+
+.. currentmodule:: cardioception.HSD.parameters
+
+.. autofunction:: getParameters

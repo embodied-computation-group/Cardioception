@@ -1,0 +1,75 @@
+---
+myst:
+  html_meta:
+    description: "Tutorials for analyzing Heart Rate Discrimination data: inspecting trial data, fitting psychophysical models and hierarchical Bayesian metacognition models."
+    keywords: "heart rate discrimination analysis, psychophysics tutorial, hierarchical Bayesian model, meta-d', metacognition, interoception"
+---
+
+# Tutorials
+
+Author: Micah G. Allen
+
+Working with Heart Rate Discrimination data, from opening the files the task
+wrote through to hierarchical models of psychophysical choices and confidence.
+
+Read them in order if the whole workflow is new to you. They build on each other:
+each one assumes the data preparation from the one before.
+
+| Tutorial | What it covers |
+|---|---|
+| [Inspecting and plotting data](inspecting-data.md) | Reading task files and checking a session's stimuli, choices, timing, confidence, heart rate, and Psi posterior. In Python and R. |
+| [The psychophysical model](psychophysics.md) | What threshold, slope and lapse rate are, and fitting one participant. |
+| [Hierarchical modelling](hierarchical.md) | Fitting psychometric functions for everyone at once, and testing covariates and group effects. |
+| [Metacognition](metacognition.md) | Fitting a hierarchical ordered beta model of confidence bias and metacognitive calibration. |
+
+## What you need
+
+Data inspection works in either Python or R. **Model fitting is done in R**, with
+[brms](https://paulbuerkner.com/brms/) and a Stan backend, using the
+[Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception).
+
+The modelling tutorials assume you have met brms before: that a formula like
+`y ~ x + (x | subject)` means something to you, and that you know roughly what a
+posterior is. If that is new, the
+[brms vignettes](https://paulbuerkner.com/brms/articles/) and
+[Bürkner (2017)](https://doi.org/10.18637/jss.v080.i01) are the place to start,
+and you will get much more out of these pages afterwards.
+
+Nothing here assumes you know psychophysics.
+
+## These pages do not fit models
+
+The models take hours to sample. A page you are reading cannot wait for that, so
+the tutorials show the code and then load results that were fitted in advance.
+
+The scripts that produced those results live in
+[`tutorials/`](https://github.com/embodied-computation-group/Cardioception/tree/main/tutorials)
+in the repository, and they run on an ordinary machine. If you want to reproduce
+a fit rather than read about it, start there. Every number quoted in these pages
+came out of those scripts.
+
+## The example data
+
+The figures come from the Visceral Mind Project {cite:p}`2026:banellis`. Its
+trial data are public as `data/raw_hrd.csv` in the
+[Hierarchical Interoception repository](https://github.com/embodied-computation-group/Hierarchical-Interoception),
+and the tutorials use 512 of its participants, each completing the HRD in two
+conditions, with age, gender and BMI recorded. That is a larger sample than most
+studies will have, which is deliberate: it makes the group-level structure visible.
+The methods apply unchanged to a sample of thirty.
+
+## Citing
+
+Cite [Courtin et al. (2026)](https://doi.org/10.3758/s13428-026-03137-3) for the
+models and the priors, and Cardioception for the data collection. See the
+[cite page](../../../reference/cite.md) for the full references.
+
+```{toctree}
+---
+hidden:
+---
+inspecting-data.md
+psychophysics.md
+hierarchical.md
+metacognition.md
+```

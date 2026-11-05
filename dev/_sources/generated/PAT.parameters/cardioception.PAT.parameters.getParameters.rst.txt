@@ -1,0 +1,6 @@
+﻿cardioception.PAT.parameters.getParameters
+==========================================
+
+.. currentmodule:: cardioception.PAT.parameters
+
+.. autofunction:: getParameters

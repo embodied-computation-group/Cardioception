@@ -1,0 +1,6 @@
+﻿cardioception.HRD.task.confidenceRatingTask
+===========================================
+
+.. currentmodule:: cardioception.HRD.task
+
+.. autofunction:: confidenceRatingTask

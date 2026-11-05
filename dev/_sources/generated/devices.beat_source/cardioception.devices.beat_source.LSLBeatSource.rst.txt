@@ -1,0 +1,36 @@
+﻿cardioception.devices.beat\_source.LSLBeatSource
+================================================
+
+.. currentmodule:: cardioception.devices.beat_source
+
+.. autoclass:: LSLBeatSource
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LSLBeatSource.__init__
+      ~LSLBeatSource.poll
+      ~LSLBeatSource.start
+      ~LSLBeatSource.stop
+      ~LSLBeatSource.wait_next_beat
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~LSLBeatSource.period
+      ~LSLBeatSource.virtual
+      ~LSLBeatSource.n_rejected
+      ~LSLBeatSource.n_samples
+      ~LSLBeatSource.last_sample_time
+   
+   

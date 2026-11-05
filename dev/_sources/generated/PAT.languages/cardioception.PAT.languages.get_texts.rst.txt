@@ -1,0 +1,6 @@
+﻿cardioception.PAT.languages.get\_texts
+======================================
+
+.. currentmodule:: cardioception.PAT.languages
+
+.. autofunction:: get_texts

@@ -1,0 +1,44 @@
+﻿cardioception.scales.ConfidenceScale
+====================================
+
+.. currentmodule:: cardioception.scales
+
+.. autoclass:: ConfidenceScale
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ConfidenceScale.__init__
+      ~ConfidenceScale.believes_correct
+      ~ConfidenceScale.clamp
+      ~ConfidenceScale.describe
+      ~ConfidenceScale.from_unit
+      ~ConfidenceScale.magnitude
+      ~ConfidenceScale.to_unit
+      ~ConfidenceScale.with_labels
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ConfidenceScale.bounds
+      ~ConfidenceScale.granularity
+      ~ConfidenceScale.high
+      ~ConfidenceScale.kind
+      ~ConfidenceScale.labels
+      ~ConfidenceScale.low
+      ~ConfidenceScale.midpoint
+      ~ConfidenceScale.n_levels
+      ~ConfidenceScale.signed
+      ~ConfidenceScale.ticks
+   
+   

@@ -1,0 +1,6 @@
+﻿cardioception.PAT.task.confidenceRatingTask
+===========================================
+
+.. currentmodule:: cardioception.PAT.task
+
+.. autofunction:: confidenceRatingTask

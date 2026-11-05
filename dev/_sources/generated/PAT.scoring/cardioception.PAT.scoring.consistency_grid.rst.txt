@@ -1,0 +1,6 @@
+﻿cardioception.PAT.scoring.consistency\_grid
+===========================================
+
+.. currentmodule:: cardioception.PAT.scoring
+
+.. autofunction:: consistency_grid

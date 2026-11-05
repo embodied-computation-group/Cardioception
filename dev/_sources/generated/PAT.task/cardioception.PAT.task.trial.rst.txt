@@ -1,0 +1,6 @@
+﻿cardioception.PAT.task.trial
+============================
+
+.. currentmodule:: cardioception.PAT.task
+
+.. autofunction:: trial

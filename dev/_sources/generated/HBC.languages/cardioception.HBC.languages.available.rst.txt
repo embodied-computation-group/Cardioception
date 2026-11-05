@@ -1,0 +1,6 @@
+﻿cardioception.HBC.languages.available
+=====================================
+
+.. currentmodule:: cardioception.HBC.languages
+
+.. autofunction:: available

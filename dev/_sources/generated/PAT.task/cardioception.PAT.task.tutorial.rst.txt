@@ -1,0 +1,6 @@
+﻿cardioception.PAT.task.tutorial
+===============================
+
+.. currentmodule:: cardioception.PAT.task
+
+.. autofunction:: tutorial

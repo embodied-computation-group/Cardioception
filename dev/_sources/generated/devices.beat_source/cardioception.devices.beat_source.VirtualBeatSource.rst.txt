@@ -1,0 +1,33 @@
+﻿cardioception.devices.beat\_source.VirtualBeatSource
+====================================================
+
+.. currentmodule:: cardioception.devices.beat_source
+
+.. autoclass:: VirtualBeatSource
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~VirtualBeatSource.__init__
+      ~VirtualBeatSource.poll
+      ~VirtualBeatSource.start
+      ~VirtualBeatSource.stop
+      ~VirtualBeatSource.wait_next_beat
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~VirtualBeatSource.period
+      ~VirtualBeatSource.virtual
+   
+   

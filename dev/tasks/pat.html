@@ -1,0 +1,814 @@
+
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta content="The Phase Adjustment Task (PAT) in Cardioception: an ECG-triggered heartbeat synchrony task over LSL, what a trial looks like, how to run it, its output files, scoring and timing." name="description" />
+<meta content="phase adjustment task, PAT, PAT-ECG, heartbeat perception, cardiac interoception, mean resultant length, ECG, LSL, cardioception" name="keywords" />
+<meta property="og:title" content="Phase Adjustment Task" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/tasks/pat.html" />
+<meta property="og:site_name" content="Cardioception Toolbox" />
+<meta property="og:description" content="The Phase Adjustment Task (PAT)[ Plans et al., 2021] measures how consistently a person can place a tone at the same point of their own cardiac cycle. Participants hear one tone per heartbeat and t..." />
+<meta property="og:image:width" content="1146" />
+<meta property="og:image:height" content="600" />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_pat_4393e6f7.png" />
+<meta property="og:image:alt" content="The Phase Adjustment Task (PAT)[ Plans et al., 2021] measures how consistently a person can place a tone at the same point of their own cardiac cycle. Partic..." />
+<meta name="twitter:card" content="summary_large_image" />
+
+<meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Heartbeat Synchrony Discrimination task" href="hsd/index.html" /><link rel="prev" title="Heartbeat Counting task" href="hbc.html" />
+        <link rel="canonical" href="https://www.the-ecg.org/Cardioception/dev/tasks/pat.html" />
+
+    <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>Phase Adjustment Task - Cardioception Toolbox</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: #1f3352;
+  --color-brand-content: #2f4b73;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     These are the docs for Cardioception 1.0, in development and not yet on PyPI. <a href="https://www.the-ecg.org/Cardioception/">The docs for the current release are here.</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Cardioception Toolbox</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/cardioception_icon.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started/recording-devices.html">Recording devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started/running-a-session.html">Running a session</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tasks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">The tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Measuring cardiac interoception</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="hrd/index.html">Heart Rate Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="hrd/tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="hrd/tutorials/inspecting-data.html">Inspecting and plotting an HRD session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hrd/tutorials/psychophysics.html">The psychophysical model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hrd/tutorials/hierarchical.html">Hierarchical modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hrd/tutorials/metacognition.html">Metacognition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hrd/reports.html">HTML reports (legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hbc.html">Heartbeat Counting task</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Phase Adjustment Task</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="hsd/design.html">HSD design and validation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constant-stimuli.html">Method of constant stimuli</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html">cardioception.HRD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.config/cardioception.HRD.config.TaskConfig.html">cardioception.HRD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.task/cardioception.HRD.task.run.html">cardioception.HRD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.task/cardioception.HRD.task.trial.html">cardioception.HRD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.task/cardioception.HRD.task.tutorial.html">cardioception.HRD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.task/cardioception.HRD.task.confidenceRatingTask.html">cardioception.HRD.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.languages/cardioception.HRD.languages.available.html">cardioception.HRD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.languages/cardioception.HRD.languages.get_texts.html">cardioception.HRD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html">cardioception.HBC.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.task/cardioception.HBC.task.run.html">cardioception.HBC.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.task/cardioception.HBC.task.tutorial.html">cardioception.HBC.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.task/cardioception.HBC.task.rest.html">cardioception.HBC.task.rest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.languages/cardioception.HBC.languages.available.html">cardioception.HBC.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.languages/cardioception.HBC.languages.get_texts.html">cardioception.HBC.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.parameters/cardioception.PAT.parameters.getParameters.html">cardioception.PAT.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.parameters/cardioception.PAT.parameters.startPhaseSequence.html">cardioception.PAT.parameters.startPhaseSequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.task/cardioception.PAT.task.run.html">cardioception.PAT.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.task/cardioception.PAT.task.trial.html">cardioception.PAT.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.task/cardioception.PAT.task.tutorial.html">cardioception.PAT.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.task/cardioception.PAT.task.dialLoop.html">cardioception.PAT.task.dialLoop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.task/cardioception.PAT.task.confidenceRatingTask.html">cardioception.PAT.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.engine/cardioception.PAT.engine.PhaseEngine.html">cardioception.PAT.engine.PhaseEngine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.consistency_grid.html">cardioception.PAT.scoring.consistency_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.mean_resultant_length.html">cardioception.PAT.scoring.mean_resultant_length</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.phase_angles.html">cardioception.PAT.scoring.phase_angles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.monte_carlo_threshold.html">cardioception.PAT.scoring.monte_carlo_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.extero_threshold.html">cardioception.PAT.scoring.extero_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.mad_outliers.html">cardioception.PAT.scoring.mad_outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.languages/cardioception.PAT.languages.available.html">cardioception.PAT.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.languages/cardioception.PAT.languages.get_texts.html">cardioception.PAT.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.parameters/cardioception.HSD.parameters.getParameters.html">cardioception.HSD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.config/cardioception.HSD.config.TaskConfig.html">cardioception.HSD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.task/cardioception.HSD.task.run.html">cardioception.HSD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.task/cardioception.HSD.task.trial.html">cardioception.HSD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.task/cardioception.HSD.task.tutorial.html">cardioception.HSD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.psi/cardioception.HSD.psi.SynchronyPsi.html">cardioception.HSD.psi.SynchronyPsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.psi/cardioception.HSD.psi.gaussian_envelope.html">cardioception.HSD.psi.gaussian_envelope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.psi/cardioception.HSD.psi.default_grids.html">cardioception.HSD.psi.default_grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.languages/cardioception.HSD.languages.available.html">cardioception.HSD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.languages/cardioception.HSD.languages.get_texts.html">cardioception.HSD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices/cardioception.devices.ContinuousOximeter.html">cardioception.devices.ContinuousOximeter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices/cardioception.devices.LSLRecorder.html">cardioception.devices.LSLRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices/cardioception.devices.ReplayRecorder.html">cardioception.devices.ReplayRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices.beat_source/cardioception.devices.beat_source.LSLBeatSource.html">cardioception.devices.beat_source.LSLBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices.beat_source/cardioception.devices.beat_source.VirtualBeatSource.html">cardioception.devices.beat_source.VirtualBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices.tone_player/cardioception.devices.tone_player.TonePlayer.html">cardioception.devices.tone_player.TonePlayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/scales/cardioception.scales.ConfidenceScale.html">cardioception.scales.ConfidenceScale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/cite.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/changelog.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/embodied-computation-group/Cardioception/edit/main/docs/source/tasks/pat.md" title="Edit this page">
+    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+    </svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="phase-adjustment-task">
+<h1>Phase Adjustment Task<a class="headerlink" href="#phase-adjustment-task" title="Permalink to this heading">#</a></h1>
+<p>The Phase Adjustment Task (PAT) <span id="id1">[<a class="reference internal" href="../reference/references.html#id41" title="David Plans, Sonia Ponzo, Davide Morelli, Massimo Cairo, Christopher Ring, Connor T. Keating, Adam C. Cunningham, Caroline Catmur, Jennifer Murphy, and Geoffrey Bird. Measuring interoception: the phase adjustment task. Biological Psychology, 165:108171, 2021. doi:10.1016/j.biopsycho.2021.108171.">Plans <em>et al.</em>, 2021</a>]</span> measures how consistently a person can place a tone at the same point of their own cardiac cycle. Participants hear one tone per heartbeat and turn a dial until tone and heartbeat feel simultaneous. There is no correct answer on a single trial: what is scored is whether the choices cluster at one phase of the cycle across trials, more than they would by chance.</p>
+<p>Cardioception’s version follows the ECG-based implementation of <span id="id2">Hodgetts <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id43" title="James Hodgetts, Germano Gallicchio, Shaun Mckiernan, Christopher Ring, Jennifer Murphy, and Andrew Cooke. The electrocardiogram-based phase adjustment task (PAT-ECG): an open-access laboratory test of cardiac interoceptive accuracy. Psychophysiology, 63(10):e70415, 2026. doi:10.1111/psyp.70415.">2026</a>]</span> (PAT-ECG), which triggers the tones from the R-wave rather than from a finger pulse, adds a phase mode and an exteroceptive control task, and scores every participant on a grid of eight consistency measures. The PAT 2.0 refinements of <span id="id3">Palmer <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id42" title="Ren Palmer, Jennifer Murphy, Jonathan M. Bird, Rosie Donaghy, Tom Piercy, Kiera L. Adams, Connor T. Keating, Rachel Tam, David Plans, Davide Morelli, Adam Cunningham, and Geoffrey Bird. Refinements of the phase adjustment task (PAT 2.0). Frontiers in Psychology, 17:1677186, 2026. doi:10.3389/fpsyg.2026.1677186.">2026</a>]</span> provide the fixed-mapping score and the Monte Carlo thresholds.</p>
+<div class="warning admonition">
+<p class="admonition-title">Beta</p>
+<p>The PAT module is close to feature complete and still being validated. The original PAT-ECG uses a hardware R-wave trigger and a Teensy microcontroller; this port detects the R-wave in software, which changes the timing budget. Read <a class="reference internal" href="#timing-and-latency">timing and latency</a> before you plan a study.</p>
+</div>
+<section id="what-a-trial-looks-like">
+<h2>What a trial looks like<a class="headerlink" href="#what-a-trial-looks-like" title="Permalink to this heading">#</a></h2>
+<p>The task listens for the heartbeat, then plays a 1000 Hz tone on every beat at the dial’s current delay after the R-wave. The participant rolls the mouse wheel to move the tone earlier or later until tone and heartbeat feel simultaneous, then presses space. They then rate their confidence from 1 (“Not at all”) to 10 (“Extremely”). The dial starts each trial at one of four phases (0, 90, 180 or 270 degrees), drawn in shuffled blocks of four without an immediate repeat, so a remembered dial position does not help.</p>
+<figure class="align-default" id="id9">
+<img alt="Three screens of a PAT trial, &quot;Listening for your heartbeat&quot; with a fixation cross; the adjustment screen with a ring and pointer around the cross; and a confidence scale from Not at all to Extremely." src="../_images/pat_trial.png" />
+<figcaption>
+<p><span class="caption-text">One PAT trial, from screenshots of the running task. The ring and pointer show the dial; <code class="docutils literal notranslate"><span class="pre">showDial=False</span></code> hides them.</span><a class="headerlink" href="#id9" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Each trial yields a chosen delay <code class="docutils literal notranslate"><span class="pre">d</span></code> (ms from the R-wave to the tone), a heart period <code class="docutils literal notranslate"><span class="pre">p</span></code> (ms) and a confidence rating <code class="docutils literal notranslate"><span class="pre">w</span></code>. The delay becomes a phase angle <code class="docutils literal notranslate"><span class="pre">theta</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">pi</span> <span class="pre">d</span> <span class="pre">/</span> <span class="pre">p</span></code>, and consistency is the mean resultant length (MRL) of the angles over trials:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">R</span>   <span class="o">=</span> <span class="o">|</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">n</span><span class="p">)</span> <span class="n">sum_r</span> <span class="n">exp</span><span class="p">(</span><span class="n">i</span> <span class="n">theta_r</span><span class="p">)</span> <span class="o">|</span>
+<span class="n">R_w</span> <span class="o">=</span> <span class="o">|</span> <span class="n">sum_r</span> <span class="n">w_r</span> <span class="n">exp</span><span class="p">(</span><span class="n">i</span> <span class="n">theta_r</span><span class="p">)</span> <span class="o">|</span> <span class="o">/</span> <span class="n">sum_r</span> <span class="n">w_r</span>      <span class="p">(</span><span class="n">confidence</span><span class="o">-</span><span class="n">weighted</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">R</span></code> runs from 0 (choices spread evenly round the cycle) to 1 (every trial at the same phase). Someone who feels their heartbeat at a stable moment, and can match a tone to it, should score high. Someone guessing should score near the chance level for their number of trials, about 0.33 for 28.</p>
+<p>A session runs the instructions, a tutorial, 8 practice trials and 28 main trials, with a break every 10. The PAT-ECG study took about 30 minutes for this, and about 10 for the exteroceptive control with the same trial counts. Between 15 and 20 trials already separate consistent responders from chance; gains beyond 20 are small <span id="id4">[<a class="reference internal" href="../reference/references.html#id42" title="Ren Palmer, Jennifer Murphy, Jonathan M. Bird, Rosie Donaghy, Tom Piercy, Kiera L. Adams, Connor T. Keating, Rachel Tam, David Plans, Davide Morelli, Adam Cunningham, and Geoffrey Bird. Refinements of the phase adjustment task (PAT 2.0). Frontiers in Psychology, 17:1677186, 2026. doi:10.3389/fpsyg.2026.1677186.">Palmer <em>et al.</em>, 2026</a>]</span>.</p>
+</section>
+<section id="what-you-need">
+<h2>What you need<a class="headerlink" href="#what-you-need" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>An ECG streamed over Lab Streaming Layer. Install the dependency with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cardioception-toolbox[lsl]</span></code>. For a PLUX hub, <a class="reference internal" href="../getting-started/recording-devices.html#a-plux-hub"><span class="std std-ref">Recording devices</span></a> covers the bridge, the channel label and the electrodes.</p></li>
+<li><p>Headphones or speakers on the stimulus PC. Tones are 1000 Hz, 30 ms, with 5 ms ramps, on the left channel, played through PsychPortAudio at latency class 1, which reports the true onset of every tone.</p></li>
+<li><p>A mouse with a wheel, held in the dominant hand. The left and right arrow keys move the dial too. Space, with the other hand, ends the trial.</p></li>
+<li><p>For the exteroceptive control only, a vibrotactile transducer (Dayton Audio TT25-16 or similar) driven from the right audio channel through a small amplifier. Tone and vibration come from one stereo stream, so they are locked to the sample. The burst is silent unless <code class="docutils literal notranslate"><span class="pre">vibrationVolume</span></code> is raised above 0, so ordinary speakers never carry it. The tactor also buzzes faintly, which is expected.</p></li>
+<li><p><a class="reference external" href="https://github.com/labstreaminglayer/App-LabRecorder">LabRecorder</a>, recording the ECG stream and the task’s <code class="docutils literal notranslate"><span class="pre">PAT</span></code> marker stream, so the ECG and every beat, tone and key press land on one clock in one XDF file.</p></li>
+</ul>
+</section>
+<section id="running-it">
+<h2>Running it<a class="headerlink" href="#running-it" title="Permalink to this heading">#</a></h2>
+<p>Start the PLUX bridge and LabRecorder, then run <code class="docutils literal notranslate"><span class="pre">wrappers/pat_lsl.py</span></code> or your copy of it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">pat_lsl</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>A dialog asks for:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>What it sets</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>participant</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Participant</span></code></p></td>
+<td><p>The participant identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p>session</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PAT</span></code></p></td>
+<td><p>The session identifier; <code class="docutils literal notranslate"><span class="pre">Extero</span></code> is appended for the exteroceptive run</p></td>
+</tr>
+<tr class="row-even"><td><p>LSL stream</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PLUX</span></code></p></td>
+<td><p>The name of the ECG stream</p></td>
+</tr>
+<tr class="row-odd"><td><p>Channel</p></td>
+<td><p>none</p></td>
+<td><p>The label of the ECG channel. It must be given, unless the exteroceptive variant is ticked</p></td>
+</tr>
+<tr class="row-even"><td><p>Mode</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">relative</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">relative</span></code> or <code class="docutils literal notranslate"><span class="pre">absolute</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Extero (vibration)</p></td>
+<td><p>off</p></td>
+<td><p>Run the exteroceptive variant, which needs no ECG</p></td>
+</tr>
+<tr class="row-even"><td><p>Language</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">english</span></code></p></td>
+<td><p>The instructions, <code class="docutils literal notranslate"><span class="pre">english</span></code> or <code class="docutils literal notranslate"><span class="pre">danish</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The same in a script, with the channel your stream has:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.devices</span><span class="w"> </span><span class="kn">import</span> <span class="n">LSLRecorder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.PAT.parameters</span><span class="w"> </span><span class="kn">import</span> <span class="n">getParameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.PAT.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
+
+<span class="c1"># The task opens its own "PAT" marker stream, so the recorder opens none</span>
+<span class="n">recorder</span> <span class="o">=</span> <span class="n">LSLRecorder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"PLUX"</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">"ECG1"</span><span class="p">,</span> <span class="n">signal_type</span><span class="o">=</span><span class="s2">"ecg"</span><span class="p">,</span> <span class="n">marker_stream</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">getParameters</span><span class="p">(</span><span class="n">participant</span><span class="o">=</span><span class="s2">"sub01"</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s2">"001"</span><span class="p">,</span> <span class="n">recorder</span><span class="o">=</span><span class="n">recorder</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"relative"</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">runTutorial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">confidenceRating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># stops the beat detector, releases the sound card</span>
+    <span class="n">recorder</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For the exteroceptive variant pass <code class="docutils literal notranslate"><span class="pre">extero=True</span></code> and no recorder. The paper ran it before the PAT.</p>
+<p>Ask the participant to focus on one consistent body location, to sit still, breathe normally and not tense their muscles, which would amplify the heartbeat sensation. The experimenter sees a one-line status every second in the console (trial, heart rate, phase, tones anchored on real and predicted beats), and a warning after 3 s without a beat (<code class="docutils literal notranslate"><span class="pre">noBeatWarning</span></code>). Esc at any prompt stops the task; what has been collected is saved. Esc during a trial, before space, drops that trial: the marker stream gets an <code class="docutils literal notranslate"><span class="pre">abort</span></code> marker, the trial has no row in <code class="docutils literal notranslate"><span class="pre">final.txt</span></code>, and its tones are left out of <code class="docutils literal notranslate"><span class="pre">tones.txt</span></code>.</p>
+<p>A trial ends without a choice after <code class="docutils literal notranslate"><span class="pre">maxTrialTime</span></code> seconds (60) if space has not ended it, and its row is marked <code class="docutils literal notranslate"><span class="pre">timeout</span></code>. Space works only once a tone has been heard. The confidence rating has no time limit, as in the paper.</p>
+</section>
+<section id="the-main-settings">
+<h2>The main settings<a class="headerlink" href="#the-main-settings" title="Permalink to this heading">#</a></h2>
+<p>The defaults of <code class="docutils literal notranslate"><span class="pre">getParameters</span></code> are those of the paper, except where noted:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;relative&quot;</span></code></p></td>
+<td><p>What the dial controls (below)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">nTrials</span></code>, <code class="docutils literal notranslate"><span class="pre">nPractice</span></code></p></td>
+<td><p>28, 8</p></td>
+<td><p>Main and practice trials</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">startPhases</span></code></p></td>
+<td><p>0, 90, 180, 270</p></td>
+<td><p>Start phases of the dial, in degrees</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">extero</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>Run the exteroceptive control (below)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">exteroPeriod</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;simulated&quot;</span></code></p></td>
+<td><p>The vibration’s period in the exteroceptive variant</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vibrationVolume</span></code></p></td>
+<td><p>0</p></td>
+<td><p>The vibration burst is silent unless raised</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">device</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;keyboard&quot;</span></code></p></td>
+<td><p>Rate confidence with the wheel and arrow keys, space to confirm (<code class="docutils literal notranslate"><span class="pre">&quot;keyboard&quot;</span></code>), or with the mouse, a click to confirm (<code class="docutils literal notranslate"><span class="pre">&quot;mouse&quot;</span></code>). The dial is the wheel either way</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">confidenceScale</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DISCRETE_1_10</span></code></p></td>
+<td><p>The 1 to 10 of the paper, labelled in the language. A scale passed in keeps its own labels, for example <code class="docutils literal notranslate"><span class="pre">VAS_0_100.with_labels([&quot;Not</span> <span class="pre">at</span> <span class="pre">all&quot;,</span> <span class="pre">&quot;Extremely&quot;])</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">language</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;english&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;english&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;danish&quot;</span></code>, from <code class="docutils literal notranslate"><span class="pre">cardioception/PAT/texts/&lt;language&gt;.yaml</span></code>. To add one, copy <code class="docutils literal notranslate"><span class="pre">english.yaml</span></code> and translate the values, not the keys or the placeholders</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dialGainDeg</span></code>, <code class="docutils literal notranslate"><span class="pre">dialGainMs</span></code></p></td>
+<td><p>10, 25</p></td>
+<td><p>Degrees per wheel notch in relative mode, ms per notch in absolute mode</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">latencyBias</span></code>, <code class="docutils literal notranslate"><span class="pre">audioLead</span></code></p></td>
+<td><p>0.05, 0.05 s</p></td>
+<td><p>See <a class="reference internal" href="#timing-and-latency">timing</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">minToneGap</span></code></p></td>
+<td><p>0.3 s</p></td>
+<td><p>A tone less than this after the previous one is skipped</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">showDial</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>The ring and pointer around the fixation cross</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">seed</span></code></p></td>
+<td><p>drawn</p></td>
+<td><p>Seeds the start phases, the simulated heart and the rating marker; recorded in the manifest</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">resultPath</span></code>, <code class="docutils literal notranslate"><span class="pre">overwrite</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">data</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>Root of the run directories, and whether a run directory with results may be written into</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">triggers</span></code></p></td>
+<td><p>none</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{event:</span> <span class="pre">callable}</span></code> for <code class="docutils literal notranslate"><span class="pre">trialStart</span></code>, <code class="docutils literal notranslate"><span class="pre">confidenceStart</span></code>, <code class="docutils literal notranslate"><span class="pre">confidenceStop</span></code> and <code class="docutils literal notranslate"><span class="pre">trialStop</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">markerStream</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;PAT&quot;</span></code></p></td>
+<td><p>The LSL marker stream the task opens</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="the-two-modes">
+<h3>The two modes<a class="headerlink" href="#the-two-modes" title="Permalink to this heading">#</a></h3>
+<p>In relative mode the dial is a phase, in degrees of the anticipated heart period, and wraps at 360. The anticipated period is the mean of the last three R-R intervals, so the tone keeps its place in the cycle when the heart speeds up or slows down. This is the mode of the PAT-ECG study. In absolute mode the dial is a delay in ms after the R-wave, as in the phone-based PAT. It wraps at the anticipated period and is clamped to the current one: a dial at 950 ms when the period shrinks to 900 ms plays at 900 ms, the markers and the row say so, and the next notch moves on from 900 ms. <span id="id5">Hodgetts <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id43" title="James Hodgetts, Germano Gallicchio, Shaun Mckiernan, Christopher Ring, Jennifer Murphy, and Andrew Cooke. The electrocardiogram-based phase adjustment task (PAT-ECG): an open-access laboratory test of cardiac interoceptive accuracy. Psychophysiology, 63(10):e70415, 2026. doi:10.1111/psyp.70415.">2026</a>]</span> suggest running both modes when the heart period varies a lot between trials, during exercise or recovery for instance, because they separate phase-locked from delay-locked perception.</p>
+</section>
+<section id="the-exteroceptive-control">
+<h3>The exteroceptive control<a class="headerlink" href="#the-exteroceptive-control" title="Permalink to this heading">#</a></h3>
+<p>With <code class="docutils literal notranslate"><span class="pre">extero=True</span></code> the “heartbeat” is a 50 Hz vibration burst on the back of the non-dominant hand, and the participant matches the tone to it with the same dial and procedure. It is a familiarization task and a screener: someone who cannot synchronize two external signals has not understood the task or is not engaging with it. <span id="id6">Hodgetts <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id43" title="James Hodgetts, Germano Gallicchio, Shaun Mckiernan, Christopher Ring, Jennifer Murphy, and Andrew Cooke. The electrocardiogram-based phase adjustment task (PAT-ECG): an open-access laboratory test of cardiac interoceptive accuracy. Psychophysiology, 63(10):e70415, 2026. doi:10.1111/psyp.70415.">2026</a>]</span> excluded the 7 of 91 participants who scored below the chance threshold here. <code class="docutils literal notranslate"><span class="pre">exteroPeriod=&quot;simulated&quot;</span></code> gives a variable series like a resting heart (base period 0.9 to 1.1 s with respiratory, slow and noise components, clamped to 0.55 to 1.5 s, smoothed over three beats); a number gives a fixed period in seconds (the paper used 1 s); a sequence of periods replays it, for example a participant’s own R-R intervals.</p>
+</section>
+<section id="running-without-a-participant">
+<h3>Running without a participant<a class="headerlink" href="#running-without-a-participant" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">PATAutopilot</span></code> is a simulated participant. It is given the phase at which it feels the heartbeat, rolls the wheel a notch at a time towards it, presses once settled, and rates its confidence at random. It lives in a private module, <code class="docutils literal notranslate"><span class="pre">cardioception.PAT._autopilot</span></code>, so its interface may change without notice. With <code class="docutils literal notranslate"><span class="pre">beat_source=</span></code> and <code class="docutils literal notranslate"><span class="pre">tone_player=</span></code> in place of the ECG and the sound card, a whole session runs headless. This runs the exteroceptive variant, whose heart is virtual, with a player that plays nothing; <code class="docutils literal notranslate"><span class="pre">tests/test_pat_headless.py</span></code> also has a virtual heart for the main task.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.devices.beat_source</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_clock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.PAT._autopilot</span><span class="w"> </span><span class="kn">import</span> <span class="n">PATAutopilot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.PAT.parameters</span><span class="w"> </span><span class="kn">import</span> <span class="n">getParameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.PAT.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SilentPlayer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Reports every tone as starting when it was due, and plays nothing."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">clock</span><span class="p">,</span> <span class="p">{},</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">schedule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">when</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"tone"</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">when</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">poll_onsets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="p">[(</span><span class="n">h</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">now</span> <span class="o">&gt;=</span> <span class="n">t</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">h</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">done</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span><span class="p">[</span><span class="n">h</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">done</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">getParameters</span><span class="p">(</span>
+    <span class="n">participant</span><span class="o">=</span><span class="s2">"pilot"</span><span class="p">,</span> <span class="n">extero</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fullscr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">markerStream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tone_player</span><span class="o">=</span><span class="n">SilentPlayer</span><span class="p">(</span><span class="n">default_clock</span><span class="p">()),</span>
+<span class="p">)</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s2">"autopilot"</span><span class="p">]</span> <span class="o">=</span> <span class="n">PATAutopilot</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">],</span> <span class="n">target</span><span class="o">=</span><span class="mf">120.0</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="what-it-saves">
+<h2>What it saves<a class="headerlink" href="#what-it-saves" title="Permalink to this heading">#</a></h2>
+<p>Each run gets its own directory, <code class="docutils literal notranslate"><span class="pre">data/sub-&lt;participant&gt;/ses-&lt;session&gt;/run-&lt;YYYYMMDD-HHMMSS&gt;/</span></code> (under <code class="docutils literal notranslate"><span class="pre">resultPath</span></code> when it is given), and every file carries the three identifiers in its name. The wrapper appends <code class="docutils literal notranslate"><span class="pre">Extero</span></code> to the session of the exteroceptive run, so both runs sit side by side.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Written</p></th>
+<th class="head"><p>Content</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">manifest.json</span></code></p></td>
+<td><p>at set-up</p></td>
+<td><p>participant, session, run, seed, version, device, language, mode, exteroceptive or not, trial counts and the confidence scale</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">session.log</span></code></p></td>
+<td><p>as the task runs</p></td>
+<td><p>the console messages, with timestamps</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">*_parameters.txt</span></code></p></td>
+<td><p>at the start</p></td>
+<td><p>the settings, one per line</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*_final.txt</span></code></p></td>
+<td><p>after every trial</p></td>
+<td><p>one row per trial</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">*_tones.txt</span></code></p></td>
+<td><p>after every trial</p></td>
+<td><p>one row per tone or vibration</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">final.txt</span></code>, one row per trial:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Trial</span></code>, <code class="docutils literal notranslate"><span class="pre">Block</span></code></p></td>
+<td><p>Trial number, and <code class="docutils literal notranslate"><span class="pre">practice</span></code> or <code class="docutils literal notranslate"><span class="pre">main</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TrialStatus</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ok</span></code>; <code class="docutils literal notranslate"><span class="pre">stale</span></code> when the press came more than 1.5 anticipated periods after the last R-wave (the ECG was lost, so <code class="docutils literal notranslate"><span class="pre">AnticipatedPeriodMs</span></code> is NaN, and so is <code class="docutils literal notranslate"><span class="pre">ChosenDelayMs</span></code> in relative mode or <code class="docutils literal notranslate"><span class="pre">ChosenPhaseDeg</span></code> in absolute mode); <code class="docutils literal notranslate"><span class="pre">timeout</span></code> when <code class="docutils literal notranslate"><span class="pre">maxTrialTime</span></code> ran out (both chosen columns NaN, no rating asked). The scores use <code class="docutils literal notranslate"><span class="pre">ok</span></code> trials only</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Mode</span></code>, <code class="docutils literal notranslate"><span class="pre">Extero</span></code></p></td>
+<td><p>Scheduling mode, and whether this was the exteroceptive variant</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">StartPhaseDeg</span></code></p></td>
+<td><p>Where the dial started</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ChosenPhaseDeg</span></code>, <code class="docutils literal notranslate"><span class="pre">ChosenDelayMs</span></code></p></td>
+<td><p>The choice at the space press, as a phase and as ms after the R-wave. <code class="docutils literal notranslate"><span class="pre">ChosenDelayMs</span></code> is the dial’s delay, before <code class="docutils literal notranslate"><span class="pre">latencyBias</span></code> is subtracted from the tone’s target</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AnticipatedPeriodMs</span></code></p></td>
+<td><p>The anticipated period at the last beat before the press: the mean of the last three R-R intervals, or in the exteroceptive variant the exact interval to the next virtual beat</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ObservedPeriodMs</span></code></p></td>
+<td><p>The R-R interval containing the press, known once the next R-wave arrives; NaN if it did not arrive within 3 s</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LastRTime</span></code>, <code class="docutils literal notranslate"><span class="pre">PressTime</span></code></p></td>
+<td><p>The last R-wave before the press and the press itself, in LSL seconds</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LastToneIndex</span></code>, <code class="docutils literal notranslate"><span class="pre">LastToneAnchor</span></code>, <code class="docutils literal notranslate"><span class="pre">LastToneRTime</span></code></p></td>
+<td><p>The last tone before the press: its <code class="docutils literal notranslate"><span class="pre">ToneIndex</span></code> in <code class="docutils literal notranslate"><span class="pre">tones.txt</span></code>, its anchor (<code class="docutils literal notranslate"><span class="pre">real</span></code> or <code class="docutils literal notranslate"><span class="pre">predicted</span></code>) and the R-wave it was timed from</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LastToneDelayMs</span></code></p></td>
+<td><p>The delay that tone was played at after the R-wave of its own cycle, with <code class="docutils literal notranslate"><span class="pre">latencyBias</span></code> added back so it reads like <code class="docutils literal notranslate"><span class="pre">ChosenDelayMs</span></code>. Equal to the dial for a <code class="docutils literal notranslate"><span class="pre">real</span></code> tone; for a <code class="docutils literal notranslate"><span class="pre">predicted</span></code> tone it is measured from the R-wave that followed, and is NaN if that R-wave never came</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Confidence</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceRT</span></code></p></td>
+<td><p>The rating, 1 to 10 by default, and its response time; empty when no rating was given</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ConfidenceUnit</span></code></p></td>
+<td><p>The same rating on 0 to 1, so sessions rated on different scales can be pooled</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Device</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">keyboard</span></code> or <code class="docutils literal notranslate"><span class="pre">mouse</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ConfidenceScale</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceLow</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceHigh</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceGranularity</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceLevels</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceSigned</span></code></p></td>
+<td><p>The scale the rating was given on, written on every row</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nTonesReal</span></code>, <code class="docutils literal notranslate"><span class="pre">nTonesPredicted</span></code>, <code class="docutils literal notranslate"><span class="pre">nTonesSkipped</span></code></p></td>
+<td><p>Tones anchored on the detected beat, on the predicted next beat, and skipped by the double-tone guard</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TrialDuration</span></code>, <code class="docutils literal notranslate"><span class="pre">nDialMoves</span></code></p></td>
+<td><p>Seconds from trial start to press, and number of dial movements</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WallTime</span></code></p></td>
+<td><p>Computer clock time of the press</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">tones.txt</span></code>, one row per tone or vibration: <code class="docutils literal notranslate"><span class="pre">ToneIndex</span></code> (a running number across the session), <code class="docutils literal notranslate"><span class="pre">Trial</span></code>, <code class="docutils literal notranslate"><span class="pre">Block</span></code>, <code class="docutils literal notranslate"><span class="pre">RTime</span></code> (the R-wave it was timed from, LSL seconds), <code class="docutils literal notranslate"><span class="pre">PeriodS</span></code> (anticipated period), <code class="docutils literal notranslate"><span class="pre">PhaseDeg</span></code> and <code class="docutils literal notranslate"><span class="pre">DelayMs</span></code> (the dial), <code class="docutils literal notranslate"><span class="pre">Target</span></code> (when it was meant to sound), <code class="docutils literal notranslate"><span class="pre">Anchor</span></code> (<code class="docutils literal notranslate"><span class="pre">real</span></code>, <code class="docutils literal notranslate"><span class="pre">predicted</span></code> or <code class="docutils literal notranslate"><span class="pre">virtual</span></code>), <code class="docutils literal notranslate"><span class="pre">Onset</span></code> (the onset PsychPortAudio reported, NaN if none) and <code class="docutils literal notranslate"><span class="pre">Kind</span></code> (<code class="docutils literal notranslate"><span class="pre">tone</span></code> or <code class="docutils literal notranslate"><span class="pre">vibration</span></code>). Together with the ECG in the XDF file this gives the true R-to-tone interval of every tone, which the original PAT-ECG did not log.</p>
+</section>
+<section id="scoring">
+<h2>Scoring<a class="headerlink" href="#scoring" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">cardioception.PAT.scoring</span></code> needs only numpy and pandas:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">glob</span><span class="w"> </span><span class="kn">import</span> <span class="n">glob</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.PAT.scoring</span><span class="w"> </span><span class="kn">import</span> <span class="n">consistency_grid</span><span class="p">,</span> <span class="n">extero_threshold</span>
+
+<span class="p">(</span><span class="n">path</span><span class="p">,)</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="s2">"data/sub-sub01/ses-001/run-*/*_final.txt"</span><span class="p">)</span>
+<span class="n">final</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">consistency_grid</span><span class="p">(</span><span class="n">final</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Only rows with <code class="docutils literal notranslate"><span class="pre">Block</span> <span class="pre">==</span> <span class="pre">&quot;main&quot;</span></code> count. <code class="docutils literal notranslate"><span class="pre">consistency_grid</span></code> returns eight rows, the 2 x 2 x 2 grid of <span id="id7">Hodgetts <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id43" title="James Hodgetts, Germano Gallicchio, Shaun Mckiernan, Christopher Ring, Jennifer Murphy, and Andrew Cooke. The electrocardiogram-based phase adjustment task (PAT-ECG): an open-access laboratory test of cardiac interoceptive accuracy. Psychophysiology, 63(10):e70415, 2026. doi:10.1111/psyp.70415.">2026</a>]</span>:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Factor</p></th>
+<th class="head"><p>Levels</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mapping</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">variable</span></code>: each trial’s angle uses its own period (phase-based consistency). <code class="docutils literal notranslate"><span class="pre">fixed</span></code>: every trial uses the participant’s median period (delay-based consistency); trials whose delay exceeds that median are dropped</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">period</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">anticipated</span></code>: the period the task used online. <code class="docutils literal notranslate"><span class="pre">observed</span></code>: the R-R interval that contained the press</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">weighting</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">none</span></code>, or <code class="docutils literal notranslate"><span class="pre">confidence</span></code>: each trial weighted by its rating</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Each row gives <code class="docutils literal notranslate"><span class="pre">n_trials</span></code>, <code class="docutils literal notranslate"><span class="pre">n_dropped</span></code> (main trials whose <code class="docutils literal notranslate"><span class="pre">TrialStatus</span></code> is not <code class="docutils literal notranslate"><span class="pre">ok</span></code>), <code class="docutils literal notranslate"><span class="pre">score</span></code> (the MRL), <code class="docutils literal notranslate"><span class="pre">threshold</span></code> and <code class="docutils literal notranslate"><span class="pre">interoceptive</span></code> (<code class="docutils literal notranslate"><span class="pre">score</span> <span class="pre">&gt;</span> <span class="pre">threshold</span></code>). Before scoring, <code class="docutils literal notranslate"><span class="pre">stale</span></code> and <code class="docutils literal notranslate"><span class="pre">timeout</span></code> trials are dropped, then trials with a missing period, then trials whose period lies more than 5 robust standard deviations (1.4826 times the median absolute deviation, floored at 1 ms) from the participant’s median period, separately for each period type. In the paper this removed under 1 percent of trials.</p>
+<p>The threshold is the participant’s own chance level: 100,000 simulated participants with the same number of valid trials choose delays uniformly over the period, and the threshold is the 95th percentile of their MRL. It depends on the number of trials and the weights, not on the periods or the mapping. Weighted cells keep the participant’s ratings as weights in the simulation, so unequal ratings raise the threshold a little. The simulations use <code class="docutils literal notranslate"><span class="pre">seed=0</span></code>, so the same file always gives the same grid; <code class="docutils literal notranslate"><span class="pre">n_sim</span></code> and <code class="docutils literal notranslate"><span class="pre">seed</span></code> can be changed. The confidence-weighted scores use the raw rating as the weight, not <code class="docutils literal notranslate"><span class="pre">ConfidenceUnit</span></code>, which is 0 for a rating of 1 and would leave those trials out.</p>
+<p>How to read the grid:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">interoceptive</span></code> is a descriptive label: the choices were more consistent than 95 percent of random responders with the same trials. The score itself can be used as a continuous measure.</p></li>
+<li><p>Variable and fixed mapping ask different questions. A high variable-mapping score means the tone was kept at a stable phase of the cycle; a high fixed-mapping score means it was kept at a stable delay after the R-wave. At rest the two mostly agree. Report both.</p></li>
+<li><p>Anticipated and observed period rarely disagree. In the paper the anticipated period was a few ms longer, and the choice changed the classification of two borderline participants.</p></li>
+<li><p>Confidence weighting changes little, because confidence varies mostly between people rather than between trials.</p></li>
+</ul>
+<p>The scores use <code class="docutils literal notranslate"><span class="pre">ChosenDelayMs</span></code>, the dial at the press. That is the delay the participant heard only when the last tone was anchored on a <code class="docutils literal notranslate"><span class="pre">real</span></code> beat. A <code class="docutils literal notranslate"><span class="pre">predicted</span></code> tone was timed from the R-wave before, one anticipated period ahead, so when the period changes from one beat to the next it sounds earlier or later than the dial says, by tens of ms at resting heart rate variability. To score what was heard instead, use <code class="docutils literal notranslate"><span class="pre">LastToneDelayMs</span></code>, or join <code class="docutils literal notranslate"><span class="pre">LastToneIndex</span></code> to <code class="docutils literal notranslate"><span class="pre">ToneIndex</span></code> in <code class="docutils literal notranslate"><span class="pre">tones.txt</span></code> and measure each tone’s <code class="docutils literal notranslate"><span class="pre">Onset</span></code> from the R-waves in the XDF file.</p>
+<p>For comparison, <span id="id8">Hodgetts <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id43" title="James Hodgetts, Germano Gallicchio, Shaun Mckiernan, Christopher Ring, Jennifer Murphy, and Andrew Cooke. The electrocardiogram-based phase adjustment task (PAT-ECG): an open-access laboratory test of cardiac interoceptive accuracy. Psychophysiology, 63(10):e70415, 2026. doi:10.1111/psyp.70415.">2026</a>]</span> classified 14 of 84 participants (16.7 percent) as interoceptive on at least one of the eight routes and 10 on all eight, in line with the 17 percent found with the phone-based PAT. Score the exteroceptive <code class="docutils literal notranslate"><span class="pre">final.txt</span></code> with the same function; <code class="docutils literal notranslate"><span class="pre">extero_threshold(28)</span></code> gives the threshold for 28 trials at a fixed 1000 ms period, 0.326 with 100,000 runs, the R = 0.33 of the paper.</p>
+</section>
+<section id="timing-and-latency">
+<h2>Timing and latency<a class="headerlink" href="#timing-and-latency" title="Permalink to this heading">#</a></h2>
+<p>In the original PAT-ECG an analogue R-wave detector triggers the microcontroller, so the tone is microseconds behind the R-wave. Here the ECG travels from the PLUX hub over Bluetooth to LSL, and Python finds the R-wave online. Measured on our stimulus PC, the beat is known about 20 ms after the R-peak (95th percentile 31 ms), and audio onsets reported by PsychPortAudio are within about 1 ms of the target, provided the tone is scheduled at least <code class="docutils literal notranslate"><span class="pre">audioLead</span></code> (50 ms) ahead.</p>
+<p>Each tone’s target is <code class="docutils literal notranslate"><span class="pre">R</span> <span class="pre">+</span> <span class="pre">delay</span> <span class="pre">-</span> <span class="pre">latencyBias</span></code>. If that is at least <code class="docutils literal notranslate"><span class="pre">audioLead</span></code> after the moment the beat is known, the tone is timed from that beat (anchor <code class="docutils literal notranslate"><span class="pre">real</span></code>). Otherwise it is too late for this cycle, and the tone is timed from the predicted next R-wave, one anticipated period later (anchor <code class="docutils literal notranslate"><span class="pre">predicted</span></code>). With the defaults the boundary sits about 120 to 137 ms after the R-wave: about 20 ms until the beat is known, up to one frame (17 ms at 60 Hz) until the engine sees it, plus <code class="docutils literal notranslate"><span class="pre">audioLead</span></code> and <code class="docutils literal notranslate"><span class="pre">latencyBias</span></code>. That is roughly the first 35 to 40 degrees of the cycle at 50 beats per minute and 60 to 65 at 80. Predicted tones scatter more than real ones, because the true next cycle differs from the three-beat mean. <code class="docutils literal notranslate"><span class="pre">tones.txt</span></code> records which anchor each tone used.</p>
+<p><code class="docutils literal notranslate"><span class="pre">latencyBias</span></code> (0.05 s) is a constant subtracted from every target. It stands for the physical delay that LSL timestamps cannot see: the Bluetooth transfer before the samples are stamped (20 to 40 ms) and the path from the reported audio onset to the ear. Together these come to roughly 30 to 70 ms on our setup. A constant bias shifts every tone by the same amount, so it leaves fixed-mapping consistency unchanged and variable-mapping consistency almost unchanged. It does matter for the mean phase a participant chooses; report the bias whenever you report that.</p>
+<p>Space stops new tones, not the ones already handed to the sound card, so up to about 1.1 s of tones (at most one period plus <code class="docutils literal notranslate"><span class="pre">audioLead</span></code>) can follow the press. The choice is the dial at the press, whatever is heard after it, and those tones are logged in <code class="docutils literal notranslate"><span class="pre">tones.txt</span></code> like any other. After the press the task waits for the next R-wave, which gives <code class="docutils literal notranslate"><span class="pre">ObservedPeriodMs</span></code>, and for the onsets of those last tones, at most 3 s. Esc during that wait ends it at once; the trial is kept, without a rating, and the task stops.</p>
+<p>Further checks of the timing chain are in <code class="docutils literal notranslate"><span class="pre">bench/README.md</span></code> in the repository.</p>
+</section>
+<section id="where-to-go-next">
+<h2>Where to go next<a class="headerlink" href="#where-to-go-next" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="index.html#the-pat-and-the-hsd"><span class="std std-ref">The PAT and the HSD</span></a>: the two synchrony tasks side by side.</p></li>
+<li><p><a class="reference internal" href="../getting-started/recording-devices.html"><span class="std std-doc">Recording devices</span></a>: the PLUX bridge and LabRecorder.</p></li>
+<li><p><a class="reference internal" href="../reference/api.html"><span class="std std-doc">API</span></a>: every argument of <code class="docutils literal notranslate"><span class="pre">getParameters</span></code> and the scoring functions.</p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="hsd/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Heartbeat Synchrony Discrimination task</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="hbc.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Heartbeat Counting task</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2019-2026, Micah Allen and the Embodied Computation Group, Aarhus University
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/embodied-computation-group/Cardioception" aria-label="GitHub"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg></a>
+              <a class="muted-link " href="https://pypi.org/project/cardioception-toolbox/" aria-label="PyPI"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path d="M8.878.392a1.75 1.75 0 0 0-1.756 0l-5.25 3.045A1.75 1.75 0 0 0 1 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 0 0 1.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514ZM7.875 1.69a.25.25 0 0 1 .25 0l4.63 2.685L8 7.133 3.245 4.375Zm-5.375 9.36V5.677l4.75 2.755v5.339l-4.626-2.683a.25.25 0 0 1-.124-.216Zm6.25 2.755V8.432l4.75-2.755v5.372a.25.25 0 0 1-.124.216Z"></path></svg></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Phase Adjustment Task</a><ul>
+<li><a class="reference internal" href="#what-a-trial-looks-like">What a trial looks like</a></li>
+<li><a class="reference internal" href="#what-you-need">What you need</a></li>
+<li><a class="reference internal" href="#running-it">Running it</a></li>
+<li><a class="reference internal" href="#the-main-settings">The main settings</a><ul>
+<li><a class="reference internal" href="#the-two-modes">The two modes</a></li>
+<li><a class="reference internal" href="#the-exteroceptive-control">The exteroceptive control</a></li>
+<li><a class="reference internal" href="#running-without-a-participant">Running without a participant</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#what-it-saves">What it saves</a></li>
+<li><a class="reference internal" href="#scoring">Scoring</a></li>
+<li><a class="reference internal" href="#timing-and-latency">Timing and latency</a></li>
+<li><a class="reference internal" href="#where-to-go-next">Where to go next</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    </body>
+</html>

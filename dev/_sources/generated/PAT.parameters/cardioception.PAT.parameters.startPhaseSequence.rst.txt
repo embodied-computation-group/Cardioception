@@ -1,0 +1,6 @@
+﻿cardioception.PAT.parameters.startPhaseSequence
+===============================================
+
+.. currentmodule:: cardioception.PAT.parameters
+
+.. autofunction:: startPhaseSequence

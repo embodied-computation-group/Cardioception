@@ -1,0 +1,51 @@
+﻿cardioception.HRD.config.TaskConfig
+===================================
+
+.. currentmodule:: cardioception.HRD.config
+
+.. autoclass:: TaskConfig
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TaskConfig.__init__
+      ~TaskConfig.apply
+      ~TaskConfig.describe
+      ~TaskConfig.psi
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~TaskConfig.HRcutOff
+      ~TaskConfig.allowedKeys
+      ~TaskConfig.alphaRange
+      ~TaskConfig.betaRange
+      ~TaskConfig.continuousRecording
+      ~TaskConfig.delta
+      ~TaskConfig.exteroBPMRange
+      ~TaskConfig.fixationSize
+      ~TaskConfig.intensRange
+      ~TaskConfig.isi
+      ~TaskConfig.listeningDuration
+      ~TaskConfig.maxHeartRateAttempts
+      ~TaskConfig.maxRatingTime
+      ~TaskConfig.minRatingTime
+      ~TaskConfig.nConfidence
+      ~TaskConfig.nFeedback
+      ~TaskConfig.psiPreset
+      ~TaskConfig.respMax
+      ~TaskConfig.startKey
+      ~TaskConfig.textSize
+      ~TaskConfig.response_keys
+   
+   

@@ -1,0 +1,6 @@
+﻿cardioception.PAT.task.run
+==========================
+
+.. currentmodule:: cardioception.PAT.task
+
+.. autofunction:: run

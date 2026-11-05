@@ -1,0 +1,63 @@
+﻿cardioception.HSD.config.TaskConfig
+===================================
+
+.. currentmodule:: cardioception.HSD.config
+
+.. autoclass:: TaskConfig
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TaskConfig.__init__
+      ~TaskConfig.apply
+      ~TaskConfig.bounds
+      ~TaskConfig.candidates
+      ~TaskConfig.ci_width
+      ~TaskConfig.describe
+      ~TaskConfig.engine
+      ~TaskConfig.grids
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~TaskConfig.absoluteDelays
+      ~TaskConfig.allowedKeys
+      ~TaskConfig.audioLead
+      ~TaskConfig.axis
+      ~TaskConfig.ceilingMargin
+      ~TaskConfig.ciWidth
+      ~TaskConfig.ciWidthPhase
+      ~TaskConfig.explore
+      ~TaskConfig.fixationSize
+      ~TaskConfig.isi
+      ~TaskConfig.latencyBias
+      ~TaskConfig.maxPeriodFraction
+      ~TaskConfig.maxRatingTime
+      ~TaskConfig.maxTrials
+      ~TaskConfig.minDelay
+      ~TaskConfig.minRatingTime
+      ~TaskConfig.minTones
+      ~TaskConfig.minTrials
+      ~TaskConfig.nTones
+      ~TaskConfig.phaseDelays
+      ~TaskConfig.respMax
+      ~TaskConfig.startKey
+      ~TaskConfig.targets
+      ~TaskConfig.textSize
+      ~TaskConfig.toneFreq
+      ~TaskConfig.toneRamp
+      ~TaskConfig.toneSecs
+      ~TaskConfig.toneVolume
+      ~TaskConfig.response_keys
+   
+   

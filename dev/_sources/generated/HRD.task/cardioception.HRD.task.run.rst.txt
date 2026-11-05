@@ -1,0 +1,6 @@
+﻿cardioception.HRD.task.run
+==========================
+
+.. currentmodule:: cardioception.HRD.task
+
+.. autofunction:: run

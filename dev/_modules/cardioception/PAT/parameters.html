@@ -1,0 +1,929 @@
+
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+        <link rel="canonical" href="https://www.the-ecg.org/Cardioception/dev/_modules/cardioception/PAT/parameters.html" />
+
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>cardioception.PAT.parameters - Cardioception Toolbox</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: #1f3352;
+  --color-brand-content: #2f4b73;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     These are the docs for Cardioception 1.0, in development and not yet on PyPI. <a href="https://www.the-ecg.org/Cardioception/">The docs for the current release are here.</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">Cardioception Toolbox</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/cardioception_icon.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started/recording-devices.html">Recording devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started/running-a-session.html">Running a session</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tasks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/index.html">The tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/theory.html">Measuring cardiac interoception</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tasks/hrd/index.html">Heart Rate Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../tasks/hrd/tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tasks/hrd/tutorials/inspecting-data.html">Inspecting and plotting an HRD session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tasks/hrd/tutorials/psychophysics.html">The psychophysical model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tasks/hrd/tutorials/hierarchical.html">Hierarchical modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tasks/hrd/tutorials/metacognition.html">Metacognition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tasks/hrd/reports.html">HTML reports (legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/hbc.html">Heartbeat Counting task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/pat.html">Phase Adjustment Task</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tasks/hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tasks/hsd/design.html">HSD design and validation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tasks/constant-stimuli.html">Method of constant stimuli</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html">cardioception.HRD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.config/cardioception.HRD.config.TaskConfig.html">cardioception.HRD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.run.html">cardioception.HRD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.trial.html">cardioception.HRD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.tutorial.html">cardioception.HRD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.confidenceRatingTask.html">cardioception.HRD.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.available.html">cardioception.HRD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.get_texts.html">cardioception.HRD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html">cardioception.HBC.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.run.html">cardioception.HBC.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.tutorial.html">cardioception.HBC.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.rest.html">cardioception.HBC.task.rest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.available.html">cardioception.HBC.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.get_texts.html">cardioception.HBC.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.parameters/cardioception.PAT.parameters.getParameters.html">cardioception.PAT.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.parameters/cardioception.PAT.parameters.startPhaseSequence.html">cardioception.PAT.parameters.startPhaseSequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.run.html">cardioception.PAT.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.trial.html">cardioception.PAT.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.tutorial.html">cardioception.PAT.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.dialLoop.html">cardioception.PAT.task.dialLoop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.confidenceRatingTask.html">cardioception.PAT.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.engine/cardioception.PAT.engine.PhaseEngine.html">cardioception.PAT.engine.PhaseEngine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.consistency_grid.html">cardioception.PAT.scoring.consistency_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.mean_resultant_length.html">cardioception.PAT.scoring.mean_resultant_length</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.phase_angles.html">cardioception.PAT.scoring.phase_angles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.monte_carlo_threshold.html">cardioception.PAT.scoring.monte_carlo_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.extero_threshold.html">cardioception.PAT.scoring.extero_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.mad_outliers.html">cardioception.PAT.scoring.mad_outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.languages/cardioception.PAT.languages.available.html">cardioception.PAT.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.languages/cardioception.PAT.languages.get_texts.html">cardioception.PAT.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.parameters/cardioception.HSD.parameters.getParameters.html">cardioception.HSD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.config/cardioception.HSD.config.TaskConfig.html">cardioception.HSD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.task/cardioception.HSD.task.run.html">cardioception.HSD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.task/cardioception.HSD.task.trial.html">cardioception.HSD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.task/cardioception.HSD.task.tutorial.html">cardioception.HSD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.psi/cardioception.HSD.psi.SynchronyPsi.html">cardioception.HSD.psi.SynchronyPsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.psi/cardioception.HSD.psi.gaussian_envelope.html">cardioception.HSD.psi.gaussian_envelope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.psi/cardioception.HSD.psi.default_grids.html">cardioception.HSD.psi.default_grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.languages/cardioception.HSD.languages.available.html">cardioception.HSD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.languages/cardioception.HSD.languages.get_texts.html">cardioception.HSD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices/cardioception.devices.ContinuousOximeter.html">cardioception.devices.ContinuousOximeter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices/cardioception.devices.LSLRecorder.html">cardioception.devices.LSLRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices/cardioception.devices.ReplayRecorder.html">cardioception.devices.ReplayRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices.beat_source/cardioception.devices.beat_source.LSLBeatSource.html">cardioception.devices.beat_source.LSLBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices.beat_source/cardioception.devices.beat_source.VirtualBeatSource.html">cardioception.devices.beat_source.VirtualBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices.tone_player/cardioception.devices.tone_player.TonePlayer.html">cardioception.devices.tone_player.TonePlayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/scales/cardioception.scales.ConfidenceScale.html">cardioception.scales.ConfidenceScale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/cite.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/changelog.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for cardioception.PAT.parameters</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (C) 2020-2026 Micah G Allen and the Embodied Computation Group, Aarhus University</span>
+<span class="sd">"""Parameters of the Phase Adjustment Task (PAT).</span>
+
+<span class="sd">The task follows the ECG version of Hodgetts et al. (2026), Psychophysiology</span>
+<span class="sd">63:e70415: one tone per heartbeat, at a delay after the R-wave that the</span>
+<span class="sd">participant moves with the mouse wheel until tones and heartbeats feel</span>
+<span class="sd">simultaneous. The exteroceptive control task replaces the heartbeat with a</span>
+<span class="sd">vibration on the hand.</span>
+
+<span class="sd">As for the other tasks, one random generator, built from ``seed`` by</span>
+<span class="sd">:func:`cardioception._rng.make_rng`, draws everything random in a session:</span>
+<span class="sd">the start phases, the simulated heart of the exteroceptive task, the tutorial</span>
+<span class="sd">start phase and the starting position of every confidence marker. The seed is</span>
+<span class="sd">recorded in ``manifest.json``, so a session can be drawn again.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._log</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">start_session_log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._rng</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_rng</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._triggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate</span> <span class="k">as</span> <span class="n">validate_triggers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..devices.tone_player</span><span class="w"> </span><span class="kn">import</span> <span class="n">TONE_CLEARANCE</span><span class="p">,</span> <span class="n">min_tone_spacing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..output</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionPaths</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..scales</span><span class="w"> </span><span class="kn">import</span> <span class="n">DISCRETE_1_10</span><span class="p">,</span> <span class="n">ConfidenceScale</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.languages</span><span class="w"> </span><span class="kn">import</span> <span class="n">available</span> <span class="k">as</span> <span class="n">available_languages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.languages</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_texts</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+
+<span class="n">MODES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"relative"</span><span class="p">,</span> <span class="s2">"absolute"</span><span class="p">)</span>
+<span class="n">DEVICES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"keyboard"</span><span class="p">,</span> <span class="s2">"mouse"</span><span class="p">)</span>
+
+<span class="c1">#: Events a trigger callback can be registered for, in the order a trial</span>
+<span class="c1">#: fires them. ``confidenceStart`` and ``confidenceStop`` fire only when a</span>
+<span class="c1">#: rating is asked for.</span>
+<span class="n">EVENTS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"trialStart"</span><span class="p">,</span> <span class="s2">"confidenceStart"</span><span class="p">,</span> <span class="s2">"confidenceStop"</span><span class="p">,</span> <span class="s2">"trialStop"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="startPhaseSequence"><a class="viewcode-back" href="../../../generated/PAT.parameters/cardioception.PAT.parameters.startPhaseSequence.html#cardioception.PAT.parameters.startPhaseSequence">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">startPhaseSequence</span><span class="p">(</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">phases</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span>
+    <span class="n">rng</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Draw the start phase of each trial, as the PAT-ECG firmware does.</span>
+
+<span class="sd">    The sequence is made of blocks, each a random permutation of `phases`. A</span>
+<span class="sd">    block is drawn again when its first value equals the last value of the</span>
+<span class="sd">    block before, so no start phase follows itself across a block boundary</span>
+<span class="sd">    (or within a block, since a permutation holds each value once).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Length of the sequence.</span>
+<span class="sd">    phases : sequence of float</span>
+<span class="sd">        The start phases, in degrees.</span>
+<span class="sd">    rng : numpy.random.Generator | None</span>
+<span class="sd">        Random generator, for reproducible sequences.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sequence : list of float</span>
+<span class="sd">        `n` start phases, in degrees.</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"n should be 0 or more, got </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="n">phases</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Give at least one start phase."</span><span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span> <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">rng</span>
+    <span class="n">distinct</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">phases</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span>
+
+    <span class="n">sequence</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="p">[</span><span class="n">phases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rng</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">phases</span><span class="p">))]</span>
+        <span class="k">while</span> <span class="n">distinct</span> <span class="ow">and</span> <span class="n">sequence</span> <span class="ow">and</span> <span class="n">block</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">sequence</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">block</span> <span class="o">=</span> <span class="p">[</span><span class="n">phases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rng</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">phases</span><span class="p">))]</span>
+        <span class="n">sequence</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sequence</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate</span><span class="p">(</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">nTrials</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">nPractice</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">startPhases</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">extero</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">exteroPeriod</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">audioLead</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">toneFreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">toneDuration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">toneVolume</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">vibrationVolume</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">dialGainDeg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">dialGainMs</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">minToneGap</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">confidenceScale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ConfidenceScale</span><span class="p">],</span>
+    <span class="n">wheelDirection</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Raise a ValueError naming the first invalid setting."""</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">MODES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"mode should be one of </span><span class="si">{</span><span class="n">MODES</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">mode</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">language</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available_languages</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Invalid language: </span><span class="si">{</span><span class="n">language</span><span class="si">!r}</span><span class="s2">. Can be one of "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">available_languages</span><span class="p">())</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DEVICES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"device should be one of </span><span class="si">{</span><span class="n">DEVICES</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">extero</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"extero should be True or False, got </span><span class="si">{</span><span class="n">extero</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">nTrials</span><span class="p">)</span> <span class="o">!=</span> <span class="n">nTrials</span> <span class="ow">or</span> <span class="n">nTrials</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"nTrials should be a whole number of 1 or more, got </span><span class="si">{</span><span class="n">nTrials</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">nPractice</span><span class="p">)</span> <span class="o">!=</span> <span class="n">nPractice</span> <span class="ow">or</span> <span class="n">nPractice</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"nPractice should be a whole number of 0 or more, got </span><span class="si">{</span><span class="n">nPractice</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">startPhases</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"startPhases should hold at least one phase."</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">startPhases</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">phase</span> <span class="o">&lt;</span> <span class="mi">360</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Start phases are degrees in [0, 360), got </span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">startPhases</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exteroPeriod</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">exteroPeriod</span> <span class="o">!=</span> <span class="s2">"simulated"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"exteroPeriod should be 'simulated', a period in seconds or a "</span>
+                <span class="sa">f</span><span class="s2">"sequence of periods in seconds, got </span><span class="si">{</span><span class="n">exteroPeriod</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">periods</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">exteroPeriod</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">periods</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">periods</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">periods</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"exteroPeriod should hold positive seconds, got </span><span class="si">{</span><span class="n">exteroPeriod</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">periods</span> <span class="o">&lt;</span> <span class="mf">0.25</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">periods</span> <span class="o">&gt;</span> <span class="mf">3.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"exteroPeriod should be seconds between 0.25 and 3, got "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">exteroPeriod</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s2">"audioLead"</span><span class="p">,</span> <span class="n">audioLead</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"toneFreq"</span><span class="p">,</span> <span class="n">toneFreq</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"toneDuration"</span><span class="p">,</span> <span class="n">toneDuration</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"dialGainDeg"</span><span class="p">,</span> <span class="n">dialGainDeg</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"dialGainMs"</span><span class="p">,</span> <span class="n">dialGainMs</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> should be above 0, got </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">toneVolume</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"toneVolume should be in (0, 1], got </span><span class="si">{</span><span class="n">toneVolume</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">vibrationVolume</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"vibrationVolume should be in [0, 1], got </span><span class="si">{</span><span class="n">vibrationVolume</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">wheelDirection</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"wheelDirection should be 1 or -1, got </span><span class="si">{</span><span class="n">wheelDirection</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">minToneGap</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"minToneGap should be 0 or more, got </span><span class="si">{</span><span class="n">minToneGap</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">minToneGap</span> <span class="o">&lt;</span> <span class="n">min_tone_spacing</span><span class="p">(</span><span class="n">toneDuration</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"minToneGap should be at least toneDuration plus </span><span class="si">{</span><span class="n">TONE_CLEARANCE</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"s (</span><span class="si">{</span><span class="n">min_tone_spacing</span><span class="p">(</span><span class="n">toneDuration</span><span class="p">)</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> s), got </span><span class="si">{</span><span class="n">minToneGap</span><span class="si">}</span><span class="s2">. The "</span>
+            <span class="s2">"tone player starts a tone only once the previous one has ended and "</span>
+            <span class="s2">"it has been polled again, so a tone sooner than that plays late."</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">confidenceScale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">confidenceScale</span><span class="p">,</span> <span class="n">ConfidenceScale</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"confidenceScale should be a cardioception.scales.ConfidenceScale "</span>
+            <span class="sa">f</span><span class="s2">"or None, got </span><span class="si">{</span><span class="n">confidenceScale</span><span class="si">!r}</span><span class="s2">."</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_markerOutlet</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Open an LSL string outlet for the task's JSON markers."""</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pylsl</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="n">pylsl</span><span class="o">.</span><span class="n">StreamInfo</span><span class="p">(</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="s2">"Markers"</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">,</span>
+        <span class="n">pylsl</span><span class="o">.</span><span class="n">IRREGULAR_RATE</span><span class="p">,</span>
+        <span class="n">pylsl</span><span class="o">.</span><span class="n">cf_string</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"cardioception-</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">pylsl</span><span class="o">.</span><span class="n">StreamOutlet</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="getParameters"><a class="viewcode-back" href="../../../generated/PAT.parameters/cardioception.PAT.parameters.getParameters.html#cardioception.PAT.parameters.getParameters">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">getParameters</span><span class="p">(</span>
+    <span class="n">participant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"SubjectTest"</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"001"</span><span class="p">,</span>
+    <span class="n">recorder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"relative"</span><span class="p">,</span>
+    <span class="n">nTrials</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">28</span><span class="p">,</span>
+    <span class="n">nPractice</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">startPhases</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"keyboard"</span><span class="p">,</span>
+    <span class="n">screenNb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">fullscr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">resultPath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"english"</span><span class="p">,</span>
+    <span class="n">extero</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">exteroPeriod</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">"simulated"</span><span class="p">,</span>
+    <span class="n">latencyBias</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">audioLead</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">toneFreq</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span>
+    <span class="n">toneDuration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.03</span><span class="p">,</span>
+    <span class="n">toneVolume</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">vibrationVolume</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">dialGainDeg</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">dialGainMs</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">25.0</span><span class="p">,</span>
+    <span class="n">wheelDirection</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">showDial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">minToneGap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">confidenceScale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ConfidenceScale</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">markerStream</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"PAT"</span><span class="p">,</span>
+    <span class="n">triggers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">autopilot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">beat_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">tone_player</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Create Phase Adjustment Task parameters.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    participant : str</span>
+<span class="sd">        Participant ID.</span>
+<span class="sd">    session : str</span>
+<span class="sd">        Session label.</span>
+<span class="sd">    recorder : :class:`cardioception.devices.LSLRecorder` | None</span>
+<span class="sd">        The ECG stream. Required unless `extero=True`. The task reads its inlet</span>
+<span class="sd">        through the beat detector, so do not read from it yourself.</span>
+<span class="sd">    mode : str</span>
+<span class="sd">        `"relative"`: the dial is a phase of the anticipated heart period, in</span>
+<span class="sd">        degrees, and wraps at 360. `"absolute"`: the dial is a delay in ms after</span>
+<span class="sd">        the R-wave, and wraps at the anticipated period.</span>
+<span class="sd">    nTrials : int</span>
+<span class="sd">        Number of main trials. The paper used 28.</span>
+<span class="sd">    nPractice : int</span>
+<span class="sd">        Number of practice trials before the main trials. The paper used 8.</span>
+<span class="sd">    startPhases : sequence of float</span>
+<span class="sd">        Start phases of the dial, in degrees. Each trial starts at one of them,</span>
+<span class="sd">        in blocks of a random permutation (see :func:`startPhaseSequence`).</span>
+<span class="sd">    device : str</span>
+<span class="sd">        Confidence rating with the arrow keys (`"keyboard"`) or the mouse</span>
+<span class="sd">        (`"mouse"`). The dial is the mouse wheel either way.</span>
+<span class="sd">    screenNb : int</span>
+<span class="sd">        Screen number, passed to :py:class:`psychopy.visual.Window`.</span>
+<span class="sd">    fullscr : bool</span>
+<span class="sd">        If `True`, the window is full screen.</span>
+<span class="sd">    resultPath : str | None</span>
+<span class="sd">        Root directory holding every participant; results go to</span>
+<span class="sd">        `&lt;resultPath&gt;/sub-&lt;participant&gt;/ses-&lt;session&gt;/run-&lt;timestamp&gt;/`.</span>
+<span class="sd">        Defaults to `&lt;cwd&gt;/data`.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Allow writing into a run directory that already holds results.</span>
+<span class="sd">    seed : int | None</span>
+<span class="sd">        Seeds the session generator, which draws the start phases, the</span>
+<span class="sd">        simulated heart of the exteroceptive task, the tutorial start phase</span>
+<span class="sd">        and the starting position of the confidence marker. Drawn from</span>
+<span class="sd">        entropy when `None`, and recorded either way.</span>
+<span class="sd">    language : str</span>
+<span class="sd">        A language in `cardioception/PAT/texts`, `"english"` or `"danish"` so</span>
+<span class="sd">        far (:func:`cardioception.PAT.languages.available` lists them).</span>
+<span class="sd">    extero : bool</span>
+<span class="sd">        If `True`, run the exteroceptive control task: a vibration on the hand</span>
+<span class="sd">        takes the place of the heartbeat, and no ECG is needed.</span>
+<span class="sd">    exteroPeriod : str | float | sequence of float</span>
+<span class="sd">        Period of the vibration in the extero task: `"simulated"` (a heart</span>
+<span class="sd">        period series with realistic variability, as in the PAT-ECG firmware),</span>
+<span class="sd">        a fixed period in seconds, or a sequence of periods in seconds to replay.</span>
+<span class="sd">    latencyBias : float</span>
+<span class="sd">        Seconds subtracted from every tone target, for the delay between the</span>
+<span class="sd">        R-wave and its LSL timestamp plus the speaker's delay after the</span>
+<span class="sd">        reported onset. Neither shows in the recording.</span>
+<span class="sd">    audioLead : float</span>
+<span class="sd">        Minimum time between scheduling a tone and its target, in seconds. A</span>
+<span class="sd">        tone that cannot be scheduled that far ahead is anchored on the</span>
+<span class="sd">        predicted next R-wave instead.</span>
+<span class="sd">    toneFreq, toneDuration, toneVolume : float</span>
+<span class="sd">        The tone: frequency (Hz), duration (s) and volume (0 to 1).</span>
+<span class="sd">    vibrationVolume : float</span>
+<span class="sd">        Volume (0 to 1) of the 50 Hz burst on the right audio channel that marks</span>
+<span class="sd">        each beat of the exteroceptive task, for an amplifier and tactor on that</span>
+<span class="sd">        channel. Default is `0`, silent, so headphones or speakers never carry</span>
+<span class="sd">        it by accident.</span>
+<span class="sd">    dialGainDeg : float</span>
+<span class="sd">        Degrees per wheel notch in relative mode.</span>
+<span class="sd">    dialGainMs : float</span>
+<span class="sd">        Milliseconds per wheel notch in absolute mode.</span>
+<span class="sd">    wheelDirection : int</span>
+<span class="sd">        `1` or `-1`. With `1`, rolling the wheel away from you (a positive</span>
+<span class="sd">        wheel step in PsychoPy, which is Windows' forward rotation) moves the</span>
+<span class="sd">        beeps later. Use `-1` for a mouse or driver that reverses the wheel.</span>
+<span class="sd">    showDial : bool</span>
+<span class="sd">        If `True`, a ring with a pointer around the fixation cross shows how</span>
+<span class="sd">        far the wheel has turned since the trial began (never the phase</span>
+<span class="sd">        itself), and the pointer flashes with each beep.</span>
+<span class="sd">    minToneGap : float</span>
+<span class="sd">        A tone is skipped when its target is less than this many seconds after</span>
+<span class="sd">        the previous target, so the participant never hears two tones in quick</span>
+<span class="sd">        succession while turning the dial. At least `toneDuration` plus</span>
+<span class="sd">        0.05 s, or a tone could play late.</span>
+<span class="sd">    confidenceScale : ConfidenceScale | None</span>
+<span class="sd">        How confidence is collected. `None` takes</span>
+<span class="sd">        :data:`cardioception.scales.DISCRETE_1_10`, the 1 to 10 of the paper,</span>
+<span class="sd">        with the end labels of the language. A scale passed in keeps its own</span>
+<span class="sd">        labels. Its ends are the numbers the instructions name.</span>
+<span class="sd">    markerStream : str | None</span>
+<span class="sd">        Name of the LSL marker stream the task opens. Every beat, tone, dial</span>
+<span class="sd">        move, press and rating is pushed to it as one JSON string, so a</span>
+<span class="sd">        LabRecorder file holds the ECG and the task together. `None` falls back</span>
+<span class="sd">        on the recorder's own marker outlet, if it has one.</span>
+<span class="sd">    triggers : dict | None</span>
+<span class="sd">        `{event: callable}` for the events in :data:`EVENTS`, for a parallel</span>
+<span class="sd">        port or another marker of your own. Checked here, so a misspelt event</span>
+<span class="sd">        fails before the window opens.</span>
+<span class="sd">    autopilot : PATAutopilot | None</span>
+<span class="sd">        A simulated participant</span>
+<span class="sd">        (:class:`cardioception.PAT._autopilot.PATAutopilot`), for headless</span>
+<span class="sd">        runs. It can also be set as `parameters["autopilot"]` afterwards, built</span>
+<span class="sd">        on `parameters["rng"]`.</span>
+<span class="sd">    beat_source, tone_player :</span>
+<span class="sd">        Replace the beat source (the ECG, or the virtual heart with</span>
+<span class="sd">        `extero=True`) and the PsychPortAudio tone player, for tests and</span>
+<span class="sd">        headless runs. Both must report times on the LSL clock. With</span>
+<span class="sd">        `beat_source` no recorder is needed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        The settings above, plus:</span>
+
+<span class="sd">        * `win`: the PsychoPy window.</span>
+<span class="sd">        * `texts`: the instructions, from :mod:`cardioception.PAT.languages`.</span>
+<span class="sd">        * `engine`: the :class:`cardioception.PAT.engine.PhaseEngine` that turns</span>
+<span class="sd">          beats and dial moves into tones.</span>
+<span class="sd">        * `outlet`: the LSL marker outlet, or `None`.</span>
+<span class="sd">        * `startPhasePractice`, `startPhaseMain`: the start phase of each trial.</span>
+<span class="sd">        * `results_df`: the trial results, filled during the task.</span>
+<span class="sd">        * `tones`: the tone rows, filled during the task.</span>
+<span class="sd">        * `rng`, `seed`: the session generator and its seed.</span>
+<span class="sd">        * `paths`: the :class:`cardioception.output.SessionPaths` of the run.</span>
+<span class="sd">        * `path`, `resultPath`: working and run directories.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    `manifest.json` (the session's settings) and `session.log` are written to</span>
+<span class="sd">    the run directory at once. Three tab-separated files follow, each named</span>
+<span class="sd">    `sub-&lt;participant&gt;_ses-&lt;session&gt;_run-&lt;timestamp&gt;_&lt;kind&gt;.txt`: `final`</span>
+<span class="sd">    (one row per trial) and `tones` (one row per tone), rewritten after every</span>
+<span class="sd">    trial, and `parameters` (the settings), written when the task starts. All</span>
+<span class="sd">    times are LSL seconds (`pylsl.local_clock`), except `WallTime` in</span>
+<span class="sd">    `final`, which is `time.time()` at the press.</span>
+
+<span class="sd">    """</span>
+    <span class="n">_validate</span><span class="p">(</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">nTrials</span><span class="o">=</span><span class="n">nTrials</span><span class="p">,</span>
+        <span class="n">nPractice</span><span class="o">=</span><span class="n">nPractice</span><span class="p">,</span>
+        <span class="n">startPhases</span><span class="o">=</span><span class="n">startPhases</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">language</span><span class="o">=</span><span class="n">language</span><span class="p">,</span>
+        <span class="n">extero</span><span class="o">=</span><span class="n">extero</span><span class="p">,</span>
+        <span class="n">exteroPeriod</span><span class="o">=</span><span class="n">exteroPeriod</span><span class="p">,</span>
+        <span class="n">audioLead</span><span class="o">=</span><span class="n">audioLead</span><span class="p">,</span>
+        <span class="n">toneFreq</span><span class="o">=</span><span class="n">toneFreq</span><span class="p">,</span>
+        <span class="n">toneDuration</span><span class="o">=</span><span class="n">toneDuration</span><span class="p">,</span>
+        <span class="n">toneVolume</span><span class="o">=</span><span class="n">toneVolume</span><span class="p">,</span>
+        <span class="n">vibrationVolume</span><span class="o">=</span><span class="n">vibrationVolume</span><span class="p">,</span>
+        <span class="n">dialGainDeg</span><span class="o">=</span><span class="n">dialGainDeg</span><span class="p">,</span>
+        <span class="n">dialGainMs</span><span class="o">=</span><span class="n">dialGainMs</span><span class="p">,</span>
+        <span class="n">minToneGap</span><span class="o">=</span><span class="n">minToneGap</span><span class="p">,</span>
+        <span class="n">confidenceScale</span><span class="o">=</span><span class="n">confidenceScale</span><span class="p">,</span>
+        <span class="n">wheelDirection</span><span class="o">=</span><span class="n">wheelDirection</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">recorder</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">extero</span> <span class="ow">and</span> <span class="n">engine</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">beat_source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"The PAT needs an ECG recorder, e.g. "</span>
+            <span class="s2">"recorder=LSLRecorder(name='PLUX', channel='ECG2'), unless extero=True."</span>
+        <span class="p">)</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"seed"</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"autopilot"</span><span class="p">]</span> <span class="o">=</span> <span class="n">autopilot</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"triggers"</span><span class="p">]</span> <span class="o">=</span> <span class="n">validate_triggers</span><span class="p">(</span><span class="n">triggers</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">EVENTS</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"participant"</span><span class="p">]</span> <span class="o">=</span> <span class="n">participant</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"session"</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"mode"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mode</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"extero"</span><span class="p">]</span> <span class="o">=</span> <span class="n">extero</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"exteroPeriod"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">exteroPeriod</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exteroPeriod</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">exteroPeriod</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nTrials</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nPractice"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nPractice</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"nBreaking"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"startPhases"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">startPhases</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"screenNb"</span><span class="p">]</span> <span class="o">=</span> <span class="n">screenNb</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"monitor"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"testMonitor"</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"language"</span><span class="p">]</span> <span class="o">=</span> <span class="n">language</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"latencyBias"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">latencyBias</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"audioLead"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">audioLead</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"toneFreq"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">toneFreq</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"toneDuration"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">toneDuration</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"toneVolume"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">toneVolume</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"vibrationVolume"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">vibrationVolume</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"dialGainDeg"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dialGainDeg</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"dialGainMs"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dialGainMs</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"minToneGap"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">minToneGap</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"markerStream"</span><span class="p">]</span> <span class="o">=</span> <span class="n">markerStream</span>
+
+    <span class="c1"># Task flow</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"startKey"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"space"</span>  <span class="c1"># starts a trial, and ends it</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"dialKeys"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"left"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">]</span>  <span class="c1"># a second dial; [] to disable</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"minTrialTime"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">3.0</span>  <span class="c1"># space is ignored this long into a trial</span>
+    <span class="c1"># A trial still running this long (a lost ECG, say) ends with no choice</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"maxTrialTime"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">60.0</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"minRatingTime"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"maxRatingTime"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># wait for the rating, as the paper did</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"statusEvery"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># seconds between experimenter status lines</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"noBeatWarning"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">3.0</span>  <span class="c1"># warn the experimenter after this silence</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"textSize"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.04</span>
+
+    <span class="c1"># The dial on screen, and the guided tutorial</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"wheelDirection"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">wheelDirection</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"showDial"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">showDial</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"dialRadius"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.15</span>  <span class="c1"># height units, around the fixation cross</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"flashDuration"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># seconds the pointer brightens per beep</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"tutorialListenTones"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># beeps heard before going on</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"tutorialNotches"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># notches each way before going on</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"tutorialStageTimeout"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">20.0</span>  <span class="c1"># space works after this anyway</span>
+
+    <span class="c1"># Start phases: one sequence for practice, one for the main trials</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"startPhasePractice"</span><span class="p">]</span> <span class="o">=</span> <span class="n">startPhaseSequence</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"nPractice"</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"startPhases"</span><span class="p">],</span> <span class="n">rng</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"startPhaseMain"</span><span class="p">]</span> <span class="o">=</span> <span class="n">startPhaseSequence</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"startPhases"</span><span class="p">],</span> <span class="n">rng</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"results_df"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"tones"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"trialBlocks"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># trial number -&gt; block, for tones.txt</span>
+
+    <span class="c1"># Run directory: &lt;resultPath&gt;/sub-&lt;participant&gt;/ses-&lt;session&gt;/run-&lt;time&gt;/</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span> <span class="o">=</span> <span class="n">SessionPaths</span><span class="p">(</span>
+        <span class="n">root</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">resultPath</span>
+            <span class="k">if</span> <span class="n">resultPath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"path"</span><span class="p">],</span> <span class="s2">"data"</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">participant</span><span class="o">=</span><span class="n">participant</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"resultPath"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">directory</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"logFile"</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_session_log</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
+
+    <span class="c1">##############</span>
+    <span class="c1"># Load texts #</span>
+    <span class="c1">##############</span>
+    <span class="c1"># The ends of the scale are known before its labels, which come from the</span>
+    <span class="c1"># texts, so the instructions can name them.</span>
+    <span class="n">ends</span> <span class="o">=</span> <span class="n">confidenceScale</span> <span class="k">if</span> <span class="n">confidenceScale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DISCRETE_1_10</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_texts</span><span class="p">(</span>
+        <span class="n">language</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">extero</span><span class="o">=</span><span class="n">extero</span><span class="p">,</span>
+        <span class="n">low</span><span class="o">=</span><span class="n">ends</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+        <span class="n">high</span><span class="o">=</span><span class="n">ends</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
+        <span class="n">showDial</span><span class="o">=</span><span class="n">showDial</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">confidenceScale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">confidenceScale</span> <span class="o">=</span> <span class="n">DISCRETE_1_10</span><span class="o">.</span><span class="n">with_labels</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"texts"</span><span class="p">][</span><span class="s2">"VASlabels"</span><span class="p">])</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"confidenceScale"</span><span class="p">]</span> <span class="o">=</span> <span class="n">confidenceScale</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"labelsRating"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">confidenceScale</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="c1">###########################</span>
+    <span class="c1"># Marker outlet and engine #</span>
+    <span class="c1">###########################</span>
+    <span class="c1"># Built before the window, so a missing sound card or stream fails with</span>
+    <span class="c1"># its own message rather than behind a full screen window.</span>
+    <span class="c1"># An injected engine brings its own markers, so no stream is opened for it.</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"outlet"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">engine</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">markerStream</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"outlet"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_markerOutlet</span><span class="p">(</span><span class="n">markerStream</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">recorder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">"outlet"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">recorder</span><span class="p">,</span> <span class="s2">"outlet"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"recorder"</span><span class="p">]</span> <span class="o">=</span> <span class="n">recorder</span>
+
+    <span class="k">if</span> <span class="n">engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.engine</span><span class="w"> </span><span class="kn">import</span> <span class="n">LSLBeatSource</span><span class="p">,</span> <span class="n">PhaseEngine</span><span class="p">,</span> <span class="n">TonePlayer</span><span class="p">,</span> <span class="n">VirtualBeatSource</span>
+
+        <span class="n">source</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">beat_source</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">extero</span><span class="p">:</span>
+            <span class="c1"># The simulated heart draws its own series from a seed, taken from</span>
+            <span class="c1"># the session generator so the seed in the manifest decides it.</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">VirtualBeatSource</span><span class="p">(</span>
+                <span class="n">exteroPeriod</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"rng"</span><span class="p">]</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">32</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">LSLBeatSource</span><span class="p">(</span><span class="n">recorder</span><span class="p">)</span>
+        <span class="n">player</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">tone_player</span>
+        <span class="k">if</span> <span class="n">player</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">player</span> <span class="o">=</span> <span class="n">TonePlayer</span><span class="p">(</span>
+                <span class="n">freq</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"toneFreq"</span><span class="p">],</span>
+                <span class="n">duration</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"toneDuration"</span><span class="p">],</span>
+                <span class="n">volume</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"toneVolume"</span><span class="p">],</span>
+                <span class="n">vib_volume</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"vibrationVolume"</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="n">engine</span> <span class="o">=</span> <span class="n">PhaseEngine</span><span class="p">(</span>
+            <span class="n">source</span><span class="p">,</span>
+            <span class="n">player</span><span class="p">,</span>
+            <span class="n">mode</span><span class="p">,</span>
+            <span class="n">latency_bias</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"latencyBias"</span><span class="p">],</span>
+            <span class="n">audio_lead</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"audioLead"</span><span class="p">],</span>
+            <span class="n">min_tone_gap</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"minToneGap"</span><span class="p">],</span>
+            <span class="n">outlet</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"outlet"</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"engine"</span><span class="p">]</span> <span class="o">=</span> <span class="n">engine</span>
+
+    <span class="c1">###############</span>
+    <span class="c1"># Open window #</span>
+    <span class="c1">###############</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">psychopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">event</span><span class="p">,</span> <span class="n">visual</span>
+
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span> <span class="o">=</span> <span class="n">visual</span><span class="o">.</span><span class="n">Window</span><span class="p">(</span>
+        <span class="n">monitor</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"monitor"</span><span class="p">],</span>
+        <span class="n">screen</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"screenNb"</span><span class="p">],</span>
+        <span class="n">fullscr</span><span class="o">=</span><span class="n">fullscr</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">"height"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">mouseVisible</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># The wheel is the dial, so the mouse is needed whatever the rating device</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"myMouse"</span><span class="p">]</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">Mouse</span><span class="p">(</span><span class="n">win</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">])</span>
+
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"startTime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">]</span><span class="o">.</span><span class="n">write_manifest</span><span class="p">(</span>
+        <span class="n">task</span><span class="o">=</span><span class="s2">"PAT"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">,</span>
+        <span class="n">start_epoch</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startTime"</span><span class="p">],</span>
+        <span class="n">start_local</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="n">timespec</span><span class="o">=</span><span class="s2">"seconds"</span><span class="p">),</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"seed"</span><span class="p">],</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">language</span><span class="o">=</span><span class="n">language</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">extero</span><span class="o">=</span><span class="n">extero</span><span class="p">,</span>
+        <span class="n">exteroPeriod</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"exteroPeriod"</span><span class="p">],</span>
+        <span class="n">nTrials</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nTrials"</span><span class="p">],</span>
+        <span class="n">nPractice</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"nPractice"</span><span class="p">],</span>
+        <span class="n">startPhases</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"startPhases"</span><span class="p">],</span>
+        <span class="n">confidence</span><span class="o">=</span><span class="n">confidenceScale</span><span class="o">.</span><span class="n">describe</span><span class="p">(),</span>
+        <span class="n">recording</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">recorder</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">recorder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">recorder</span><span class="p">,</span> <span class="s2">"describe"</span><span class="p">)</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">),</span>
+        <span class="n">beat_source</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="n">tone_player</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="s2">"player"</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="n">autopilot</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">autopilot</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">type</span><span class="p">(</span><span class="n">autopilot</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"PAT session </span><span class="si">{</span><span class="n">participant</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> mode"</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">', exteroceptive'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">extero</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">, seed </span><span class="si">{</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'seed'</span><span class="p">]</span><span class="si">}</span><span class="s2">, "</span>
+        <span class="sa">f</span><span class="s2">"results in </span><span class="si">{</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'resultPath'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parameters</span></div>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2019-2026, Micah Allen and the Embodied Computation Group, Aarhus University
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/embodied-computation-group/Cardioception" aria-label="GitHub"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg></a>
+              <a class="muted-link " href="https://pypi.org/project/cardioception-toolbox/" aria-label="PyPI"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path d="M8.878.392a1.75 1.75 0 0 0-1.756 0l-5.25 3.045A1.75 1.75 0 0 0 1 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 0 0 1.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514ZM7.875 1.69a.25.25 0 0 1 .25 0l4.63 2.685L8 7.133 3.245 4.375Zm-5.375 9.36V5.677l4.75 2.755v5.339l-4.626-2.683a.25.25 0 0 1-.124-.216Zm6.25 2.755V8.432l4.75-2.755v5.372a.25.25 0 0 1-.124.216Z"></path></svg></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    </body>
+</html>

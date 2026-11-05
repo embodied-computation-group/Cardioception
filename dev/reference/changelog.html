@@ -1,0 +1,748 @@
+
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="Changelog" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/reference/changelog.html" />
+<meta property="og:site_name" content="Cardioception Toolbox" />
+<meta property="og:description" content="1.0.0 (unreleased): 1.0.0 is the first release of the rewritten package. It runs four tasks under one output layout: the Heart Rate Discrimination and Heartbeat Counting tasks, and the Heartbeat Sy..." />
+<meta property="og:image:width" content="1146" />
+<meta property="og:image:height" content="600" />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_reference_changelog_9dcff9b3.png" />
+<meta property="og:image:alt" content="1.0.0 (unreleased): 1.0.0 is the first release of the rewritten package. It runs four tasks under one output layout: the Heart Rate Discrimination and Heartb..." />
+<meta name="description" content="1.0.0 (unreleased): 1.0.0 is the first release of the rewritten package. It runs four tasks under one output layout: the Heart Rate Discrimination and Heartbeat Counting tasks, and the Heartbeat Sy..." />
+<meta name="twitter:card" content="summary_large_image" />
+
+<meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="References" href="references.html" />
+        <link rel="canonical" href="https://www.the-ecg.org/Cardioception/dev/reference/changelog.html" />
+
+    <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>Changelog - Cardioception Toolbox</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: #1f3352;
+  --color-brand-content: #2f4b73;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     These are the docs for Cardioception 1.0, in development and not yet on PyPI. <a href="https://www.the-ecg.org/Cardioception/">The docs for the current release are here.</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Cardioception Toolbox</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/cardioception_icon.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started/recording-devices.html">Recording devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started/running-a-session.html">Running a session</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tasks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tasks/index.html">The tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tasks/theory.html">Measuring cardiac interoception</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tasks/hrd/index.html">Heart Rate Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tasks/hrd/tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tasks/hrd/tutorials/inspecting-data.html">Inspecting and plotting an HRD session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tasks/hrd/tutorials/psychophysics.html">The psychophysical model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tasks/hrd/tutorials/hierarchical.html">Hierarchical modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tasks/hrd/tutorials/metacognition.html">Metacognition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/hrd/reports.html">HTML reports (legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tasks/hbc.html">Heartbeat Counting task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tasks/pat.html">Phase Adjustment Task</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tasks/hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/hsd/design.html">HSD design and validation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tasks/whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tasks/constant-stimuli.html">Method of constant stimuli</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html">cardioception.HRD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.config/cardioception.HRD.config.TaskConfig.html">cardioception.HRD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.task/cardioception.HRD.task.run.html">cardioception.HRD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.task/cardioception.HRD.task.trial.html">cardioception.HRD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.task/cardioception.HRD.task.tutorial.html">cardioception.HRD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.task/cardioception.HRD.task.confidenceRatingTask.html">cardioception.HRD.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.languages/cardioception.HRD.languages.available.html">cardioception.HRD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HRD.languages/cardioception.HRD.languages.get_texts.html">cardioception.HRD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html">cardioception.HBC.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.task/cardioception.HBC.task.run.html">cardioception.HBC.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.task/cardioception.HBC.task.tutorial.html">cardioception.HBC.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.task/cardioception.HBC.task.rest.html">cardioception.HBC.task.rest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.languages/cardioception.HBC.languages.available.html">cardioception.HBC.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HBC.languages/cardioception.HBC.languages.get_texts.html">cardioception.HBC.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.parameters/cardioception.PAT.parameters.getParameters.html">cardioception.PAT.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.parameters/cardioception.PAT.parameters.startPhaseSequence.html">cardioception.PAT.parameters.startPhaseSequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.task/cardioception.PAT.task.run.html">cardioception.PAT.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.task/cardioception.PAT.task.trial.html">cardioception.PAT.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.task/cardioception.PAT.task.tutorial.html">cardioception.PAT.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.task/cardioception.PAT.task.dialLoop.html">cardioception.PAT.task.dialLoop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.task/cardioception.PAT.task.confidenceRatingTask.html">cardioception.PAT.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.engine/cardioception.PAT.engine.PhaseEngine.html">cardioception.PAT.engine.PhaseEngine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.consistency_grid.html">cardioception.PAT.scoring.consistency_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.mean_resultant_length.html">cardioception.PAT.scoring.mean_resultant_length</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.phase_angles.html">cardioception.PAT.scoring.phase_angles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.monte_carlo_threshold.html">cardioception.PAT.scoring.monte_carlo_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.extero_threshold.html">cardioception.PAT.scoring.extero_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.scoring/cardioception.PAT.scoring.mad_outliers.html">cardioception.PAT.scoring.mad_outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.languages/cardioception.PAT.languages.available.html">cardioception.PAT.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/PAT.languages/cardioception.PAT.languages.get_texts.html">cardioception.PAT.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.parameters/cardioception.HSD.parameters.getParameters.html">cardioception.HSD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.config/cardioception.HSD.config.TaskConfig.html">cardioception.HSD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.task/cardioception.HSD.task.run.html">cardioception.HSD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.task/cardioception.HSD.task.trial.html">cardioception.HSD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.task/cardioception.HSD.task.tutorial.html">cardioception.HSD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.psi/cardioception.HSD.psi.SynchronyPsi.html">cardioception.HSD.psi.SynchronyPsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.psi/cardioception.HSD.psi.gaussian_envelope.html">cardioception.HSD.psi.gaussian_envelope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.psi/cardioception.HSD.psi.default_grids.html">cardioception.HSD.psi.default_grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.languages/cardioception.HSD.languages.available.html">cardioception.HSD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/HSD.languages/cardioception.HSD.languages.get_texts.html">cardioception.HSD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices/cardioception.devices.ContinuousOximeter.html">cardioception.devices.ContinuousOximeter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices/cardioception.devices.LSLRecorder.html">cardioception.devices.LSLRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices/cardioception.devices.ReplayRecorder.html">cardioception.devices.ReplayRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices.beat_source/cardioception.devices.beat_source.LSLBeatSource.html">cardioception.devices.beat_source.LSLBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices.beat_source/cardioception.devices.beat_source.VirtualBeatSource.html">cardioception.devices.beat_source.VirtualBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/devices.tone_player/cardioception.devices.tone_player.TonePlayer.html">cardioception.devices.tone_player.TonePlayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/scales/cardioception.scales.ConfidenceScale.html">cardioception.scales.ConfidenceScale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/embodied-computation-group/Cardioception/edit/main/docs/source/reference/changelog.md" title="Edit this page">
+    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+    </svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this heading">#</a></h1>
+<section id="unreleased">
+<h2>1.0.0 (unreleased)<a class="headerlink" href="#unreleased" title="Permalink to this heading">#</a></h2>
+<p>1.0.0 is the first release of the rewritten package. It runs four tasks under
+one output layout: the Heart Rate Discrimination and Heartbeat Counting tasks,
+and the Heartbeat Synchrony Discrimination and Phase Adjustment tasks, both
+in beta. It changes the output schema and the output layout, so analysis scripts
+written against 0.7.x need the migration notes under Breaking below. The 0.7
+line stays installable from the <code class="docutils literal notranslate"><span class="pre">legacy/0.7</span></code> branch and the <code class="docutils literal notranslate"><span class="pre">v0.7.2</span></code> tag.</p>
+<section id="breaking">
+<h3>Breaking<a class="headerlink" href="#breaking" title="Permalink to this heading">#</a></h3>
+<p><strong>Results now live in per-run directories.</strong>
+<code class="docutils literal notranslate"><span class="pre">data/&lt;participant&gt;&lt;session&gt;/</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">data/sub-&lt;participant&gt;/ses-&lt;session&gt;/run-&lt;YYYYMMDD-HHMMSS&gt;/</span></code>, and every
+filename carries all three identifiers. Two consequences:</p>
+<ul class="simple">
+<li><p>Participant and session are no longer concatenated. <code class="docutils literal notranslate"><span class="pre">(&quot;P0&quot;,</span> <span class="pre">&quot;1001&quot;)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">(&quot;P01&quot;,</span> <span class="pre">&quot;001&quot;)</span></code> used to land in the same directory; they no longer can.</p></li>
+<li><p>A repeated session cannot overwrite an earlier one. This has cost real data
+in longitudinal studies, and the workaround, telling people to append the
+session to the participant ID, is no longer needed. Starting a session over
+an existing set of results raises <code class="docutils literal notranslate"><span class="pre">FileExistsError</span></code> unless you pass
+<code class="docutils literal notranslate"><span class="pre">overwrite=True</span></code>.</p></li>
+</ul>
+<p>Read <code class="docutils literal notranslate"><span class="pre">&lt;run</span> <span class="pre">directory&gt;/*_final.txt</span></code> rather than a name you construct yourself.
+<code class="docutils literal notranslate"><span class="pre">parameters[&quot;resultPath&quot;]</span></code> still exists and now points at the run directory.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">listenBPM</span></code> is the rate over the listening window,</strong> <code class="docutils literal notranslate"><span class="pre">60000</span> <span class="pre">/</span> <span class="pre">mean(IBI)</span></code>,
+where it was previously <code class="docutils literal notranslate"><span class="pre">mean(60000</span> <span class="pre">/</span> <span class="pre">IBI)</span></code>. By Jensen’s inequality the second
+is always the larger; on real PPG the difference is about +0.33 BPM. The tone
+was therefore reliably faster than the heart it was meant to match. The old
+value is kept as <code class="docutils literal notranslate"><span class="pre">listenBPM_arithmetic</span></code>. New sessions are not directly
+comparable to published ones on this variable.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">Confidence</span></code> is labelled.</strong> It previously held 0-100 from the mouse, 1-10
+from the HRD keyboard and 1-7 from HBC, with nothing in the output saying
+which. The raw rating still uses its own scale; <code class="docutils literal notranslate"><span class="pre">ConfidenceUnit</span></code> carries the
+same rating on 0-1 so sessions run on different scales can be pooled, and the
+scale definition is written on every row next to <code class="docutils literal notranslate"><span class="pre">Device</span></code>.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">stairType=&quot;updown&quot;</span></code> raises.</strong> The nUp/nDown staircase is gone. It described
+itself as a 1-down 2-up procedure converging at ~71% accuracy, but built its
+conditions with <code class="docutils literal notranslate"><span class="pre">nUp=1,</span> <span class="pre">nDown=1</span></code>, which converges at 50%, chance on a
+two-alternative task. The documentation and the code never agreed, no published
+Cardioception data used it, and it could not estimate a slope. <code class="docutils literal notranslate"><span class="pre">TrialType</span></code> no
+longer contains <code class="docutils literal notranslate"><span class="pre">updown</span></code>.</p>
+<p><strong>Missed trials no longer reach the staircase.</strong> A trial with no response was
+previously scored as <code class="docutils literal notranslate"><span class="pre">Less</span></code> and fed to <code class="docutils literal notranslate"><span class="pre">addResponse</span></code>, which pushed the psi
+posterior on evidence the participant never gave. Missed trials are now
+excluded and, by default, re-presented later in the session, so session length
+varies. Set <code class="docutils literal notranslate"><span class="pre">onMissedTrial=&quot;skip&quot;</span></code> for a fixed number of presentations.
+<code class="docutils literal notranslate"><span class="pre">nRepresentations</span></code> records how many times each trial was shown.</p>
+</section>
+<section id="added">
+<h3>Added<a class="headerlink" href="#added" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TaskConfig(psiPreset=...)</span></code> for the Heart Rate Discrimination task.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;legacy&quot;</span></code>, the default, keeps the Psi settings of the original paper.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;courtin&quot;</span></code> uses the per-condition threshold and slope ranges and the
+0.01 lapse rate from the hierarchical refit of the Visceral Mind Project
+data (Courtin et al., 2026).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">intensRange</span></code>, <code class="docutils literal notranslate"><span class="pre">alphaRange</span></code>, <code class="docutils literal notranslate"><span class="pre">betaRange</span></code> and <code class="docutils literal notranslate"><span class="pre">delta</span></code> still override the
+preset, in both conditions.</p></li>
+<li><p>The settings each staircase used are written to <code class="docutils literal notranslate"><span class="pre">manifest.json</span></code> under
+<code class="docutils literal notranslate"><span class="pre">config.psi</span></code>.</p></li>
+</ul>
+</li>
+<li><p>German instructions for the Heart Rate Discrimination task, <code class="docutils literal notranslate"><span class="pre">language=&quot;german&quot;</span></code>,
+addressing the participant formally. The texts shipped in 0.7.2 as a Python
+function and move here to <code class="docutils literal notranslate"><span class="pre">HRD/texts/german.yaml</span></code>, checked against that
+function in the language snapshot test.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code> in <code class="docutils literal notranslate"><span class="pre">_signal.txt</span></code>: absolute epoch seconds for every sample. Without it
+the PPG recording could not be aligned with the trial triggers or with
+anything recorded alongside it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">manifest.json</span></code>, written at session <strong>start</strong>: participant, session, run,
+seed, version, device, language, staircase, trial count and confidence scale.
+The parameters pickle is written at the end, so an aborted session used to
+leave no record of its own settings.</p></li>
+<li><p>A recorded random seed. Every session draws from one generator, and the seed
+is saved even when the caller did not choose one, so any session can be
+replayed.</p></li>
+<li><p>Quality columns: <code class="docutils literal notranslate"><span class="pre">HeartRateAttempts</span></code>, <code class="docutils literal notranslate"><span class="pre">HeartRateAccepted</span></code>,
+<code class="docutils literal notranslate"><span class="pre">nRepresentations</span></code>, <code class="docutils literal notranslate"><span class="pre">DroppedFrames</span></code>. <code class="docutils literal notranslate"><span class="pre">HeartRateAccepted</span></code> distinguishes a
+trial where the task settled on a heart rate from one where it exhausted its
+attempts and used the last window anyway. This was previously invisible.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cardioception.scales.ConfidenceScale</span></code>, including a signed
+−100 (certain error) / 0 / +100 (certain correct) VAS. On a signed scale the
+sign is the believed outcome and the magnitude is the confidence; use
+<code class="docutils literal notranslate"><span class="pre">magnitude()</span></code> and <code class="docutils literal notranslate"><span class="pre">believes_correct()</span></code> to separate them before modelling.</p></li>
+<li><p>Trigger callables at each trial event. These were documented for years but
+never created, so following the documentation raised <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">cardioception.validate</span> <span class="pre">&lt;run</span> <span class="pre">directory&gt;</span></code>, which checks a finished
+session against the invariants the test suite uses.</p></li>
+<li><p>A test suite that runs whole sessions without hardware or a human, and CI
+that runs it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">session.log</span></code> in the run directory. The tasks narrated themselves with
+<code class="docutils literal notranslate"><span class="pre">print</span></code>, which goes to a terminal nobody keeps and carries no timestamps, so
+a session that failed left nothing to look at. The same messages now go to a
+timestamped file as well as the console.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cardioception.devices.LSLRecorder</span></code>: ECG or PPG from any Lab Streaming
+Layer stream, passed as <code class="docutils literal notranslate"><span class="pre">recorder=</span></code>. ECG beats come from the sleepecg
+detector, each moved to the R peak, and the task’s trigger codes are also
+sent to an LSL marker stream, so a LabRecorder file holds the physiology
+and the events on one clock. Needs <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cardioception-toolbox[lsl]</span></code>.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">language</span></code> parameter for the Heartbeat Counting task, <code class="docutils literal notranslate"><span class="pre">&quot;english&quot;</span></code> (the
+default) or <code class="docutils literal notranslate"><span class="pre">&quot;german&quot;</span></code>, also offered by <code class="docutils literal notranslate"><span class="pre">wrappers/hbc.py</span></code> and recorded in
+<code class="docutils literal notranslate"><span class="pre">manifest.json</span></code>. 0.7.2 added it with the texts as Python functions; here
+they are <code class="docutils literal notranslate"><span class="pre">HBC/texts/english.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">german.yaml</span></code>, checked against those
+functions by a snapshot test, and an unknown language fails before a window
+opens. The German confidence scale reads “Geraten” to “Sicher”.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cardioception.HSD.psi.SynchronyPsi</span></code>, the estimation engine for the
+Heartbeat Synchrony Discrimination task: an adaptive Bayesian
+version of the Brener, Liu and Ring method of constant stimuli that chooses
+each R-wave-to-tone delay by expected information gain and estimates where
+in the cardiac cycle the heartbeat is felt, and how sharply. Plain NumPy, no
+PsychoPy or device. The design is documented
+in <code class="docutils literal notranslate"><span class="pre">docs/source/tasks/hsd/design.md</span></code>.</p></li>
+<li><p>The Heartbeat Synchrony Discrimination task runner, in beta:
+<code class="docutils literal notranslate"><span class="pre">cardioception.HSD.parameters.getParameters</span></code> and <code class="docutils literal notranslate"><span class="pre">cardioception.HSD.task.run</span></code>,
+with English instructions, a tutorial with three practice trials, both
+stimulus axes (ms after the R-wave, or a fraction of the interbeat
+interval), an adaptive stopping rule, and <code class="docutils literal notranslate"><span class="pre">wrappers/hsd_lsl.py</span></code>. Each
+trial’s train is scheduled on the R-waves of an LSL ECG stream and the
+engine is updated with the delay actually realized. A session writes
+<code class="docutils literal notranslate"><span class="pre">final</span></code>, <code class="docutils literal notranslate"><span class="pre">tones</span></code>, <code class="docutils literal notranslate"><span class="pre">beats</span></code>, the posterior per trial and the engine state.
+<code class="docutils literal notranslate"><span class="pre">setup=&quot;behavioral&quot;</span></code> uses the shared <code class="docutils literal notranslate"><span class="pre">LSLBeatSource</span></code> and <code class="docutils literal notranslate"><span class="pre">TonePlayer</span></code> in
+<code class="docutils literal notranslate"><span class="pre">cardioception.devices</span></code>. Every tone is scheduled a 50 ms latency bias early
+(<code class="docutils literal notranslate"><span class="pre">TaskConfig.latencyBias</span></code>), for the transport and speaker delays the
+recordings cannot see, so no delay below 130 ms is played and the
+shortest on the default grid is 140 ms. One hardware
+dry run, 60 trials on a PLUX ECG over Bluetooth, is recorded in the design
+document, with a simulation rerun at the 130 ms floor. Running the HSD
+(<code class="docutils literal notranslate"><span class="pre">docs/source/tasks/hsd/index.md</span></code>) is a how-to for running a session and
+reading its results.</p></li>
+<li><p>The Phase Adjustment Task, in beta: <code class="docutils literal notranslate"><span class="pre">cardioception.PAT</span></code>, after the
+PAT-ECG variant of Hodgetts et al. (2026, <em>Psychophysiology</em> 63:e70415).
+One tone per heartbeat, timed from the R-waves of an LSL ECG stream, at a
+delay the participant moves with the mouse wheel until tones and heartbeats
+feel simultaneous. Relative (phase) and absolute (ms) dial modes, start
+phases in shuffled blocks, a guided tutorial, an exteroceptive control task
+on a vibration with a simulated heart, English and Danish instructions,
+and <code class="docutils literal notranslate"><span class="pre">wrappers/pat_lsl.py</span></code>. A session writes <code class="docutils literal notranslate"><span class="pre">final</span></code>, <code class="docutils literal notranslate"><span class="pre">tones</span></code> and
+<code class="docutils literal notranslate"><span class="pre">parameters</span></code>; <code class="docutils literal notranslate"><span class="pre">cardioception.PAT.scoring</span></code> gives the paper’s 2 x 2 x 2 grid
+of phase-consistency scores with Monte Carlo chance thresholds. See
+<code class="docutils literal notranslate"><span class="pre">docs/source/tasks/pat.md</span></code>.</p></li>
+<li><p>The ECG channel is a required field in <code class="docutils literal notranslate"><span class="pre">wrappers/pat_lsl.py</span></code> and
+<code class="docutils literal notranslate"><span class="pre">wrappers/hsd_lsl.py</span></code>, with no default: its label is not the same on every
+hub (<code class="docutils literal notranslate"><span class="pre">ECG1</span></code> on one, <code class="docutils literal notranslate"><span class="pre">ECG2</span></code> on another), so it has to be typed in, and the
+wrapper does not start without it.</p></li>
+</ul>
+</section>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>A memory leak that reached 2.6 GB over 60 psi trials. The stored posterior
+was a view onto that trial’s likelihood array, which pinned all of them.</p></li>
+<li><p>Escape now aborts from the Heart Rate Discrimination task’s response and
+rating screens. It previously did not.</p></li>
+<li><p>A button still held down from the decision no longer submits the confidence
+rating on the first frame past <code class="docutils literal notranslate"><span class="pre">minRatingTime</span></code>. <code class="docutils literal notranslate"><span class="pre">Mouse.getPressed</span></code> reports
+the button’s level, not a press, and <code class="docutils literal notranslate"><span class="pre">clickReset</span></code> resets click times rather
+than state, so a held button was read as a fresh click on the next screen.
+It was observed in real data as 17 trials with a decision response time
+of exactly zero.</p></li>
+<li><p>The mouse confidence rating no longer warps the cursor on every frame
+(issue 103). On macOS each warp suppresses mouse events for 0.25 s, so the
+slider froze and could be neither moved nor clicked. The cursor is now
+warped once to the random start and brought back only near the edge of the
+screen. The fix is in the shared rating, so it applies to every task that
+uses it.</p></li>
+<li><p>The heart-rate acquisition loop is bounded and can be escaped. A single
+artefactual interbeat interval could previously hold a participant on the
+listening screen indefinitely.</p></li>
+<li><p>Every <code class="docutils literal notranslate"><span class="pre">core.wait</span></code> is now a loop that keeps drawing and flipping. Stimulus
+durations are unchanged; the window simply stays responsive and frame
+intervals get recorded.</p></li>
+<li><p>An odd <code class="docutils literal notranslate"><span class="pre">nTrials</span></code> no longer fails at setup with an <code class="docutils literal notranslate"><span class="pre">IndexError</span></code>.</p></li>
+<li><p>The keyboard confidence rating uses <code class="docutils literal notranslate"><span class="pre">visual.Slider</span></code>. <code class="docutils literal notranslate"><span class="pre">visual.RatingScale</span></code>
+moved to the <code class="docutils literal notranslate"><span class="pre">psychopy-legacy</span></code> plugin in PsychoPy 2026 and now raises.</p></li>
+<li><p>A crash or an abort still saves everything the session produced.</p></li>
+<li><p>A missed R peak or a T wave taken for one no longer skews the anticipated
+period of the live beat source (PAT, HSD) by a third for three beats. An RR
+interval outside 0.6 to 1.6 times the median of the last five accepted ones
+is left out of the period and counted in <code class="docutils literal notranslate"><span class="pre">LSLBeatSource.n_rejected</span></code>.</p></li>
+<li><p>The online R-peak detector restarts its filters after a gap in the ECG
+timestamps and reports nothing for one period after it, instead of taking
+the resume transient for a beat. Without beats, its QRS estimate is no
+longer halved without limit, so electrode-off noise is not taken for beats.</p></li>
+<li><p>Two tones closer than a tone’s duration plus about 30 ms played the second
+late, because the tone player starts a sound only after the previous one of
+its kind has ended. <code class="docutils literal notranslate"><span class="pre">TonePlayer.schedule</span></code> now refuses such a tone (logged,
+NaN onset), the PAT’s <code class="docutils literal notranslate"><span class="pre">minToneGap</span></code> must be at least <code class="docutils literal notranslate"><span class="pre">toneDuration</span></code> plus
+0.05 s (it allowed 0), and the HSD’s <code class="docutils literal notranslate"><span class="pre">toneSecs</span></code> at most 0.2 s.</p></li>
+<li><p>The HSD detection evidence (<code class="docutils literal notranslate"><span class="pre">DetectionEvidence</span></code>, <code class="docutils literal notranslate"><span class="pre">DetectionBF</span></code>) no longer
+rewards biased non-detectors. The floor grid stopped at 0.4 and the peak
+grid started at 0.5, so a flat responder could be expressed only at yes
+rates of about 0.3 to 0.6, and anyone else was explained as a rise: in 60
+trials, answering always “yes” gave a log10 Bayes factor of +10, always
+“no” +9 and a flat 0.9 +4 to +7, more than a true detector (+2). The floor
+and the peak now share one grid of rates from 0.03 to 0.97, so a flat
+envelope exists at every rate, and the rise is measured inside the range of
+delays presented, so a bump the task cannot present carries no evidence.
+The prior on a rise of more than 0.2 is about 0.5, not 0.92. The same
+responders now give -4.3 to -0.2, the detector +2.2 to +2.7. <code class="docutils literal notranslate"><span class="pre">FloorMean</span></code>
+and <code class="docutils literal notranslate"><span class="pre">PeakMean</span></code> keep their names; the grid is larger (98,820 points) and a
+stimulus selection takes about 20 ms. Because a flat envelope now keeps
+posterior mass, and leaves <code class="docutils literal notranslate"><span class="pre">mu</span></code> unidentified, <code class="docutils literal notranslate"><span class="pre">mu</span></code> and <code class="docutils literal notranslate"><span class="pre">sigma</span></code> (so
+<code class="docutils literal notranslate"><span class="pre">MuMean</span></code>, <code class="docutils literal notranslate"><span class="pre">MuCILow</span></code>, <code class="docutils literal notranslate"><span class="pre">MuCIHigh</span></code>, the <code class="docutils literal notranslate"><span class="pre">Sigma</span></code> columns and the stopping rule)
+come from the posterior conditioned on a rise of more than 0.2, falling back
+to the marginal below 0.01 of mass on a rise; the new <code class="docutils literal notranslate"><span class="pre">MuConditional</span></code>
+column says which. Delay placement still uses the marginal <code class="docutils literal notranslate"><span class="pre">mu</span></code>.</p></li>
+<li><p>An HSD train no longer stops at the first beat whose period puts the tone
+past the ceiling. That beat is skipped and a later one takes its place, up
+to <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">nTones</span></code> beats a train, so long delays no longer lose most of their
+tones to respiratory sinus arrhythmia (three dry-run trials got 2 or 3 of
+5). <code class="docutils literal notranslate"><span class="pre">ceilingMargin</span></code> widens to 0.10, and a trial with fewer than <code class="docutils literal notranslate"><span class="pre">minTones</span></code>
+tones (3) is judged and written but does not update the posterior; the new
+<code class="docutils literal notranslate"><span class="pre">Used</span></code> and <code class="docutils literal notranslate"><span class="pre">UnusedReason</span></code> columns say which trials did.</p></li>
+<li><p>During an HSD train the screen flips and Esc is read every 50 ms whether
+or not beats arrive. With a silent beat source the screen used to freeze
+and Esc wait for the train’s deadline, 10 s or more. A status line is
+logged every second and says <code class="docutils literal notranslate"><span class="pre">NO</span> <span class="pre">BEATS</span></code> from the first second the source
+is quiet for 1.5 periods, as the PAT’s does.</p></li>
+<li><p>The HSD beat source is polled during the confidence rating and the breaks.
+The shared rating and wait drained only the HRD recorder, so HSD beats
+reached the record up to 7 s late after a rating. They now also call
+<code class="docutils literal notranslate"><span class="pre">parameters[&quot;drain&quot;]</span></code> when a task sets it; the HRD leaves it unset.</p></li>
+<li><p>Smaller HSD fixes. A period with no candidate between the floor and the
+ceiling skips the trial (<code class="docutils literal notranslate"><span class="pre">AbortReason</span></code> <code class="docutils literal notranslate"><span class="pre">no_candidate</span></code>) instead of crashing
+the session, and so does a collapsed posterior, which is logged and leaves
+the trial written with <code class="docutils literal notranslate"><span class="pre">UnusedReason</span></code> <code class="docutils literal notranslate"><span class="pre">update_failed</span></code>. The train and the
+decision loops sleep 1 ms when idle instead of pinning a core. Beats polled
+after a train are filed in <code class="docutils literal notranslate"><span class="pre">beats.txt</span></code> under that trial, as the marker
+stream has them, not under the next one. <code class="docutils literal notranslate"><span class="pre">posterior.npy</span></code> is float32, half
+the size (about 10 MB for 60 trials).</p></li>
+<li><p>A PAT trial on a lost ECG no longer waits for Esc or scores as normal. A
+trial ends after <code class="docutils literal notranslate"><span class="pre">maxTrialTime</span></code> (60 s) with no choice and <code class="docutils literal notranslate"><span class="pre">TrialStatus</span></code>
+<code class="docutils literal notranslate"><span class="pre">timeout</span></code>; a press more than 1.5 anticipated periods after the last R-wave
+is <code class="docutils literal notranslate"><span class="pre">stale</span></code>, with no anticipated period. The PAT scores drop both and report
+how many in <code class="docutils literal notranslate"><span class="pre">n_dropped</span></code>.</p></li>
+<li><p>A PAT trial row now records the delay of the last tone actually heard
+(<code class="docutils literal notranslate"><span class="pre">LastToneDelayMs</span></code>, with its anchor, R-wave and <code class="docutils literal notranslate"><span class="pre">LastToneIndex</span></code>), which
+differs from the dial for a tone timed from the predicted next beat.
+<code class="docutils literal notranslate"><span class="pre">tones.txt</span></code> gains a <code class="docutils literal notranslate"><span class="pre">ToneIndex</span></code> to join on.</p></li>
+<li><p>Esc during a PAT trial pushes an <code class="docutils literal notranslate"><span class="pre">abort</span></code> marker instead of a <code class="docutils literal notranslate"><span class="pre">press</span></code>, and
+the aborted trial’s tones are no longer written to <code class="docutils literal notranslate"><span class="pre">tones.txt</span></code> without a
+row in <code class="docutils literal notranslate"><span class="pre">final.txt</span></code>.</p></li>
+<li><p>In the PAT’s absolute mode, a dial left beyond a period that has since
+shrunk is clamped to that period before it wraps. A notch from it no longer
+jumps ahead, and the <code class="docutils literal notranslate"><span class="pre">dial</span></code> and <code class="docutils literal notranslate"><span class="pre">press</span></code> markers report the phase that is
+played.</p></li>
+<li><p>The PAT period outlier rule floors the robust standard deviation at 1 ms.
+With a fixed period (median absolute deviation 0) float noise used to turn
+trials into outliers.</p></li>
+<li><p>The PAT’s wait after the press, for the next R-wave (up to 3 s), keeps
+the window flipping and the frame hook running, and Esc ends it. It used to
+busy-wait with the screen frozen and Esc ignored.</p></li>
+</ul>
+</section>
+<section id="internal">
+<h3>Internal<a class="headerlink" href="#internal" title="Permalink to this heading">#</a></h3>
+<p>Structural work from the audit’s refactoring report. None of it changes what a
+participant sees or what a trial records, and each step was checked against the
+code it replaced rather than read over.</p>
+<ul class="simple">
+<li><p>Participant-facing text moves from 484 lines of Python to one YAML file per
+language, validated against a required key set when the session starts. A
+language missing a key, or a <code class="docutils literal notranslate"><span class="pre">language</span></code> that does not exist, used to fail
+mid-session with a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>; both are now errors at launch.</p></li>
+<li><p>The YAML text loader moves from <code class="docutils literal notranslate"><span class="pre">HRD/languages.py</span></code> to <code class="docutils literal notranslate"><span class="pre">cardioception._texts</span></code>,
+shared by all three tasks. Each task’s <code class="docutils literal notranslate"><span class="pre">languages</span></code> module names its own
+directory and required keys; the HRD’s keeps its signatures.</p></li>
+<li><p>The 64 <code class="docutils literal notranslate"><span class="pre">visual.TextStim</span></code> constructions become one <code class="docutils literal notranslate"><span class="pre">text()</span></code> helper, 370 lines
+to 95.</p></li>
+<li><p>The trigger codes and signal constants are named. Worth knowing: <strong>the two
+tasks write different meanings to the same marker channel.</strong> In HRD, 1 is the
+trial starting and 2 the listening window opening; in HBC, 1 is the listening
+window opening and 2 its closing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trial()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">TrialOutcome</span></code> rather than an 18-element tuple, and that
+object owns the results row, so column order is decided in one place.</p></li>
+<li><p>The two listening phases become <code class="docutils literal notranslate"><span class="pre">listen_to_heart()</span></code> and <code class="docutils literal notranslate"><span class="pre">listen_to_tone()</span></code>.
+The first is now the only place the task touches physiology.</p></li>
+<li><p>The Heart Rate Discrimination tutorial is a table of phases, instruction
+screens interleaved with practice blocks, rather than a sequential script.
+What participants are shown, how many practice trials each block runs and at
+what difficulty are all set in one place. Verified by tracing all 440
+presentation steps across every language, device and condition before and
+after; they are identical.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TaskConfig</span></code> gathers the design values that were literals inside
+<code class="docutils literal notranslate"><span class="pre">getParameters</span></code>: response window, tutorial lengths, ISI, listening duration,
+heart-rate cutoffs, staircase bounds, text size. Pass one to <code class="docutils literal notranslate"><span class="pre">getParameters</span></code>,
+and it is written to <code class="docutils literal notranslate"><span class="pre">manifest.json</span></code> with the data it produced.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">responseDecision</span></code> returns five values, not six.</strong> The second, a
+<code class="docutils literal notranslate"><span class="pre">responseTrigger</span></code> timestamp, was unpacked by its only caller and never read.
+<code class="docutils literal notranslate"><span class="pre">parameters</span></code> no longer carries <code class="docutils literal notranslate"><span class="pre">lambdaIntero</span></code> or <code class="docutils literal notranslate"><span class="pre">lambdaExtero</span></code>, which were
+always empty lists, so a <code class="docutils literal notranslate"><span class="pre">_parameters.pickle</span></code> will not contain them.</p></li>
+<li><p>The live tests of the beat-locked tone player, which play through the
+sound card at its own volume, are marked <code class="docutils literal notranslate"><span class="pre">audio</span></code> and run only with
+<code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--run-audio</span></code>, as <code class="docutils literal notranslate"><span class="pre">blocking</span></code> tests run only with <code class="docutils literal notranslate"><span class="pre">--run-blocking</span></code>.</p></li>
+<li><p>The online R detector, the beat source and the PAT engine are tested on a
+committed 60 s ECG excerpt (<code class="docutils literal notranslate"><span class="pre">tests/data/ecg_excerpt.npz</span></code>) instead of
+skipping everywhere but the lab PC, and on the full lab recordings too when
+<code class="docutils literal notranslate"><span class="pre">CARDIOCEPTION_RECORDINGS</span></code> points at their directory.</p></li>
+<li><p>The HSD simulation (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">cardioception.HSD.simulate</span></code>) models the task
+as it runs: a 130 ms floor (<code class="docutils literal notranslate"><span class="pre">--min-delay</span></code>, was 80), a heart period per
+simulated participant that sets the task’s ceiling (<code class="docutils literal notranslate"><span class="pre">--period</span></code>,
+<code class="docutils literal notranslate"><span class="pre">--no-ceiling</span></code>), Gaussian timing noise on the delay heard (<code class="docutils literal notranslate"><span class="pre">--jitter-sd</span></code>,
+26 ms) and trials that deliver no train (<code class="docutils literal notranslate"><span class="pre">--train-loss</span></code>, 0.07). The observer
+bank gains four biased non-detectors, and the script writes
+<code class="docutils literal notranslate"><span class="pre">evidence.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">stopping.csv</span></code>. Rerun this way, with 26 and 6 ms of
+jitter, the design page’s results describe the task as it runs. The HSD
+stopping defaults (<code class="docutils literal notranslate"><span class="pre">minTrials</span></code> 15, <code class="docutils literal notranslate"><span class="pre">maxTrials</span></code> 60, <code class="docutils literal notranslate"><span class="pre">ciWidth</span></code> 100 ms) are
+unchanged: the median detector reaches a 100 ms interval only at 75 to 89
+trials, but running to 90 would lower the RMSE of <code class="docutils literal notranslate"><span class="pre">mu</span></code> by about 2 ms.</p></li>
+<li><p>The Phase Adjustment Task, written against 0.7, follows the conventions
+above: the per-run output directory and manifest, one recorded seed per
+session, <code class="docutils literal notranslate"><span class="pre">session.log</span></code>, a <code class="docutils literal notranslate"><span class="pre">ConfidenceScale</span></code> with <code class="docutils literal notranslate"><span class="pre">ConfidenceUnit</span></code> and the
+scale columns on every row, the shared rating widgets (the keyboard rating
+gains a <code class="docutils literal notranslate"><span class="pre">wheel</span></code> option, and the mouse rating moves into
+<code class="docutils literal notranslate"><span class="pre">_rating.mouse_rating</span></code>), texts in YAML checked against a snapshot of the
+functions they replace, screens and waits through <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">hold</span></code> and
+<code class="docutils literal notranslate"><span class="pre">on_every_frame</span></code>, validated triggers, and an autopilot that runs whole
+sessions headless. Its phase arithmetic, scheduling, scoring and data
+columns are unchanged.</p></li>
+</ul>
+</section>
+<section id="packaging">
+<h3>Packaging<a class="headerlink" href="#packaging" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">package_data</span></code> listed <code class="docutils literal notranslate"><span class="pre">*.wav</span></code> and <code class="docutils literal notranslate"><span class="pre">*.png</span></code>, but the stimuli live in
+<code class="docutils literal notranslate"><span class="pre">Images/</span></code> and <code class="docutils literal notranslate"><span class="pre">Sounds/</span></code>, so the patterns matched nothing and a wheel built
+from it shipped no sounds. Only <code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code> was keeping the sdist usable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">psychopy</span></code> moves from <code class="docutils literal notranslate"><span class="pre">==2026.2.2</span></code> to <code class="docutils literal notranslate"><span class="pre">&gt;=2026.2,&lt;2027</span></code>. The major-version
+ceiling stays because 2026 moved <code class="docutils literal notranslate"><span class="pre">visual.RatingScale</span></code> into a plugin without a
+deprecation cycle.</p></li>
+<li><p>The documentation workflow deployed to <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> from pull requests as well
+as from master, so a pull request could replace the live documentation before
+review. It now builds on pull requests and publishes only from master.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.RData</span></code> (50 MB), <code class="docutils literal notranslate"><span class="pre">.Rhistory</span></code> and <code class="docutils literal notranslate"><span class="pre">.coverage</span></code> are no longer tracked. They
+remain in the history; only new clones of the working tree get smaller.</p></li>
+</ul>
+</section>
+<section id="deprecated">
+<h3>Deprecated<a class="headerlink" href="#deprecated" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cardioception.reports</span></code>. To be rebuilt.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="references.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">References</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2019-2026, Micah Allen and the Embodied Computation Group, Aarhus University
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/embodied-computation-group/Cardioception" aria-label="GitHub"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg></a>
+              <a class="muted-link " href="https://pypi.org/project/cardioception-toolbox/" aria-label="PyPI"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path d="M8.878.392a1.75 1.75 0 0 0-1.756 0l-5.25 3.045A1.75 1.75 0 0 0 1 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 0 0 1.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514ZM7.875 1.69a.25.25 0 0 1 .25 0l4.63 2.685L8 7.133 3.245 4.375Zm-5.375 9.36V5.677l4.75 2.755v5.339l-4.626-2.683a.25.25 0 0 1-.124-.216Zm6.25 2.755V8.432l4.75-2.755v5.372a.25.25 0 0 1-.124.216Z"></path></svg></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#unreleased">1.0.0 (unreleased)</a><ul>
+<li><a class="reference internal" href="#breaking">Breaking</a></li>
+<li><a class="reference internal" href="#added">Added</a></li>
+<li><a class="reference internal" href="#fixed">Fixed</a></li>
+<li><a class="reference internal" href="#internal">Internal</a></li>
+<li><a class="reference internal" href="#packaging">Packaging</a></li>
+<li><a class="reference internal" href="#deprecated">Deprecated</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    </body>
+</html>

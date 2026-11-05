@@ -1,0 +1,1017 @@
+
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="The psychophysical model" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/tasks/hrd/tutorials/psychophysics.html" />
+<meta property="og:site_name" content="Cardioception Toolbox" />
+<meta property="og:description" content="Author: Micah G. Allen The Heart Rate Discrimination task turns a simple judgement into a model of cardiac belief. A participant attends to their heart, hears a sequence of tones, and reports wheth..." />
+<meta property="og:image:width" content="1146" />
+<meta property="og:image:height" content="600" />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_hrd_tutorials_psychophysics_e3d58ecd.png" />
+<meta property="og:image:alt" content="Author: Micah G. Allen The Heart Rate Discrimination task turns a simple judgement into a model of cardiac belief. A participant attends to their heart, hear..." />
+<meta name="description" content="Author: Micah G. Allen The Heart Rate Discrimination task turns a simple judgement into a model of cardiac belief. A participant attends to their heart, hears a sequence of tones, and reports wheth..." />
+<meta name="twitter:card" content="summary_large_image" />
+
+<meta name="robots" content="noindex"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="Hierarchical modelling" href="hierarchical.html" /><link rel="prev" title="Inspecting and plotting an HRD session" href="inspecting-data.html" />
+        <link rel="canonical" href="https://www.the-ecg.org/Cardioception/dev/tasks/hrd/tutorials/psychophysics.html" />
+
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>The psychophysical model - Cardioception Toolbox</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: #1f3352;
+  --color-brand-content: #2f4b73;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     These are the docs for Cardioception 1.0, in development and not yet on PyPI. <a href="https://www.the-ecg.org/Cardioception/">The docs for the current release are here.</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">Cardioception Toolbox</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/cardioception_icon.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started/recording-devices.html">Recording devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started/running-a-session.html">Running a session</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tasks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">The tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory.html">Measuring cardiac interoception</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Heart Rate Discrimination task</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="inspecting-data.html">Inspecting and plotting an HRD session</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">The psychophysical model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hierarchical.html">Hierarchical modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metacognition.html">Metacognition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reports.html">HTML reports (legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../hbc.html">Heartbeat Counting task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pat.html">Phase Adjustment Task</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../hsd/design.html">HSD design and validation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../constant-stimuli.html">Method of constant stimuli</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html">cardioception.HRD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.config/cardioception.HRD.config.TaskConfig.html">cardioception.HRD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.run.html">cardioception.HRD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.trial.html">cardioception.HRD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.tutorial.html">cardioception.HRD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.task/cardioception.HRD.task.confidenceRatingTask.html">cardioception.HRD.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.available.html">cardioception.HRD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HRD.languages/cardioception.HRD.languages.get_texts.html">cardioception.HRD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html">cardioception.HBC.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.run.html">cardioception.HBC.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.tutorial.html">cardioception.HBC.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.task/cardioception.HBC.task.rest.html">cardioception.HBC.task.rest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.available.html">cardioception.HBC.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HBC.languages/cardioception.HBC.languages.get_texts.html">cardioception.HBC.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.parameters/cardioception.PAT.parameters.getParameters.html">cardioception.PAT.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.parameters/cardioception.PAT.parameters.startPhaseSequence.html">cardioception.PAT.parameters.startPhaseSequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.run.html">cardioception.PAT.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.trial.html">cardioception.PAT.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.tutorial.html">cardioception.PAT.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.dialLoop.html">cardioception.PAT.task.dialLoop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.task/cardioception.PAT.task.confidenceRatingTask.html">cardioception.PAT.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.engine/cardioception.PAT.engine.PhaseEngine.html">cardioception.PAT.engine.PhaseEngine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.consistency_grid.html">cardioception.PAT.scoring.consistency_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.mean_resultant_length.html">cardioception.PAT.scoring.mean_resultant_length</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.phase_angles.html">cardioception.PAT.scoring.phase_angles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.monte_carlo_threshold.html">cardioception.PAT.scoring.monte_carlo_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.extero_threshold.html">cardioception.PAT.scoring.extero_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.scoring/cardioception.PAT.scoring.mad_outliers.html">cardioception.PAT.scoring.mad_outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.languages/cardioception.PAT.languages.available.html">cardioception.PAT.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/PAT.languages/cardioception.PAT.languages.get_texts.html">cardioception.PAT.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.parameters/cardioception.HSD.parameters.getParameters.html">cardioception.HSD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.config/cardioception.HSD.config.TaskConfig.html">cardioception.HSD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.task/cardioception.HSD.task.run.html">cardioception.HSD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.task/cardioception.HSD.task.trial.html">cardioception.HSD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.task/cardioception.HSD.task.tutorial.html">cardioception.HSD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.psi/cardioception.HSD.psi.SynchronyPsi.html">cardioception.HSD.psi.SynchronyPsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.psi/cardioception.HSD.psi.gaussian_envelope.html">cardioception.HSD.psi.gaussian_envelope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.psi/cardioception.HSD.psi.default_grids.html">cardioception.HSD.psi.default_grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.languages/cardioception.HSD.languages.available.html">cardioception.HSD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/HSD.languages/cardioception.HSD.languages.get_texts.html">cardioception.HSD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices/cardioception.devices.ContinuousOximeter.html">cardioception.devices.ContinuousOximeter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices/cardioception.devices.LSLRecorder.html">cardioception.devices.LSLRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices/cardioception.devices.ReplayRecorder.html">cardioception.devices.ReplayRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices.beat_source/cardioception.devices.beat_source.LSLBeatSource.html">cardioception.devices.beat_source.LSLBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices.beat_source/cardioception.devices.beat_source.VirtualBeatSource.html">cardioception.devices.beat_source.VirtualBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/devices.tone_player/cardioception.devices.tone_player.TonePlayer.html">cardioception.devices.tone_player.TonePlayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/scales/cardioception.scales.ConfidenceScale.html">cardioception.scales.ConfidenceScale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/cite.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/changelog.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/embodied-computation-group/Cardioception/edit/main/docs/source/tasks/hrd/tutorials/psychophysics.md" title="Edit this page">
+    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+    </svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="the-psychophysical-model">
+<h1>The psychophysical model<a class="headerlink" href="#the-psychophysical-model" title="Permalink to this heading">#</a></h1>
+<p>Author: Micah G. Allen</p>
+<p>The Heart Rate Discrimination task turns a simple judgement into a model of
+cardiac belief. A participant attends to their heart, hears a sequence of tones,
+and reports whether the tones were faster or slower. Across trials, we vary the
+difference between the tones and the measured heart rate. The pattern of
+responses tells us where the participant believes their heart rate lies and how
+precisely they can discriminate changes around that belief.</p>
+<p>There are two Bayesian procedures in this workflow. Psi runs during the task and
+chooses informative stimuli. We then refit the response model in <code class="docutils literal notranslate"><span class="pre">brms</span></code>, where
+we can estimate lapse rate, use cleaned trials, and retain posterior uncertainty.
+The two procedures use closely related psychometric functions, but they have
+different jobs.</p>
+<p>This tutorial is organized accordingly:</p>
+<ol class="arabic simple">
+<li><p>the measurement model and its psychological interpretation;</p></li>
+<li><p>adaptive measurement with Psi;</p></li>
+<li><p>a worked <code class="docutils literal notranslate"><span class="pre">brms</span></code> analysis of one participant.</p></li>
+</ol>
+<p>Begin with <a class="reference internal" href="inspecting-data.html"><span class="std std-doc">inspecting your results</span></a> if you are working with
+your own data and have not yet checked missing responses or recording quality.</p>
+<section id="part-i-the-measurement-model">
+<h2>Part I. The measurement model<a class="headerlink" href="#part-i-the-measurement-model" title="Permalink to this heading">#</a></h2>
+<section id="a-trial-is-a-comparison">
+<h3>A trial is a comparison<a class="headerlink" href="#a-trial-is-a-comparison" title="Permalink to this heading">#</a></h3>
+<p>For participant <span class="math notranslate nohighlight">\(s\)</span> on trial <span class="math notranslate nohighlight">\(i\)</span>, define the stimulus intensity as</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+x_{is} = \text{tone rate} - \text{reference rate}
+\]</div>
+</div>
+<p>in ΔBPM. The reference is the measured heart rate in an interoceptive trial and
+the first tone sequence in an exteroceptive trial. A negative value means the
+comparison tones were slower than the reference; a positive value means they
+were faster.</p>
+<p>The response is coded</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}
+y_{is} =
+\begin{cases}
+1 &amp; \text{if the participant responds &quot;faster&quot;},\\
+0 &amp; \text{if the participant responds &quot;slower&quot;}.
+\end{cases}
+\end{split}\]</div>
+</div>
+<p>The model concerns <span class="math notranslate nohighlight">\(P(y=1)\)</span>, the probability of a “faster” response. It does not
+model <code class="docutils literal notranslate"><span class="pre">ResponseCorrect</span></code>. This distinction is central to understanding the HRD.</p>
+<p>Suppose a participant underestimates their heart rate by 10 BPM. Their responses
+will be divided equally between “faster” and “slower” when the tones are around
+<span class="math notranslate nohighlight">\(-10\)</span> ΔBPM. This is their subjective match even though the tones are objectively
+slower than the measured heart rate. Accuracy is therefore low near the
+participant’s subjective threshold and high for sufficiently extreme stimuli.</p>
+<p><img alt="Response probability is monotonic, whereas objective accuracy is not" src="../../../_images/fig_response_vs_accuracy.png" /></p>
+<p>The left panel is the monotonic function fitted by the model. The right panel is
+what happens if those same responses are scored against the sign of ΔBPM.
+Correctness switches from a “slower” response to a “faster” response at zero,
+so it is not described by a single cumulative Gaussian. Fitting accuracy would
+answer a different question and would not recover the participant’s subjective
+heart-rate belief.</p>
+</section>
+<section id="the-psychometric-function">
+<h3>The psychometric function<a class="headerlink" href="#the-psychometric-function" title="Permalink to this heading">#</a></h3>
+<p>We use a cumulative Gaussian with a lapse component. Let <span class="math notranslate nohighlight">\(\ell_s\)</span> be the
+probability that participant <span class="math notranslate nohighlight">\(s\)</span> responds independently of the stimulus. The
+probability of a “faster” response is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+p_{is} = \frac{\ell_s}{2} + (1-\ell_s)
+  \Phi\!\left[e^{\beta_s}(x_{is}-\alpha_s)\right],
+\]</div>
+</div>
+<p>and the observed response follows</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+y_{is} \sim \operatorname{Bernoulli}(p_{is}).
+\]</div>
+</div>
+<p><span class="math notranslate nohighlight">\(\Phi\)</span> is the standard normal cumulative distribution function. On a lapse
+trial, a random choice produces a “faster” response half the time. On the
+remaining trials, response probability follows the cumulative Gaussian.</p>
+<p>The three parameters separate properties that would otherwise be confounded.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Scale</p></th>
+<th class="head"><p>Psychological interpretation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\alpha\)</span></p></td>
+<td><p>ΔBPM</p></td>
+<td><p>Threshold, or point of subjective equality. It locates the participant’s bias.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\beta\)</span></p></td>
+<td><p>log inverse-σ</p></td>
+<td><p>Slope. Larger values indicate a steeper transition and finer discrimination.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\ell\)</span></p></td>
+<td><p>probability</p></td>
+<td><p>Lapse probability. It controls stimulus-independent responses and the asymptotes.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>At <span class="math notranslate nohighlight">\(x=\alpha\)</span>, the argument of <span class="math notranslate nohighlight">\(\Phi\)</span> is zero and
+<span class="math notranslate nohighlight">\(P(\text{&quot;faster&quot;})=0.5\)</span>, regardless of the lapse rate. In the interoceptive
+condition:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\alpha&lt;0\)</span> indicates underestimation of heart rate;</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha=0\)</span> indicates little bias relative to the measured rate;</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha&gt;0\)</span> indicates overestimation.</p></li>
+</ul>
+<p>The log-slope can be returned to ΔBPM by computing</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\sigma_s = e^{-\beta_s}.
+\]</div>
+</div>
+<p><span class="math notranslate nohighlight">\(\sigma\)</span> is the standard deviation of the underlying Gaussian. Small values
+produce a sharp response transition; large values produce a gradual one. The
+slope at the threshold is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\left.\frac{dp}{dx}\right|_{x=\alpha}
+= \frac{(1-\ell)e^\beta}{\sqrt{2\pi}}.
+\]</div>
+</div>
+<p>This expression makes the direction of <span class="math notranslate nohighlight">\(\beta\)</span> explicit: larger <span class="math notranslate nohighlight">\(\beta\)</span> means a
+steeper curve.</p>
+<p><img alt="How threshold, slope, and lapse rate change the psychometric function" src="../../../_images/fig_parameters.png" /></p>
+<p>The dark curve is held fixed in each panel. Threshold moves the function
+horizontally, slope changes the width of its transition, and lapse rate pulls
+the lower and upper asymptotes towards 0.5.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The online Psi output and the model use different slope parameterizations.
+PsychoPy’s Psi estimate is <span class="math notranslate nohighlight">\(\sigma\)</span>, for which larger values mean poorer
+discrimination. The offline <code class="docutils literal notranslate"><span class="pre">brms</span></code> model estimates <span class="math notranslate nohighlight">\(\beta=-\log(\sigma)\)</span>, for
+which larger values mean better discrimination. The slope reported in
+<a class="reference external" href="https://doi.org/10.1016/j.biopsycho.2021.108239">Legrand et al. (2022)</a> follows
+the Psi convention.</p>
+</div>
+</section>
+<section id="what-the-parameters-measure">
+<h3>What the parameters measure<a class="headerlink" href="#what-the-parameters-measure" title="Permalink to this heading">#</a></h3>
+<p>Threshold and slope describe judgements about heart rate. They should not be
+treated as pure measures of ascending cardiac afferent sensitivity. A
+participant may draw on cardiac sensations, somatic cues, prior beliefs about
+resting heart rate, temporal estimation, and memory for the listening interval.</p>
+<p>The exteroceptive condition helps identify general temporal comparison biases,
+but it does not turn the interoceptive estimate into a process-pure measure.
+Interoceptive and exteroceptive trials differ in their reference signals, and the
+comparison between them should be stated at the level of the fitted parameters.</p>
+<p>Threshold and slope must also be interpreted separately. A participant can hold
+a biased but precise cardiac belief, or an unbiased but imprecise one. Evidence
+for an effect on threshold is not evidence for an effect on discrimination
+precision.</p>
+</section>
+</section>
+<section id="part-ii-adaptive-measurement-with-psi">
+<h2>Part II. Adaptive measurement with Psi<a class="headerlink" href="#part-ii-adaptive-measurement-with-psi" title="Permalink to this heading">#</a></h2>
+<section id="the-state-of-the-staircase">
+<h3>The state of the staircase<a class="headerlink" href="#the-state-of-the-staircase" title="Permalink to this heading">#</a></h3>
+<p>Psi maintains a joint probability distribution over possible thresholds and
+slopes. With the current Cardioception defaults, this grid covers:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="text-right head"><p>Range</p></th>
+<th class="text-right head"><p>Resolution</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>stimulus <span class="math notranslate nohighlight">\(x\)</span></p></td>
+<td class="text-right"><p>-50.5 to 50.5 ΔBPM</p></td>
+<td class="text-right"><p>1 ΔBPM</p></td>
+</tr>
+<tr class="row-odd"><td><p>threshold <span class="math notranslate nohighlight">\(\alpha\)</span></p></td>
+<td class="text-right"><p>-50.5 to 50.5 ΔBPM</p></td>
+<td class="text-right"><p>1 ΔBPM</p></td>
+</tr>
+<tr class="row-even"><td><p>Psi slope <span class="math notranslate nohighlight">\(\sigma\)</span></p></td>
+<td class="text-right"><p>0.1 to 25 ΔBPM</p></td>
+<td class="text-right"><p>0.1 ΔBPM</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The online lapse fraction is fixed at 0.02. For a response-coded Yes/No Psi
+staircase, the function used online is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+P(\text{&quot;faster&quot;}\mid x,\alpha,\sigma)
+= \frac{0.02}{2} + (1-0.02)
+  \Phi\!\left(\frac{x-\alpha}{\sigma}\right).
+\]</div>
+</div>
+<p>Cardioception delegates the grid update and stimulus selection to
+<a class="reference external" href="https://psychopy.org/api/data.html#psychopy.data.PsiHandler">PsychoPy’s <code class="docutils literal notranslate"><span class="pre">PsiHandler</span></code></a>.
+The HRD trial contains two intervals, but <code class="docutils literal notranslate"><span class="pre">expectedMin=0</span></code> selects PsychoPy’s
+Yes/No form because the staircase models which response was made. An
+accuracy-coded 2AFC function would instead have a lower asymptote of 0.5 and
+would not describe the point of subjective equality.</p>
+<p>Interoceptive and exteroceptive conditions have separate grids because their
+thresholds and slopes may differ. Optional catch trials present predetermined
+extreme intensities and do not update either grid.</p>
+</section>
+<section id="choosing-the-next-stimulus">
+<h3>Choosing the next stimulus<a class="headerlink" href="#choosing-the-next-stimulus" title="Permalink to this heading">#</a></h3>
+<p>After <span class="math notranslate nohighlight">\(t\)</span> adaptive trials, let <span class="math notranslate nohighlight">\(q_t(\alpha,\sigma)\)</span> denote the current joint
+posterior. Psi considers every intensity the task can present. For each candidate
+<span class="math notranslate nohighlight">\(x\)</span>, it asks how the posterior would change after either possible response and
+computes the expected remaining entropy:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}[H\mid x,D_t]
+= \sum_{y\in\{0,1\}}
+  P(y\mid x,D_t)\,
+  H\!\left[q(\alpha,\sigma\mid D_t,x,y)\right].
+\]</div>
+</div>
+<p>The next intensity is the one that minimizes this quantity:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+x_{t+1}
+= \underset{x}{\operatorname{argmin}}\;
+  \mathbb{E}[H\mid x,D_t].
+\]</div>
+</div>
+<p>After the participant responds, Bayes’ rule updates the grid:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+q_{t+1}(\alpha,\sigma)
+\propto
+P(y_{t+1}\mid x_{t+1},\alpha,\sigma)\,
+q_t(\alpha,\sigma).
+\]</div>
+</div>
+<p>The figure below applies this calculation to the example session bundled with
+Cardioception. After eight trials, uncertainty remains about both threshold and
+slope. Psi evaluates the expected information gain at every available ΔBPM. It
+selects <span class="math notranslate nohighlight">\(+11.5\)</span> ΔBPM, having averaged over the posterior that would follow a
+“slower” response and the posterior that would follow a “faster” response.</p>
+<p><img alt="Psi chooses a stimulus by expected information gain" src="../../../_images/fig_psi_information.png" /></p>
+<p>This is more efficient than drawing intensities uniformly. Trials are allocated
+where they are expected to distinguish plausible psychometric functions. Some
+will fall near the current threshold estimate; others are placed away from it
+because the tails carry information about slope. An efficient Psi trace does not
+have to settle into a flat line.</p>
+</section>
+<section id="from-the-trace-to-the-function">
+<h3>From the trace to the function<a class="headerlink" href="#from-the-trace-to-the-function" title="Permalink to this heading">#</a></h3>
+<p>The next figure follows the layout of Fig. 1 in the <a class="reference external" href="https://doi.org/10.1016/j.biopsycho.2021.108239">original HRD methods
+paper</a>.
+It uses a complete session shipped with this repository. Triangles in the left
+panel show the selected intensities and responses. The red line and band show
+the evolving marginal posterior for the threshold. The middle panel retains the
+joint uncertainty in threshold and slope. The right panel maps that posterior
+through the psychometric function.</p>
+<p><img alt="The adaptive trace, joint Psi posterior, and resulting psychometric function" src="../../../_images/fig_psi_adaptation.png" /></p>
+<p>At the end of this session the online posterior is centred near
+<span class="math notranslate nohighlight">\(\alpha=+9.9\)</span> ΔBPM and <span class="math notranslate nohighlight">\(\sigma=15.5\)</span> ΔBPM. These are summaries of a distribution,
+not parameters read directly from the visual trace. The trace contains many
+stimuli below the final threshold because those trials helped the algorithm
+learn the response transition.</p>
+<p>The animation shows the same calculation after every adaptive trial. The broad
+initial family of plausible functions contracts as responses accumulate. An
+unexpected response can widen or move the posterior temporarily, which is an
+appropriate revision of uncertainty rather than a failure to converge.</p>
+<p><img alt="Animation of the Psi posterior and psychometric function updating over 48 trials" src="../../../_images/fig_psi_adaptation.gif" /></p>
+<p>The example also contains catch trials, but they are omitted here because they
+do not update Psi. The figure and animation can be regenerated with
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">tutorials/plot_psi_adaptation.py</span></code>.</p>
+</section>
+<section id="what-psi-gives-us">
+<h3>What Psi gives us<a class="headerlink" href="#what-psi-gives-us" title="Permalink to this heading">#</a></h3>
+<p>Adaptive measurement has three practical advantages:</p>
+<ol class="arabic simple">
+<li><p>it estimates threshold and slope jointly;</p></li>
+<li><p>it spends fewer trials on stimuli that are predictable under every plausible
+function;</p></li>
+<li><p>it produces a running posterior that can be inspected for range problems and
+poor identification.</p></li>
+</ol>
+<p>The online estimates remain part of the experimental procedure. They answer
+“which stimulus should be presented next?” very well. They are not the analysis
+we want to report.</p>
+</section>
+</section>
+<section id="part-iii-fitting-one-participant-in-brms">
+<h2>Part III. Fitting one participant in <code class="docutils literal notranslate"><span class="pre">brms</span></code><a class="headerlink" href="#part-iii-fitting-one-participant-in-brms" title="Permalink to this heading">#</a></h2>
+<p>We use one participant here because it keeps the connection between trials,
+parameters, and the fitted curve visible. This is a complete descriptive model
+for that session. Questions about a sample, a condition effect, or a group
+difference require the model in the next tutorial.</p>
+<section id="why-refit-the-trials">
+<h3>Why refit the trials<a class="headerlink" href="#why-refit-the-trials" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">EstimatedThreshold</span></code> and <code class="docutils literal notranslate"><span class="pre">EstimatedSlope</span></code> summarize the online Psi grid. They
+are useful for checking that a session ran as expected. The offline fit gives us
+several things that the staircase was not designed to provide:</p>
+<ul class="simple">
+<li><p>the lapse rate is estimated rather than fixed at 0.02;</p></li>
+<li><p>planned trial exclusions can be applied before fitting;</p></li>
+<li><p>the parameters are no longer restricted to the Psi grid;</p></li>
+<li><p>uncertainty is carried through to the fitted function and every summary.</p></li>
+</ul>
+<p>The presented intensities remain valid observations. Conditional on an
+intensity, the likelihood of the response has the same form whether Psi chose
+that intensity or it was fixed in advance. We therefore retain the actual
+intensities and responses, apply the data-quality criteria, and fit them again.</p>
+</section>
+<section id="prepare-the-participant-s-responses">
+<h3>Prepare the participant’s responses<a class="headerlink" href="#prepare-the-participant-s-responses" title="Permalink to this heading">#</a></h3>
+<p>The example below reads the session distributed with Cardioception. It has 58
+usable interoceptive trials at 34 exact intensities. Catch trials did not update
+Psi, but they are valid observations of the response function and can be
+included if they pass the same quality checks as the other trials.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">brms</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">readr</span><span class="p">)</span>
+
+<span class="n">raw</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span>
+<span class="w">  </span><span class="s">"docs/source/examples/templates/data/HRD/HRD_final.txt"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">show_col_types</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span>
+<span class="p">)</span>
+
+<span class="n">trials</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">filter</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Modality</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"Intero"</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Decision</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"More"</span><span class="p">,</span><span class="w"> </span><span class="s">"Less"</span><span class="p">),</span>
+<span class="w">    </span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">Alpha</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate</span><span class="p">(</span>
+<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Alpha</span><span class="p">,</span>
+<span class="w">    </span><span class="n">resp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.integer</span><span class="p">(</span><span class="n">Decision</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"More"</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="n">model_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trials</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">group_by</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">summarise</span><span class="p">(</span>
+<span class="w">    </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">resp</span><span class="p">),</span>
+<span class="w">    </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dplyr</span><span class="o">::</span><span class="nf">n</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">.groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"drop"</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="nf">stopifnot</span><span class="p">(</span>
+<span class="w">  </span><span class="nf">all</span><span class="p">(</span><span class="n">model_df</span><span class="o">$</span><span class="n">y</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">  </span><span class="nf">all</span><span class="p">(</span><span class="n">model_df</span><span class="o">$</span><span class="n">y</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">model_df</span><span class="o">$</span><span class="n">n</span><span class="p">),</span>
+<span class="w">  </span><span class="nf">all</span><span class="p">(</span><span class="n">model_df</span><span class="o">$</span><span class="n">n</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">y</span></code> counts “faster” responses. Its proportion should generally increase with
+<code class="docutils literal notranslate"><span class="pre">x</span></code>; a decreasing pattern is a cue to check the response coding. Exact repeats
+are combined as
+<span class="math notranslate nohighlight">\(Y_x\sim\operatorname{Binomial}(n_x,p_x)\)</span>. Nearby intensities are left
+separate because arbitrary bins discard information.</p>
+</section>
+<section id="define-the-response-model">
+<h3>Define the response model<a class="headerlink" href="#define-the-response-model" title="Permalink to this heading">#</a></h3>
+<p>For this one participant, each nonlinear parameter needs only an intercept:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">inv_logit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="m">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+<span class="n">erf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">pnorm</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">sqrt</span><span class="p">(</span><span class="m">2</span><span class="p">))</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="m">1</span>
+
+<span class="n">bff</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">bf</span><span class="p">(</span>
+<span class="w">  </span><span class="n">y</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nf">trials</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="nf">inv_logit</span><span class="p">(</span><span class="n">lambda</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">+</span>
+<span class="w">    </span><span class="p">(</span><span class="m">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nf">inv_logit</span><span class="p">(</span><span class="n">lambda</span><span class="p">))</span><span class="w"> </span><span class="o">*</span>
+<span class="w">      </span><span class="p">(</span><span class="m">0.5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">erf</span><span class="p">(</span><span class="nf">exp</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">alpha</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nf">sqrt</span><span class="p">(</span><span class="m">2</span><span class="p">))),</span>
+<span class="w">  </span><span class="n">alpha</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">beta</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">lambda</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">nl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">binomial</span><span class="p">(</span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"identity"</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">erf()</span></code> expression is the cumulative Gaussian from Part I. Stan provides
+<code class="docutils literal notranslate"><span class="pre">erf()</span></code> during sampling, while the short R definition lets <code class="docutils literal notranslate"><span class="pre">brms</span></code> evaluate the
+same expression when making predictions. The nonlinear formula already returns
+a probability, so the binomial family uses an identity link.</p>
+</section>
+<section id="specify-and-inspect-the-priors">
+<h3>Specify and inspect the priors<a class="headerlink" href="#specify-and-inspect-the-priors" title="Permalink to this heading">#</a></h3>
+<p>These priors come from the normative HRD refit reported by
+<a class="reference external" href="https://doi.org/10.3758/s13428-026-03137-3">Courtin et al. (2026)</a>:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">priors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span>
+<span class="w">  </span><span class="nf">set_prior</span><span class="p">(</span>
+<span class="w">    </span><span class="s">"normal(-8.67, 11.23)"</span><span class="p">,</span>
+<span class="w">    </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"b"</span><span class="p">,</span><span class="w"> </span><span class="n">nlpar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"alpha"</span><span class="p">,</span><span class="w"> </span><span class="n">coef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Intercept"</span>
+<span class="w">  </span><span class="p">),</span>
+<span class="w">  </span><span class="nf">set_prior</span><span class="p">(</span>
+<span class="w">    </span><span class="s">"normal(-2.3, 0.34)"</span><span class="p">,</span>
+<span class="w">    </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"b"</span><span class="p">,</span><span class="w"> </span><span class="n">nlpar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"beta"</span><span class="p">,</span><span class="w"> </span><span class="n">coef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Intercept"</span>
+<span class="w">  </span><span class="p">),</span>
+<span class="w">  </span><span class="nf">set_prior</span><span class="p">(</span>
+<span class="w">    </span><span class="s">"normal(-4.32, 1.96)"</span><span class="p">,</span>
+<span class="w">    </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"b"</span><span class="p">,</span><span class="w"> </span><span class="n">nlpar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"lambda"</span><span class="p">,</span><span class="w"> </span><span class="n">coef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Intercept"</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The threshold prior is centred at <span class="math notranslate nohighlight">\(-8.67\)</span> ΔBPM. The prior mean of <span class="math notranslate nohighlight">\(-2.3\)</span> for
+log inverse-<span class="math notranslate nohighlight">\(\sigma\)</span> corresponds to <span class="math notranslate nohighlight">\(\sigma\approx10\)</span> ΔBPM. The logit-lapse
+prior is centred at a lapse probability of about 1.3%. Check that the names
+match the coefficients generated by the formula:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">get_prior</span><span class="p">(</span><span class="n">bff</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model_df</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A coefficient name in a nonlinear model is easy to mistype, which can leave an
+unintended flat prior. Before seeing the responses, sample from the prior and
+draw the implied psychometric curves across the task range:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">prior_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">brm</span><span class="p">(</span>
+<span class="w">  </span><span class="n">bff</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model_df</span><span class="p">,</span>
+<span class="w">  </span><span class="n">prior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">priors</span><span class="p">,</span>
+<span class="w">  </span><span class="n">sample_prior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"only"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">cores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"cmdstanr"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5101</span><span class="p">,</span>
+<span class="w">  </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"fits/hrd_single_prior"</span>
+<span class="p">)</span>
+
+<span class="n">grid</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">-50.5</span><span class="p">,</span><span class="w"> </span><span class="m">50.5</span><span class="p">,</span><span class="w"> </span><span class="n">length.out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">200</span><span class="p">),</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+<span class="n">prior_curves</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">posterior_epred</span><span class="p">(</span><span class="n">prior_fit</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span>
+<span class="nf">matplot</span><span class="p">(</span>
+<span class="w">  </span><span class="n">grid</span><span class="o">$</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="nf">t</span><span class="p">(</span><span class="n">prior_curves</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">100</span><span class="p">,</span><span class="w"> </span><span class="p">]),</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"l"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">lty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rgb</span><span class="p">(</span><span class="m">0.3</span><span class="p">,</span><span class="w"> </span><span class="m">0.35</span><span class="p">,</span><span class="w"> </span><span class="m">0.4</span><span class="p">,</span><span class="w"> </span><span class="m">0.12</span><span class="p">),</span>
+<span class="w">  </span><span class="n">xlab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"ΔBPM"</span><span class="p">,</span><span class="w"> </span><span class="n">ylab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"P(response 'faster')"</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This check is more informative than inspecting three prior densities in
+isolation. It shows whether their combination assigns probability to plausible
+response curves over the intensities the participant could encounter.</p>
+</section>
+<section id="sample-the-posterior">
+<h3>Sample the posterior<a class="headerlink" href="#sample-the-posterior" title="Permalink to this heading">#</a></h3>
+<p>Bayesian fitting combines the parameter priors with the likelihood of the 58
+responses:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[
+p(\alpha,\beta,\lambda\mid y,x)
+\propto
+p(y\mid x,\alpha,\beta,\lambda)
+p(\alpha)p(\beta)p(\lambda).
+\]</div>
+</div>
+<p>We use four independent chains to explore this posterior. <code class="docutils literal notranslate"><span class="pre">sample_prior</span> <span class="pre">=</span> <span class="pre">&quot;yes&quot;</span></code> also stores draws from the priors, which makes a direct comparison with
+the posterior possible.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">brm</span><span class="p">(</span>
+<span class="w">  </span><span class="n">bff</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model_df</span><span class="p">,</span>
+<span class="w">  </span><span class="n">prior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">priors</span><span class="p">,</span>
+<span class="w">  </span><span class="n">sample_prior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"yes"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">cores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">warmup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">control</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">adapt_delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">,</span><span class="w"> </span><span class="n">max_treedepth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">),</span>
+<span class="w">  </span><span class="n">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"cmdstanr"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5102</span><span class="p">,</span>
+<span class="w">  </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"fits/hrd_single"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">file_refit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"on_change"</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The upper row below compares marginal prior draws with posterior draws from this
+fit. The participant’s responses move the threshold well away from the prior
+centre and narrow it substantially. The width is also learned from the data.
+Lapse remains less certain because very low lapse rates make similar predictions
+in a session of this length.</p>
+<p>The lower row shows post-warmup draws in sampling order. These traces are a
+computational diagnostic, not a record of how the participant learned during
+the task. All four chains should explore the same region without trends or long
+periods of sticking.</p>
+<p><img alt="From priors to the sampled posterior for one participant" src="../../../_images/fig_single_subject_sampling.png" /></p>
+<p>The cached <code class="docutils literal notranslate"><span class="pre">brms</span></code> object can be large. Keep it out of version control. The script
+used for this example, including its cache and compact output tables, is
+<code class="docutils literal notranslate"><span class="pre">tutorials/R/05_single_subject.R</span></code>.</p>
+</section>
+<section id="check-the-sampling">
+<h3>Check the sampling<a class="headerlink" href="#check-the-sampling" title="Permalink to this heading">#</a></h3>
+<p>Read the diagnostics before interpreting the curve:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">nuts_params</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="n">draw_summary</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">posterior</span><span class="o">::</span><span class="nf">summarise_draws</span><span class="p">(</span>
+<span class="w">  </span><span class="n">posterior</span><span class="o">::</span><span class="nf">as_draws_array</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="nf">sum</span><span class="p">(</span><span class="n">np</span><span class="o">$</span><span class="n">Value</span><span class="p">[</span><span class="n">np</span><span class="o">$</span><span class="n">Parameter</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"divergent__"</span><span class="p">])</span>
+<span class="nf">max</span><span class="p">(</span><span class="n">np</span><span class="o">$</span><span class="n">Value</span><span class="p">[</span><span class="n">np</span><span class="o">$</span><span class="n">Parameter</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"treedepth__"</span><span class="p">])</span>
+<span class="nf">max</span><span class="p">(</span><span class="n">draw_summary</span><span class="o">$</span><span class="n">rhat</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+<span class="nf">min</span><span class="p">(</span><span class="n">draw_summary</span><span class="o">$</span><span class="n">ess_bulk</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+<span class="nf">min</span><span class="p">(</span><span class="n">draw_summary</span><span class="o">$</span><span class="n">ess_tail</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For this fit there were no divergent transitions, maximum tree depth was 4,
+maximum <span class="math notranslate nohighlight">\(\widehat{R}\)</span> was 1.001, and the minimum bulk and tail effective sample
+sizes were 3,309 and 4,266. Minimum E-BFMI across chains was 1.00. These values
+give no indication of a sampling problem. As general checks, require no
+divergences, <span class="math notranslate nohighlight">\(\widehat{R}&lt;1.01\)</span>, effective sample sizes in at least the hundreds,
+and E-BFMI above 0.3.</p>
+</section>
+<section id="plot-the-fitted-participant">
+<h3>Plot the fitted participant<a class="headerlink" href="#plot-the-fitted-participant" title="Permalink to this heading">#</a></h3>
+<p>We now carry each posterior draw through the psychometric function. At every
+value of ΔBPM this gives a distribution of response probabilities, from which
+we can plot a median and credible bands.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">-50.5</span><span class="p">,</span><span class="w"> </span><span class="m">50.5</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.25</span><span class="p">),</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+<span class="n">p_draws</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">posterior_epred</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span>
+
+<span class="n">curve</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">tibble</span><span class="p">(</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">grid</span><span class="o">$</span><span class="n">x</span><span class="p">,</span>
+<span class="w">  </span><span class="n">q2.5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.025</span><span class="p">),</span>
+<span class="w">  </span><span class="n">q10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.10</span><span class="p">),</span>
+<span class="w">  </span><span class="n">q25</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.25</span><span class="p">),</span>
+<span class="w">  </span><span class="n">median</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">median</span><span class="p">),</span>
+<span class="w">  </span><span class="n">q75</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.75</span><span class="p">),</span>
+<span class="w">  </span><span class="n">q90</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.90</span><span class="p">),</span>
+<span class="w">  </span><span class="n">q97.5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">p_draws</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">quantile</span><span class="p">,</span><span class="w"> </span><span class="m">0.975</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><img alt="One participant's observed responses and posterior psychometric function" src="../../../_images/fig_single_subject_brms.png" /></p>
+<p>Each point is the observed proportion of “faster” responses at one exact
+intensity; larger points represent repeated presentations. The line is the
+posterior median function. The nested bands contain 50%, 80%, and 95% of the
+posterior probability at each intensity. The vertical dashed line marks the
+median threshold.</p>
+<p>This participant’s threshold is <span class="math notranslate nohighlight">\(+9.1\)</span> ΔBPM, with a 95% credible interval from
+<span class="math notranslate nohighlight">\(+4.0\)</span> to <span class="math notranslate nohighlight">\(+13.8\)</span> ΔBPM. Their tones had to be about 9 BPM faster than the
+measured heart rate before “faster” and “slower” responses were equally likely,
+which indicates overestimation relative to the measured rate. The median
+<span class="math notranslate nohighlight">\(\sigma\)</span> is 11.2 ΔBPM, with a 95% interval from 7.3 to 17.3 ΔBPM. The median
+lapse probability is 1.1%, although its 95% interval is broad, from 0.03% to
+17.9%. The posterior bands make that remaining uncertainty visible in a way that
+the final Psi point estimates cannot.</p>
+</section>
+<section id="return-to-scientific-scales">
+<h3>Return to scientific scales<a class="headerlink" href="#return-to-scientific-scales" title="Permalink to this heading">#</a></h3>
+<p>Transform slope and lapse draws before reporting them:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">draws</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">posterior</span><span class="o">::</span><span class="nf">as_draws_df</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">as.data.frame</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">transmute</span><span class="p">(</span>
+<span class="w">    </span><span class="n">threshold_dBPM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b_alpha_Intercept</span><span class="p">,</span>
+<span class="w">    </span><span class="n">log_slope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b_beta_Intercept</span><span class="p">,</span>
+<span class="w">    </span><span class="n">sigma_dBPM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">exp</span><span class="p">(</span><span class="o">-</span><span class="n">b_beta_Intercept</span><span class="p">),</span>
+<span class="w">    </span><span class="n">lapse_probability</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">plogis</span><span class="p">(</span><span class="n">b_lambda_Intercept</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="n">draws</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="n">tidyr</span><span class="o">::</span><span class="nf">pivot_longer</span><span class="p">(</span>
+<span class="w">    </span><span class="nf">everything</span><span class="p">(),</span><span class="w"> </span><span class="n">names_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"parameter"</span><span class="p">,</span><span class="w"> </span><span class="n">values_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"value"</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">group_by</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">summarise</span><span class="p">(</span>
+<span class="w">    </span><span class="n">median</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+<span class="w">    </span><span class="n">q2.5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">quantile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="m">0.025</span><span class="p">),</span>
+<span class="w">    </span><span class="n">q97.5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">quantile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="m">0.975</span><span class="p">),</span>
+<span class="w">    </span><span class="n">.groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"drop"</span>
+<span class="w">  </span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="where-the-single-participant-analysis-ends">
+<h3>Where the single-participant analysis ends<a class="headerlink" href="#where-the-single-participant-analysis-ends" title="Permalink to this heading">#</a></h3>
+<p>This fit is useful for understanding the model, describing an individual
+session, and diagnosing whether the response function is identified. It is not
+a route to a group analysis. Fitting every participant separately and testing
+their posterior means would discard their different levels of uncertainty.</p>
+<p>Continue to <a class="reference internal" href="hierarchical.html"><span class="std std-doc">hierarchical modelling</span></a> when the scientific
+question concerns participants as a sample, experimental conditions, groups,
+or covariates. That tutorial starts from the same trial likelihood and develops
+the population model in full.</p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="hierarchical.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Hierarchical modelling</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="inspecting-data.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Inspecting and plotting an HRD session</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2019-2026, Micah Allen and the Embodied Computation Group, Aarhus University
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/embodied-computation-group/Cardioception" aria-label="GitHub"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg></a>
+              <a class="muted-link " href="https://pypi.org/project/cardioception-toolbox/" aria-label="PyPI"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path d="M8.878.392a1.75 1.75 0 0 0-1.756 0l-5.25 3.045A1.75 1.75 0 0 0 1 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 0 0 1.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514ZM7.875 1.69a.25.25 0 0 1 .25 0l4.63 2.685L8 7.133 3.245 4.375Zm-5.375 9.36V5.677l4.75 2.755v5.339l-4.626-2.683a.25.25 0 0 1-.124-.216Zm6.25 2.755V8.432l4.75-2.755v5.372a.25.25 0 0 1-.124.216Z"></path></svg></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">The psychophysical model</a><ul>
+<li><a class="reference internal" href="#part-i-the-measurement-model">Part I. The measurement model</a><ul>
+<li><a class="reference internal" href="#a-trial-is-a-comparison">A trial is a comparison</a></li>
+<li><a class="reference internal" href="#the-psychometric-function">The psychometric function</a></li>
+<li><a class="reference internal" href="#what-the-parameters-measure">What the parameters measure</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#part-ii-adaptive-measurement-with-psi">Part II. Adaptive measurement with Psi</a><ul>
+<li><a class="reference internal" href="#the-state-of-the-staircase">The state of the staircase</a></li>
+<li><a class="reference internal" href="#choosing-the-next-stimulus">Choosing the next stimulus</a></li>
+<li><a class="reference internal" href="#from-the-trace-to-the-function">From the trace to the function</a></li>
+<li><a class="reference internal" href="#what-psi-gives-us">What Psi gives us</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#part-iii-fitting-one-participant-in-brms">Part III. Fitting one participant in <code class="docutils literal notranslate"><span class="pre">brms</span></code></a><ul>
+<li><a class="reference internal" href="#why-refit-the-trials">Why refit the trials</a></li>
+<li><a class="reference internal" href="#prepare-the-participant-s-responses">Prepare the participant’s responses</a></li>
+<li><a class="reference internal" href="#define-the-response-model">Define the response model</a></li>
+<li><a class="reference internal" href="#specify-and-inspect-the-priors">Specify and inspect the priors</a></li>
+<li><a class="reference internal" href="#sample-the-posterior">Sample the posterior</a></li>
+<li><a class="reference internal" href="#check-the-sampling">Check the sampling</a></li>
+<li><a class="reference internal" href="#plot-the-fitted-participant">Plot the fitted participant</a></li>
+<li><a class="reference internal" href="#return-to-scientific-scales">Return to scientific scales</a></li>
+<li><a class="reference internal" href="#where-the-single-participant-analysis-ends">Where the single-participant analysis ends</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

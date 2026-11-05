@@ -1,0 +1,6 @@
+﻿cardioception.PAT.scoring.monte\_carlo\_threshold
+=================================================
+
+.. currentmodule:: cardioception.PAT.scoring
+
+.. autofunction:: monte_carlo_threshold

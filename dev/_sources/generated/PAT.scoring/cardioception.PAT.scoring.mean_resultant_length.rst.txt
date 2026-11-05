@@ -1,0 +1,6 @@
+﻿cardioception.PAT.scoring.mean\_resultant\_length
+=================================================
+
+.. currentmodule:: cardioception.PAT.scoring
+
+.. autofunction:: mean_resultant_length

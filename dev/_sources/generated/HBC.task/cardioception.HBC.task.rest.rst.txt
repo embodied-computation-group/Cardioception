@@ -1,0 +1,6 @@
+﻿cardioception.HBC.task.rest
+===========================
+
+.. currentmodule:: cardioception.HBC.task
+
+.. autofunction:: rest

@@ -1,0 +1,6 @@
+﻿cardioception.PAT.scoring.extero\_threshold
+===========================================
+
+.. currentmodule:: cardioception.PAT.scoring
+
+.. autofunction:: extero_threshold

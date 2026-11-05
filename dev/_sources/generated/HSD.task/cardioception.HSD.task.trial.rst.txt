@@ -1,0 +1,6 @@
+﻿cardioception.HSD.task.trial
+============================
+
+.. currentmodule:: cardioception.HSD.task
+
+.. autofunction:: trial

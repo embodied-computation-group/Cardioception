@@ -1,0 +1,6 @@
+﻿cardioception.HSD.psi.default\_grids
+====================================
+
+.. currentmodule:: cardioception.HSD.psi
+
+.. autofunction:: default_grids

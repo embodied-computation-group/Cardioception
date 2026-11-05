@@ -1,0 +1,6 @@
+﻿cardioception.PAT.scoring.phase\_angles
+=======================================
+
+.. currentmodule:: cardioception.PAT.scoring
+
+.. autofunction:: phase_angles

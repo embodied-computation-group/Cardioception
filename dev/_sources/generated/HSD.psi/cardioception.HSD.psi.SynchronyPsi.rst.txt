@@ -1,0 +1,37 @@
+﻿cardioception.HSD.psi.SynchronyPsi
+==================================
+
+.. currentmodule:: cardioception.HSD.psi
+
+.. autoclass:: SynchronyPsi
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SynchronyPsi.__init__
+      ~SynchronyPsi.ci_width
+      ~SynchronyPsi.converged
+      ~SynchronyPsi.detection_bayes_factor
+      ~SynchronyPsi.detection_evidence
+      ~SynchronyPsi.estimate
+      ~SynchronyPsi.expected_entropy
+      ~SynchronyPsi.marginal
+      ~SynchronyPsi.next_delay
+      ~SynchronyPsi.predicted_envelope
+      ~SynchronyPsi.rise_range
+      ~SynchronyPsi.rise_supported
+      ~SynchronyPsi.state
+      ~SynchronyPsi.summary
+      ~SynchronyPsi.update
+      ~SynchronyPsi.visible_rise
+   
+   
+
+   
+   
+   
