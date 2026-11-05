@@ -177,7 +177,6 @@ In the validation study, 190 participants ran the task a second time, about seve
 
 - [Measuring cardiac interoception](../theory.md): why the HRD measures beliefs about heart rate, and what you may conclude from it.
 - [Tutorials](tutorials/index.md): inspecting a session, fitting psychometric functions, hierarchical models and metacognition.
-- [HTML reports (legacy)](reports.md): the notebook report of a session.
 - [API](../../reference/api.rst): every argument of `getParameters` and every field of `TaskConfig`.
 
 ```{toctree}
@@ -185,5 +184,4 @@ In the validation study, 190 participants ran the task a second time, about seve
 hidden:
 ---
 Tutorials <tutorials/index.md>
-HTML reports (legacy) <reports.md>
 ```

@@ -203,7 +203,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../tasks/hrd/tutorials/metacognition.html">Metacognition</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../tasks/hrd/reports.html">HTML reports (legacy)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tasks/hbc.html">Heartbeat Counting task</a></li>
@@ -266,8 +265,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../generated/devices.beat_source/cardioception.devices.beat_source.VirtualBeatSource.html">cardioception.devices.beat_source.VirtualBeatSource</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/devices.tone_player/cardioception.devices.tone_player.TonePlayer.html">cardioception.devices.tone_player.TonePlayer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/scales/cardioception.scales.ConfidenceScale.html">cardioception.scales.ConfidenceScale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/cite.html">How to cite</a></li>
@@ -418,7 +415,7 @@ Recording 20 s from COM3. Keep a finger in the sensor.
 </section>
 <section id="the-conda-route">
 <span id="id1"></span><h2>The conda route<a class="headerlink" href="#the-conda-route" title="Permalink to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> at the root of the repository replaces steps 1 to 3 on Windows for people who already have Anaconda or Miniconda. It pins the interpreter to 3.10 and installs <code class="docutils literal notranslate"><span class="pre">pywinhook</span></code> from conda-forge, which saves building it from source. <code class="docutils literal notranslate"><span class="pre">pywinhook</span></code> exists only for Windows, so on Linux use <code class="docutils literal notranslate"><span class="pre">environment_linux.yml</span></code>, which leaves it out and adds PyMC and metadpy for the legacy report notebooks. There is no file for macOS; use the venv route there.</p>
+<p><code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> at the root of the repository replaces steps 1 to 3 on Windows for people who already have Anaconda or Miniconda. It pins the interpreter to 3.10 and installs <code class="docutils literal notranslate"><span class="pre">pywinhook</span></code> from conda-forge, which saves building it from source. <code class="docutils literal notranslate"><span class="pre">pywinhook</span></code> exists only for Windows, so on Linux use <code class="docutils literal notranslate"><span class="pre">environment_linux.yml</span></code>, which leaves it out. There is no file for macOS; use the venv route there.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/embodied-computation-group/Cardioception.git
 <span class="nb">cd</span><span class="w"> </span>Cardioception
 conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml

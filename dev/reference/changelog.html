@@ -202,7 +202,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../tasks/hrd/tutorials/metacognition.html">Metacognition</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../tasks/hrd/reports.html">HTML reports (legacy)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tasks/hbc.html">Heartbeat Counting task</a></li>
@@ -265,8 +264,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../generated/devices.beat_source/cardioception.devices.beat_source.VirtualBeatSource.html">cardioception.devices.beat_source.VirtualBeatSource</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/devices.tone_player/cardioception.devices.tone_player.TonePlayer.html">cardioception.devices.tone_player.TonePlayer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/scales/cardioception.scales.ConfidenceScale.html">cardioception.scales.ConfidenceScale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../generated/reports/cardioception.reports.report.html">cardioception.reports.report</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../generated/reports/cardioception.reports.preprocessing.html">cardioception.reports.preprocessing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
@@ -655,10 +652,17 @@ review. It now builds on pull requests and publishes only from master.</p></li>
 remain in the history; only new clones of the working tree get smaller.</p></li>
 </ul>
 </section>
-<section id="deprecated">
-<h3>Deprecated<a class="headerlink" href="#deprecated" title="Permalink to this heading">#</a></h3>
+<section id="removed">
+<h3>Removed<a class="headerlink" href="#removed" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">cardioception.reports</span></code>. To be rebuilt.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cardioception.reports</span></code>, with <code class="docutils literal notranslate"><span class="pre">report</span></code>, <code class="docutils literal notranslate"><span class="pre">preprocessing</span></code> and the two
+notebook templates in <code class="docutils literal notranslate"><span class="pre">cardioception/notebooks/</span></code> that <code class="docutils literal notranslate"><span class="pre">report</span></code> ran. They read
+only the file names 0.7 wrote, and mixed quality control with outdated
+analysis choices. Reporting will be rebuilt from scratch; until then, the
+<a class="reference external" href="https://www.the-ecg.org/Cardioception/tasks/hrd/tutorials/inspecting-data.html">inspecting-data tutorial</a>
+covers the same checks. The 0.7 reports remain in <code class="docutils literal notranslate"><span class="pre">v0.7.2</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">papermill</span></code> and <code class="docutils literal notranslate"><span class="pre">pingouin</span></code> are no longer dependencies, and
+<code class="docutils literal notranslate"><span class="pre">environment_linux.yml</span></code> no longer installs PyMC and metadpy.</p></li>
 </ul>
 </section>
 </section>
@@ -722,7 +726,7 @@ remain in the history; only new clones of the working tree get smaller.</p></li>
 <li><a class="reference internal" href="#fixed">Fixed</a></li>
 <li><a class="reference internal" href="#internal">Internal</a></li>
 <li><a class="reference internal" href="#packaging">Packaging</a></li>
-<li><a class="reference internal" href="#deprecated">Deprecated</a></li>
+<li><a class="reference internal" href="#removed">Removed</a></li>
 </ul>
 </li>
 </ul>

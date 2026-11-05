@@ -1,6 +1,0 @@
-﻿cardioception.reports.preprocessing
-===================================
-
-.. currentmodule:: cardioception.reports
-
-.. autofunction:: preprocessing

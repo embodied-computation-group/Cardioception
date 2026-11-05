@@ -1,6 +1,0 @@
-﻿cardioception.reports.report
-============================
-
-.. currentmodule:: cardioception.reports
-
-.. autofunction:: report
