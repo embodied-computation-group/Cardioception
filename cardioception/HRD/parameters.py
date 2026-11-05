@@ -326,9 +326,10 @@ def getParameters(
     participant : str
         Subject ID. Default is 'SubjectTest'.
     catchTrials : float
-        Ratio of Psi trials allocated to extreme values (+20 or -20 bpm with some
-        jitter) to control for range of stimuli presented. Default to `0.0` (no catch
-        trials). If not `0.0`, recommended value is `0.2`.
+        Ratio of Psi trials replaced by catch trials at fixed differences, cycling
+        through -30, +10, -20, +20, -10 and +30 BPM, to control for the range of
+        stimuli presented. Default to `0.0` (no catch trials). If not `0.0`,
+        recommended value is `0.2`.
     recorder : object | None
         A recording device to use instead of the one `setup` would open, e.g.
         :class:`cardioception.devices.LSLRecorder` to read ECG from an LSL
