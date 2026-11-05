@@ -7,24 +7,23 @@ myst:
 
 # HTML reports (legacy)
 
-Results are saved in the `'resultPath'` folder defined in the parameters dictionary. The HRD and the HBC each come with a notebook covering the main results, quality checks, and basic preprocessing steps. To generate the HTML report:
+The HRD and the HBC each come with a notebook of main results, quality checks and basic preprocessing. `report` runs it with papermill and writes it out as HTML:
 
 ```python
 from cardioception.reports import report
 
-resultPath = "./"  # the folder containing the result files
-reportPath = "./"  # the folder where you want to save the HTML report
+resultPath = "./"  # the folder holding one participant's result files
+reportPath = "./"  # where to write the HTML report
 
-report(resultPath, reportPath, task='HRD')
+report(resultPath, reportPath, task="HRD")
 ```
 
-This writes the HTML report for the Heart Rate Discrimination task into `reportPath`, using the result files found in `resultPath`. It requires [papermill](https://papermill.readthedocs.io/en/latest/).
+```{warning}
+The notebooks look for the file names that version 0.7 and earlier wrote, so they do not read a 1.0 run directory. The HRD notebook looks for `*Intero_posterior.npy`, where 1.0 writes `*_posterior-Intero.npy`, and the HBC notebook for one `.npy` recording per trial, where 1.0 writes `*_ppg-<n>.txt`.
+```
 
-The functions that build the HTML reports also require:
+papermill, matplotlib, seaborn and pingouin install with the package. The reports also need three things that do not:
 
-* [papermill](https://papermill.readthedocs.io/en/latest/) (>=2.3.1)
-* [matplotlib](https://matplotlib.org/) (>=3.3.3)
-* [seaborn](https://seaborn.pydata.org/) (>=0.11.1)
-* [pingouin](https://pingouin-stats.org/) (>=0.3.10)
-* [metadpy](https://github.com/EmbodiedComputationGroup/metadpy) (>=0.1.0)
-* [pymc](https://www.pymc.io/welcome.html) (>=5.0)
+* [Jupyter nbconvert](https://nbconvert.readthedocs.io/), which `report` calls to convert the notebook to HTML.
+* [metadpy](https://github.com/embodied-computation-group/metadpy) (>=0.1.0), which the HRD notebook imports.
+* [PyMC](https://www.pymc.io/welcome.html) (>=5.0), which `preprocessing` uses with metadpy.
