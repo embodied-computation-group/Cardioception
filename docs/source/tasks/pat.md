@@ -124,17 +124,47 @@ With `extero=True` the "heartbeat" is a 50 Hz vibration burst on the back of the
 
 ### Running without a participant
 
-`cardioception.PAT._autopilot.PATAutopilot` is a simulated participant. It is given the phase at which it feels the heartbeat, rolls the wheel a notch at a time towards it, presses once settled, and rates its confidence at random. With `beat_source=` and `tone_player=` in place of the ECG and the sound card, a whole session runs headless; `tests/test_pat_headless.py` has a silent player and a virtual heart.
+`PATAutopilot` is a simulated participant. It is given the phase at which it feels the heartbeat, rolls the wheel a notch at a time towards it, presses once settled, and rates its confidence at random. It lives in a private module, `cardioception.PAT._autopilot`, so its interface may change without notice. With `beat_source=` and `tone_player=` in place of the ECG and the sound card, a whole session runs headless. This runs the exteroceptive variant, whose heart is virtual, with a player that plays nothing; `tests/test_pat_headless.py` also has a virtual heart for the main task.
 
 ```python
+from cardioception.devices.beat_source import default_clock
 from cardioception.PAT._autopilot import PATAutopilot
+from cardioception.PAT.parameters import getParameters
+from cardioception.PAT.task import run
+
+
+class SilentPlayer:
+    """Reports every tone as starting when it was due, and plays nothing."""
+
+    def __init__(self, clock):
+        self.clock, self.waiting, self.n = clock, {}, 0
+
+    def schedule(self, when, kind="tone"):
+        self.n += 1
+        self.waiting[self.n] = when
+        return self.n
+
+    def poll_onsets(self):
+        now = self.clock()
+        done = [(h, t) for h, t in self.waiting.items() if now >= t]
+        for h, _ in done:
+            del self.waiting[h]
+        return done
+
+    def close(self):
+        pass
+
 
 parameters = getParameters(
     participant="pilot", extero=True, fullscr=False, seed=1,
-    markerStream=None, tone_player=my_silent_player,
+    markerStream=None, tone_player=SilentPlayer(default_clock()),
 )
 parameters["autopilot"] = PATAutopilot(parameters["rng"], target=120.0, spread=10.0)
-run(parameters)
+try:
+    run(parameters)
+finally:
+    parameters["win"].close()
+    parameters["engine"].close()
 ```
 
 ## What it saves
