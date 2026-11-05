@@ -106,8 +106,7 @@ jobs:
       # test_headless.py, so 13 of the 16 test files never executed in CI at
       # all -- a regression in the language loader, the confidence scales,
       # SessionPaths, the trigger registry or the tutorial table would have
-      # shipped green. test_reports.py is excluded because it needs papermill
-      # and reports is deprecated; it is excluded locally for the same reason.
+      # shipped green.
       #
       # A per-test timeout dumps the stack of whatever is stuck; thread
       # method, because the signal method cannot interrupt a blocking call
@@ -117,4 +116,4 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
         run: |
-          xvfb-run -a pytest tests/ -v --ignore=tests/test_reports.py --timeout=180 --timeout-method=thread --durations=15 --cov=cardioception --cov-report=term-missing
+          xvfb-run -a pytest tests/ -v --timeout=180 --timeout-method=thread --durations=15 --cov=cardioception --cov-report=term-missing

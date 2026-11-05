@@ -131,7 +131,7 @@ Continue to [Recording devices](recording-devices.md) to connect the device your
 (the-conda-route)=
 ## The conda route
 
-`environment.yml` at the root of the repository replaces steps 1 to 3 on Windows for people who already have Anaconda or Miniconda. It pins the interpreter to 3.10 and installs `pywinhook` from conda-forge, which saves building it from source. `pywinhook` exists only for Windows, so on Linux use `environment_linux.yml`, which leaves it out and adds PyMC and metadpy for the legacy report notebooks. There is no file for macOS; use the venv route there.
+`environment.yml` at the root of the repository replaces steps 1 to 3 on Windows for people who already have Anaconda or Miniconda. It pins the interpreter to 3.10 and installs `pywinhook` from conda-forge, which saves building it from source. `pywinhook` exists only for Windows, so on Linux use `environment_linux.yml`, which leaves it out. There is no file for macOS; use the venv route there.
 
 ```bash
 git clone https://github.com/embodied-computation-group/Cardioception.git

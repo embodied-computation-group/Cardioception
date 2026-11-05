@@ -87,11 +87,6 @@ autodoc_mock_imports = [
     "psychopy",
     "serial",
     "systole",
-    "pymc",
-    "pytensor",
-    "metadpy",
-    "papermill",
-    "pingouin",
 ]
 numpydoc_show_class_members = False
 # The numpydoc docstrings carry the types. Sphinx 5.3 printed the annotations
@@ -273,6 +268,9 @@ redirects = {
     "tasks/hrd/running": "index.html",
     "tasks/hrd/theory": "../theory.html",
     "tasks/hsd/running": "index.html",
+    # The legacy HTML reports were removed in 1.0; the tutorial that covers
+    # inspecting a session took their place.
+    "tasks/hrd/reports": "tutorials/inspecting-data.html",
 }
 
 

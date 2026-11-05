@@ -334,6 +334,13 @@ code it replaced rather than read over.
 - `.RData` (50 MB), `.Rhistory` and `.coverage` are no longer tracked. They
   remain in the history; only new clones of the working tree get smaller.
 
-### Deprecated
+### Removed
 
-- `cardioception.reports`. To be rebuilt.
+- `cardioception.reports`, with `report`, `preprocessing` and the two
+  notebook templates in `cardioception/notebooks/` that `report` ran. They read
+  only the file names 0.7 wrote, and mixed quality control with outdated
+  analysis choices. Reporting will be rebuilt from scratch; until then, the
+  [inspecting-data tutorial](https://www.the-ecg.org/Cardioception/tasks/hrd/tutorials/inspecting-data.html)
+  covers the same checks. The 0.7 reports remain in `v0.7.2`.
+- `papermill` and `pingouin` are no longer dependencies, and
+  `environment_linux.yml` no longer installs PyMC and metadpy.

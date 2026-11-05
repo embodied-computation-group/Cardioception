@@ -27,7 +27,7 @@ pytest tests/test_rng.py tests/test_stimuli.py tests/test_hsd_psi.py
 The whole suite, as CI runs it:
 
 ```bash
-pytest tests/ --ignore=tests/test_reports.py --timeout=180 --timeout-method=thread
+pytest tests/ --timeout=180 --timeout-method=thread
 ```
 
 CI also checks types, formatting and lint on Python 3.11:
