@@ -24,12 +24,9 @@ run it; this page sets them side by side.
 | Trials and minutes | 120 trials, about 20 minutes plus the tutorial | 6 counting windows, about 4 minutes | 28 trials and 8 practice, about 30 minutes | 15 to 60 trials; 60 took 7 minutes |  |  |
 | Status | Established | Established | Beta | Beta | Coming soon | Coming soon |
 
-Every task writes to the same layout,
-`data/sub-<participant>/ses-<session>/run-<YYYYMMDD-HHMMSS>/` under the current
-folder or under `resultPath`. The timestamp makes each run's directory unique,
-every file name carries participant, session and run, and `manifest.json`
-records the settings before the first trial. The trial table is always
-`*_final.txt`.
+Every task writes to the same run directory layout, with the trial table in
+`*_final.txt`; [Running a session](../getting-started/running-a-session.md#where-the-data-goes)
+describes it.
 
 ## Strengths and limitations
 
