@@ -226,6 +226,6 @@ Further checks of the timing chain are in `bench/README.md` in the repository.
 
 ## Where to go next
 
-- [Heartbeat Synchrony Discrimination](hsd/design.md#relation-to-the-phase-adjustment-task): how the HSD relates to the PAT, and what each can and cannot separate.
+- [The PAT and the HSD](index.md#the-pat-and-the-hsd): the two synchrony tasks side by side.
 - [Recording devices](../getting-started/recording-devices.md): the PLUX bridge and LabRecorder.
 - [API](../reference/api.rst): every argument of `getParameters` and the scoring functions.

@@ -107,14 +107,8 @@ delay), the two possible timing axes (milliseconds or cardiac phase) and a
 confidence rating. An exteroceptive control like the PAT's is planned for the
 HSD (roadmap item D). They differ in the psychophysical method.
 
-| | PAT-ECG | HSD |
-|---|---|---|
-| Method | Adjustment: the participant turns a dial until the tones feel synchronous, then presses space | Constant stimuli made adaptive: the procedure sets the delay, the participant answers yes or no |
-| Who samples the delays | The participant, freely, for as long as they like (about 1 minute per trial, 28 trials in 30 minutes) | The algorithm, by expected information gain; a trial is five beats plus a response |
-| Measure | Circular consistency of the chosen delays across trials (mean resultant length), tested against a Monte Carlo null | Posterior over the location, width, floor and peak of a response envelope; credible intervals; posterior evidence that the envelope rises at all |
-| Width of the sensation | Not separable from consistency | An explicit parameter, `sigma` |
-| Lapses and bias | Not modelled; confidence weighting offered instead | Floor and peak parameters absorb lapses, and are marginalized out |
-| Stopping | Fixed 28 trials, justified by simulation (15 to 20 enough for classification) | Credible-interval width on `mu`, with a maximum |
+The [tasks overview](../index.md#the-pat-and-the-hsd) sets the two side by
+side.
 
 The Phase Adjustment Task was built for smartphone photoplethysmography,
 where the participant's own exploration replaces a controlled stimulus

@@ -55,9 +55,8 @@ sensitivity on its own.
 **The PAT.** It connects to the phase adjustment literature and classifies
 participants against chance with a fixed number of trials. It cannot separate
 where the sensation lies from how precise it is, and a participant can be
-consistent through a habit of search rather than a sensation; the
-[HSD design page](hsd/design.md#relation-to-the-phase-adjustment-task) compares
-the two. This port is in beta, and its timing differs from the hardware
+consistent through a habit of search rather than a sensation;
+[the PAT and the HSD](#the-pat-and-the-hsd) sets the two side by side. This port is in beta, and its timing differs from the hardware
 original.
 
 **The HSD.** It estimates where in the cardiac cycle a person feels the
@@ -67,3 +66,18 @@ spends the trials where they are informative. It is in beta: not yet
 validated, unable to probe delays below 130 ms, and sensitive to jitter in a
 Bluetooth ECG, which widens `sigma`. Read the [design page](hsd/design.md)
 before using it.
+
+## The PAT and the HSD
+
+Both tasks time a tone from the R-wave, on a delay in milliseconds or a phase
+of the cardiac cycle, and both ask for a confidence rating. They differ in the
+psychophysical method.
+
+| | PAT | HSD |
+|---|---|---|
+| Method | Adjustment: the participant turns a dial until the tones feel synchronous, then presses space | Constant stimuli made adaptive: the procedure sets the delay, the participant answers yes or no |
+| Who samples the delays | The participant, freely, for as long as they like (about 1 minute per trial, 28 trials in 30 minutes) | The algorithm, by expected information gain; a trial is five beats plus a response |
+| Measure | Circular consistency of the chosen delays across trials (mean resultant length), tested against a Monte Carlo null | Posterior over the location, width, floor and peak of a response envelope; credible intervals; posterior evidence that the envelope rises at all |
+| Width of the sensation | Not separable from consistency | An explicit parameter, `sigma` |
+| Lapses and bias | Not modelled; confidence weighting offered instead | Floor and peak parameters absorb lapses, and are marginalized out |
+| Stopping | Fixed 28 trials, justified by simulation (15 to 20 enough for classification) | Credible-interval width on `mu`, with a maximum |
