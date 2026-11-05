@@ -25,7 +25,7 @@ Each trial plays five tones, each a chosen delay after an R-wave detected online
 One HSD trial, from screenshots of the running task.
 ```
 
-After each answer the next delay is chosen where it is most informative about `mu` and `sigma`, with one trial in ten drawn at random. The delay is set on one of two axes, chosen per session with `axis`. On the absolute axis, the default, candidates run from 80 to 600 ms after the R-wave in 20 ms steps; none below the 130 ms floor is played, so the shortest delay is 140 ms. On the phase axis the delay is a fraction of the anticipated interbeat interval, from 0.10 to 0.75 in steps of 0.025, so it scales with heart rate.
+After each answer the next delay is chosen where it is most informative about `mu`, with one trial in ten drawn at random. The delay is set on one of two axes, chosen per session with `axis`. On the absolute axis, the default, candidates run from 80 to 600 ms after the R-wave in 20 ms steps; none below the 130 ms floor is played, so the shortest delay is 140 ms. On the phase axis the delay is a fraction of the anticipated interbeat interval, from 0.10 to 0.75 in steps of 0.025, so it scales with heart rate.
 
 The session stops once the 95 percent credible interval of `mu` is no wider than 100 ms (0.17 of the period on the phase axis), after at least 15 trials, and never later than 60. Expect most sessions to run to 60; the dry run did, in 7 minutes. A session starts with three instruction screens and three practice trials that do not update the estimate, and there is a break every 20 trials.
 
@@ -142,19 +142,13 @@ The practice trials are not in `*_final.txt`. The columns that matter:
 | `MuConditional` | True when the `Mu` and `Sigma` columns are conditioned on the envelope rising; False when the posterior put less than 0.01 on a rise, and they are then the plain marginals |
 | `DetectionBF`, `DetectionEvidence` | The Bayes factor, and the posterior probability, for an envelope that rises by more than 0.2 across the delays presented so far |
 
-`DetectionBF` is a sanity check, never a classification. The rise is measured across the delays presented, so a bump outside them, or one too wide to change across them, counts as flat. The prior puts about half its mass on a rise (0.47 over 140 to 500 ms), so read `DetectionEvidence` against that, or read the Bayes factor, which removes the prior. A located `mu` with a weak Bayes factor is possible; the dry run below is an example.
-
-```{figure} ../../images/hsd_dryrun_session.png
-:alt: Three panels from the 60-trial dry run. Left, each answer against the realized delay from 140 to 540 ms, coloured by confidence, with the proportion of synchronous answers per 50 ms bin and the posterior-mean envelope rising from about 0.32 to about 0.75 near 270 ms. Middle, the posterior mean of mu settles near 270 ms while its credible interval narrows. Right, the log10 Bayes factor for detection wanders between -0.6 and +0.3 and ends near 0.
-
-The hardware dry run. Left: each answer against the realized delay, with the proportion of "synchronous" answers per 50 ms bin and the posterior-mean envelope. Middle: the posterior mean of `mu` and its 95 percent credible interval after each trial. Right: the log10 Bayes factor for detection after each trial.
-```
+`DetectionBF` is a sanity check, never a classification. The rise is measured across the delays presented, so a bump outside them, or one too wide to change across them, counts as flat. The prior puts about half its mass on a rise (0.47 over 140 to 500 ms), so read `DetectionEvidence` against that, or read the Bayes factor, which removes the prior.
 
 As for the HRD, the online posterior is a monitoring aid, not an analysis. No offline model has been published yet. Fit any later model to the trial history, `RealizedCorrected` against `Decision` on the rows with `Used` true, which `*_engine.json` also holds.
 
 ## Where to go next
 
-- [Design and validation](design.md): the model, the delay placement, the simulations, the hardware dry run and the roadmap.
+- [HSD design and validation](design.md): the model, the delay placement, the simulations, the hardware dry run and the roadmap.
 - [Recording devices](../../getting-started/recording-devices.md): the PLUX bridge and LabRecorder.
 - [API](../../reference/api.rst): every field of `TaskConfig` and every argument of `getParameters`.
 
@@ -162,5 +156,5 @@ As for the HRD, the online posterior is a monitoring aid, not an analysis. No of
 ---
 hidden:
 ---
-Design and validation <design.md>
+design.md
 ```

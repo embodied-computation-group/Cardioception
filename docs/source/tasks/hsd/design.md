@@ -5,7 +5,7 @@ myst:
     keywords: "heartbeat detection, heartbeat synchrony, method of constant stimuli, Psi-marginal, adaptive psychophysics, cardiac interoception"
 ---
 
-# Heartbeat Synchrony Discrimination task
+# HSD design and validation
 
 The Heartbeat Synchrony Discrimination task (HSD) is an adaptive Bayesian
 version of the heartbeat detection task of Brener, Liu and Ring
@@ -103,9 +103,9 @@ was scored as the mean resultant length and tested against a Monte Carlo null;
 version, and an exteroceptive control in which a tactor vibrates on the hand.
 
 The two tasks share the trigger (the R-wave), the stimulus (a tone at a
-delay), the two possible timing axes (milliseconds or cardiac phase), a
-confidence rating and an exteroceptive control. They differ in the
-psychophysical method.
+delay), the two possible timing axes (milliseconds or cardiac phase) and a
+confidence rating. An exteroceptive control like the PAT's is planned for the
+HSD (roadmap item D). They differ in the psychophysical method.
 
 | | PAT-ECG | HSD |
 |---|---|---|
