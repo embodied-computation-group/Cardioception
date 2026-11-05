@@ -15,7 +15,7 @@ myst:
 
 Cardioception is an open-source Python toolbox for studying how people perceive their own heartbeat. It brings the most widely used methods for measuring cardiac interoception together in one place, built on [PsychoPy](https://www.psychopy.org/): heart rate discrimination, heartbeat counting, the Phase Adjustment Task, and a new adaptive task for the perceived timing of individual heartbeats. One installation, one output layout and one set of tutorials let you study perceptual bias, precision and confidence across methods, and compare them in the same participants.
 
-[![GitHub release](https://img.shields.io/github/v/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/) [![pip](https://img.shields.io/pypi/v/cardioception-toolbox)](https://pypi.org/project/cardioception-toolbox/) [![GitHub license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/embodied-computation-group/Cardioception/blob/master/LICENSE) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22139105.svg)](https://doi.org/10.5281/zenodo.22139105)
+[![GitHub release](https://img.shields.io/github/v/release/embodied-computation-group/Cardioception)](https://GitHub.com/embodied-computation-group/Cardioception/releases/) [![pip](https://img.shields.io/pypi/v/cardioception-toolbox)](https://pypi.org/project/cardioception-toolbox/) [![GitHub license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/embodied-computation-group/Cardioception/blob/main/LICENSE) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22139105.svg)](https://doi.org/10.5281/zenodo.22139105)
 
 ```{note}
 This is the official Cardioception, developed by Micah Allen and the Embodied Computation Group at Aarhus University, and originally funded by a Lundbeckfonden Fellowship to Micah Allen. It is the version cited in the publications listed on the [cite page](reference/cite.md).
@@ -50,7 +50,7 @@ Cardioception collects data; it does not analyze it. For HRD data, the companion
 
 Report bugs and ask questions in the [issue tracker](https://github.com/embodied-computation-group/Cardioception/issues). For questions about the tasks and study design, contact Micah Allen at micah@cfin.au.dk.
 
-<img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/LabLogo.png" height ="100"><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/master/docs/source/images/AU.png" height ="100">
+<img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/main/docs/source/images/LabLogo.png" height ="100"><img src = "https://raw.githubusercontent.com/embodied-computation-group/Cardioception/main/docs/source/images/AU.png" height ="100">
 
 ```{toctree}
 ---

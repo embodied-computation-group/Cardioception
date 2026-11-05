@@ -140,7 +140,7 @@ html_theme_options = {
     # footer entry, and the badges that name the project live on the landing
     # page alone.
     "source_repository": "https://github.com/embodied-computation-group/Cardioception",
-    "source_branch": "master",
+    "source_branch": "main",
     "source_directory": "docs/source/",
     "light_css_variables": {
         "color-brand-primary": "#1f3352",
