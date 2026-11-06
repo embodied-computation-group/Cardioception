@@ -7,9 +7,9 @@ myst:
 
 # Installation
 
-From a machine with nothing installed to a first session and a checked pulse signal, in six steps. Each step prints something; compare what you get with what is shown here.
+These six steps take you from installing Python to running a test session and checking a pulse signal. Example output is included so you can check your progress.
 
-Cardioception needs Python 3.10 or 3.11. The upper bound is `pywinhook`, which ships wheels only up to 3.11; `pip` refuses any other version before it starts.
+Cardioception requires Python 3.10 or 3.11. The upper limit reflects the availability of prebuilt wheels for `pywinhook`, which extend only to Python 3.11. The package's version requirement prevents installation with other Python versions.
 
 ## 1. Install Python 3.10 or 3.11
 
@@ -33,7 +33,7 @@ cardioception-env\Scripts\activate     # Windows
 source cardioception-env/bin/activate  # macOS and Linux
 ```
 
-Your prompt gains a `(cardioception-env)` prefix. It has to be there every time you run a task; if you close the terminal, activate the environment again.
+After activation, the terminal prompt begins with `(cardioception-env)`. Run the installation commands and tasks from this environment. If you close the terminal, activate the environment again before continuing.
 
 ```{warning}
 On Windows, keep this folder somewhere short, such as `C:\Users\you\cardio`. Some dependencies create deeply nested paths, and Windows refuses paths over 260 characters unless long path support is enabled.
@@ -81,7 +81,7 @@ python -c "from cardioception.HRD import task; print('ok')"
 ok
 ```
 
-If this raises, go to [Troubleshooting](#troubleshooting). The error text usually names the cause.
+If the import raises an error, compare the message with the entries in [Troubleshooting](#troubleshooting).
 
 ## 5. Run a task without hardware
 
@@ -96,7 +96,7 @@ task.run(parameters, confidenceRating=True, runTutorial=False)
 parameters["win"].close()
 ```
 
-A window opens and runs ten trials; answer with the mouse buttons. PsychoPy's audio backend can ignore the system volume, so turn the speakers or headphones down first. The results land in `data/sub-sub01/ses-pilot/run-<timestamp>/`.
+A window opens and runs ten trials; respond with the mouse buttons. PsychoPy's audio backend can ignore the system volume, so turn the speakers or headphones down first. The task saves the results in `data/sub-sub01/ses-pilot/run-<timestamp>/`.
 
 ## 6. Check the pulse signal
 
@@ -122,7 +122,7 @@ Recording 20 s from COM3. Keep a finger in the sensor.
   Ready to collect data.
 ```
 
-Read the amplitude, not the beat count: an empty sensor still yields plausible beats, and only the amplitude gives it away. The [Recording devices](recording-devices.md) page lists the verdicts and the options, and covers ECG and PPG over LSL, which this check does not test.
+Check the signal amplitude as well as the detected beats: noise from an empty sensor can produce a plausible beat count. [Recording devices](recording-devices.md) explains the possible results and command options. It also covers ECG and PPG over LSL, which this command does not test.
 
 ## Next step
 

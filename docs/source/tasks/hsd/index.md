@@ -10,14 +10,18 @@ myst:
 ```{admonition} Beta
 :class: warning
 
-The Heartbeat Synchrony Discrimination task (HSD) is close to feature complete and still being validated. Its stopping rule is provisional. The [design page](design.md) holds the method, the simulations and the hardware dry run.
+The Heartbeat Synchrony Discrimination task (HSD) is close to feature complete and still being validated. Its stopping rule is provisional. Read the [method and rationale](design.md) for the measurement approach and the [validation page](validation.md) for simulation results and hardware checks.
 ```
 
-The HSD is an adaptive version of the heartbeat detection task of Brener, Liu and Ring {cite:p}`1993:brener`. It estimates where in the cardiac cycle a person feels their heartbeat (`mu`, in ms after the R-wave), how sharply (`sigma`), and how much more often they answer "synchronous" there than away from it, which is the sensitivity measure. Confidence is rated on every trial.
+The HSD is an adaptive version of the heartbeat detection task of Brener, Liu and Ring {cite:p}`1993:brener`. Participants judge whether tones presented at different delays after the R-wave feel synchronous with their heartbeat.
+
+The model estimates the location of the perceived heartbeat (`mu`, in milliseconds after the R-wave) and the width of the response pattern around it (`sigma`). Sensitivity is described by the increase in "synchronous" responses near that location compared with delays farther away. Participants also rate their confidence after each judgement.
 
 ## What a trial looks like
 
-Each trial plays five tones, each a chosen delay after an R-wave detected online in the ECG. The participant answers whether the tones felt synchronous with their heartbeat, UP for yes and DOWN for no, within 5 s, then rates their confidence in ten steps from "Guess" to "Certain" with the LEFT and RIGHT keys and confirms with DOWN. A trial without an answer shows "Too late" and does not count.
+Each trial presents five tones at a selected delay after successive R-waves detected in the ECG. The participant has 5 s to judge whether the tones felt synchronous with their heartbeat, pressing UP for yes or DOWN for no.
+
+They then rate their confidence in ten steps from "Guess" to "Certain", using LEFT and RIGHT to select a rating and DOWN to confirm. If no decision is given in time, the task displays "Too late" and the trial does not update the estimate.
 
 ```{figure} ../../images/hsd_trial.png
 :alt: Four screens of an HSD trial, a fixation cross; "Listen" while five tones play; the question "Were the tones synchronous with your heartbeat?" with UP for synchronous and DOWN for not; and a confidence scale from Guess to Certain.
@@ -27,7 +31,30 @@ One HSD trial, from screenshots of the running task.
 
 After each answer the next delay is chosen where it is most informative about `mu`, with one trial in ten drawn at random. The delay is set on one of two axes, chosen per session with `axis`. On the absolute axis, the default, candidates run from 80 to 600 ms after the R-wave in 20 ms steps; none below the 130 ms floor is played, so the shortest delay is 140 ms. On the phase axis the delay is a fraction of the anticipated interbeat interval, from 0.10 to 0.75 in steps of 0.025, so it scales with heart rate.
 
-The session stops once the 95 percent credible interval of `mu` is no wider than 100 ms (0.17 of the period on the phase axis), after at least 15 trials, and never later than 60. Expect most sessions to run to 60; the dry run did, in 7 minutes. A session starts with three instruction screens and three practice trials that do not update the estimate, and there is a break every 20 trials.
+The session stops once the 95 percent credible interval of `mu` is no wider than 100 ms (0.17 of the period on the phase axis), after at least 15 valid updates, and never later than 60 trials. The hardware demonstration reached 60 trials in 7 minutes. The stopping rule is provisional; the [validation page](validation.md#session-length) distinguishes the earlier simulation results from the current rule. A session starts with three instruction screens and three practice trials that do not update the estimate, and there is a break every 20 trials.
+
+## The psychometric model
+
+The model describes how the probability of a "synchronous" response changes with tone delay $d$. It uses a Gaussian response envelope:
+
+```{math}
+P(\text{synchronous} \mid d)
+= \mathrm{floor} + (\mathrm{peak} - \mathrm{floor})
+\exp\left[-\frac{1}{2}\left(\frac{d - \mu}{\sigma}\right)^2\right].
+```
+
+| Parameter | Interpretation |
+|---|---|
+| $\mu$ (`mu`) | The delay at which "synchronous" responses are most likely |
+| $\sigma$ (`sigma`) | The width of the response envelope; smaller values describe a narrower range of delays judged synchronous |
+| $\mathrm{floor}$ (`floor`) | The baseline probability of a "synchronous" response far from $\mu$ |
+| $\mathrm{peak}$ (`peak`) | The probability of a "synchronous" response at $\mu$ |
+
+On the absolute axis, $d$, $\mu$, and $\sigma$ are measured in milliseconds. On the phase axis, they are expressed as fractions of the cardiac period. The model constrains $0 \leq \mathrm{floor} \leq \mathrm{peak} \leq 1$, with $\sigma > 0$.
+
+The difference $\mathrm{peak} - \mathrm{floor}$ describes the strength of the response pattern. When the two are equal, responses do not depend on delay and cannot identify a preferred heartbeat timing. The width $\sigma$ describes the observed judgements; timing jitter in the recording and audio system can broaden it.
+
+The task updates the parameter estimates after each valid response and uses them to select the next delay. See the [model specification](design.md#the-model) for the parameter grids, priors, and conditional estimates used by the stopping rule.
 
 ## What you need
 
@@ -58,7 +85,7 @@ A dialog asks for:
 
 When the dialog closes, the task opens the `HSD` marker stream. In LabRecorder, update the stream list, select the ECG stream and `HSD`, and start recording while the first instruction screen is up. The wrapper runs at most 60 trials (`nTrials=60`).
 
-The same in a script:
+To run the task from a Python script:
 
 ```python
 from cardioception.devices import LSLRecorder
@@ -78,7 +105,7 @@ finally:
 
 With `setup="behavioral"` the beats are found online by `cardioception.devices.beat_source.LSLBeatSource` and the tones scheduled by `cardioception.devices.tone_player.TonePlayer`, both shared with the Phase Adjustment Task. There is no replay setup: `setup="test"` needs a `beat_source=` and a `tone_player=` of your own, which is how the headless tests run.
 
-Escape ends the session with its files saved. The task also stops itself, saving first, after three trials in a row in which no tone could be delivered, which means the beat source has lost the heart.
+Escape ends the session and saves the files. The task also saves and stops after three consecutive trials with no tones delivered, indicating a problem with beat detection or tone delivery.
 
 ## The main settings
 
@@ -105,7 +132,7 @@ parameters = getParameters(..., config=config)
 | `ciWidth`, `ciWidthPhase` | 100 ms, 0.17 | The credible interval width at which to stop |
 | `respMax`, `minRatingTime`, `maxRatingTime` | 5, 0.5, 5 s | Time limits on the answer and the rating |
 
-The floor and the ceiling matter most. The ECG transport and the speaker add a roughly constant 30 to 70 ms that no recording can see, so every tone is scheduled `latencyBias` early and no delay below `minDelay` is played. Set `minDelay` from the lag your setup shows; the [design page](design.md#realized-delays-and-per-trial-constraints) has the measurements and what the floor costs in accuracy. The longest delay on a trial is limited to 0.675 of the current interbeat interval (0.75 less the 10 percent margin), so that a tone is not heard as belonging to the next beat; 600 ms is allowed only when the period is over 0.89 s. A beat whose period has shortened past the ceiling is skipped and a later one used, up to twice `nTones` beats per trial.
+The floor and the ceiling matter most. The ECG transport and the speaker add a roughly constant 30 to 70 ms that no recording can see, so every tone is scheduled `latencyBias` early and no delay below `minDelay` is played. Set `minDelay` from the lag your setup shows; the [timing measurements](validation.md#timing-measurements) explain the default correction, and the [simulation results](validation.md#response-patterns-that-are-difficult-to-estimate) show how the floor affects accuracy. The longest delay on a trial is limited to 0.675 of the current interbeat interval (0.75 less the 10 percent margin), so that a tone is not heard as belonging to the next beat; 600 ms is allowed only when the period is over 0.89 s. A beat whose period has shortened past the ceiling is skipped and a later one used, up to twice `nTones` beats per trial.
 
 ## What it saves
 
@@ -125,7 +152,7 @@ The run directory holds no ECG: that is in the LabRecorder file. The task's trig
 
 ## Reading the results
 
-The practice trials are not in `*_final.txt`. The columns that matter:
+Practice trials are excluded from `*_final.txt`. The main columns are:
 
 | Column | Meaning |
 |---|---|
@@ -148,7 +175,8 @@ As for the HRD, the online posterior is a monitoring aid, not an analysis. No of
 
 ## Where to go next
 
-- [HSD design and validation](design.md): the model, the delay placement, the simulations, the hardware dry run and the roadmap.
+- [HSD method and rationale](design.md): the model, adaptive delay selection, interpretation, and stopping rule.
+- [HSD validation and technical details](validation.md): simulation results, the hardware demonstration, and remaining validation work.
 - [Recording devices](../../getting-started/recording-devices.md): the PLUX bridge and LabRecorder.
 - [API](../../reference/api.rst): every field of `TaskConfig` and every argument of `getParameters`.
 
@@ -157,4 +185,5 @@ As for the HRD, the online posterior is a monitoring aid, not an analysis. No of
 hidden:
 ---
 design.md
+validation.md
 ```
