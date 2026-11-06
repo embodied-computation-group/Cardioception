@@ -13,7 +13,9 @@ myst:
 
 # Cardioception Toolbox
 
-Cardioception is an open-source Python toolbox for studying how people perceive their own heartbeat. It brings the most widely used methods for measuring cardiac interoception together in one place, built on [PsychoPy](https://www.psychopy.org/): heart rate discrimination, heartbeat counting, the Phase Adjustment Task, and a new adaptive task for the perceived timing of individual heartbeats. One installation, one output layout and one set of tutorials let you study perceptual bias, precision and confidence across methods, and compare them in the same participants.
+Cardioception is an open-source Python toolbox for studying how people perceive their own heartbeat. Built on [PsychoPy](https://www.psychopy.org/), it provides four tasks: Heart Rate Discrimination, Heartbeat Counting, the Phase Adjustment Task, and Heartbeat Synchrony Discrimination.
+
+The tasks examine different aspects of cardiac perception, from judgements of heart rate to the perceived timing of individual beats. They share a common session setup and output directory structure. The task pages explain each method's procedure, measures, and limitations; the HRD tutorials cover data inspection and analysis.
 
 [![GitHub release](https://img.shields.io/github/v/release/embodied-computation-group/Cardioception)](https://github.com/embodied-computation-group/Cardioception/releases/) [![pip](https://img.shields.io/pypi/v/cardioception-toolbox)](https://pypi.org/project/cardioception-toolbox/) [![GitHub license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/embodied-computation-group/Cardioception/blob/main/LICENSE) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22139105.svg)](https://doi.org/10.5281/zenodo.22139105)
 
@@ -38,7 +40,7 @@ The HRD and the HBC run with a USB pulse oximeter or with an ECG or PPG device o
 
 ## Where to go
 
-Getting started is three pages, read in order: [install the package](getting-started/installation.md), [connect a recording device](getting-started/recording-devices.md) and [run a session](getting-started/running-a-session.md). Each task page then covers its own procedure, parameters and output files.
+To get started, [install the package](getting-started/installation.md), [connect a recording device](getting-started/recording-devices.md), then [run a session](getting-started/running-a-session.md). Each task page describes its procedure, parameters, and output files.
 
 The [changelog](reference/changelog.md) lists what changed in 1.0 and how to migrate scripts written for 0.7.
 

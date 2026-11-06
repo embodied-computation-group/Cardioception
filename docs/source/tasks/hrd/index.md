@@ -7,23 +7,31 @@ myst:
 
 # Heart Rate Discrimination task
 
-The Heart Rate Discrimination task (HRD) {cite:p}`2022:legrand` measures how a person judges their own heart rate. On each trial the participant hears tones slightly faster or slower than their heart and says which. The threshold of the resulting psychometric function is their bias, its slope their precision, and the confidence rating on every trial measures their metacognition. The task is established. [Measuring cardiac interoception](../theory.md) sets out what it can and cannot establish.
+The Heart Rate Discrimination task (HRD) {cite:p}`2022:legrand` measures judgements of one's own heart rate. Participants attend to their heartbeat, listen to a sequence of tones, and judge whether the tones were faster or slower than their heart.
+
+Across trials, these responses define a psychometric function. Its threshold estimates bias in perceived heart rate, and its slope describes the precision of those judgements. Optional confidence ratings allow researchers to examine how confidence relates to performance. [Measuring cardiac interoception](../theory.md) explains the interpretation and limits of these measures.
 
 ## What a trial looks like
 
-A trial begins with a fixation cross for 0.25 s. The participant then attends to their heartbeat for 5 s while the pulse is recorded and the heart rate measured. They hear a sequence of tones at that rate plus or minus a difference, `Alpha`, in beats per minute, and answer whether the tones were faster or slower than their heart, with the mouse buttons or the up and down arrow keys. They have 5 s to answer. They then rate their confidence, on a 0 to 100 slider with the mouse or in ten steps with the keyboard. The rating takes between 0.5 and 5 s.
+A trial begins with a fixation cross for 0.25 s. The participant then attends to their heartbeat for 5 s while the task records the pulse and estimates heart rate. A sequence of tones follows at the measured rate plus a signed difference, `Alpha`, in beats per minute.
 
-Half the trials by default are an exteroceptive control. The participant listens for 5 s to a tone sequence at a random rate between 40 and 100 BPM instead of their heart, then judges a second sequence against it. Everything else is the same.
+The participant has 5 s to judge whether the tones were faster or slower than their heart, using the mouse buttons or the up and down arrow keys. They then rate their confidence on a 0 to 100 slider with the mouse, or in ten steps with the keyboard. The rating period lasts between 0.5 and 5 s.
+
+By default, half the trials form an exteroceptive control condition. The participant listens for 5 s to a reference tone sequence at a random rate between 40 and 100 BPM, then judges whether a second sequence is faster or slower. The response procedure and confidence rating are the same as in the interoceptive condition.
 
 ```{figure} ../../images/hrd_overview.png
 :alt: Panel a, the task's screens for one interoceptive and one exteroceptive trial, fixation 0.25 s, listening 5 s, decision up to 5 s and confidence 0.5 to 5 s. Panel b, the Psi staircase over 60 trials in each condition for one participant, with each stimulus marked by the answer given and the threshold estimate converging. Panel c, the psychometric functions at the final estimates, interoceptive alpha -3.2 and sigma 9.2, exteroceptive alpha +2.4 and sigma 4.8.
 
-(a) The task's screens for one trial in each condition, with the default durations; a 0.5 s fixation precedes the decision. (b) The Psi staircase for one participant from the Visceral Mind Project: each trial's ΔBPM, marked by the answer given, and the threshold estimate with its 95 percent interval. (c) The psychometric functions at the staircase's final online estimates, with the threshold (α) at 50 percent "faster". The tutorials fit these properly.
+(a) The screens for one trial in each condition, with the default durations; a 0.5 s fixation precedes the decision. (b) The Psi staircase for one participant from the Visceral Mind Project, showing each trial's ΔBPM and response, along with the threshold estimate and its 95 percent interval. (c) Psychometric functions drawn from the staircase's final online estimates, with the threshold (α) at 50 percent "faster" responses. The tutorials explain how to fit psychometric functions to the trial data for analysis.
 ```
 
-A Psi staircase {cite:p}`1999:kontsevich`, one per condition, chooses `Alpha` on each trial between -50.5 and 50.5 ΔBPM, where the answer is most informative about the participant's threshold and slope. A trial with no answer in time is written with `DecisionProvided` false, does not update the staircase, and is put back at the end of the queue (`onMissedTrial="represent"`, at most three presentations).
+Each condition has a separate Psi staircase {cite:p}`1999:kontsevich`. On each trial, it chooses `Alpha` between -50.5 and 50.5 ΔBPM to obtain information about the participant's threshold and slope.
 
-A session starts with a tutorial when `runTutorial=True`: instruction screens, five practice trials per condition with feedback at an easy difference of 20 BPM (`nFeedback`), then eight per condition with a confidence rating and no feedback (`nConfidence`). The main task runs 120 trials by default, 60 per condition, with a break every 20. The four example sessions in the documentation took 20 to 22 minutes without the tutorial, about 10 s a trial; at that pace the tutorial's 26 trials add about 5 minutes, plus the instruction screens.
+If the participant does not respond in time, the task records `DecisionProvided` as false and leaves the staircase unchanged. By default, the missed trial returns to the end of the queue (`onMissedTrial="represent"`), with at most three presentations.
+
+With `runTutorial=True`, the session begins with instructions and practice. Participants first complete five trials per condition with feedback at a difference of 20 BPM (`nFeedback`), then eight per condition with confidence ratings and no feedback (`nConfidence`).
+
+The main task contains 120 trials by default, 60 per condition, with a break every 20 trials. The four example sessions in the documentation took 20 to 22 minutes without the tutorial, or about 10 s per trial. At that pace, the 26 practice trials add about 5 minutes, plus time for the instructions.
 
 ## What you need
 
@@ -52,7 +60,7 @@ A dialog asks for:
 
 The LSL wrapper asks for the stream name, the channel label and the signal type (`ecg` or `ppg`) instead of the port and setup.
 
-The same in a script:
+To run the task from a Python script:
 
 ```python
 from cardioception.HRD.parameters import getParameters
@@ -81,7 +89,7 @@ Escape ends the session; what has been collected is saved.
 
 ## The main settings
 
-The arguments of `getParameters` that change the task:
+The following arguments to `getParameters` control the session:
 
 | Argument | Default | Meaning |
 |---|---|---|
@@ -99,7 +107,7 @@ The arguments of `getParameters` that change the task:
 | `seed` | drawn | Seeds the session's random generator; recorded in the manifest |
 | `stairType` | `"psi"` | The only staircase. The nUp/nDown staircase was removed in 1.0.0, so `"updown"` raises; the [changelog](../../reference/changelog.md) explains why |
 
-Timing and the staircase bounds are on a `TaskConfig`, passed as `config=`:
+To change trial timing or staircase bounds, pass a `TaskConfig` object as `config=`:
 
 ```python
 from cardioception.HRD.config import TaskConfig
@@ -147,7 +155,7 @@ A session writes to `data/sub-<participant>/ses-<session>/run-<YYYYMMDD-HHMMSS>/
 | `manifest.json` | The settings, the seed and the version, written before the first trial |
 | `*_behaviour.txt`, `*_parameters.pickle`, `session.log` | The rows written after every trial, the parameters at the end, and the session's log |
 
-The columns of `*_final.txt` that matter:
+The main columns in `*_final.txt` are:
 
 | Column | Meaning |
 |---|---|
@@ -167,7 +175,7 @@ The [inspecting data tutorial](tutorials/inspecting-data.md#the-trial-table) des
 
 `EstimatedThreshold` and `EstimatedSlope` are a by-product of the staircase. Plot them to check that a session converged. They are not an analysis and must not be used as a dependent variable in a group-level test.
 
-Fit the trials instead, `Decision` against `Alpha` by `Modality`, with the [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception) {cite:p}`2026:courtin`. The [tutorials](tutorials/index.md) go from opening a session to a hierarchical model with confidence ratings.
+For analysis, model the trial-level responses (`Decision`) as a function of stimulus intensity (`Alpha`) and condition (`Modality`). The [Hierarchical Interoception toolbox](https://github.com/embodied-computation-group/Hierarchical-Interoception) {cite:p}`2026:courtin` provides the models and priors. The [tutorials](tutorials/index.md) explain data inspection, psychometric modelling, and the separate analysis of confidence ratings.
 
 ### Reliability
 

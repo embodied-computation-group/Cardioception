@@ -9,10 +9,10 @@ myst:
 
 Author: Micah G. Allen
 
-Before you analyze an HRD dataset, you need to be clear about what the task can
-measure. Cardiac interoception is often described as the ability to perceive
-one's heartbeat accurately. That description sounds straightforward until we
-ask what an experimental score actually identifies.
+Cardiac interoception is often described as the ability to perceive one's
+heartbeat accurately. In an experiment, however, accuracy depends on what
+participants are asked to judge and how their responses are scored. Understanding
+these choices is essential to interpreting an HRD dataset.
 
 We developed the Heart Rate Discrimination task to estimate three distinguishable
 features of cardiac judgement: perceptual bias, perceptual precision, and the
@@ -20,20 +20,21 @@ relationship between confidence and performance. Together they describe a
 person's beliefs about their heart rate under particular task conditions. This
 is a narrower claim than measuring a general interoceptive ability.
 
-This page explains that position and the evidence behind it. The practical
-tutorials build on these distinctions.
+This page reviews the measurement problems that motivated the HRD, then explains
+how to interpret its measures of bias, precision, and confidence. These
+distinctions provide the basis for the practical tutorials.
 
 ## Cardiac interoception as a measurement problem
 
 Interoception encompasses the processes by which the nervous system senses,
 interprets, and regulates the internal state of the body. Cardiac interoception
 is one part of that larger system. It has been studied extensively because the
-heartbeat is continuous, discrete, and easy to record, and because bodily
+heart beats continuously, produces discrete events that are easy to record, and because bodily
 signals are thought to contribute to emotion, cognition, and the sense of self
 {cite:p}`2022:legrand,2022:garfinkel`.
 
-The experimental difficulty is that a heartbeat is an endogenous stimulus. In
-most laboratory studies we can record it, but we cannot set its intensity and
+The experimental difficulty is that a heartbeat originates within the body. In
+most laboratory studies we can record it, but we cannot control its intensity and
 timing as freely as we would set the contrast of a visual stimulus. A participant's
 response may therefore reflect several sources of information at once, including
 afferent cardiac signals, prior knowledge of heart rate, attention, decision
@@ -105,10 +106,10 @@ same heading of interoceptive accuracy. If they measured the same ability, their
 scores should show a reasonably stable association. In practice, correlations
 are generally weak or absent {cite:p}`2016:brener`.
 
-This disagreement is informative. Counting is vulnerable to good performance
-based on prior knowledge, while a fixed-delay task can miss participants whose
-sensation occurs at an unexpected latency. Combining both under a single label
-does not resolve either measurement problem.
+The weak association is consistent with the different limitations of these
+tasks. Prior knowledge can support a good counting score, while a fixed-delay
+task can miss participants whose heartbeat sensation occurs at an unexpected
+latency. The shared label therefore obscures differences in what the tasks measure.
 
 ## A dimensional framework
 
@@ -121,9 +122,9 @@ interoception {cite:p}`2015:garfinkel`:
 | Interoceptive sensibility | Attention to and beliefs about internal states | Self-report questionnaires |
 | Interoceptive awareness | Insight into one's own task performance | Confidence-based metacognitive measures |
 
-The framework prevents us from treating task performance, questionnaire scores,
-and metacognition as versions of the same variable. That was an important advance,
-and later work has extended the framework across bodily systems and additional
+This framework distinguishes task performance, questionnaire scores, and
+metacognition as separate objects of study. Later work has extended it across
+bodily systems and additional
 dimensions {cite:p}`2022:garfinkel`.
 
 The label attached to a task does not establish its construct validity. Calling
@@ -181,8 +182,8 @@ several sources of information. Prior beliefs are part of the perceptual process
 we want to understand. They cannot be treated only as contamination between an
 afferent signal and a verbal response.
 
-The measurement claim is behavioural. The HRD estimates the bias and precision
-expressed in repeated perceptual judgements. Identifying a neural prior or
+The HRD estimates the bias and precision expressed in repeated behavioural
+judgements. Identifying a neural prior or
 afferent precision requires additional measurements and experimental
 manipulations. HRD parameters can be related to physiological, neural, or
 clinical variables when the study design supports that inference.
@@ -221,17 +222,19 @@ from binary choices across stimulus intensities. A participant can show little
 bias and poor precision, or substantial bias and high precision. The psychometric
 function distinguishes these cases.
 
-The scientific model also includes a lapse rate. Lapses describe responses that
+The psychometric model also includes a lapse rate. Lapses describe responses that
 are weakly related to stimulus intensity and prevent an occasional mistake at an
 easy intensity from distorting the estimated threshold or slope. Lapse rate is a
 feature of the response process, not a measure of interoceptive ability.
 
 ### Confidence adds a separate measurement problem
 
-The HRD records confidence after each choice. These ratings support two distinct
-questions. Overall confidence describes metacognitive bias. In the ordered beta
-model, the difference in confidence between correct and incorrect trials describes
-metacognitive calibration.
+When confidence ratings are enabled, the HRD records confidence after each
+choice. The ratings address two questions: how confident is the participant
+overall, and does their confidence track performance? We refer to these as
+metacognitive bias and metacognitive calibration, respectively. The ordered beta
+model estimates calibration through the difference in confidence between correct
+and incorrect trials.
 
 We use calibration specifically for the `Accuracy` coefficient and its interactions
 in this model. We reserve metacognitive sensitivity and efficiency for quantities
@@ -255,10 +258,10 @@ adaptive procedure, and confidence scale are otherwise closely matched. This
 gives us a within-person comparison for general temporal discrimination,
 response selection, and confidence use.
 
-Treat this condition as a matched within-person comparator rather than a pure
-subtraction. Some nonspecific processes remain, but the comparison tells us
-whether a pattern is more pronounced for cardiac judgements than for a similar
-auditory judgement. In the original validation study of 223 participants,
+The comparison shows whether a pattern is more pronounced for cardiac
+judgements than for a similar auditory judgement. It does not isolate cardiac
+perception completely, because the conditions also involve attention, memory,
+and decision processes. In the original validation study of 223 participants,
 cardiac judgements were more negatively biased and less precise. They also had
 a lower M-ratio under the metacognitive analysis used in that paper
 {cite:p}`2022:legrand`.
