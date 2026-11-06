@@ -30,12 +30,14 @@ on the [validation page](validation.md#simulation-study).
 
 Heartbeat sensations do not occur at the same delay after the R-wave in every
 person. A task that compares only two fixed delays can therefore miss a clearly
-perceived heartbeat whose timing falls between them. In common versions of
-the Whitehead task, only about one quarter of participants meet the detector
-criterion {cite:p}`1977:whitehead,2016:brener`.
+perceived heartbeat whose timing falls between them. Across heartbeat
+discrimination tasks with two fixed delays, Brener and Ring estimate that only
+about one in three or four people reliably discriminate {cite:p}`2016:brener`.
+Whitehead and colleagues, who introduced the procedure, set no detector
+criterion {cite:p}`1977:whitehead`.
 
-The original procedure used light flashes; common implementations compare
-delays of about 128 and 384 ms after the R-wave.
+The original procedure flashed a light 128 or 384 ms after each R-wave; later
+versions mostly use tones, and the delays vary between laboratories.
 
 The method of constant stimuli addresses this problem by sampling several
 delays across the cardiac cycle {cite:p}`1993:brener`. Each participant's

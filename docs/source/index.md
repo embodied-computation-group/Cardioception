@@ -31,7 +31,7 @@ This is the official Cardioception, developed by Micah Allen and the Embodied Co
 | [Heartbeat Counting (HBC)](tasks/hbc.md) | Count their heartbeats during intervals of different lengths | Reported heartbeat counts relative to recorded counts | [Schandry, 1981](https://doi.org/10.1111/j.1469-8986.1981.tb02486.x) | Established |
 | [Phase Adjustment Task (PAT)](tasks/pat.md) | Adjust the delay of tones until they match their perceived heartbeat | The delay chosen, and its consistency across trials | [Plans et al., 2021](https://doi.org/10.1016/j.biopsycho.2021.108171); ECG version after [Hodgetts et al., 2026](https://doi.org/10.1111/psyp.70415) | Beta |
 | [Heartbeat Synchrony Discrimination (HSD)](tasks/hsd/index.md) | Judge whether tones played at different delays after each heartbeat are synchronous with it | Perceived timing of the heartbeat, and its temporal precision | New in Cardioception; see the [design page](tasks/hsd/design.md) | Beta |
-| [Whitehead method](tasks/whitehead.md) | Judge which of two tone sequences, one at a short and one at a longer delay after each heartbeat, is simultaneous with it | Discrimination of synchronous from delayed tones | [Whitehead et al., 1977](https://doi.org/10.1007/BF00998623) | Coming soon |
+| [Heartbeat discrimination](tasks/heartbeat-discrimination.md) | Judge whether stimuli presented at one of two fixed delays after each heartbeat are simultaneous with it or delayed | Discrimination of synchronous from delayed stimuli | [Whitehead et al., 1977](https://doi.org/10.1007/BF00998623) | Coming soon |
 | [Method of constant stimuli (Brener)](tasks/constant-stimuli.md) | Judge whether tones at one of several fixed delays, from 0 to 500 ms after each heartbeat, are simultaneous with it | Proportion of tones judged simultaneous at each delay | [Brener, Liu & Ring, 1993](https://doi.org/10.1111/j.1469-8986.1993.tb02091.x) | Coming soon |
 
 Tasks in beta are close to feature complete and are still being rigorously validated.
@@ -75,7 +75,7 @@ tasks/hrd/index.md
 tasks/hbc.md
 tasks/pat.md
 tasks/hsd/index.md
-tasks/whitehead.md
+tasks/heartbeat-discrimination.md
 tasks/constant-stimuli.md
 ```
 

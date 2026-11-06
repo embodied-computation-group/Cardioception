@@ -10,15 +10,15 @@ myst:
 Cardioception provides two established tasks, Heart Rate Discrimination (HRD)
 and Heartbeat Counting (HBC), and two beta tasks, the Phase Adjustment Task (PAT)
 and Heartbeat Synchrony Discrimination (HSD). The beta tasks are close to feature
-complete, but validation is ongoing. Implementations of the Whitehead method
-and the method of constant stimuli are planned.
+complete, but validation is ongoing. Implementations of heartbeat
+discrimination and the method of constant stimuli are planned.
 
 This page compares the tasks' measures, procedures, and practical requirements.
 The individual task pages explain how to configure and run each one.
 
-| Task | [HRD](hrd/index.md) | [HBC](hbc.md) | [PAT](pat.md) | [HSD](hsd/index.md) | [Whitehead](whitehead.md) | [Constant stimuli](constant-stimuli.md) |
+| Task | [HRD](hrd/index.md) | [HBC](hbc.md) | [PAT](pat.md) | [HSD](hsd/index.md) | [Heartbeat discrimination](heartbeat-discrimination.md) | [Constant stimuli](constant-stimuli.md) |
 |---|---|---|---|---|---|---|
-| Measure | Bias (threshold) and precision (slope) of judgements of one's own heart rate, with confidence | Heartbeats reported against heartbeats recorded over fixed windows, with confidence | Consistency of the chosen tone delay or phase across trials, with confidence | Where in the cardiac cycle the heartbeat is felt (`mu`), how sharply (`sigma`), and how strongly, with confidence | Discrimination of synchronous from delayed tones {cite:p}`1977:whitehead` | Proportion of tones judged simultaneous at each delay {cite:p}`1993:brener` |
+| Measure | Bias (threshold) and precision (slope) of judgements of one's own heart rate, with confidence | Heartbeats reported against heartbeats recorded over fixed windows, with confidence | Consistency of the chosen tone delay or phase across trials, with confidence | Where in the cardiac cycle the heartbeat is felt (`mu`), how sharply (`sigma`), and how strongly, with confidence | Discrimination of synchronous from delayed stimulus trains {cite:p}`1977:whitehead` | Proportion of tones judged simultaneous at each delay {cite:p}`1993:brener` |
 | Reference | {cite:t}`2022:legrand` | {cite:t}`1981:schandry`, {cite:t}`1978:dale` | {cite:t}`2021:plans`, {cite:t}`2026:hodgetts` | {cite:t}`1993:brener` | {cite:t}`1977:whitehead` | {cite:t}`1993:brener` |
 | Adaptive | Yes: a Psi staircase sets the tone rate | No | No: the participant adjusts the delay | Yes: Bayesian placement of the tone delay | No | No |
 | Hardware | Pulse oximeter, or ECG or PPG over LSL; headphones; mouse or keyboard | Pulse oximeter, or ECG or PPG over LSL; keyboard | ECG over LSL; sound card; mouse wheel; a tactor for the control task | ECG over LSL; sound card; keyboard |  |  |

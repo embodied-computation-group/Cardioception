@@ -78,11 +78,15 @@ literature built with the task remains informative within that constraint
 
 ### What fixed-delay synchrony tasks can establish
 
-The other common approach is a two-alternative heartbeat synchrony task
-{cite:p}`1977:whitehead`. Tones or flashes are presented at two delays from the
-ECG R-wave, and participants judge which sequence is simultaneous with their
-heartbeat. Successful performance requires access to cardiac timing, which is a
-clear advantage over counting.
+The other common approach is heartbeat discrimination, introduced by Whitehead
+and colleagues {cite:p}`1976:whitehead,1977:whitehead`. On each trial a train of
+stimuli, originally light flashes and in later versions usually tones, is
+presented at one of two fixed delays from the ECG R-wave, and the participant
+judges whether it was simultaneous with their heartbeat or delayed. Because both
+trains are locked to the participant's own heartbeat, successful performance
+requires access to cardiac timing, which is a clear advantage over counting. The
+delays vary between laboratories, from the original 128 and 384 ms to pairs such
+as 200 and 500 ms.
 
 The usual implementation assumes that heartbeat sensations occur at similar
 latencies across people. Multi-interval studies show substantial individual
@@ -93,10 +97,10 @@ sensation, so the participant may treat both as equally synchronous. Their poor
 discrimination would be compatible with a clearly perceived heartbeat at a
 latency the task did not sample.
 
-Fixed-delay tasks consequently risk false negatives. Only about one quarter of
-participants meet the conventional detector criterion in common versions of the
-task, and performance improves when stimulus delays better accommodate individual
-cardiac timing {cite:p}`2016:brener`. A failure to discriminate two chosen delays
+Fixed-delay tasks consequently risk false negatives. Across two-interval tasks,
+Brener and Ring estimate that about one in three or four people reliably
+discriminate, and performance improves when stimulus delays are set to each
+person's preferred interval {cite:p}`2016:brener`. A failure to discriminate two chosen delays
 does not uniquely identify an absence of heartbeat sensation.
 
 ### Why the traditional tasks disagree
