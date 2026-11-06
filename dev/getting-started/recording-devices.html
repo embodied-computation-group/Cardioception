@@ -10,11 +10,11 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/getting-started/recording-devices.html" />
 <meta property="og:site_name" content="Cardioception Toolbox" />
-<meta property="og:description" content="Every task reads the participant’s heart while it runs. Which device it can read from depends on the task:,,, Task, USB pulse oximeter, ECG or PPG over LSL,,, Heart Rate Discrimination, yes, yes,, ..." />
+<meta property="og:description" content="Each task uses a cardiac recording during the session. The supported devices depend on the task:,,, Task, USB pulse oximeter, ECG or PPG over LSL,,, Heart Rate Discrimination, yes, yes,, Heartbeat ..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_getting-started_recording-devices_dc175472.png" />
-<meta property="og:image:alt" content="Every task reads the participant’s heart while it runs. Which device it can read from depends on the task:,,, Task, USB pulse oximeter, ECG or PPG over LSL,,..." />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_getting-started_recording-devices_e688e818.png" />
+<meta property="og:image:alt" content="Each task uses a cardiac recording during the session. The supported devices depend on the task:,,, Task, USB pulse oximeter, ECG or PPG over LSL,,, Heart Ra..." />
 <meta name="twitter:card" content="summary_large_image" />
 
 <meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Running a session" href="running-a-session.html" /><link rel="prev" title="Installation" href="installation.html" />
@@ -208,10 +208,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../tasks/hbc.html">Heartbeat Counting task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tasks/pat.html">Phase Adjustment Task</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tasks/hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tasks/hsd/design.html">HSD design and validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/hsd/design.html">HSD method and rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/hsd/validation.html">HSD validation and technical details</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tasks/whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tasks/heartbeat-discrimination.html">Heartbeat discrimination</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tasks/constant-stimuli.html">Method of constant stimuli</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
@@ -314,7 +315,7 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="recording-devices">
 <h1>Recording devices<a class="headerlink" href="#recording-devices" title="Permalink to this heading">#</a></h1>
-<p>Every task reads the participant’s heart while it runs. Which device it can read from depends on the task:</p>
+<p>Each task uses a cardiac recording during the session. The supported devices depend on the task:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -343,8 +344,8 @@
 </tbody>
 </table>
 </div>
-<p>The two synchrony tasks time each tone from the R-wave, which a pulse oximeter cannot give them.</p>
-<p>The device is chosen when the parameters are built. <code class="docutils literal notranslate"><span class="pre">setup=&quot;behavioral&quot;</span></code> with a <code class="docutils literal notranslate"><span class="pre">serialPort</span></code> opens the pulse oximeter; <code class="docutils literal notranslate"><span class="pre">recorder=</span></code> passes any other device and wins over <code class="docutils literal notranslate"><span class="pre">setup</span></code>, so nothing touches a serial port.</p>
+<p>The two synchrony tasks time each tone relative to the ECG R-wave. A pulse oximeter records the peripheral pulse and cannot provide this reference.</p>
+<p>For the HRD and HBC, select the device when building the parameters. Use <code class="docutils literal notranslate"><span class="pre">setup=&quot;behavioral&quot;</span></code> with a <code class="docutils literal notranslate"><span class="pre">serialPort</span></code> to open the pulse oximeter. To use another device, pass it as <code class="docutils literal notranslate"><span class="pre">recorder=</span></code>; this takes precedence over <code class="docutils literal notranslate"><span class="pre">setup</span></code> and bypasses the serial connection.</p>
 <section id="the-nonin-pulse-oximeter">
 <h2>The Nonin pulse oximeter<a class="headerlink" href="#the-nonin-pulse-oximeter" title="Permalink to this heading">#</a></h2>
 <p>The oximeter Cardioception supports directly is the <a class="reference external" href="https://www.nonin.com/products/xpod/">Nonin 3012LP Xpod</a> with <a class="reference external" href="https://www.nonin.com/products/8000s/">Nonin 8000SM soft-clip fingertip sensors</a>. It plugs into the stimulus PC over USB, appears as a serial port, and needs no extra software. It is the only Nonin model the package has been tested with.</p>
@@ -356,7 +357,7 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>cardioception.check_device
 </pre></div>
 </div>
-<p>It records for twenty seconds and reaches one of five verdicts:</p>
+<p>The command records for twenty seconds and reports one of five results:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -383,8 +384,8 @@
 </tbody>
 </table>
 </div>
-<p>Amplitude is tested first because an empty sensor still yields beats at a plausible rate: an empty Nonin gave 67 BPM from 16 detected beats on a trace spanning a single ADC unit, and only its amplitude of 1.0 gave it away.</p>
-<p><code class="docutils literal notranslate"><span class="pre">--port</span> <span class="pre">COM3</span></code> picks a port when several are attached, and <code class="docutils literal notranslate"><span class="pre">--duration</span></code> changes the recording length. The command exits 0 only for a clean signal, so it can gate a startup script.</p>
+<p>The check tests amplitude first because noise from an empty sensor can produce plausible beat detections. In one test, an empty Nonin sensor yielded 16 detected beats and an estimated rate of 67 BPM, although the signal spanned only a single ADC unit. The low amplitude identified the absence of a physiological signal.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">--port</span> <span class="pre">COM3</span></code> to select a port when several are attached, and <code class="docutils literal notranslate"><span class="pre">--duration</span></code> to change the recording length. The command returns exit code 0 only for a clean signal, allowing a startup script to check the result before continuing.</p>
 </section>
 <section id="ecg-or-ppg-over-lsl">
 <h2>ECG or PPG over LSL<a class="headerlink" href="#ecg-or-ppg-over-lsl" title="Permalink to this heading">#</a></h2>
@@ -401,7 +402,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">channel</span></code> is an index or a label from the stream’s channel metadata. <code class="docutils literal notranslate"><span class="pre">signal_type</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;ecg&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ppg&quot;</span></code> and chooses the beat detector: systole’s <code class="docutils literal notranslate"><span class="pre">ecg_peaks</span></code> with the sleepecg method for ECG, each beat moved to the R peak, or <code class="docutils literal notranslate"><span class="pre">ppg_peaks</span></code> for PPG. With an ECG the tutorial also skips the finger-sensor instructions. When the stream’s name is not known in advance, <code class="docutils literal notranslate"><span class="pre">stream_type=&quot;ECG&quot;</span></code> finds it by type instead.</p>
 <p>The trigger codes a task writes are also pushed, as they happen, to an LSL marker stream named <code class="docutils literal notranslate"><span class="pre">Cardioception</span></code> by default (<code class="docutils literal notranslate"><span class="pre">marker_stream=</span></code> renames it, <code class="docutils literal notranslate"><span class="pre">None</span></code> turns it off), labelled by event name. Record that stream and the device’s with <a class="reference external" href="https://github.com/labstreaminglayer/App-LabRecorder">LabRecorder</a> to get the physiology and the task events on one clock. The signal file a task writes carries each sample’s LSL timestamp as well.</p>
 <p>The HRD and HBC take the recorder as above. The HSD wrapper names its marker stream <code class="docutils literal notranslate"><span class="pre">HSD</span></code>, and the task builds its beat source and tone player over the recorder. The PAT opens its own <code class="docutils literal notranslate"><span class="pre">PAT</span></code> marker stream, so its recorder is given <code class="docutils literal notranslate"><span class="pre">marker_stream=None</span></code>. The task pages show each call.</p>
-<p>For the synchrony tasks, a wired ECG with an LSL path (Biopac, ADInstruments and Brain Products all have one) gives less timing jitter than a Bluetooth hub; the <a class="reference internal" href="../tasks/hsd/design.html#what-comes-next"><span class="std std-ref">HSD roadmap</span></a> has the numbers.</p>
+<p>For the synchrony tasks, a wired ECG with an LSL path (Biopac, ADInstruments and Brain Products all have one) gives less timing jitter than a Bluetooth hub; the <a class="reference internal" href="../tasks/hsd/validation.html#what-comes-next"><span class="std std-ref">HSD roadmap</span></a> has the numbers.</p>
 <section id="a-plux-hub">
 <h3>A PLUX hub<a class="headerlink" href="#a-plux-hub" title="Permalink to this heading">#</a></h3>
 <p>The ECG setup used to develop the synchrony tasks is a PLUX hub with a chest lead, streamed to LSL by the bridge in the <a class="reference external" href="https://github.com/embodied-computation-group/plux-lsl">plux-lsl</a> repository (Apache 2.0). Start it before the task:</p>
@@ -409,12 +410,12 @@
 </pre></div>
 </div>
 <p>It publishes the stream as <code class="docutils literal notranslate"><span class="pre">PLUX</span></code>, which is the wrappers’ default. The ECG channel’s label is not the same on every hub (<code class="docutils literal notranslate"><span class="pre">ECG1</span></code> on one, <code class="docutils literal notranslate"><span class="pre">ECG2</span></code> on another), so read it from the stream before the session; the PAT and HSD wrappers have no default for it and will not start without one.</p>
-<p>Electrodes follow <span id="id1">Hodgetts <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id43" title="James Hodgetts, Germano Gallicchio, Shaun Mckiernan, Christopher Ring, Jennifer Murphy, and Andrew Cooke. The electrocardiogram-based phase adjustment task (PAT-ECG): an open-access laboratory test of cardiac interoceptive accuracy. Psychophysiology, 63(10):e70415, 2026. doi:10.1111/psyp.70415.">2026</a>]</span>: right clavicle, lowest left rib, reference on the left clavicle or hip. With the PLUX lead set, upright R-waves came from black on the lowest left rib and red on the right clavicle; swap them if the trace is inverted.</p>
+<p>Electrodes follow <span id="id1">Hodgetts <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id44" title="James Hodgetts, Germano Gallicchio, Shaun Mckiernan, Christopher Ring, Jennifer Murphy, and Andrew Cooke. The electrocardiogram-based phase adjustment task (PAT-ECG): an open-access laboratory test of cardiac interoceptive accuracy. Psychophysiology, 63(10):e70415, 2026. doi:10.1111/psyp.70415.">2026</a>]</span>: right clavicle, lowest left rib, reference on the left clavicle or hip. With the PLUX lead set, upright R-waves came from black on the lowest left rib and red on the right clavicle; swap them if the trace is inverted.</p>
 </section>
 </section>
 <section id="running-without-a-device">
 <h2>Running without a device<a class="headerlink" href="#running-without-a-device" title="Permalink to this heading">#</a></h2>
-<p>The HRD and the HBC accept <code class="docutils literal notranslate"><span class="pre">setup=&quot;test&quot;</span></code>, which replays a recorded pulse through the same code path as the oximeter and opens a windowed rather than full-screen display. No hardware is needed, which makes it the way to try a task or check an installation.</p>
+<p>The HRD and HBC accept <code class="docutils literal notranslate"><span class="pre">setup=&quot;test&quot;</span></code> to replay a recorded pulse through the same code path as the oximeter. The task opens in a window rather than full screen. This mode lets you try a task or check an installation without recording hardware.</p>
 <p>The HSD accepts <code class="docutils literal notranslate"><span class="pre">setup=&quot;test&quot;</span></code> only when a <code class="docutils literal notranslate"><span class="pre">beat_source</span></code> and a <code class="docutils literal notranslate"><span class="pre">tone_player</span></code> are passed in place of the ECG and the sound card; the PAT has no <code class="docutils literal notranslate"><span class="pre">setup</span></code> argument and takes the same two objects. The <a class="reference internal" href="../tasks/pat.html#running-without-a-participant"><span class="std std-ref">PAT page</span></a> shows a headless run with a simulated participant.</p>
 </section>
 <section id="other-devices">

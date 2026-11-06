@@ -10,11 +10,11 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/tasks/hrd/index.html" />
 <meta property="og:site_name" content="Cardioception Toolbox" />
-<meta property="og:description" content="The Heart Rate Discrimination task (HRD)[ Legrand et al., 2022] measures how a person judges their own heart rate. On each trial the participant hears tones slightly faster or slower than their hea..." />
+<meta property="og:description" content="The Heart Rate Discrimination task (HRD)[ Legrand et al., 2022] measures judgements of one’s own heart rate. Participants attend to their heartbeat, listen to a sequence of tones, and judge whether..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_hrd_index_4c80ea45.png" />
-<meta property="og:image:alt" content="The Heart Rate Discrimination task (HRD)[ Legrand et al., 2022] measures how a person judges their own heart rate. On each trial the participant hears tones..." />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_hrd_index_98a14f7e.png" />
+<meta property="og:image:alt" content="The Heart Rate Discrimination task (HRD)[ Legrand et al., 2022] measures judgements of one’s own heart rate. Participants attend to their heartbeat, listen t..." />
 <meta name="twitter:card" content="summary_large_image" />
 
 <meta name="robots" content="noindex"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Tutorials" href="tutorials/index.html" /><link rel="prev" title="Measuring cardiac interoception" href="../theory.html" />
@@ -208,10 +208,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../hbc.html">Heartbeat Counting task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pat.html">Phase Adjustment Task</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../hsd/design.html">HSD design and validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hsd/design.html">HSD method and rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hsd/validation.html">HSD validation and technical details</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../heartbeat-discrimination.html">Heartbeat discrimination</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../constant-stimuli.html">Method of constant stimuli</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
@@ -314,19 +315,23 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="heart-rate-discrimination-task">
 <h1>Heart Rate Discrimination task<a class="headerlink" href="#heart-rate-discrimination-task" title="Permalink to this heading">#</a></h1>
-<p>The Heart Rate Discrimination task (HRD) <span id="id1">[<a class="reference internal" href="../../reference/references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span> measures how a person judges their own heart rate. On each trial the participant hears tones slightly faster or slower than their heart and says which. The threshold of the resulting psychometric function is their bias, its slope their precision, and the confidence rating on every trial measures their metacognition. The task is established. <a class="reference internal" href="../theory.html"><span class="std std-doc">Measuring cardiac interoception</span></a> sets out what it can and cannot establish.</p>
+<p>The Heart Rate Discrimination task (HRD) <span id="id1">[<a class="reference internal" href="../../reference/references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span> measures judgements of one’s own heart rate. Participants attend to their heartbeat, listen to a sequence of tones, and judge whether the tones were faster or slower than their heart.</p>
+<p>Across trials, these responses define a psychometric function. Its threshold estimates bias in perceived heart rate, and its slope describes the precision of those judgements. Optional confidence ratings allow researchers to examine how confidence relates to performance. <a class="reference internal" href="../theory.html"><span class="std std-doc">Measuring cardiac interoception</span></a> explains the interpretation and limits of these measures.</p>
 <section id="what-a-trial-looks-like">
 <h2>What a trial looks like<a class="headerlink" href="#what-a-trial-looks-like" title="Permalink to this heading">#</a></h2>
-<p>A trial begins with a fixation cross for 0.25 s. The participant then attends to their heartbeat for 5 s while the pulse is recorded and the heart rate measured. They hear a sequence of tones at that rate plus or minus a difference, <code class="docutils literal notranslate"><span class="pre">Alpha</span></code>, in beats per minute, and answer whether the tones were faster or slower than their heart, with the mouse buttons or the up and down arrow keys. They have 5 s to answer. They then rate their confidence, on a 0 to 100 slider with the mouse or in ten steps with the keyboard. The rating takes between 0.5 and 5 s.</p>
-<p>Half the trials by default are an exteroceptive control. The participant listens for 5 s to a tone sequence at a random rate between 40 and 100 BPM instead of their heart, then judges a second sequence against it. Everything else is the same.</p>
+<p>A trial begins with a fixation cross for 0.25 s. The participant then attends to their heartbeat for 5 s while the task records the pulse and estimates heart rate. A sequence of tones follows at the measured rate plus a signed difference, <code class="docutils literal notranslate"><span class="pre">Alpha</span></code>, in beats per minute.</p>
+<p>The participant has 5 s to judge whether the tones were faster or slower than their heart, using the mouse buttons or the up and down arrow keys. They then rate their confidence on a 0 to 100 slider with the mouse, or in ten steps with the keyboard. The rating period lasts between 0.5 and 5 s.</p>
+<p>By default, half the trials form an exteroceptive control condition. The participant listens for 5 s to a reference tone sequence at a random rate between 40 and 100 BPM, then judges whether a second sequence is faster or slower. The response procedure and confidence rating are the same as in the interoceptive condition.</p>
 <figure class="align-default" id="id6">
 <img alt="Panel a, the task's screens for one interoceptive and one exteroceptive trial, fixation 0.25 s, listening 5 s, decision up to 5 s and confidence 0.5 to 5 s. Panel b, the Psi staircase over 60 trials in each condition for one participant, with each stimulus marked by the answer given and the threshold estimate converging. Panel c, the psychometric functions at the final estimates, interoceptive alpha -3.2 and sigma 9.2, exteroceptive alpha +2.4 and sigma 4.8." src="../../_images/hrd_overview.png" />
 <figcaption>
-<p><span class="caption-text">(a) The task’s screens for one trial in each condition, with the default durations; a 0.5 s fixation precedes the decision. (b) The Psi staircase for one participant from the Visceral Mind Project: each trial’s ΔBPM, marked by the answer given, and the threshold estimate with its 95 percent interval. (c) The psychometric functions at the staircase’s final online estimates, with the threshold (α) at 50 percent “faster”. The tutorials fit these properly.</span><a class="headerlink" href="#id6" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">(a) The screens for one trial in each condition, with the default durations; a 0.5 s fixation precedes the decision. (b) The Psi staircase for one participant from the Visceral Mind Project, showing each trial’s ΔBPM and response, along with the threshold estimate and its 95 percent interval. (c) Psychometric functions drawn from the staircase’s final online estimates, with the threshold (α) at 50 percent “faster” responses. The tutorials explain how to fit psychometric functions to the trial data for analysis.</span><a class="headerlink" href="#id6" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>A Psi staircase <span id="id2">[<a class="reference internal" href="../../reference/references.html#id12" title="Leonid L. Kontsevich and Christopher W. Tyler. Bayesian adaptive estimation of psychometric slope and threshold. Vision Research, 39(16):2729-2737, 1999. URL: https://www.sciencedirect.com/science/article/pii/S0042698998002855, doi:10.1016/S0042-6989(98)00285-5.">Kontsevich and Tyler, 1999</a>]</span>, one per condition, chooses <code class="docutils literal notranslate"><span class="pre">Alpha</span></code> on each trial between -50.5 and 50.5 ΔBPM, where the answer is most informative about the participant’s threshold and slope. A trial with no answer in time is written with <code class="docutils literal notranslate"><span class="pre">DecisionProvided</span></code> false, does not update the staircase, and is put back at the end of the queue (<code class="docutils literal notranslate"><span class="pre">onMissedTrial=&quot;represent&quot;</span></code>, at most three presentations).</p>
-<p>A session starts with a tutorial when <code class="docutils literal notranslate"><span class="pre">runTutorial=True</span></code>: instruction screens, five practice trials per condition with feedback at an easy difference of 20 BPM (<code class="docutils literal notranslate"><span class="pre">nFeedback</span></code>), then eight per condition with a confidence rating and no feedback (<code class="docutils literal notranslate"><span class="pre">nConfidence</span></code>). The main task runs 120 trials by default, 60 per condition, with a break every 20. The four example sessions in the documentation took 20 to 22 minutes without the tutorial, about 10 s a trial; at that pace the tutorial’s 26 trials add about 5 minutes, plus the instruction screens.</p>
+<p>Each condition has a separate Psi staircase <span id="id2">[<a class="reference internal" href="../../reference/references.html#id12" title="Leonid L. Kontsevich and Christopher W. Tyler. Bayesian adaptive estimation of psychometric slope and threshold. Vision Research, 39(16):2729-2737, 1999. URL: https://www.sciencedirect.com/science/article/pii/S0042698998002855, doi:10.1016/S0042-6989(98)00285-5.">Kontsevich and Tyler, 1999</a>]</span>. On each trial, it chooses <code class="docutils literal notranslate"><span class="pre">Alpha</span></code> between -50.5 and 50.5 ΔBPM to obtain information about the participant’s threshold and slope.</p>
+<p>If the participant does not respond in time, the task records <code class="docutils literal notranslate"><span class="pre">DecisionProvided</span></code> as false and leaves the staircase unchanged. By default, the missed trial returns to the end of the queue (<code class="docutils literal notranslate"><span class="pre">onMissedTrial=&quot;represent&quot;</span></code>), with at most three presentations.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">runTutorial=True</span></code>, the session begins with instructions and practice. Participants first complete five trials per condition with feedback at a difference of 20 BPM (<code class="docutils literal notranslate"><span class="pre">nFeedback</span></code>), then eight per condition with confidence ratings and no feedback (<code class="docutils literal notranslate"><span class="pre">nConfidence</span></code>).</p>
+<p>The main task contains 120 trials by default, 60 per condition, with a break every 20 trials. The four example sessions in the documentation took 20 to 22 minutes without the tutorial, or about 10 s per trial. At that pace, the 26 practice trials add about 5 minutes, plus time for the instructions.</p>
 </section>
 <section id="what-you-need">
 <h2>What you need<a class="headerlink" href="#what-you-need" title="Permalink to this heading">#</a></h2>
@@ -380,7 +385,7 @@
 </table>
 </div>
 <p>The LSL wrapper asks for the stream name, the channel label and the signal type (<code class="docutils literal notranslate"><span class="pre">ecg</span></code> or <code class="docutils literal notranslate"><span class="pre">ppg</span></code>) instead of the port and setup.</p>
-<p>The same in a script:</p>
+<p>To run the task from a Python script:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD.parameters</span><span class="w"> </span><span class="kn">import</span> <span class="n">getParameters</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
 
@@ -405,7 +410,7 @@
 </section>
 <section id="the-main-settings">
 <h2>The main settings<a class="headerlink" href="#the-main-settings" title="Permalink to this heading">#</a></h2>
-<p>The arguments of <code class="docutils literal notranslate"><span class="pre">getParameters</span></code> that change the task:</p>
+<p>The following arguments to <code class="docutils literal notranslate"><span class="pre">getParameters</span></code> control the session:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -470,7 +475,7 @@
 </tbody>
 </table>
 </div>
-<p>Timing and the staircase bounds are on a <code class="docutils literal notranslate"><span class="pre">TaskConfig</span></code>, passed as <code class="docutils literal notranslate"><span class="pre">config=</span></code>:</p>
+<p>To change trial timing or staircase bounds, pass a <code class="docutils literal notranslate"><span class="pre">TaskConfig</span></code> object as <code class="docutils literal notranslate"><span class="pre">config=</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HRD.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskConfig</span>
 
 <span class="n">parameters</span> <span class="o">=</span> <span class="n">getParameters</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">TaskConfig</span><span class="p">(</span><span class="n">respMax</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">nFeedback</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
@@ -520,7 +525,7 @@
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">psiPreset</span></code> chooses between two sets of Psi settings. <code class="docutils literal notranslate"><span class="pre">&quot;legacy&quot;</span></code> is the setting of the original paper and of every earlier release: the same uniform ranges in both conditions. <code class="docutils literal notranslate"><span class="pre">&quot;courtin&quot;</span></code> narrows the ranges separately for each condition, to what the hierarchical refit of the Visceral Mind Project data found plausible, and halves the lapse rate <span id="id3">[<a class="reference internal" href="../../reference/references.html#id22" title="Arthur S. Courtin, Jesper Fischer Ehmsen, Leah Banellis, Francesca Fardo, and Micah G. Allen. Hierarchical bayesian modeling of interoceptive psychophysics. Behavior Research Methods, 58(9):260, 2026. doi:10.3758/s13428-026-03137-3.">Courtin <em>et al.</em>, 2026</a>]</span>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">psiPreset</span></code> chooses between two sets of Psi settings. <code class="docutils literal notranslate"><span class="pre">&quot;legacy&quot;</span></code> is the setting of the original paper and of every earlier release: the same uniform ranges in both conditions. <code class="docutils literal notranslate"><span class="pre">&quot;courtin&quot;</span></code> narrows the ranges separately for each condition, to what the hierarchical refit of the Visceral Mind Project data found plausible, and halves the lapse rate <span id="id3">[<a class="reference internal" href="../../reference/references.html#id23" title="Arthur S. Courtin, Jesper Fischer Ehmsen, Leah Banellis, Francesca Fardo, and Micah G. Allen. Hierarchical bayesian modeling of interoceptive psychophysics. Behavior Research Methods, 58(9):260, 2026. doi:10.3758/s13428-026-03137-3.">Courtin <em>et al.</em>, 2026</a>]</span>.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -591,7 +596,7 @@
 </tbody>
 </table>
 </div>
-<p>The columns of <code class="docutils literal notranslate"><span class="pre">*_final.txt</span></code> that matter:</p>
+<p>The main columns in <code class="docutils literal notranslate"><span class="pre">*_final.txt</span></code> are:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -630,7 +635,7 @@
 <section id="reading-the-results">
 <h2>Reading the results<a class="headerlink" href="#reading-the-results" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">EstimatedThreshold</span></code> and <code class="docutils literal notranslate"><span class="pre">EstimatedSlope</span></code> are a by-product of the staircase. Plot them to check that a session converged. They are not an analysis and must not be used as a dependent variable in a group-level test.</p>
-<p>Fit the trials instead, <code class="docutils literal notranslate"><span class="pre">Decision</span></code> against <code class="docutils literal notranslate"><span class="pre">Alpha</span></code> by <code class="docutils literal notranslate"><span class="pre">Modality</span></code>, with the <a class="reference external" href="https://github.com/embodied-computation-group/Hierarchical-Interoception">Hierarchical Interoception toolbox</a> <span id="id4">[<a class="reference internal" href="../../reference/references.html#id22" title="Arthur S. Courtin, Jesper Fischer Ehmsen, Leah Banellis, Francesca Fardo, and Micah G. Allen. Hierarchical bayesian modeling of interoceptive psychophysics. Behavior Research Methods, 58(9):260, 2026. doi:10.3758/s13428-026-03137-3.">Courtin <em>et al.</em>, 2026</a>]</span>. The <a class="reference internal" href="tutorials/index.html"><span class="std std-doc">tutorials</span></a> go from opening a session to a hierarchical model with confidence ratings.</p>
+<p>For analysis, model the trial-level responses (<code class="docutils literal notranslate"><span class="pre">Decision</span></code>) as a function of stimulus intensity (<code class="docutils literal notranslate"><span class="pre">Alpha</span></code>) and condition (<code class="docutils literal notranslate"><span class="pre">Modality</span></code>). The <a class="reference external" href="https://github.com/embodied-computation-group/Hierarchical-Interoception">Hierarchical Interoception toolbox</a> <span id="id4">[<a class="reference internal" href="../../reference/references.html#id23" title="Arthur S. Courtin, Jesper Fischer Ehmsen, Leah Banellis, Francesca Fardo, and Micah G. Allen. Hierarchical bayesian modeling of interoceptive psychophysics. Behavior Research Methods, 58(9):260, 2026. doi:10.3758/s13428-026-03137-3.">Courtin <em>et al.</em>, 2026</a>]</span> provides the models and priors. The <a class="reference internal" href="tutorials/index.html"><span class="std std-doc">tutorials</span></a> explain data inspection, psychometric modelling, and the separate analysis of confidence ratings.</p>
 <section id="reliability">
 <h3>Reliability<a class="headerlink" href="#reliability" title="Permalink to this heading">#</a></h3>
 <p>In the validation study, 190 participants ran the task a second time, about seven weeks after the first session. The test-retest correlation was r = 0.51 for the threshold and r = 0.10 for the slope <span id="id5">[<a class="reference internal" href="../../reference/references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span>.</p>

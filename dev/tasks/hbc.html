@@ -10,11 +10,11 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/tasks/hbc.html" />
 <meta property="og:site_name" content="Cardioception Toolbox" />
-<meta property="og:description" content="The Heartbeat Counting task (HBC)[ Schandry, 1981, Dale and Anderson, 1978] compares the number of heartbeats a person reports over a fixed window with the number recorded. The score is usually tak..." />
+<meta property="og:description" content="The Heartbeat Counting task (HBC)[ Schandry, 1981, Dale and Anderson, 1978] compares the number of heartbeats a participant reports during a fixed interval with the number recorded. It is an establ..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_hbc_c739b7aa.png" />
-<meta property="og:image:alt" content="The Heartbeat Counting task (HBC)[ Schandry, 1981, Dale and Anderson, 1978] compares the number of heartbeats a person reports over a fixed window with the n..." />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_hbc_59f580aa.png" />
+<meta property="og:image:alt" content="The Heartbeat Counting task (HBC)[ Schandry, 1981, Dale and Anderson, 1978] compares the number of heartbeats a participant reports during a fixed interval w..." />
 <meta name="twitter:card" content="summary_large_image" />
 
 <meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Phase Adjustment Task" href="pat.html" /><link rel="prev" title="Metacognition" href="hrd/tutorials/metacognition.html" />
@@ -208,10 +208,11 @@
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Heartbeat Counting task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pat.html">Phase Adjustment Task</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="hsd/design.html">HSD design and validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hsd/design.html">HSD method and rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hsd/validation.html">HSD validation and technical details</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="heartbeat-discrimination.html">Heartbeat discrimination</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constant-stimuli.html">Method of constant stimuli</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
@@ -314,7 +315,8 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="heartbeat-counting-task">
 <h1>Heartbeat Counting task<a class="headerlink" href="#heartbeat-counting-task" title="Permalink to this heading">#</a></h1>
-<p>The Heartbeat Counting task (HBC) <span id="id1">[<a class="reference internal" href="../reference/references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, doi:10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>, <a class="reference internal" href="../reference/references.html#id2" title="Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. Perceptual and Motor Skills, 47(1):79-85, 1978. PMID: 704264. URL: https://doi.org/10.2466/pms.1978.47.1.79, doi:10.2466/pms.1978.47.1.79.">Dale and Anderson, 1978</a>]</span> compares the number of heartbeats a person reports over a fixed window with the number recorded. The score is usually taken to index interoceptive accuracy. The task is established, and the package keeps it because much of the literature rests on it. A good score can come from a plausible estimate of heart rate rather than from feeling beats; <a class="reference internal" href="theory.html#what-heartbeat-counting-can-establish"><span class="std std-ref">what heartbeat counting can establish</span></a> sets out the evidence.</p>
+<p>The Heartbeat Counting task (HBC) <span id="id1">[<a class="reference internal" href="../reference/references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, doi:10.1111/j.1469-8986.1981.tb02486.x.">Schandry, 1981</a>, <a class="reference internal" href="../reference/references.html#id2" title="Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. Perceptual and Motor Skills, 47(1):79-85, 1978. PMID: 704264. URL: https://doi.org/10.2466/pms.1978.47.1.79, doi:10.2466/pms.1978.47.1.79.">Dale and Anderson, 1978</a>]</span> compares the number of heartbeats a participant reports during a fixed interval with the number recorded. It is an established task with a large literature, in which the score is commonly interpreted as interoceptive accuracy.</p>
+<p>A good score can also result from a plausible estimate of heart rate, without reliable perception of individual beats. <a class="reference internal" href="theory.html#what-heartbeat-counting-can-establish"><span class="std std-ref">What heartbeat counting can establish</span></a> reviews the evidence and its implications for interpreting a counting score.</p>
 <section id="what-a-trial-looks-like">
 <h2>What a trial looks like<a class="headerlink" href="#what-a-trial-looks-like" title="Permalink to this heading">#</a></h2>
 <p>A tone marks the start of the window. The participant silently counts the heartbeats they feel while the pulse is recorded. A second tone marks the end. They then type the number they counted and press enter, and rate their confidence from 1 (“Guess”) to 7 (“Certain”) on the keyboard.</p>
@@ -324,7 +326,8 @@
 <p><span class="caption-text">One HBC trial. The window lengths and the 1 to 7 confidence scale are the defaults.</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>The default version, <code class="docutils literal notranslate"><span class="pre">taskVersion=&quot;Garfinkel&quot;</span></code>, runs six counting windows of 25, 30, 35, 40, 45 and 50 s in random order. <code class="docutils literal notranslate"><span class="pre">taskVersion=&quot;Schandry&quot;</span></code> runs three windows of 25, 35 and 45 s after a minute of rest, separated by 30 s rests, in that fixed order. With <code class="docutils literal notranslate"><span class="pre">runTutorial=True</span></code> the session starts with instruction screens, and in every version a 30 s rest with the pulse recorded precedes the first window. The default version takes about 4 minutes.</p>
+<p>The default version, <code class="docutils literal notranslate"><span class="pre">taskVersion=&quot;Garfinkel&quot;</span></code>, presents six counting windows of 25, 30, 35, 40, 45, and 50 s in random order. The <code class="docutils literal notranslate"><span class="pre">taskVersion=&quot;Schandry&quot;</span></code> version presents three windows of 25, 35, and 45 s in that order, following a minute of rest and separated by 30 s rest periods.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">runTutorial=True</span></code>, the session begins with instruction screens. Every version also records the pulse during a 30 s rest before the first window. The default version takes about 4 minutes.</p>
 </section>
 <section id="what-you-need">
 <h2>What you need<a class="headerlink" href="#what-you-need" title="Permalink to this heading">#</a></h2>
@@ -403,7 +406,7 @@
 </tbody>
 </table>
 </div>
-<p>The window lengths and conditions are <code class="docutils literal notranslate"><span class="pre">parameters[&quot;times&quot;]</span></code> and <code class="docutils literal notranslate"><span class="pre">parameters[&quot;conditions&quot;]</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;Rest&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;Count&quot;</span></code>); a custom schedule is set by editing them after <code class="docutils literal notranslate"><span class="pre">getParameters</span></code> returns.</p>
+<p>To define a custom schedule, edit <code class="docutils literal notranslate"><span class="pre">parameters[&quot;times&quot;]</span></code> and <code class="docutils literal notranslate"><span class="pre">parameters[&quot;conditions&quot;]</span></code> after <code class="docutils literal notranslate"><span class="pre">getParameters</span></code> returns. These contain the window lengths and the corresponding conditions (<code class="docutils literal notranslate"><span class="pre">&quot;Rest&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;Count&quot;</span></code>).</p>
 </section>
 <section id="what-it-saves">
 <h2>What it saves<a class="headerlink" href="#what-it-saves" title="Permalink to this heading">#</a></h2>
@@ -458,7 +461,7 @@
 </tbody>
 </table>
 </div>
-<p>The task does not count the recorded beats. The true count of each window comes from its pulse file.</p>
+<p>The task saves the pulse recording without counting the beats. Obtain the recorded count for each window by detecting beats in its pulse file.</p>
 </section>
 <section id="scoring">
 <h2>Scoring<a class="headerlink" href="#scoring" title="Permalink to this heading">#</a></h2>

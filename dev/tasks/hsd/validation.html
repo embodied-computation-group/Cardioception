@@ -1,0 +1,1529 @@
+
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta content="Simulation results, hardware checks, and remaining validation work for Heartbeat Synchrony Discrimination, with reproducible technical details." name="description" />
+<meta content="HSD validation, heartbeat synchrony, simulation, timing jitter, adaptive psychophysics" name="keywords" />
+<meta property="og:title" content="HSD validation and technical details" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/tasks/hsd/validation.html" />
+<meta property="og:site_name" content="Cardioception Toolbox" />
+<meta property="og:description" content="HSD has been evaluated in simulations and a single hardware demonstration. The simulations test how well the procedure recovers known response patterns; the hardware session checks recording and st..." />
+<meta property="og:image:width" content="1146" />
+<meta property="og:image:height" content="600" />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_hsd_validation_e57e3d2b.png" />
+<meta property="og:image:alt" content="HSD has been evaluated in simulations and a single hardware demonstration. The simulations test how well the procedure recovers known response patterns; the..." />
+<meta name="twitter:card" content="summary_large_image" />
+
+<meta name="robots" content="noindex"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Heartbeat discrimination" href="../heartbeat-discrimination.html" /><link rel="prev" title="HSD method and rationale" href="design.html" />
+        <link rel="canonical" href="https://www.the-ecg.org/Cardioception/dev/tasks/hsd/validation.html" />
+
+    <link rel="shortcut icon" href="../../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>HSD validation and technical details - Cardioception Toolbox</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: #1f3352;
+  --color-brand-content: #2f4b73;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #9fc0e8;
+  --color-brand-content: #9fc0e8;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     These are the docs for Cardioception 1.0, in development and not yet on PyPI. <a href="https://www.the-ecg.org/Cardioception/">The docs for the current release are here.</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">Cardioception Toolbox</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/cardioception_icon.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started/recording-devices.html">Recording devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started/running-a-session.html">Running a session</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tasks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">The tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Measuring cardiac interoception</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../hrd/index.html">Heart Rate Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../hrd/tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../hrd/tutorials/inspecting-data.html">Inspecting and plotting an HRD session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hrd/tutorials/psychophysics.html">The psychophysical model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hrd/tutorials/hierarchical.html">Hierarchical modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hrd/tutorials/metacognition.html">Metacognition</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../hbc.html">Heartbeat Counting task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pat.html">Phase Adjustment Task</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Heartbeat Synchrony Discrimination task</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="design.html">HSD method and rationale</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">HSD validation and technical details</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../heartbeat-discrimination.html">Heartbeat discrimination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../constant-stimuli.html">Method of constant stimuli</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HRD.parameters/cardioception.HRD.parameters.getParameters.html">cardioception.HRD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HRD.config/cardioception.HRD.config.TaskConfig.html">cardioception.HRD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HRD.task/cardioception.HRD.task.run.html">cardioception.HRD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HRD.task/cardioception.HRD.task.trial.html">cardioception.HRD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HRD.task/cardioception.HRD.task.tutorial.html">cardioception.HRD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HRD.task/cardioception.HRD.task.confidenceRatingTask.html">cardioception.HRD.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HRD.languages/cardioception.HRD.languages.available.html">cardioception.HRD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HRD.languages/cardioception.HRD.languages.get_texts.html">cardioception.HRD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HBC.parameters/cardioception.HBC.parameters.getParameters.html">cardioception.HBC.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HBC.task/cardioception.HBC.task.run.html">cardioception.HBC.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HBC.task/cardioception.HBC.task.trial.html">cardioception.HBC.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HBC.task/cardioception.HBC.task.tutorial.html">cardioception.HBC.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HBC.task/cardioception.HBC.task.rest.html">cardioception.HBC.task.rest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HBC.languages/cardioception.HBC.languages.available.html">cardioception.HBC.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HBC.languages/cardioception.HBC.languages.get_texts.html">cardioception.HBC.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.parameters/cardioception.PAT.parameters.getParameters.html">cardioception.PAT.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.parameters/cardioception.PAT.parameters.startPhaseSequence.html">cardioception.PAT.parameters.startPhaseSequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.task/cardioception.PAT.task.run.html">cardioception.PAT.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.task/cardioception.PAT.task.trial.html">cardioception.PAT.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.task/cardioception.PAT.task.tutorial.html">cardioception.PAT.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.task/cardioception.PAT.task.dialLoop.html">cardioception.PAT.task.dialLoop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.task/cardioception.PAT.task.confidenceRatingTask.html">cardioception.PAT.task.confidenceRatingTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.engine/cardioception.PAT.engine.PhaseEngine.html">cardioception.PAT.engine.PhaseEngine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.scoring/cardioception.PAT.scoring.consistency_grid.html">cardioception.PAT.scoring.consistency_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.scoring/cardioception.PAT.scoring.mean_resultant_length.html">cardioception.PAT.scoring.mean_resultant_length</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.scoring/cardioception.PAT.scoring.phase_angles.html">cardioception.PAT.scoring.phase_angles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.scoring/cardioception.PAT.scoring.monte_carlo_threshold.html">cardioception.PAT.scoring.monte_carlo_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.scoring/cardioception.PAT.scoring.extero_threshold.html">cardioception.PAT.scoring.extero_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.scoring/cardioception.PAT.scoring.mad_outliers.html">cardioception.PAT.scoring.mad_outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.languages/cardioception.PAT.languages.available.html">cardioception.PAT.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/PAT.languages/cardioception.PAT.languages.get_texts.html">cardioception.PAT.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HSD.parameters/cardioception.HSD.parameters.getParameters.html">cardioception.HSD.parameters.getParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HSD.config/cardioception.HSD.config.TaskConfig.html">cardioception.HSD.config.TaskConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HSD.task/cardioception.HSD.task.run.html">cardioception.HSD.task.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HSD.task/cardioception.HSD.task.trial.html">cardioception.HSD.task.trial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HSD.task/cardioception.HSD.task.tutorial.html">cardioception.HSD.task.tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HSD.psi/cardioception.HSD.psi.SynchronyPsi.html">cardioception.HSD.psi.SynchronyPsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HSD.psi/cardioception.HSD.psi.gaussian_envelope.html">cardioception.HSD.psi.gaussian_envelope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HSD.psi/cardioception.HSD.psi.default_grids.html">cardioception.HSD.psi.default_grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HSD.languages/cardioception.HSD.languages.available.html">cardioception.HSD.languages.available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/HSD.languages/cardioception.HSD.languages.get_texts.html">cardioception.HSD.languages.get_texts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/devices/cardioception.devices.ContinuousOximeter.html">cardioception.devices.ContinuousOximeter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/devices/cardioception.devices.LSLRecorder.html">cardioception.devices.LSLRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/devices/cardioception.devices.ReplayRecorder.html">cardioception.devices.ReplayRecorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/devices.beat_source/cardioception.devices.beat_source.LSLBeatSource.html">cardioception.devices.beat_source.LSLBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/devices.beat_source/cardioception.devices.beat_source.VirtualBeatSource.html">cardioception.devices.beat_source.VirtualBeatSource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/devices.tone_player/cardioception.devices.tone_player.TonePlayer.html">cardioception.devices.tone_player.TonePlayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/scales/cardioception.scales.ConfidenceScale.html">cardioception.scales.ConfidenceScale</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/cite.html">How to cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/changelog.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/embodied-computation-group/Cardioception/edit/main/docs/source/tasks/hsd/validation.md" title="Edit this page">
+    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+    </svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="hsd-validation-and-technical-details">
+<h1>HSD validation and technical details<a class="headerlink" href="#hsd-validation-and-technical-details" title="Permalink to this heading">#</a></h1>
+<p>HSD has been evaluated in simulations and a single hardware demonstration.
+The simulations test how well the procedure recovers known response patterns;
+the hardware session checks recording and stimulus delivery. Neither establishes
+validity as a measure of heartbeat perception in a participant population.</p>
+<p>This page explains the main findings before presenting the detailed numerical
+results and development history. For the model and adaptive procedure, see
+<a class="reference internal" href="design.html"><span class="std std-doc">HSD method and rationale</span></a>. For session setup, see the
+<a class="reference internal" href="index.html"><span class="std std-doc">task page</span></a>.</p>
+<section id="simulation-study">
+<h2>Simulation study<a class="headerlink" href="#simulation-study" title="Permalink to this heading">#</a></h2>
+<p>The study examined how quickly adaptive sampling estimates preferred heartbeat
+timing, which response patterns are difficult to recover, and whether the
+evidence distinguishes a timing-dependent response from a flat one. It compared
+three adaptive procedures with a 120-trial method of constant stimuli (MCS).</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The figures and tables below report <strong>marginal</strong> estimates of <span class="math notranslate nohighlight">\(\mu\)</span>, including
+the stopping analyses. The current task reports <strong>conditional</strong> timing estimates
+and uses their intervals for stopping. A full rerun of these results with the
+conditional estimates is pending. The reported stopping proportions should
+therefore not be treated as predictions for the current task.</p>
+</div>
+<p>The simulations included 38 observer profiles: 30 with a timing-dependent
+response, six with flat responses at different yes rates, and two with
+asymmetric response patterns. Each method was run ten times per profile for
+120 trials, giving 1,520 runs per timing condition. Each trial represented a
+five-tone judgement.</p>
+<p>The two timing conditions used jitter standard deviations of 26 and 6 ms,
+based on measurements from the test desktop and laboratory PC. Simulations
+also included a minimum delay, a heart-period-dependent upper limit, and
+trials with no delivered tones. The MCS benchmark retained its classical
+0 to 500 ms delays, including delays unavailable to the adaptive task on the
+current hardware. The comparison therefore reflects both sampling strategy
+and access to different delays.</p>
+<p>The default adaptive procedure, <code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code>, targets <span class="math notranslate nohighlight">\(\mu\)</span> and selects a
+random delay on 10 percent of trials. The other adaptive procedures target
+<span class="math notranslate nohighlight">\(\mu\)</span> without exploration (<code class="docutils literal notranslate"><span class="pre">psi_mu</span></code>) or jointly target <span class="math notranslate nohighlight">\(\mu\)</span> and <span class="math notranslate nohighlight">\(\sigma\)</span>
+(<code class="docutils literal notranslate"><span class="pre">psi_mu_sigma</span></code>). Unless stated otherwise, accuracy summaries cover the
+30 timing-dependent profiles, or 300 runs per method.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Observer profiles, comparison methods, and simulation settings<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text"><strong>Observers.</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Group</p></th>
+<th class="head"><p class="sd-card-text">Parameters</p></th>
+<th class="head"><p class="sd-card-text">Count</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">Detectors</p></td>
+<td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">mu</span></code> in {150, 200, 250, 300, 350} ms; <code class="docutils literal notranslate"><span class="pre">sigma</span></code> in {50, 100, 150} ms; (<code class="docutils literal notranslate"><span class="pre">floor</span></code>, <code class="docutils literal notranslate"><span class="pre">peak</span></code>) in {(0.05, 0.95)} (clean) or {(0.2, 0.8)} (noisy)</p></td>
+<td><p class="sd-card-text">30</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Non-detectors</p></td>
+<td><p class="sd-card-text">Flat “yes” rate of 0.3 or 0.5</p></td>
+<td><p class="sd-card-text">2</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Misspecified</p></td>
+<td><p class="sd-card-text">Asymmetric envelope, right tail twice as wide as the left, <code class="docutils literal notranslate"><span class="pre">mu</span></code> at 200 or 300 ms, <code class="docutils literal notranslate"><span class="pre">sigma</span></code> 100 ms, (<code class="docutils literal notranslate"><span class="pre">floor</span></code>, <code class="docutils literal notranslate"><span class="pre">peak</span></code>) = (0.05, 0.95)</p></td>
+<td><p class="sd-card-text">2</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Biased non-detectors</p></td>
+<td><p class="sd-card-text">Always “yes”, always “no”, flat 0.1, flat 0.9</p></td>
+<td><p class="sd-card-text">4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="sd-card-text"><strong>Methods.</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Label</p></th>
+<th class="head"><p class="sd-card-text">Method</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">MCS</p></td>
+<td><p class="sd-card-text">Six delays from 0 to 500 ms, 20 trials each, random order. Analyzed on the same grid posterior, and with the classical median interval and interquartile range</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">psi_mu</span></code></p></td>
+<td><p class="sd-card-text">Psi-marginal, target <code class="docutils literal notranslate"><span class="pre">mu</span></code>; <code class="docutils literal notranslate"><span class="pre">sigma</span></code>, <code class="docutils literal notranslate"><span class="pre">floor</span></code> and <code class="docutils literal notranslate"><span class="pre">peak</span></code> as nuisances</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code></p></td>
+<td><p class="sd-card-text">The same with <code class="docutils literal notranslate"><span class="pre">explore</span></code> at 0.1: the task’s default</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">psi_mu_sigma</span></code></p></td>
+<td><p class="sd-card-text">Psi-marginal, target <code class="docutils literal notranslate"><span class="pre">mu</span></code> and <code class="docutils literal notranslate"><span class="pre">sigma</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="sd-card-text"><strong>Timing and delivery assumptions.</strong> Each simulated participant has a resting heart
+period drawn uniformly from 0.8 to 1.1 s, the same for every method. The
+adaptive methods present candidates from 140 ms (the first above the 130 ms
+floor) up to the task’s ceiling at that period, <code class="docutils literal notranslate"><span class="pre">TaskConfig.bounds</span></code>, which
+is 570 to 784 ms, so the top candidate is 560 or 600 ms. The observer answers at the nominal delay plus Gaussian timing noise,
+one draw per trial, while the engine is updated with the nominal delay: 26 ms
+SD, the Bluetooth jitter of the ECG stamps on the test desktop, and 6 ms, that
+of the lab PC. One draw per trial is pessimistic if the five tones of a train
+average out. On 7 percent of trials no train is delivered and the trial gives
+no update but still counts, as the dry run lost 4 of its 60 trains (though
+those still gave an update). Jitter and lost trains apply to MCS too, which
+keeps its published levels from 0 to 500 ms as the classical benchmark,
+although 0 ms cannot be realized on current hardware.</p>
+<p class="sd-card-text"><strong>Replications.</strong> Ten repetitions per observer and method, seeded through the
+package’s random number generator so every run can be reproduced: 38
+observers, 4 methods, 10 repetitions and 120 trials, 1,520 runs per study,
+with the seeds of the earlier studies for the first 34 observers. Each study
+took 37 minutes with 28 worker processes on a 32-core machine. The commands
+are under <a class="reference internal" href="#how-to-reproduce">how to reproduce</a>.</p>
+<p class="sd-card-text"><strong>Metrics.</strong> Absolute error and root mean squared error of the posterior mean
+of <code class="docutils literal notranslate"><span class="pre">mu</span></code> at each trial count; credible-interval width; coverage of the 95
+percent interval; error in <code class="docutils literal notranslate"><span class="pre">sigma</span></code>; the detection Bayes factor per observer
+group; the stopping rule applied to every run; the distribution of sampled
+delays, which is the check on clustering.</p>
+<p class="sd-card-text"><strong>Outputs.</strong> CSVs of per-trial estimates, of summaries by trial count, of
+detection evidence by group and of the stopping rule, a figure of RMSE and
+credible-interval width against trial count by method, and a table at 15, 20,
+30, 40, 60 and 120 trials. The simulation script regenerates all of them.</p>
+</div>
+</details></section>
+<section id="accuracy-of-heartbeat-timing-estimates">
+<h2>Accuracy of heartbeat timing estimates<a class="headerlink" href="#accuracy-of-heartbeat-timing-estimates" title="Permalink to this heading">#</a></h2>
+<p>Adaptive sampling reduced estimation error early in the simulated sessions.
+Its advantage diminished with additional trials, and MCS had lower error by
+120 trials. The figure shows both estimation error and uncertainty: narrower
+intervals do not necessarily imply lower error.</p>
+<figure class="align-default" id="id3">
+<img alt="Two panels against trial number, 1 to 120, with 26 ms of jitter. Left, RMSE of the posterior mean of mu falls from about 80 ms; the adaptive methods are below MCS until about trial 60, after which MCS keeps falling to 24 ms while the adaptive methods level off between 27 and 32 ms. Right, mean 95 percent credible-interval width falls from about 580 ms to between 106 and 116 ms, with MCS widest until about trial 80." src="../../_images/hsd_simulation.png" />
+<figcaption>
+<p><span class="caption-text">RMSE of the posterior mean of <code class="docutils literal notranslate"><span class="pre">mu</span></code> (left) and mean width of its 95 percent
+credible interval (right) against trial count, by method, for the 30 detectors,
+as the task runs with 26 ms of timing jitter.</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>For the default adaptive procedure with 26 ms jitter, root mean squared error
+(RMSE) was about 45 ms after 15 trials and 34 ms after 60 trials. MCS had
+corresponding errors of about 63 and 35 ms. By 120 trials, MCS reached about
+24 ms, compared with 32 ms for the default adaptive procedure.</p>
+<p>The advantage of MCS at longer sessions needs to be interpreted alongside its
+access to earlier delays. Those delays are particularly informative for
+participants whose heartbeat sensation occurs early in the cardiac cycle.</p>
+<section id="detailed-accuracy-results">
+<span id="results-as-the-task-runs"></span><h3>Detailed accuracy results<a class="headerlink" href="#detailed-accuracy-results" title="Permalink to this heading">#</a></h3>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Full accuracy and interval-width results<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">mu</span></code> RMSE (ms) at trial</p></th>
+<th class="head"><p class="sd-card-text">15</p></th>
+<th class="head"><p class="sd-card-text">20</p></th>
+<th class="head"><p class="sd-card-text">30</p></th>
+<th class="head"><p class="sd-card-text">40</p></th>
+<th class="head"><p class="sd-card-text">60</p></th>
+<th class="head"><p class="sd-card-text">120</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">MCS, 26 ms jitter</p></td>
+<td><p class="sd-card-text">62.6</p></td>
+<td><p class="sd-card-text">54.6</p></td>
+<td><p class="sd-card-text">48.5</p></td>
+<td><p class="sd-card-text">43.0</p></td>
+<td><p class="sd-card-text">34.9</p></td>
+<td><p class="sd-card-text">24.1</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">psi_mu</span></code>, 26 ms</p></td>
+<td><p class="sd-card-text">43.6</p></td>
+<td><p class="sd-card-text">42.2</p></td>
+<td><p class="sd-card-text">36.5</p></td>
+<td><p class="sd-card-text">35.6</p></td>
+<td><p class="sd-card-text">32.2</p></td>
+<td><p class="sd-card-text">27.2</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code>, 26 ms</p></td>
+<td><p class="sd-card-text">45.5</p></td>
+<td><p class="sd-card-text">43.1</p></td>
+<td><p class="sd-card-text">39.0</p></td>
+<td><p class="sd-card-text">36.8</p></td>
+<td><p class="sd-card-text">34.2</p></td>
+<td><p class="sd-card-text">31.9</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">psi_mu_sigma</span></code>, 26 ms</p></td>
+<td><p class="sd-card-text">48.2</p></td>
+<td><p class="sd-card-text">44.9</p></td>
+<td><p class="sd-card-text">41.2</p></td>
+<td><p class="sd-card-text">37.8</p></td>
+<td><p class="sd-card-text">34.5</p></td>
+<td><p class="sd-card-text">30.4</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">MCS, 6 ms jitter</p></td>
+<td><p class="sd-card-text">65.1</p></td>
+<td><p class="sd-card-text">57.5</p></td>
+<td><p class="sd-card-text">48.2</p></td>
+<td><p class="sd-card-text">40.9</p></td>
+<td><p class="sd-card-text">33.8</p></td>
+<td><p class="sd-card-text">23.6</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">psi_mu</span></code>, 6 ms</p></td>
+<td><p class="sd-card-text">41.7</p></td>
+<td><p class="sd-card-text">39.7</p></td>
+<td><p class="sd-card-text">35.7</p></td>
+<td><p class="sd-card-text">32.7</p></td>
+<td><p class="sd-card-text">28.0</p></td>
+<td><p class="sd-card-text">26.1</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code>, 6 ms</p></td>
+<td><p class="sd-card-text">44.6</p></td>
+<td><p class="sd-card-text">39.1</p></td>
+<td><p class="sd-card-text">35.2</p></td>
+<td><p class="sd-card-text">32.9</p></td>
+<td><p class="sd-card-text">30.1</p></td>
+<td><p class="sd-card-text">26.8</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">psi_mu_sigma</span></code>, 6 ms</p></td>
+<td><p class="sd-card-text">43.0</p></td>
+<td><p class="sd-card-text">38.8</p></td>
+<td><p class="sd-card-text">35.3</p></td>
+<td><p class="sd-card-text">33.0</p></td>
+<td><p class="sd-card-text">31.8</p></td>
+<td><p class="sd-card-text">27.7</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Median absolute error, <code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code>, 26 ms</p></td>
+<td><p class="sd-card-text">26.4</p></td>
+<td><p class="sd-card-text">26.9</p></td>
+<td><p class="sd-card-text">23.4</p></td>
+<td><p class="sd-card-text">22.1</p></td>
+<td><p class="sd-card-text">16.3</p></td>
+<td><p class="sd-card-text">12.6</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Median absolute error, <code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code>, 6 ms</p></td>
+<td><p class="sd-card-text">24.1</p></td>
+<td><p class="sd-card-text">23.2</p></td>
+<td><p class="sd-card-text">19.6</p></td>
+<td><p class="sd-card-text">17.2</p></td>
+<td><p class="sd-card-text">14.6</p></td>
+<td><p class="sd-card-text">9.8</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Bias, <code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code>, 26 ms</p></td>
+<td><p class="sd-card-text">-4.6</p></td>
+<td><p class="sd-card-text">-8.2</p></td>
+<td><p class="sd-card-text">-11.6</p></td>
+<td><p class="sd-card-text">-11.4</p></td>
+<td><p class="sd-card-text">-12.2</p></td>
+<td><p class="sd-card-text">-11.3</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Mean CI width, MCS, 26 ms</p></td>
+<td><p class="sd-card-text">495</p></td>
+<td><p class="sd-card-text">439</p></td>
+<td><p class="sd-card-text">355</p></td>
+<td><p class="sd-card-text">290</p></td>
+<td><p class="sd-card-text">214</p></td>
+<td><p class="sd-card-text">106</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Mean CI width, <code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code>, 26 ms</p></td>
+<td><p class="sd-card-text">440</p></td>
+<td><p class="sd-card-text">388</p></td>
+<td><p class="sd-card-text">305</p></td>
+<td><p class="sd-card-text">248</p></td>
+<td><p class="sd-card-text">181</p></td>
+<td><p class="sd-card-text">112</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Mean CI width, <code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code>, 6 ms</p></td>
+<td><p class="sd-card-text">420</p></td>
+<td><p class="sd-card-text">367</p></td>
+<td><p class="sd-card-text">287</p></td>
+<td><p class="sd-card-text">234</p></td>
+<td><p class="sd-card-text">163</p></td>
+<td><p class="sd-card-text">95</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="sd-card-text">The adaptive methods have a lower RMSE than MCS up to
+about trial 60 to 80, depending on the method and the jitter; by 120 trials
+MCS is the most accurate (24 ms against 27 to 32 ms), because its levels are
+not held to the floor. Inside the task’s 60 trials the gain over MCS is
+largest early: 45 against 63 ms at 15 trials and 39 against 49 ms at 30 (26 ms
+of jitter). The median absolute error of <code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code> is within the 20 to
+30 ms target from 15 trials, and below 20 ms from about 40 trials with 6 ms of
+jitter and 60 with 26 ms. Exploration changes the RMSE by at most 3 ms within
+60 trials, and costs 5 ms at 120 trials with 26 ms of jitter. Jitter of 26 rather than 6 ms costs about 4 ms of RMSE at
+60 trials (34.2 against 30.1 ms for <code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code>) and widens the interval by
+about 20 ms. On the same MCS data the classical median interval has an RMSE of
+38 ms at 120 trials against 24 ms for the grid posterior.</p>
+</div>
+</details></section>
+</section>
+<section id="response-patterns-that-are-difficult-to-estimate">
+<h2>Response patterns that are difficult to estimate<a class="headerlink" href="#response-patterns-that-are-difficult-to-estimate" title="Permalink to this heading">#</a></h2>
+<p>The largest location errors occurred for early sensations. When much of the
+rising side of the response envelope falls below the minimum delay, the task
+mainly observes its falling side. Several earlier values of <span class="math notranslate nohighlight">\(\mu\)</span> can then
+explain similar data, pulling the posterior mean towards earlier delays.</p>
+<p>This explains the mean bias of about -11 ms across timing-dependent observers.
+It also explains why additional trials alone do not remove the error: the
+missing part of the response pattern remains inaccessible.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Location error by preferred delay at 120 trials<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">True <code class="docutils literal notranslate"><span class="pre">mu</span></code></p></th>
+<th class="head"><p class="sd-card-text">150 ms</p></th>
+<th class="head"><p class="sd-card-text">200 ms</p></th>
+<th class="head"><p class="sd-card-text">250 ms</p></th>
+<th class="head"><p class="sd-card-text">300 ms</p></th>
+<th class="head"><p class="sd-card-text">350 ms</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">RMSE (ms), 26 ms jitter</p></td>
+<td><p class="sd-card-text">38.4</p></td>
+<td><p class="sd-card-text">44.4</p></td>
+<td><p class="sd-card-text">30.6</p></td>
+<td><p class="sd-card-text">14.6</p></td>
+<td><p class="sd-card-text">22.1</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">RMSE (ms), 6 ms jitter</p></td>
+<td><p class="sd-card-text">36.5</p></td>
+<td><p class="sd-card-text">30.5</p></td>
+<td><p class="sd-card-text">28.9</p></td>
+<td><p class="sd-card-text">17.3</p></td>
+<td><p class="sd-card-text">14.3</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Bias (ms), 26 ms jitter</p></td>
+<td><p class="sd-card-text">-26.5</p></td>
+<td><p class="sd-card-text">-17.0</p></td>
+<td><p class="sd-card-text">-7.2</p></td>
+<td><p class="sd-card-text">-2.3</p></td>
+<td><p class="sd-card-text">-3.7</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Bias (ms), 6 ms jitter</p></td>
+<td><p class="sd-card-text">-24.5</p></td>
+<td><p class="sd-card-text">-7.2</p></td>
+<td><p class="sd-card-text">-9.3</p></td>
+<td><p class="sd-card-text">+0.5</p></td>
+<td><p class="sd-card-text">+0.2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</details><p>Asymmetric response patterns introduce a different problem. The model assumes
+a symmetric Gaussian envelope. For the two asymmetric observers, the default
+procedure had an RMSE of 42 ms with 26 ms jitter and 33 ms with 6 ms jitter
+after 120 trials (20 runs per method). These results show the sensitivity of location estimates
+to the shape assumed by the model.</p>
+<p>The marginal 95 percent intervals covered the true <span class="math notranslate nohighlight">\(\mu\)</span> in 96 to 100 percent
+of runs across methods and trial counts from 15 onward. They were conservative
+in these simulations. This coverage result does not establish coverage of
+the conditional intervals used by the current task.</p>
+</section>
+<section id="effects-of-timing-variability">
+<h2>Effects of timing variability<a class="headerlink" href="#effects-of-timing-variability" title="Permalink to this heading">#</a></h2>
+<p>Reducing jitter from 26 to 6 ms lowered the default procedure’s RMSE at
+60 trials from 34.2 to 30.1 ms and narrowed its mean interval by about 20 ms.
+The benefit was modest for location, but timing variability also broadens the
+response envelope and complicates interpretation of <span class="math notranslate nohighlight">\(\sigma\)</span>.</p>
+<p>Width was recovered less accurately than location under adaptive sampling.
+With 26 ms jitter, error in <span class="math notranslate nohighlight">\(\sigma\)</span> fell only from about 36 ms at 15 trials
+to 32 ms at 120 trials. At 120 trials it was about 27 ms with 6 ms jitter;
+MCS reached 21 to 24 ms. Improving hardware timing and estimating perceptual
+width therefore remain separate validation concerns.</p>
+</section>
+<section id="detection-evidence">
+<h2>Detection evidence<a class="headerlink" href="#detection-evidence" title="Permalink to this heading">#</a></h2>
+<p>Detection evidence generally distinguished timing-dependent from flat
+responses at the group level. It did not reliably classify every simulated
+observer within 60 trials. Flat responders with yes rates near 0.3 or 0.5
+and observers with noisy timing-dependent responses were the hardest cases.</p>
+<p>The table reports the median base-10 logarithm of the detection Bayes factor
+for the default procedure with 26 ms jitter. Positive values favour a rise
+in response probability across the sampled delays; negative values favour
+the alternative. The final column shows the proportion of runs favouring a
+rise after 60 trials.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Group</p></th>
+<th class="head"><p>30 trials</p></th>
+<th class="head"><p>60 trials</p></th>
+<th class="head"><p>120 trials</p></th>
+<th class="head"><p>Share above 0 at 60 trials</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Clean detectors</p></td>
+<td><p>+1.45</p></td>
+<td><p>+2.27</p></td>
+<td><p>+3.71</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>Noisy detectors</p></td>
+<td><p>+0.67</p></td>
+<td><p>+1.36</p></td>
+<td><p>+2.00</p></td>
+<td><p>0.91</p></td>
+</tr>
+<tr class="row-even"><td><p>Asymmetric</p></td>
+<td><p>+0.95</p></td>
+<td><p>+1.41</p></td>
+<td><p>+2.03</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>Always “yes”</p></td>
+<td><p>-2.52</p></td>
+<td><p>-3.97</p></td>
+<td><p>-6.04</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>Always “no”</p></td>
+<td><p>-1.17</p></td>
+<td><p>-1.85</p></td>
+<td><p>-2.85</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Flat 0.1</p></td>
+<td><p>-0.45</p></td>
+<td><p>-0.90</p></td>
+<td><p>-1.38</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>Flat 0.9</p></td>
+<td><p>-0.68</p></td>
+<td><p>-1.11</p></td>
+<td><p>-1.61</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Flat 0.3</p></td>
+<td><p>-0.11</p></td>
+<td><p>-0.20</p></td>
+<td><p>-0.69</p></td>
+<td><p>0.2</p></td>
+</tr>
+<tr class="row-even"><td><p>Flat 0.5</p></td>
+<td><p>-0.00</p></td>
+<td><p>-0.45</p></td>
+<td><p>-0.69</p></td>
+<td><p>0.3</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>After 60 trials, evidence still favoured a rise in 2 or 3 of 10 runs for the
+flat 0.3 and 0.5 responders. Conversely, 9 percent of noisy detector runs
+did not favour a rise. These errors are why the task reports detection
+evidence as a monitoring measure rather than a participant classification.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Comparisons across timing conditions and methods<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">With 6 ms of jitter the detectors’ medians are a little higher (clean +2.54,
+noisy +1.49 at 60 trials); the non-detectors’ answers do not depend on the
+delay, so jitter does not change them. <code class="docutils literal notranslate"><span class="pre">psi_mu</span></code> and <code class="docutils literal notranslate"><span class="pre">psi_mu_sigma</span></code> are within
+about 0.4 of <code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code> at 60 trials. MCS gives detectors larger factors
+from about 40 trials (clean +3.02 at 60), since its fixed levels sample both
+flanks and the far tail.</p>
+<p class="sd-card-text">The Bayes factor now favours a rise for every detector group and a flat
+envelope for every non-detector group, the biased ones included, and it moves
+further with more trials in both directions. A biased non-detector is the
+clearest case: answering almost always “yes” or “no” puts the evidence firmly
+against a rise, where the old grids took it as strong evidence for one. The
+hard cases are non-detectors near the middle of the scale, 0.3 and 0.5, whose
+evidence moves slowly and is still above 0 in 2 or 3 of 10 runs at 60 trials,
+and noisy detectors, of which 9 percent are still at or below 0 then. So the
+evidence separates the groups on average but not every person within 60
+trials, which is why it is reported as a sanity check and not used as a
+classifier.</p>
+</div>
+</details><section id="sampling-across-delays">
+<h3>Sampling across delays<a class="headerlink" href="#sampling-across-delays" title="Permalink to this heading">#</a></h3>
+<p>The sampled delays covered much of the available range, with a concentration
+at the minimum delay for early sensations. Under <code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code> with 26 ms of jitter, 16 of the 24 candidate delays
+from 140 to 600 ms each receive at least 2 percent of trials, with 4 to 7
+percent per delay between 180 and 340 ms. The one concentration is at the
+floor: 21 percent of trials at 140 ms, from 33 percent for observers with a
+<code class="docutils literal notranslate"><span class="pre">mu</span></code> of 150 ms to 8 percent for a <code class="docutils literal notranslate"><span class="pre">mu</span></code> of 350 ms. For early sensations the
+floor cuts off the rising side of the envelope, so the lowest allowed delay is
+the most informative one left. The longest delays, 520 to 600 ms, receive
+7 percent of trials.</p>
+</section>
+</section>
+<section id="session-length">
+<h2>Session length<a class="headerlink" href="#session-length" title="Permalink to this heading">#</a></h2>
+<p>Longer sessions improved accuracy, but the gains beyond 60 trials were small
+for the default procedure. Extending the maximum to 90 trials reduced RMSE
+by about 2 ms while allowing 50 percent more trials. The lower delay limit
+continued to constrain estimates for early sensations.</p>
+<p>The historical stopping analysis used marginal intervals. With a 100 ms
+width criterion, about half the clean detector runs stopped before 60 trials,
+whereas most noisy detectors and almost all flat responders reached the
+maximum. These results motivated the provisional limits, but the current
+conditional rule needs its own evaluation.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Historical stopping results using marginal intervals<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Median 95% CI width on <code class="docutils literal notranslate"><span class="pre">mu</span></code></p></th>
+<th class="head"><p class="sd-card-text">Clean, 26 ms jitter</p></th>
+<th class="head"><p class="sd-card-text">Noisy, 26 ms</p></th>
+<th class="head"><p class="sd-card-text">Clean, 6 ms</p></th>
+<th class="head"><p class="sd-card-text">Noisy, 6 ms</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">150 ms</p></td>
+<td><p class="sd-card-text">37 trials</p></td>
+<td><p class="sd-card-text">Not reached by 120</p></td>
+<td><p class="sd-card-text">34 trials</p></td>
+<td><p class="sd-card-text">84 trials</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">100 ms</p></td>
+<td><p class="sd-card-text">61 trials</p></td>
+<td><p class="sd-card-text">Not reached</p></td>
+<td><p class="sd-card-text">52 trials</p></td>
+<td><p class="sd-card-text">Not reached</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">80 ms</p></td>
+<td><p class="sd-card-text">75 trials</p></td>
+<td><p class="sd-card-text">Not reached</p></td>
+<td><p class="sd-card-text">63 trials</p></td>
+<td><p class="sd-card-text">Not reached</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">60 ms</p></td>
+<td><p class="sd-card-text">104 trials</p></td>
+<td><p class="sd-card-text">Not reached</p></td>
+<td><p class="sd-card-text">80 trials</p></td>
+<td><p class="sd-card-text">Not reached</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="sd-card-text">Clean observers have a floor of 0.05 and a peak of 0.95, noisy ones 0.2 and
+0.8. Over all 30 detectors the median width reaches 100 ms at trial 89 with
+26 ms of jitter and at trial 75 with 6 ms. Width grows with <code class="docutils literal notranslate"><span class="pre">sigma</span></code>: at 60
+trials and 26 ms of jitter the clean medians are 60, 95 and 130 ms for a
+<code class="docutils literal notranslate"><span class="pre">sigma</span></code> of 50, 100 and 150 ms.</p>
+<p class="sd-card-text">The historical rule was applied to each run using marginal intervals; a lost
+train did not count towards <code class="docutils literal notranslate"><span class="pre">minTrials</span></code>:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code></p></th>
+<th class="head"><p class="sd-card-text">26 ms jitter</p></th>
+<th class="head"><p class="sd-card-text">6 ms jitter</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">RMSE of <code class="docutils literal notranslate"><span class="pre">mu</span></code> over all detectors at 15, 60 and 90 trials</p></td>
+<td><p class="sd-card-text">45.5, 34.2, 32.3 ms</p></td>
+<td><p class="sd-card-text">44.6, 30.1, 28.1 ms</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Clean detectors stopping before 60 trials</p></td>
+<td><p class="sd-card-text">55 percent; median stop at 55; RMSE at the stop 24.5 ms</p></td>
+<td><p class="sd-card-text">63 percent; 48; 20.6 ms</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Noisy detectors stopping before 60 trials</p></td>
+<td><p class="sd-card-text">23 percent; RMSE at the stop 43.1 ms</p></td>
+<td><p class="sd-card-text">31 percent; 38.8 ms</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">The same with <code class="docutils literal notranslate"><span class="pre">maxTrials</span></code> 90, noisy detectors</p></td>
+<td><p class="sd-card-text">37 percent; 41.4 ms</p></td>
+<td><p class="sd-card-text">45 percent; 37.0 ms</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="sd-card-text">These results informed the provisional defaults. Raising <code class="docutils literal notranslate"><span class="pre">maxTrials</span></code> to 90 would let the median detector
+reach the 100 ms interval, but it lowers the RMSE of <code class="docutils literal notranslate"><span class="pre">mu</span></code> by only 2 ms (34.2 to
+32.3 ms, and 30.1 to 28.1 ms), at 50 percent more session time: what remains
+is mostly the bias of the 130 ms floor for early sensations and the noise of
+the noisy observers, which more trials of the same kind do not remove. A
+100 ms width lets about half the clean detectors stop early, at an RMSE of
+about 20 to 25 ms. <code class="docutils literal notranslate"><span class="pre">minTrials</span></code> never binds: at 15 trials the median width is
+still 370 to 530 ms. It stays as a guard. The non-detectors run to the maximum
+(239 of their 240 runs per jitter level), because the flat part of their
+posterior spreads <code class="docutils literal notranslate"><span class="pre">mu</span></code> over the whole grid.</p>
+</div>
+</details></section>
+<section id="hardware-dry-run">
+<h2>Hardware dry run<a class="headerlink" href="#hardware-dry-run" title="Permalink to this heading">#</a></h2>
+<p>On 2026-11-03, a single 60-trial session tested the full procedure with a
+PLUX ECG streamed over Bluetooth into LSL. LabRecorder recorded the ECG and
+HSD markers. The participant wore a tight finger pulse oximeter to provide
+a clear pulse sensation. This was a check of the task and recording system,
+not a validation study of heartbeat perception.</p>
+<p>The session lasted 7 minutes. It delivered 290 tones during the saved trials,
+with no dropped ECG samples. Beat detection agreed closely with offline
+R-wave detection. However, variation in Bluetooth arrival timestamps remained
+an appreciable source of timing error.</p>
+<figure class="align-default" id="id4">
+<img alt="Three panels from the 60-trial dry run. Left, each answer (1 synchronous, 0 not) against the realized delay from 140 to 540 ms, coloured by confidence, with the proportion of synchronous answers per 50 ms bin as squares and the posterior-mean envelope, which rises from a floor of about 0.32 to a peak of about 0.75 near 270 ms. Middle, the posterior mean of mu settles near 270 ms over trials while its 95 percent credible interval narrows from 0 to 600 ms to 150 to 400 ms. Right, the log10 Bayes factor for detection wanders between -0.6 and +0.3 and ends near 0." src="../../_images/hsd_dryrun_session.png" />
+<figcaption>
+<p><span class="caption-text">The dry run session. Left: each answer against the realized delay, coloured by
+confidence, with the proportion of “synchronous” answers in each 50 ms bin
+(squares, sized by the number of trials) and the posterior-mean envelope.
+Middle: posterior mean of <code class="docutils literal notranslate"><span class="pre">mu</span></code> and its 95 percent credible interval after each
+trial. Right: log10 Bayes factor for detection after each trial. All three
+show the posterior as the session computed it, with the old floor and peak
+grids.</span><a class="headerlink" href="#id4" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The figure shows the session’s original estimates, calculated with earlier
+floor and peak grids. Responses were most often synchronous near 250 to
+300 ms, but there were also frequent synchronous responses at long delays.
+The model therefore had limited evidence for a single, well-localized response
+envelope.</p>
+<p>Re-analysis with the shared floor and peak grid left the estimated location
+almost unchanged, at 273 ms, while widening its marginal credible interval
+to 40 to 550 ms. A flat response pattern could explain the observations
+nearly as well. This illustrates why a plausible location estimate must be
+interpreted alongside detection evidence and model uncertainty.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Recording checks and timing measurements<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Check</p></th>
+<th class="head"><p class="sd-card-text">Measured</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">Session</p></td>
+<td><p class="sd-card-text">60 trials in 7 minutes</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Tones</p></td>
+<td><p class="sd-card-text">290 delivered on the 60 saved trials; 6 skipped because their beat was known too late; 4 trains ended short (one ran out of beats, three reached the ceiling). The player handled 305 tones in all, the 15 of the practice trials included, which are not saved. Every reported start within 1 ms of its schedule</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Online R detector</p></td>
+<td><p class="sd-card-text">Commits a beat 13 ms (median) and 14 ms (95th percentile) after the stamped R-wave</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Beat polled after its stamped R-wave, beats of a train</p></td>
+<td><p class="sd-card-text">12 ms median, 48 ms at the 95th percentile, 63 ms at the 99th; 107 of all 506 beats polled before their stamped time, which the dejitter smooths</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">ECG stream</p></td>
+<td><p class="sd-card-text">No dropped samples</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Online beats against offline R-waves from the recording</p></td>
+<td><p class="sd-card-text">Sensitivity 0.996, positive predictive value 1.0</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Realized delay against the stamped R-wave</p></td>
+<td><p class="sd-card-text">50 ms below the request on every trial, by design (the latency bias). It is taken from the scheduled start, so it checks the bookkeeping, not the sound</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Tone onsets against the offline R-wave</p></td>
+<td><p class="sd-card-text">Interquartile range of 23 ms on the raw LSL timestamps, 44 ms on the dejittered ones</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Bluetooth arrival jitter of the ECG samples</p></td>
+<td><p class="sd-card-text">SD 26 ms on the test desktop, against 6 ms on the stimulus PC</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="sd-card-text">Every tone’s reported start was within 1 ms of the time it was given. The
+reported start is the scheduled one, so this shows that no tone started late,
+not when the sound came out; the offline comparison is the check on that. The
+scatter against the offline R-wave comes from before the scheduler. The online detector times each R-wave from the timestamps its
+samples carry when they arrive, and on that desktop the Bluetooth arrival
+times jittered with an SD of 26 ms, against 6 ms on the stimulus PC. Against
+the recording’s dejittered timestamps, which are closer to when the hub took
+each sample, the tones therefore scattered more widely (44 ms) than against
+its raw ones (23 ms). Jitter of this size widens the measured <code class="docutils literal notranslate"><span class="pre">sigma</span></code>, which is
+what roadmap items C2 and C3 address.</p>
+</div>
+</details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Original estimates, response counts, and re-analysis<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">After 60 trials, the session’s maximum, the posterior put <code class="docutils literal notranslate"><span class="pre">mu</span></code> at 272 ms with
+a 95 percent credible interval of 150 to 400 ms, <code class="docutils literal notranslate"><span class="pre">sigma</span></code> at 98 ms, the floor
+at 0.32 and the peak at 0.75. The log10 Bayes factor for detection was about 0.
+The interval never came down to the 100 ms stopping width, so the session ran
+to its maximum.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Realized delay (ms)</p></th>
+<th class="head"><p class="sd-card-text">100 to 150</p></th>
+<th class="head"><p class="sd-card-text">150 to 200</p></th>
+<th class="head"><p class="sd-card-text">200 to 250</p></th>
+<th class="head"><p class="sd-card-text">250 to 300</p></th>
+<th class="head"><p class="sd-card-text">300 to 350</p></th>
+<th class="head"><p class="sd-card-text">350 to 400</p></th>
+<th class="head"><p class="sd-card-text">400 to 450</p></th>
+<th class="head"><p class="sd-card-text">450 to 500</p></th>
+<th class="head"><p class="sd-card-text">500 to 550</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">P(synchronous)</p></td>
+<td><p class="sd-card-text">0.33</p></td>
+<td><p class="sd-card-text">none</p></td>
+<td><p class="sd-card-text">0.62</p></td>
+<td><p class="sd-card-text">0.84</p></td>
+<td><p class="sd-card-text">0.57</p></td>
+<td><p class="sd-card-text">0.20</p></td>
+<td><p class="sd-card-text">0.00</p></td>
+<td><p class="sd-card-text">0.33</p></td>
+<td><p class="sd-card-text">0.62</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Trials</p></td>
+<td><p class="sd-card-text">9</p></td>
+<td><p class="sd-card-text">0</p></td>
+<td><p class="sd-card-text">8</p></td>
+<td><p class="sd-card-text">19</p></td>
+<td><p class="sd-card-text">7</p></td>
+<td><p class="sd-card-text">5</p></td>
+<td><p class="sd-card-text">1</p></td>
+<td><p class="sd-card-text">3</p></td>
+<td><p class="sd-card-text">8</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="sd-card-text">The answers rise to a clear peak at 250 to 300 ms and fall away by 350 to
+400 ms. But the participant also answered “synchronous” on 5 of the 8 trials
+at 500 to 550 ms. The model has one bump, so it absorbed those long-delay
+answers as a high floor, 0.32, rather than as a second rise. A floor that high
+leaves the envelope a rise of only 0.43 from floor to peak, and the posterior
+mass on a rise of more than 0.2 stayed at 0.92, the same as its prior on those grids. That is
+why the Bayes factor stayed near 1 even though <code class="docutils literal notranslate"><span class="pre">mu</span></code> was located. Whether the
+long-delay answers were heard against the next beat, the periodicity the model
+ignores, cannot be told from one session.</p>
+<p class="sd-card-text">Re-analyzed with the shared floor and peak grid and the rise measured over the
+delays presented (140 to 540 ms), the same 60 answers give <code class="docutils literal notranslate"><span class="pre">mu</span></code> at 273 ms but
+a credible interval of 40 to 550 ms, <code class="docutils literal notranslate"><span class="pre">sigma</span></code> at 82 ms, the floor at 0.42 and
+the peak at 0.76, a detection evidence of 0.70 against a prior of 0.49, and a
+log10 Bayes factor of +0.38. A flat responder answering “synchronous” on about
+6 trials in 10 is now on the grid and explains these answers nearly as well as
+a rise, so about 0.3 of the posterior stays on an envelope that does not rise,
+spread over every <code class="docutils literal notranslate"><span class="pre">mu</span></code>. The location is the same; the session is weaker evidence for it
+than the old interval said.</p>
+</div>
+</details></section>
+<section id="what-comes-next">
+<h2>What comes next<a class="headerlink" href="#what-comes-next" title="Permalink to this heading">#</a></h2>
+<p>The remaining work concerns both delivery and measurement. Audio calibration
+and improved ECG timestamps could reduce the minimum delay and timing jitter.
+An exteroceptive validation task with known stimulus timing would test the
+procedure against a controlled reference. Validation in participants is still
+needed before interpreting HSD estimates as established measures of heartbeat
+perception.</p>
+<p>The roadmap below records implemented components, proposed hardware changes,
+and their expected effects. Proposed improvements are not results from the
+current implementation.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Implementation status and validation roadmap<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Phase</p></th>
+<th class="head"><p class="sd-card-text">Status</p></th>
+<th class="head"><p class="sd-card-text">Content</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">B. Task runner</p></td>
+<td><p class="sd-card-text">Implemented</p></td>
+<td><p class="sd-card-text">The task, its parameters and configuration, English instructions, an autopilot observer, the train scheduler with both stimulus axes, a headless test on a virtual heart, an LSL test on a synthetic ECG through <code class="docutils literal notranslate"><span class="pre">LSLRecorder</span></code> and the shared <code class="docutils literal notranslate"><span class="pre">LSLBeatSource</span></code>, the wrapper and the <a class="reference internal" href="index.html"><span class="std std-doc">HSD page</span></a>. <code class="docutils literal notranslate"><span class="pre">setup=&quot;behavioral&quot;</span></code> uses the shared <code class="docutils literal notranslate"><span class="pre">LSLBeatSource</span></code> and <code class="docutils literal notranslate"><span class="pre">TonePlayer</span></code> in <code class="docutils literal notranslate"><span class="pre">cardioception.devices</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">B. Hardware dry run</p></td>
+<td><p class="sd-card-text">Done, 2026-11-03</p></td>
+<td><p class="sd-card-text">The PLUX-to-LSL bridge installed on the test desktop and 60 trials run on a real ECG in 7 minutes, recorded with LabRecorder. 290 tones were delivered on the 60 trials (6 skipped as late, 4 trains short), every reported start within 1 ms of its schedule, the detector committed 13 ms after each R, no samples were dropped, and the realized delay sat 50 ms below the request by design. Against the offline R-wave the tones scattered with an interquartile range of 23 to 44 ms, because the Bluetooth arrival stamps of the ECG samples jitter (SD 26 ms on that desktop, 6 ms on the stimulus PC). The session put the sensation of a participant wearing a tight finger pulse oximeter at 272 ms, interval 150 to 400 ms. See <a class="reference internal" href="#hardware-dry-run">hardware dry run</a></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">C1. Audio lead and output calibration</p></td>
+<td><p class="sd-card-text">Planned, software only</p></td>
+<td><p class="sd-card-text">Cut the audio scheduling lead from 50 to 20 ms (the bench showed 20 ms still lands within 1 ms) and measure the output offset of the speaker or headphones with the microphone loopback in <code class="docutils literal notranslate"><span class="pre">bench/audio_onset.py</span></code>, so the latency bias becomes a measured constant per setup. Lowers the physical floor from 130 to about 100 ms and makes <code class="docutils literal notranslate"><span class="pre">mu</span></code> comparable across laboratories</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">C2. Re-time PLUX samples from the hub’s counter</p></td>
+<td><p class="sd-card-text">Planned, bridge change shared with PAT</p></td>
+<td><p class="sd-card-text">The hub samples at exactly 1000 Hz, so a running fit of its sample counter to the clock in the bridge removes the Bluetooth arrival jitter down to the chunk period, about 10 ms, without touching the constant lag. Jitter is the error that inflates <code class="docutils literal notranslate"><span class="pre">sigma</span></code>: 26 ms of it turns a true width of 40 ms into a measured 48 ms. In the simulations as the task runs, 6 rather than 26 ms of jitter lowers the RMSE of <code class="docutils literal notranslate"><span class="pre">mu</span></code> at 60 trials from 34 to 30 ms</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">C3. Wired ECG into LSL</p></td>
+<td><p class="sd-card-text">Recommended configuration</p></td>
+<td><p class="sd-card-text">Biopac, ADInstruments and Brain Products all have LSL paths. Jitter falls to a millisecond or two, the transport lag to a few milliseconds, and with the shorter lead the floor to about 60 ms. In the earlier exact-delivery simulations an 80 ms rather than a 130 ms floor lowered the RMSE of <code class="docutils literal notranslate"><span class="pre">mu</span></code> at 120 trials from 26 to 17 ms and removed a 10 ms bias, because sensations at 150 to 200 ms regain their rising flank</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">D. Exteroceptive validation</p></td>
+<td><p class="sd-card-text">Not started</p></td>
+<td><p class="sd-card-text">The same adaptive procedure on a tone and vibration (or light) stimulus with a known delay, as a screening condition and as a ground-truth check of the engine</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</details></section>
+<section id="technical-details-and-development-history">
+<h2>Technical details and development history<a class="headerlink" href="#technical-details-and-development-history" title="Permalink to this heading">#</a></h2>
+<p>These sections preserve the measurements and earlier analyses behind the
+current design. Historical results should be interpreted using the settings
+specified for each analysis.</p>
+<section id="timing-measurements">
+<h3>Timing measurements<a class="headerlink" href="#timing-measurements" title="Permalink to this heading">#</a></h3>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Reported delays, latency correction, and hardware limits<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text"><strong>Realized delays.</strong> The posterior is updated with the realized delay rather
+than the request: the mean over the trial’s tones of the start time the tone
+player reports, against the stamped R-wave, with the latency bias below added
+back. The likelihood is recomputed from the envelope, so any real-valued delay
+can be used, without requiring the delivered delay to match a point on the candidate grid. With PsychToolbox audio the reported start is the time the device
+scheduled, not a measurement of the sound, so the realized delay differs from
+the request only when a tone started late. It is not what the participant
+heard. The delay of each reported onset relative to an offline R-wave can be checked
+in the LabRecorder file (<code class="docutils literal notranslate"><span class="pre">bench/pat_dryrun_report.py</span> <span class="pre">--markers</span> <span class="pre">HSD</span></code>).</p>
+<p class="sd-card-text"><strong>Delay limits.</strong> Each trial can restrict the candidates:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Limit</p></th>
+<th class="head"><p class="sd-card-text">Set by</p></th>
+<th class="head"><p class="sd-card-text">Why</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">min_delay</span></code></p></td>
+<td><p class="sd-card-text">The system’s R-to-tone latency</p></td>
+<td><p class="sd-card-text">No tone can be scheduled before the system knows about the R-wave. 130 ms of physical delay on current hardware (below), so 140 ms is the shortest candidate presented</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">max_delay</span></code></p></td>
+<td><p class="sd-card-text">0.75 of the anticipated interbeat interval, less a 10 percent margin: about 0.68 of it on the absolute axis</p></td>
+<td><p class="sd-card-text">Keeps the last tone clear of the next beat. The envelope is periodic in the cardiac cycle and the model ignores that, so delays near the next beat would be misread. 600 ms is allowed only at periods over 0.89 s</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="sd-card-text">If no candidate lies between the two limits, the engine raises an error
+rather than presenting a delay outside them.</p>
+<p class="sd-card-text"><strong>The latency floor on current hardware.</strong> These figures come from
+measurements on the pat-ecg branch, 2026-11-03, with a PLUX ECG streamed over
+Lab Streaming Layer to the stimulus PC. They are bench measurements, not a
+published result.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Stage</p></th>
+<th class="head"><p class="sd-card-text">Measured</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">Online R detector (<code class="docutils literal notranslate"><span class="pre">OnlineRDetector</span></code>) commits a beat</p></td>
+<td><p class="sd-card-text">14 ms median, 18 ms maximum after the R peak</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Whole chain knows about a beat</p></td>
+<td><p class="sd-card-text">20 ms median, 31 ms at the 95th percentile, after the R-wave</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Tone scheduled with psychtoolbox audio, latency class 1, 50 ms lead</p></td>
+<td><p class="sd-card-text">Lands within 1 ms of the scheduled time (latency class 3 was unusable on that laptop)</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Dry run, tones anchored on the real R-wave</p></td>
+<td><p class="sd-card-text">Within 17 ms of the intended phase at the 95th percentile</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="sd-card-text"><strong>The latency bias.</strong> Two delays do not appear in any recording. The PLUX
+Bluetooth transport delivers each sample 20 to 40 ms after the hub took it,
+and LSL stamps it on arrival, so the stamped R-wave is late. The sound leaves
+the speaker some milliseconds after the onset the audio driver reports.
+Together these come to a roughly constant 30 to 70 ms, which the PAT dry run
+measured. As the PAT task does, the runner subtracts a latency bias,
+<code class="docutils literal notranslate"><span class="pre">TaskConfig.latencyBias</span></code> (50 ms by default), from every tone’s target, so
+that the tone reaches the participant at the requested delay after the true
+R-wave. A delay measured against the stamped R-wave is then 50 ms short of
+the physical one, and the runner adds the bias back before it updates the
+posterior. Both values are saved: <code class="docutils literal notranslate"><span class="pre">RealizedDelay</span></code> against the stamped R-wave,
+<code class="docutils literal notranslate"><span class="pre">RealizedCorrected</span></code> as the engine saw it. Both come from the start time the
+player reports, which is the scheduled time, so on the absolute axis
+<code class="docutils literal notranslate"><span class="pre">RealizedCorrected</span></code> equals <code class="docutils literal notranslate"><span class="pre">RequestedDelay</span></code> unless a tone started late (within
+0.3 ms on every trial of the dry run). The phase axis applies the same
+subtraction to the target and the same addition to the realized fraction.</p>
+<p class="sd-card-text"><strong>The latency floor.</strong> A tone for a physical delay <code class="docutils literal notranslate"><span class="pre">d</span></code> is due at the stamped
+R-wave plus <code class="docutils literal notranslate"><span class="pre">d</span></code> less the 50 ms bias. It can be scheduled only if that is at
+least the 50 ms audio lead after the beat is known, which on the bench was up
+to 31 ms (95th percentile) after the stamped R-wave. So</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[d \geq 31 + 50 + 50 = 131 \text{ ms},\]</div>
+</div>
+<p class="sd-card-text">and the runner’s floor, <code class="docutils literal notranslate"><span class="pre">TaskConfig.minDelay</span></code>, is 130 ms. The candidates
+still start at 80 ms; the per-trial bounds leave out those under the floor, so
+the shortest delay presented is 140 ms.</p>
+<p class="sd-card-text">The <a class="reference internal" href="#hardware-dry-run">hardware dry run</a> measured a longer lag. Among the
+beats of a train, the poll that returned a beat came 12 ms (median), 48 ms
+(95th percentile) and 63 ms (99th percentile) after its stamped R-wave, and
+107 of the session’s 506 beats were polled before their own stamped time,
+because the LSL inlet’s dejitter smooths the stamps. With that lag the floor
+would be about 150 to 165 ms, and 6 of the dry run’s tones at 140 ms were
+skipped because their beat was known too late. <code class="docutils literal notranslate"><span class="pre">minDelay</span></code> should therefore be
+set from the lag a session’s setup actually shows. It is left at 130 ms here.
+Shorter delays are possible only by scheduling predictively from the
+anticipated interbeat interval (the mean of the last three RR intervals).
+That adds the beat-to-beat variability of the heart period to the delay as
+jitter, and is not implemented. A sensation earlier than 130 ms can still be
+located, but only from the falling side of the envelope.</p>
+<p class="sd-card-text">The simulations run at this 130 ms floor (see
+<a class="reference internal" href="#results-as-the-task-runs">results as the task runs</a>). The floor costs
+accuracy for sensations at 200 ms and earlier.</p>
+<p class="sd-card-text">The latency bias is an estimate. The LabRecorder file supports an offline timing check: with the ECG and the tone markers on one clock, the
+offline R-waves and the reported onsets show the delay actually delivered,
+less the speaker.</p>
+</div>
+</details></section>
+<section id="earlier-floor-and-peak-grids">
+<h3>Earlier floor and peak grids<a class="headerlink" href="#earlier-floor-and-peak-grids" title="Permalink to this heading">#</a></h3>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Why the response-probability grids were revised<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">An earlier version had a floor grid of 0 to 0.4 and a peak grid of 0.5 to
+0.97. It could express a flat responder only at rates of about 0.3 to 0.6, and
+explained any other non-detector as a rise. In 60 trials of the task’s
+configuration (bounds 130 to 514 ms, <code class="docutils literal notranslate"><span class="pre">explore</span></code> 0.1, three seeds), the log10
+Bayes factor for detection was:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Responder</p></th>
+<th class="head"><p class="sd-card-text">Old grids</p></th>
+<th class="head"><p class="sd-card-text">Shared grid, rise inside the range</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">Always “yes”</p></td>
+<td><p class="sd-card-text">+10.3</p></td>
+<td><p class="sd-card-text">-4.3</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Always “no”</p></td>
+<td><p class="sd-card-text">+8.8</p></td>
+<td><p class="sd-card-text">-2.0</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Flat 0.9</p></td>
+<td><p class="sd-card-text">+4.1 to +7.4</p></td>
+<td><p class="sd-card-text">-1.9 to -0.5</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Flat 0.1</p></td>
+<td><p class="sd-card-text">+2.8 to +4.3</p></td>
+<td><p class="sd-card-text">-1.5 to -1.1</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">Flat 0.5</p></td>
+<td><p class="sd-card-text">-0.8 to -0.6</p></td>
+<td><p class="sd-card-text">-0.7 to -0.2</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">Detector, <code class="docutils literal notranslate"><span class="pre">mu</span></code> 250 ms, <code class="docutils literal notranslate"><span class="pre">sigma</span></code> 50 ms, floor 0.1, peak 0.9</p></td>
+<td><p class="sd-card-text">+1.6 to +2.5</p></td>
+<td><p class="sd-card-text">+2.2 to +2.7</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="sd-card-text">The biased non-detectors favoured a rise more strongly than the detector did.
+The estimate of <code class="docutils literal notranslate"><span class="pre">mu</span></code> for a detector was not affected.</p>
+</div>
+</details></section>
+<section id="conditional-estimates">
+<h3>Conditional estimates<a class="headerlink" href="#conditional-estimates" title="Permalink to this heading">#</a></h3>
+<p>The current estimation rule is explained on the <a class="reference internal" href="design.html#timing-estimates-and-the-stopping-rule"><span class="std std-ref">methods page</span></a>. The following small demonstration was recorded separately from the full simulation study.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Preliminary comparison with marginal intervals<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">With the task’s configuration at a 0.6 s period, a simulated observer with
+<code class="docutils literal notranslate"><span class="pre">mu</span></code> of 250 ms and <code class="docutils literal notranslate"><span class="pre">sigma</span></code> of 40 ms reaches a conditional interval of
+70 to 170 ms after 12 trials (three seeds), compared with a marginal interval
+of 160 to 420 ms. The main simulation tables report marginal estimates
+of <code class="docutils literal notranslate"><span class="pre">mu</span></code>; a rerun using conditional estimates is pending.</p>
+<p class="sd-card-text">The reported ranges need confirmation against the original output before they can be interpreted as interval widths or endpoints. They are retained here as a development record.</p>
+</div>
+</details></section>
+<section id="earlier-runs-without-jitter-or-ceiling">
+<h3>Earlier runs without jitter or ceiling<a class="headerlink" href="#earlier-runs-without-jitter-or-ceiling" title="Permalink to this heading">#</a></h3>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Exact-delivery studies and the pending control<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">The first studies delivered every delay exactly, had no ceiling and lost no
+trains, and used the old floor and peak grids. One ran 7 methods at an 80 ms
+floor (2,380 runs), the other 4 methods at the 130 ms floor (1,360 runs). With
+exact delivery, <code class="docutils literal notranslate"><span class="pre">psi_mu</span></code> reached a <code class="docutils literal notranslate"><span class="pre">mu</span></code> RMSE of 25 ms at 60 trials and 17 ms at
+120 with the 80 ms floor, against 29 and 26 ms with the 130 ms floor, where a
+bias of about -10 ms appeared. The runs above add the ceiling, the jitter and
+the lost trains, and the new grids; the 6 ms run is close to the old 130 ms one
+(<code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code> 30.1 against 30.3 ms at 60 trials), while the intervals are wider
+(163 against 142 ms for <code class="docutils literal notranslate"><span class="pre">psi_mu_x10</span></code> at 60), because a flat envelope keeps some
+posterior mass spread over every <code class="docutils literal notranslate"><span class="pre">mu</span></code>. The earlier runs also reported that the
+detection evidence “moves in the right direction for both groups”; with the
+old grids that held only for the flat 0.3 and 0.5 responders they tested.</p>
+<p class="sd-card-text">A control with the new grids and exact delivery at the 130 ms floor, no
+jitter, no ceiling and no lost trains, is pending. It would separate the
+effect of the new grids from that of the realistic delivery, and will be run
+on the cluster.</p>
+</div>
+</details></section>
+<section id="literature-checks-still-outstanding">
+<h3>Literature checks still outstanding<a class="headerlink" href="#literature-checks-still-outstanding" title="Permalink to this heading">#</a></h3>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Claims excluded from the design rationale<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Two figures that circulate in summaries of this literature are not used on
+this page, because we could not open the papers to check them.</p>
+<ul class="simple">
+<li><p class="sd-card-text">Detector rates of 13, 43 and 47 percent for one, five and ten tones per
+trial, attributed to Brener, Ring and Liu <span id="id1">[<a class="reference internal" href="../../reference/references.html#id37" title="Jasper Brener, Christopher Ring, and Xiaoqing Liu. Effects of data limitations on heartbeat detection in the method of constant stimuli. Psychophysiology, 31(3):309–312, 1994. doi:10.1111/j.1469-8986.1994.tb02219.x.">Brener <em>et al.</em>, 1994</a>]</span>. The review
+confirms only that five tones per trial did not impair reliability relative
+to ten.</p></li>
+<li><p class="sd-card-text">A study by Schneider, Ring and Katkin <span id="id2">[<a class="reference internal" href="../../reference/references.html#id38" title="Tamera R. Schneider, Christopher Ring, and Edward S. Katkin. A test of the validity of the method of constant stimuli as an index of heartbeat detection. Psychophysiology, 35(1):86–89, 1998. doi:10.1111/1469-8986.3510086.">Schneider <em>et al.</em>, 1998</a>]</span> said to have
+shifted the delay range from 0 to 500 ms to 100 to 600 ms and found that
+preferred delays did not move. We cite the paper only as a validity test of
+the MCS, which is what its title describes.</p></li>
+</ul>
+<p class="sd-card-text">The design does not depend on either claim.</p>
+</div>
+</details></section>
+<section id="how-to-reproduce">
+<h3>How to reproduce<a class="headerlink" href="#how-to-reproduce" title="Permalink to this heading">#</a></h3>
+<p>The commands below record the settings used for the reported studies and a
+planned control. Reproducing the historical tables requires the source revision
+that produced their marginal estimates. The current simulation code uses
+conditional estimates, so running the same commands on a newer revision is
+not an exact reproduction of these tables.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Commands, seeds, and output files<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">From the repository root, at the commit that added these results, with the
+study seed 2026. The first two are the runs reported above; the third is the
+pending control.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>python -m cardioception.HSD.simulate --out &lt;dir&gt;/jitter26 --reps 10 --processes 28 --trials 120 --seed 2026 --min-delay 130 --jitter-sd 26 --train-loss 0.07 --period 0.8 1.1 --methods mcs psi_mu psi_mu_x10 psi_mu_sigma
+python -m cardioception.HSD.simulate --out &lt;dir&gt;/jitter6 --reps 10 --processes 28 --trials 120 --seed 2026 --min-delay 130 --jitter-sd 6 --train-loss 0.07 --period 0.8 1.1 --methods mcs psi_mu psi_mu_x10 psi_mu_sigma
+python -m cardioception.HSD.simulate --out &lt;dir&gt;/exact130 --reps 10 --processes 28 --trials 120 --seed 2026 --min-delay 130 --jitter-sd 0 --train-loss 0 --no-ceiling --methods mcs psi_mu psi_mu_x10 psi_mu_sigma
+</pre></div>
+</div>
+<p class="sd-card-text">Each writes <code class="docutils literal notranslate"><span class="pre">trials.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">summary.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">evidence.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">stopping.csv</span></code>,
+<code class="docutils literal notranslate"><span class="pre">delays.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">figure.png</span></code> and <code class="docutils literal notranslate"><span class="pre">table.md</span></code>. The figure on this page is the
+<code class="docutils literal notranslate"><span class="pre">figure.png</span></code> of the first. The run seeds do not depend on <code class="docutils literal notranslate"><span class="pre">--processes</span></code>, so a
+cluster run with a different worker count reproduces the same runs.</p>
+</div>
+</details></section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>Full citation details are on the <a class="reference internal" href="../../reference/references.html"><span class="std std-doc">references page</span></a>.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../heartbeat-discrimination.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Heartbeat discrimination</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="design.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">HSD method and rationale</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2019-2026, Micah Allen and the Embodied Computation Group, Aarhus University
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/embodied-computation-group/Cardioception" aria-label="GitHub"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg></a>
+              <a class="muted-link " href="https://pypi.org/project/cardioception-toolbox/" aria-label="PyPI"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16"><path d="M8.878.392a1.75 1.75 0 0 0-1.756 0l-5.25 3.045A1.75 1.75 0 0 0 1 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 0 0 1.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514ZM7.875 1.69a.25.25 0 0 1 .25 0l4.63 2.685L8 7.133 3.245 4.375Zm-5.375 9.36V5.677l4.75 2.755v5.339l-4.626-2.683a.25.25 0 0 1-.124-.216Zm6.25 2.755V8.432l4.75-2.755v5.372a.25.25 0 0 1-.124.216Z"></path></svg></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">HSD validation and technical details</a><ul>
+<li><a class="reference internal" href="#simulation-study">Simulation study</a></li>
+<li><a class="reference internal" href="#accuracy-of-heartbeat-timing-estimates">Accuracy of heartbeat timing estimates</a><ul>
+<li><a class="reference internal" href="#detailed-accuracy-results">Detailed accuracy results</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#response-patterns-that-are-difficult-to-estimate">Response patterns that are difficult to estimate</a></li>
+<li><a class="reference internal" href="#effects-of-timing-variability">Effects of timing variability</a></li>
+<li><a class="reference internal" href="#detection-evidence">Detection evidence</a><ul>
+<li><a class="reference internal" href="#sampling-across-delays">Sampling across delays</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#session-length">Session length</a></li>
+<li><a class="reference internal" href="#hardware-dry-run">Hardware dry run</a></li>
+<li><a class="reference internal" href="#what-comes-next">What comes next</a></li>
+<li><a class="reference internal" href="#technical-details-and-development-history">Technical details and development history</a><ul>
+<li><a class="reference internal" href="#timing-measurements">Timing measurements</a></li>
+<li><a class="reference internal" href="#earlier-floor-and-peak-grids">Earlier floor and peak grids</a></li>
+<li><a class="reference internal" href="#conditional-estimates">Conditional estimates</a></li>
+<li><a class="reference internal" href="#earlier-runs-without-jitter-or-ceiling">Earlier runs without jitter or ceiling</a></li>
+<li><a class="reference internal" href="#literature-checks-still-outstanding">Literature checks still outstanding</a></li>
+<li><a class="reference internal" href="#how-to-reproduce">How to reproduce</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

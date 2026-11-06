@@ -7,7 +7,7 @@ myst:
 
 # Recording devices
 
-Every task reads the participant's heart while it runs. Which device it can read from depends on the task:
+Each task uses a cardiac recording during the session. The supported devices depend on the task:
 
 | Task | USB pulse oximeter | ECG or PPG over LSL |
 |---|---|---|
@@ -16,9 +16,9 @@ Every task reads the participant's heart while it runs. Which device it can read
 | Phase Adjustment Task | no | ECG only |
 | Heartbeat Synchrony Discrimination | no | ECG only |
 
-The two synchrony tasks time each tone from the R-wave, which a pulse oximeter cannot give them.
+The two synchrony tasks time each tone relative to the ECG R-wave. A pulse oximeter records the peripheral pulse and cannot provide this reference.
 
-The device is chosen when the parameters are built. `setup="behavioral"` with a `serialPort` opens the pulse oximeter; `recorder=` passes any other device and wins over `setup`, so nothing touches a serial port.
+For the HRD and HBC, select the device when building the parameters. Use `setup="behavioral"` with a `serialPort` to open the pulse oximeter. To use another device, pass it as `recorder=`; this takes precedence over `setup` and bypasses the serial connection.
 
 ## The Nonin pulse oximeter
 
@@ -36,7 +36,7 @@ Check the signal before every session:
 python -m cardioception.check_device
 ```
 
-It records for twenty seconds and reaches one of five verdicts:
+The command records for twenty seconds and reports one of five results:
 
 | Verdict | What it means |
 |---|---|
@@ -46,9 +46,9 @@ It records for twenty seconds and reaches one of five verdicts:
 | `signal present but detection unreliable` | Real signal, but the intervals between beats are too scattered to trust. Reseat the sensor, keep the hand still and below heart level. |
 | `clean physiological signal` | Amplitude in the hundreds, intervals between 0.4 and 1.2 s with little spread. Ready. |
 
-Amplitude is tested first because an empty sensor still yields beats at a plausible rate: an empty Nonin gave 67 BPM from 16 detected beats on a trace spanning a single ADC unit, and only its amplitude of 1.0 gave it away.
+The check tests amplitude first because noise from an empty sensor can produce plausible beat detections. In one test, an empty Nonin sensor yielded 16 detected beats and an estimated rate of 67 BPM, although the signal spanned only a single ADC unit. The low amplitude identified the absence of a physiological signal.
 
-`--port COM3` picks a port when several are attached, and `--duration` changes the recording length. The command exits 0 only for a clean signal, so it can gate a startup script.
+Use `--port COM3` to select a port when several are attached, and `--duration` to change the recording length. The command returns exit code 0 only for a clean signal, allowing a startup script to check the result before continuing.
 
 ## ECG or PPG over LSL
 
@@ -71,7 +71,7 @@ The trigger codes a task writes are also pushed, as they happen, to an LSL marke
 
 The HRD and HBC take the recorder as above. The HSD wrapper names its marker stream `HSD`, and the task builds its beat source and tone player over the recorder. The PAT opens its own `PAT` marker stream, so its recorder is given `marker_stream=None`. The task pages show each call.
 
-For the synchrony tasks, a wired ECG with an LSL path (Biopac, ADInstruments and Brain Products all have one) gives less timing jitter than a Bluetooth hub; the [HSD roadmap](../tasks/hsd/design.md#what-comes-next) has the numbers.
+For the synchrony tasks, a wired ECG with an LSL path (Biopac, ADInstruments and Brain Products all have one) gives less timing jitter than a Bluetooth hub; the [HSD roadmap](../tasks/hsd/validation.md#what-comes-next) has the numbers.
 
 ### A PLUX hub
 
@@ -87,7 +87,7 @@ Electrodes follow {cite:t}`2026:hodgetts`: right clavicle, lowest left rib, refe
 
 ## Running without a device
 
-The HRD and the HBC accept `setup="test"`, which replays a recorded pulse through the same code path as the oximeter and opens a windowed rather than full-screen display. No hardware is needed, which makes it the way to try a task or check an installation.
+The HRD and HBC accept `setup="test"` to replay a recorded pulse through the same code path as the oximeter. The task opens in a window rather than full screen. This mode lets you try a task or check an installation without recording hardware.
 
 The HSD accepts `setup="test"` only when a `beat_source` and a `tone_player` are passed in place of the ECG and the sound card; the PAT has no `setup` argument and takes the same two objects. The [PAT page](../tasks/pat.md#running-without-a-participant) shows a headless run with a simulated participant.
 

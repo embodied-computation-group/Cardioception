@@ -7,6 +7,6 @@ myst:
 
 # Method of constant stimuli
 
-The method of constant stimuli of Brener, Liu and Ring {cite:p}`1993:brener` is coming to Cardioception. Tones are presented at several fixed delays spanning the cardiac cycle, commonly from R+0 to R+500 ms, and participants judge whether each was simultaneous with a heartbeat sensation.
+An implementation of the method of constant stimuli of Brener, Liu and Ring {cite:p}`1993:brener` is planned for Cardioception. Tones are presented at several fixed delays spanning the cardiac cycle, commonly from R+0 to R+500 ms. Participants judge whether each was simultaneous with a heartbeat sensation.
 
-A review of the literature behind it will follow. Until then, [a stronger measure of heartbeat timing](theory.md#a-stronger-measure-of-heartbeat-timing), in Measuring cardiac interoception, describes the method.
+A review of the literature will accompany the implementation. For an introduction, see [A stronger measure of heartbeat timing](theory.md#a-stronger-measure-of-heartbeat-timing).

@@ -10,11 +10,11 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/getting-started/installation.html" />
 <meta property="og:site_name" content="Cardioception Toolbox" />
-<meta property="og:description" content="From a machine with nothing installed to a first session and a checked pulse signal, in six steps. Each step prints something; compare what you get with what is shown here. Cardioception needs Pyth..." />
+<meta property="og:description" content="These six steps take you from installing Python to running a test session and checking a pulse signal. Example output is included so you can check your progress. Cardioception requires Python 3.10 ..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_getting-started_installation_587365d6.png" />
-<meta property="og:image:alt" content="From a machine with nothing installed to a first session and a checked pulse signal, in six steps. Each step prints something; compare what you get with what..." />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_getting-started_installation_ecae4cc5.png" />
+<meta property="og:image:alt" content="These six steps take you from installing Python to running a test session and checking a pulse signal. Example output is included so you can check your progr..." />
 <meta name="twitter:card" content="summary_large_image" />
 
 <meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Recording devices" href="recording-devices.html" /><link rel="prev" title="Cardioception Toolbox" href="../index.html" />
@@ -208,10 +208,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../tasks/hbc.html">Heartbeat Counting task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tasks/pat.html">Phase Adjustment Task</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tasks/hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tasks/hsd/design.html">HSD design and validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/hsd/design.html">HSD method and rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/hsd/validation.html">HSD validation and technical details</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tasks/whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tasks/heartbeat-discrimination.html">Heartbeat discrimination</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tasks/constant-stimuli.html">Method of constant stimuli</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
@@ -314,8 +315,8 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h1>
-<p>From a machine with nothing installed to a first session and a checked pulse signal, in six steps. Each step prints something; compare what you get with what is shown here.</p>
-<p>Cardioception needs Python 3.10 or 3.11. The upper bound is <code class="docutils literal notranslate"><span class="pre">pywinhook</span></code>, which ships wheels only up to 3.11; <code class="docutils literal notranslate"><span class="pre">pip</span></code> refuses any other version before it starts.</p>
+<p>These six steps take you from installing Python to running a test session and checking a pulse signal. Example output is included so you can check your progress.</p>
+<p>Cardioception requires Python 3.10 or 3.11. The upper limit reflects the availability of prebuilt wheels for <code class="docutils literal notranslate"><span class="pre">pywinhook</span></code>, which extend only to Python 3.11. The package’s version requirement prevents installation with other Python versions.</p>
 <section id="install-python-3-10-or-3-11">
 <h2>1. Install Python 3.10 or 3.11<a class="headerlink" href="#install-python-3-10-or-3-11" title="Permalink to this heading">#</a></h2>
 <p>Download it from <a class="reference external" href="https://www.python.org/downloads/">python.org/downloads</a>. Pick 3.11.9 or 3.10.11: later point releases of 3.10 and 3.11 are source-only and have no Windows installer. On Windows, tick <strong>Add Python to PATH</strong> in the installer. If you already use Anaconda, skip to <a class="reference internal" href="#the-conda-route">the conda route</a> instead.</p>
@@ -334,7 +335,7 @@ cardioception-env<span class="se">\S</span>cripts<span class="se">\a</span>ctiva
 <span class="nb">source</span><span class="w"> </span>cardioception-env/bin/activate<span class="w">  </span><span class="c1"># macOS and Linux</span>
 </pre></div>
 </div>
-<p>Your prompt gains a <code class="docutils literal notranslate"><span class="pre">(cardioception-env)</span></code> prefix. It has to be there every time you run a task; if you close the terminal, activate the environment again.</p>
+<p>After activation, the terminal prompt begins with <code class="docutils literal notranslate"><span class="pre">(cardioception-env)</span></code>. Run the installation commands and tasks from this environment. If you close the terminal, activate the environment again before continuing.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>On Windows, keep this folder somewhere short, such as <code class="docutils literal notranslate"><span class="pre">C:\Users\you\cardio</span></code>. Some dependencies create deeply nested paths, and Windows refuses paths over 260 characters unless long path support is enabled.</p>
@@ -372,7 +373,7 @@ cardioception-env<span class="se">\S</span>cripts<span class="se">\a</span>ctiva
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ok
 </pre></div>
 </div>
-<p>If this raises, go to <a class="reference internal" href="#troubleshooting">Troubleshooting</a>. The error text usually names the cause.</p>
+<p>If the import raises an error, compare the message with the entries in <a class="reference internal" href="#troubleshooting">Troubleshooting</a>.</p>
 </section>
 <section id="run-a-task-without-hardware">
 <h2>5. Run a task without hardware<a class="headerlink" href="#run-a-task-without-hardware" title="Permalink to this heading">#</a></h2>
@@ -385,7 +386,7 @@ cardioception-env<span class="se">\S</span>cripts<span class="se">\a</span>ctiva
 <span class="n">parameters</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>A window opens and runs ten trials; answer with the mouse buttons. PsychoPy’s audio backend can ignore the system volume, so turn the speakers or headphones down first. The results land in <code class="docutils literal notranslate"><span class="pre">data/sub-sub01/ses-pilot/run-&lt;timestamp&gt;/</span></code>.</p>
+<p>A window opens and runs ten trials; respond with the mouse buttons. PsychoPy’s audio backend can ignore the system volume, so turn the speakers or headphones down first. The task saves the results in <code class="docutils literal notranslate"><span class="pre">data/sub-sub01/ses-pilot/run-&lt;timestamp&gt;/</span></code>.</p>
 </section>
 <section id="check-the-pulse-signal">
 <h2>6. Check the pulse signal<a class="headerlink" href="#check-the-pulse-signal" title="Permalink to this heading">#</a></h2>
@@ -407,7 +408,7 @@ Recording 20 s from COM3. Keep a finger in the sensor.
   Ready to collect data.
 </pre></div>
 </div>
-<p>Read the amplitude, not the beat count: an empty sensor still yields plausible beats, and only the amplitude gives it away. The <a class="reference internal" href="recording-devices.html"><span class="std std-doc">Recording devices</span></a> page lists the verdicts and the options, and covers ECG and PPG over LSL, which this check does not test.</p>
+<p>Check the signal amplitude as well as the detected beats: noise from an empty sensor can produce a plausible beat count. <a class="reference internal" href="recording-devices.html"><span class="std std-doc">Recording devices</span></a> explains the possible results and command options. It also covers ECG and PPG over LSL, which this command does not test.</p>
 </section>
 <section id="next-step">
 <h2>Next step<a class="headerlink" href="#next-step" title="Permalink to this heading">#</a></h2>

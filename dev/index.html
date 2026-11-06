@@ -13,8 +13,8 @@
 <meta property="og:description" content="Official documentation for Cardioception, the Aarhus University toolbox that brings the most widely used cardiac interoception tasks together in PsychoPy." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_index_36993f12.png" />
-<meta property="og:image:alt" content="Cardioception is an open-source Python toolbox for studying how people perceive their own heartbeat. It brings the most widely used methods for measuring car..." />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_index_bfdf5e9a.png" />
+<meta property="og:image:alt" content="Cardioception is an open-source Python toolbox for studying how people perceive their own heartbeat. Built on PsychoPy, it provides four tasks: Heart Rate Di..." />
 <meta name="twitter:card" content="summary_large_image" />
 
 <meta name="robots" content="noindex"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="getting-started/installation.html" />
@@ -258,10 +258,11 @@
 <li class="toctree-l1"><a class="reference internal" href="tasks/hbc.html">Heartbeat Counting task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tasks/pat.html">Phase Adjustment Task</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tasks/hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="tasks/hsd/design.html">HSD design and validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks/hsd/design.html">HSD method and rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks/hsd/validation.html">HSD validation and technical details</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="tasks/whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks/heartbeat-discrimination.html">Heartbeat discrimination</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tasks/constant-stimuli.html">Method of constant stimuli</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
@@ -364,7 +365,8 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="cardioception-toolbox">
 <h1>Cardioception Toolbox<a class="headerlink" href="#cardioception-toolbox" title="Permalink to this heading">#</a></h1>
-<p>Cardioception is an open-source Python toolbox for studying how people perceive their own heartbeat. It brings the most widely used methods for measuring cardiac interoception together in one place, built on <a class="reference external" href="https://www.psychopy.org/">PsychoPy</a>: heart rate discrimination, heartbeat counting, the Phase Adjustment Task, and a new adaptive task for the perceived timing of individual heartbeats. One installation, one output layout and one set of tutorials let you study perceptual bias, precision and confidence across methods, and compare them in the same participants.</p>
+<p>Cardioception is an open-source Python toolbox for studying how people perceive their own heartbeat. Built on <a class="reference external" href="https://www.psychopy.org/">PsychoPy</a>, it provides four tasks: Heart Rate Discrimination, Heartbeat Counting, the Phase Adjustment Task, and Heartbeat Synchrony Discrimination.</p>
+<p>The tasks examine different aspects of cardiac perception, from judgements of heart rate to the perceived timing of individual beats. They share a common session setup and output directory structure. The task pages explain each method’s procedure, measures, and limitations; the HRD tutorials cover data inspection and analysis.</p>
 <p><a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/releases/"><img alt="GitHub release" src="https://img.shields.io/github/v/release/embodied-computation-group/Cardioception" /></a> <a class="reference external" href="https://pypi.org/project/cardioception-toolbox/"><img alt="pip" src="https://img.shields.io/pypi/v/cardioception-toolbox" /></a> <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" /></a> <a class="reference external" href="https://doi.org/10.5281/zenodo.22139105"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.22139105.svg" /></a></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -407,9 +409,9 @@
 <td><p>New in Cardioception; see the <a class="reference internal" href="tasks/hsd/design.html"><span class="std std-doc">design page</span></a></p></td>
 <td><p>Beta</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="tasks/whitehead.html"><span class="std std-doc">Whitehead method</span></a></p></td>
-<td><p>Judge which of two tone sequences, one at a short and one at a longer delay after each heartbeat, is simultaneous with it</p></td>
-<td><p>Discrimination of synchronous from delayed tones</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="tasks/heartbeat-discrimination.html"><span class="std std-doc">Heartbeat discrimination</span></a></p></td>
+<td><p>Judge whether stimuli presented at one of two fixed delays after each heartbeat are simultaneous with it or delayed</p></td>
+<td><p>Discrimination of synchronous from delayed stimuli</p></td>
 <td><p><a class="reference external" href="https://doi.org/10.1007/BF00998623">Whitehead et al., 1977</a></p></td>
 <td><p>Coming soon</p></td>
 </tr>
@@ -427,7 +429,7 @@
 </section>
 <section id="where-to-go">
 <h2>Where to go<a class="headerlink" href="#where-to-go" title="Permalink to this heading">#</a></h2>
-<p>Getting started is three pages, read in order: <a class="reference internal" href="getting-started/installation.html"><span class="std std-doc">install the package</span></a>, <a class="reference internal" href="getting-started/recording-devices.html"><span class="std std-doc">connect a recording device</span></a> and <a class="reference internal" href="getting-started/running-a-session.html"><span class="std std-doc">run a session</span></a>. Each task page then covers its own procedure, parameters and output files.</p>
+<p>To get started, <a class="reference internal" href="getting-started/installation.html"><span class="std std-doc">install the package</span></a>, <a class="reference internal" href="getting-started/recording-devices.html"><span class="std std-doc">connect a recording device</span></a>, then <a class="reference internal" href="getting-started/running-a-session.html"><span class="std std-doc">run a session</span></a>. Each task page describes its procedure, parameters, and output files.</p>
 <p>The <a class="reference internal" href="reference/changelog.html"><span class="std std-doc">changelog</span></a> lists what changed in 1.0 and how to migrate scripts written for 0.7.</p>
 </section>
 <section id="analyzing-your-data">

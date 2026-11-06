@@ -10,11 +10,11 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/tasks/index.html" />
 <meta property="og:site_name" content="Cardioception Toolbox" />
-<meta property="og:description" content="Cardioception runs four tasks: two established, the Heart Rate Discrimination task (HRD) and the Heartbeat Counting task (HBC), and two in beta, the Phase Adjustment Task (PAT) and the Heartbeat Sy..." />
+<meta property="og:description" content="Cardioception provides two established tasks, Heart Rate Discrimination (HRD) and Heartbeat Counting (HBC), and two beta tasks, the Phase Adjustment Task (PAT) and Heartbeat Synchrony Discriminatio..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_index_79c66a1a.png" />
-<meta property="og:image:alt" content="Cardioception runs four tasks: two established, the Heart Rate Discrimination task (HRD) and the Heartbeat Counting task (HBC), and two in beta, the Phase Ad..." />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_index_79d98296.png" />
+<meta property="og:image:alt" content="Cardioception provides two established tasks, Heart Rate Discrimination (HRD) and Heartbeat Counting (HBC), and two beta tasks, the Phase Adjustment Task (PA..." />
 <meta name="twitter:card" content="summary_large_image" />
 
 <meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Measuring cardiac interoception" href="theory.html" /><link rel="prev" title="Running a session" href="../getting-started/running-a-session.html" />
@@ -208,10 +208,11 @@
 <li class="toctree-l1"><a class="reference internal" href="hbc.html">Heartbeat Counting task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pat.html">Phase Adjustment Task</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="hsd/design.html">HSD design and validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hsd/design.html">HSD method and rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hsd/validation.html">HSD validation and technical details</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="heartbeat-discrimination.html">Heartbeat discrimination</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constant-stimuli.html">Method of constant stimuli</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
@@ -314,13 +315,13 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="the-tasks">
 <h1>The tasks<a class="headerlink" href="#the-tasks" title="Permalink to this heading">#</a></h1>
-<p>Cardioception runs four tasks: two established, the Heart Rate Discrimination
-task (HRD) and the Heartbeat Counting task (HBC), and two in beta, the Phase
-Adjustment Task (PAT) and the Heartbeat Synchrony Discrimination task (HSD).
-Tasks in beta are close to feature complete and are still being rigorously
-validated. Two more, the Whitehead method and the method of constant
-stimuli, are coming. Each task has a page that says what it measures and how to
-run it; this page sets them side by side.</p>
+<p>Cardioception provides two established tasks, Heart Rate Discrimination (HRD)
+and Heartbeat Counting (HBC), and two beta tasks, the Phase Adjustment Task (PAT)
+and Heartbeat Synchrony Discrimination (HSD). The beta tasks are close to feature
+complete, but validation is ongoing. Implementations of heartbeat
+discrimination and the method of constant stimuli are planned.</p>
+<p>This page compares the tasks’ measures, procedures, and practical requirements.
+The individual task pages explain how to configure and run each one.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -329,7 +330,7 @@ run it; this page sets them side by side.</p>
 <th class="head"><p><a class="reference internal" href="hbc.html"><span class="std std-doc">HBC</span></a></p></th>
 <th class="head"><p><a class="reference internal" href="pat.html"><span class="std std-doc">PAT</span></a></p></th>
 <th class="head"><p><a class="reference internal" href="hsd/index.html"><span class="std std-doc">HSD</span></a></p></th>
-<th class="head"><p><a class="reference internal" href="whitehead.html"><span class="std std-doc">Whitehead</span></a></p></th>
+<th class="head"><p><a class="reference internal" href="heartbeat-discrimination.html"><span class="std std-doc">Heartbeat discrimination</span></a></p></th>
 <th class="head"><p><a class="reference internal" href="constant-stimuli.html"><span class="std std-doc">Constant stimuli</span></a></p></th>
 </tr>
 </thead>
@@ -339,16 +340,16 @@ run it; this page sets them side by side.</p>
 <td><p>Heartbeats reported against heartbeats recorded over fixed windows, with confidence</p></td>
 <td><p>Consistency of the chosen tone delay or phase across trials, with confidence</p></td>
 <td><p>Where in the cardiac cycle the heartbeat is felt (<code class="docutils literal notranslate"><span class="pre">mu</span></code>), how sharply (<code class="docutils literal notranslate"><span class="pre">sigma</span></code>), and how strongly, with confidence</p></td>
-<td><p>Discrimination of synchronous from delayed tones <span id="id1">[<a class="reference internal" href="../reference/references.html#id19" title="William E. Whitehead, Vincent M. Drescher, Peggy Heiman, and Barry Blackwell. Relation of heart rate control to heartbeat perception. Biofeedback and Self-Regulation, 2:371–392, 1977. doi:10.1007/BF00998623.">Whitehead <em>et al.</em>, 1977</a>]</span></p></td>
-<td><p>Proportion of tones judged simultaneous at each delay <span id="id2">[<a class="reference internal" href="../reference/references.html#id20" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">Brener <em>et al.</em>, 1993</a>]</span></p></td>
+<td><p>Discrimination of synchronous from delayed stimulus trains <span id="id1">[<a class="reference internal" href="../reference/references.html#id20" title="William E. Whitehead, Vincent M. Drescher, Peter Heiman, and Barry Blackwell. Relation of heart rate control to heartbeat perception. Biofeedback and Self-Regulation, 2:371–392, 1977. doi:10.1007/BF00998623.">Whitehead <em>et al.</em>, 1977</a>]</span></p></td>
+<td><p>Proportion of tones judged simultaneous at each delay <span id="id2">[<a class="reference internal" href="../reference/references.html#id21" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">Brener <em>et al.</em>, 1993</a>]</span></p></td>
 </tr>
 <tr class="row-odd"><td><p>Reference</p></td>
 <td><p><span id="id3">Legrand <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:10.1016/j.biopsycho.2021.108239.">2022</a>]</span></p></td>
 <td><p><span id="id4">Schandry [<a class="reference internal" href="../reference/references.html#id3" title="Rainer Schandry. Heart beat perception and emotional experience. Psychophysiology, 18(4):483-488, 1981. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1469-8986.1981.tb02486.x, doi:10.1111/j.1469-8986.1981.tb02486.x.">1981</a>]</span>, <span id="id5">Dale and Anderson [<a class="reference internal" href="../reference/references.html#id2" title="Alexander Dale and David Anderson. Information variables in voluntary control and classical conditioning of heart rate: field dependence and heart-rate perception. Perceptual and Motor Skills, 47(1):79-85, 1978. PMID: 704264. URL: https://doi.org/10.2466/pms.1978.47.1.79, doi:10.2466/pms.1978.47.1.79.">1978</a>]</span></p></td>
-<td><p><span id="id6">Plans <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id41" title="David Plans, Sonia Ponzo, Davide Morelli, Massimo Cairo, Christopher Ring, Connor T. Keating, Adam C. Cunningham, Caroline Catmur, Jennifer Murphy, and Geoffrey Bird. Measuring interoception: the phase adjustment task. Biological Psychology, 165:108171, 2021. doi:10.1016/j.biopsycho.2021.108171.">2021</a>]</span>, <span id="id7">Hodgetts <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id43" title="James Hodgetts, Germano Gallicchio, Shaun Mckiernan, Christopher Ring, Jennifer Murphy, and Andrew Cooke. The electrocardiogram-based phase adjustment task (PAT-ECG): an open-access laboratory test of cardiac interoceptive accuracy. Psychophysiology, 63(10):e70415, 2026. doi:10.1111/psyp.70415.">2026</a>]</span></p></td>
-<td><p><span id="id8">Brener <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id20" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">1993</a>]</span></p></td>
-<td><p><span id="id9">Whitehead <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id19" title="William E. Whitehead, Vincent M. Drescher, Peggy Heiman, and Barry Blackwell. Relation of heart rate control to heartbeat perception. Biofeedback and Self-Regulation, 2:371–392, 1977. doi:10.1007/BF00998623.">1977</a>]</span></p></td>
-<td><p><span id="id10">Brener <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id20" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">1993</a>]</span></p></td>
+<td><p><span id="id6">Plans <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id42" title="David Plans, Sonia Ponzo, Davide Morelli, Massimo Cairo, Christopher Ring, Connor T. Keating, Adam C. Cunningham, Caroline Catmur, Jennifer Murphy, and Geoffrey Bird. Measuring interoception: the phase adjustment task. Biological Psychology, 165:108171, 2021. doi:10.1016/j.biopsycho.2021.108171.">2021</a>]</span>, <span id="id7">Hodgetts <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id44" title="James Hodgetts, Germano Gallicchio, Shaun Mckiernan, Christopher Ring, Jennifer Murphy, and Andrew Cooke. The electrocardiogram-based phase adjustment task (PAT-ECG): an open-access laboratory test of cardiac interoceptive accuracy. Psychophysiology, 63(10):e70415, 2026. doi:10.1111/psyp.70415.">2026</a>]</span></p></td>
+<td><p><span id="id8">Brener <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id21" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">1993</a>]</span></p></td>
+<td><p><span id="id9">Whitehead <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id20" title="William E. Whitehead, Vincent M. Drescher, Peter Heiman, and Barry Blackwell. Relation of heart rate control to heartbeat perception. Biofeedback and Self-Regulation, 2:371–392, 1977. doi:10.1007/BF00998623.">1977</a>]</span></p></td>
+<td><p><span id="id10">Brener <em>et al.</em> [<a class="reference internal" href="../reference/references.html#id21" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">1993</a>]</span></p></td>
 </tr>
 <tr class="row-even"><td><p>Adaptive</p></td>
 <td><p>Yes: a Psi staircase sets the tone rate</p></td>
@@ -390,7 +391,8 @@ run it; this page sets them side by side.</p>
 describes it.</p>
 <section id="strengths-and-limitations">
 <h2>Strengths and limitations<a class="headerlink" href="#strengths-and-limitations" title="Permalink to this heading">#</a></h2>
-<p>Each task answers a different question, and each has costs.</p>
+<p>The tasks differ in what they ask participants to judge and what can be inferred
+from their responses.</p>
 <p><strong>The HRD.</strong> It separates the bias of heart rate judgements from their
 precision, includes a within-person exteroceptive comparison, adapts the
 stimulus with a staircase, and runs on a pulse oximeter. Hierarchical models
@@ -400,22 +402,22 @@ sensed in the listening window. It does not show whether or when a person feels
 individual heartbeats; see
 <a class="reference internal" href="theory.html#what-you-may-conclude-from-the-hrd"><span class="std std-ref">what you may conclude</span></a>. A
 full session takes about 20 minutes plus the tutorial.</p>
-<p><strong>The HBC.</strong> It is short, needs only a pulse oximeter, and connects directly to
-a large literature, which is why the package keeps it. A plausible estimate of
+<p><strong>The HBC.</strong> It is brief, can run with a pulse oximeter, and supports comparisons
+with a large existing literature. A plausible estimate of
 heart rate can produce a good counting score without detecting any beats
-<span id="id11">[<a class="reference internal" href="../reference/references.html#id21" title="Sabine Windmann, Othmar W. Schonecke, Gerd Fröhlig, and Gabriele Maldener. Dissociating beliefs about heart rates and actual heart rates in patients with cardiac pacemakers. Psychophysiology, 36(3):339–342, 1999. doi:10.1017/S0048577299980381.">Windmann <em>et al.</em>, 1999</a>, <a class="reference internal" href="../reference/references.html#id15" title="Jasper Brener and Christopher Ring. Towards a psychophysics of interoceptive processes: the measurement of heartbeat detection. Philosophical Transactions of the Royal Society B: Biological Sciences, 371(1708):20160015, 2016. doi:10.1098/rstb.2016.0015.">Brener and Ring, 2016</a>]</span>, and counting scores are unrelated to
-heartbeat detection <span id="id12">[<a class="reference internal" href="../reference/references.html#id40" title="Christopher Ring and Jasper Brener. Heartbeat counting is unrelated to heartbeat detection: a comparison of methods to quantify interoception. Psychophysiology, 55(9):e13084, 2018. doi:10.1111/psyp.13084.">Ring and Brener, 2018</a>]</span>, so a score is hard to read as
-sensitivity on its own.</p>
+<span id="id11">[<a class="reference internal" href="../reference/references.html#id22" title="Sabine Windmann, Othmar W. Schonecke, Gerd Fröhlig, and Gabriele Maldener. Dissociating beliefs about heart rates and actual heart rates in patients with cardiac pacemakers. Psychophysiology, 36(3):339–342, 1999. doi:10.1017/S0048577299980381.">Windmann <em>et al.</em>, 1999</a>, <a class="reference internal" href="../reference/references.html#id15" title="Jasper Brener and Christopher Ring. Towards a psychophysics of interoceptive processes: the measurement of heartbeat detection. Philosophical Transactions of the Royal Society B: Biological Sciences, 371(1708):20160015, 2016. doi:10.1098/rstb.2016.0015.">Brener and Ring, 2016</a>]</span>, and counting scores are unrelated to
+heartbeat detection <span id="id12">[<a class="reference internal" href="../reference/references.html#id41" title="Christopher Ring and Jasper Brener. Heartbeat counting is unrelated to heartbeat detection: a comparison of methods to quantify interoception. Psychophysiology, 55(9):e13084, 2018. doi:10.1111/psyp.13084.">Ring and Brener, 2018</a>]</span>. A counting score alone therefore
+provides limited evidence of cardiac sensitivity.</p>
 <p><strong>The PAT.</strong> It connects to the phase adjustment literature and classifies
 participants against chance with a fixed number of trials. It cannot separate
 where the sensation lies from how precise it is, and a participant can be
 consistent through a habit of search rather than a sensation;
 <a class="reference internal" href="#the-pat-and-the-hsd">the PAT and the HSD</a> sets the two side by side. This port is in beta, and its timing differs from the hardware
 original.</p>
-<p><strong>The HSD.</strong> It estimates where in the cardiac cycle a person feels the
-heartbeat and how sharply. It keeps the multi-interval logic of the method of
+<p><strong>The HSD.</strong> It estimates the location and temporal precision of heartbeat
+sensations within the cardiac cycle. It adapts the multi-interval design of the method of
 constant stimuli, which takes about 35 minutes <span id="id13">[<a class="reference internal" href="../reference/references.html#id15" title="Jasper Brener and Christopher Ring. Towards a psychophysics of interoceptive processes: the measurement of heartbeat detection. Philosophical Transactions of the Royal Society B: Biological Sciences, 371(1708):20160015, 2016. doi:10.1098/rstb.2016.0015.">Brener and Ring, 2016</a>]</span>, and
-spends the trials where they are informative. It is in beta: not yet
+selects delays according to their expected information gain. It is in beta: not yet
 validated, unable to probe delays below 130 ms, and sensitive to jitter in a
 Bluetooth ECG, which widens <code class="docutils literal notranslate"><span class="pre">sigma</span></code>. Read the <a class="reference internal" href="hsd/design.html"><span class="std std-doc">design page</span></a>
 before using it.</p>

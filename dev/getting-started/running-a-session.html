@@ -10,11 +10,11 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/getting-started/running-a-session.html" />
 <meta property="og:site_name" content="Cardioception Toolbox" />
-<meta property="og:description" content="Every task is run the same way. Its parameters submodule builds a dictionary from keyword arguments, and its task submodule runs the session from that dictionary. Each task page shows the call for ..." />
+<meta property="og:description" content="All four tasks use the same basic workflow: the parameters submodule builds a settings dictionary, and the task submodule uses it to run the session. This page covers the shared session settings an..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_getting-started_running-a-session_3dd3d90d.png" />
-<meta property="og:image:alt" content="Every task is run the same way. Its parameters submodule builds a dictionary from keyword arguments, and its task submodule runs the session from that dictio..." />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_getting-started_running-a-session_42a065e9.png" />
+<meta property="og:image:alt" content="All four tasks use the same basic workflow: the parameters submodule builds a settings dictionary, and the task submodule uses it to run the session. This pa..." />
 <meta name="twitter:card" content="summary_large_image" />
 
 <meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="The tasks" href="../tasks/index.html" /><link rel="prev" title="Recording devices" href="recording-devices.html" />
@@ -208,10 +208,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../tasks/hbc.html">Heartbeat Counting task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tasks/pat.html">Phase Adjustment Task</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tasks/hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tasks/hsd/design.html">HSD design and validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/hsd/design.html">HSD method and rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/hsd/validation.html">HSD validation and technical details</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tasks/whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tasks/heartbeat-discrimination.html">Heartbeat discrimination</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tasks/constant-stimuli.html">Method of constant stimuli</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
@@ -314,7 +315,7 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="running-a-session">
 <h1>Running a session<a class="headerlink" href="#running-a-session" title="Permalink to this heading">#</a></h1>
-<p>Every task is run the same way. Its <code class="docutils literal notranslate"><span class="pre">parameters</span></code> submodule builds a dictionary from keyword arguments, and its <code class="docutils literal notranslate"><span class="pre">task</span></code> submodule runs the session from that dictionary. Each task page shows the call for its own task; this page covers what the tasks share.</p>
+<p>All four tasks use the same basic workflow: the <code class="docutils literal notranslate"><span class="pre">parameters</span></code> submodule builds a settings dictionary, and the <code class="docutils literal notranslate"><span class="pre">task</span></code> submodule uses it to run the session. This page covers the shared session settings and output structure. Each task page provides a complete example.</p>
 <section id="the-wrappers">
 <h2>The wrappers<a class="headerlink" href="#the-wrappers" title="Permalink to this heading">#</a></h2>
 <p>The <a class="reference external" href="https://github.com/embodied-computation-group/Cardioception/tree/main/wrappers">wrappers</a> folder of the repository has a ready-to-run script for each task. Each opens a dialog for the session settings, then runs the task with the defaults of the published version:</p>
@@ -380,9 +381,9 @@
   ...
 </pre></div>
 </div>
-<p>The timestamp makes the directory unique, so a repeated session never overwrites an earlier one, and every file name carries participant, session and run, so a file still identifies itself after being copied out.</p>
-<p><code class="docutils literal notranslate"><span class="pre">manifest.json</span></code> is written when the parameters are built, before the first trial: the task and package version, the start time, the seed, the device, language and setup, the confidence scale and the recording device. An aborted session therefore still has a record of its settings. <code class="docutils literal notranslate"><span class="pre">session.log</span></code> holds the console messages with timestamps.</p>
-<p><code class="docutils literal notranslate"><span class="pre">*_final.txt</span></code> has one row per trial and is written when the task ends. The HRD, HBC and HSD also save the rows so far to <code class="docutils literal notranslate"><span class="pre">*_behaviour.txt</span></code> after every trial. The other files, the physiological recordings, the staircase posteriors and the parameters, differ by task and are listed on each task page.</p>
+<p>The timestamp distinguishes successive runs. File names also include the participant, session, and run identifiers, so files remain identifiable when copied out of their original directory.</p>
+<p>The task writes <code class="docutils literal notranslate"><span class="pre">manifest.json</span></code> when it builds the parameters, before the first trial. The manifest records the task and package version, start time, random seed, response device, language, setup, confidence scale, and recording device. These settings remain available even if the session is aborted. <code class="docutils literal notranslate"><span class="pre">session.log</span></code> records console messages with timestamps.</p>
+<p>The task writes <code class="docutils literal notranslate"><span class="pre">*_final.txt</span></code> when the session ends, with one row per trial. The HRD, HBC, and HSD also save the accumulated trial rows to <code class="docutils literal notranslate"><span class="pre">*_behaviour.txt</span></code> after each trial. Additional files include physiological recordings, staircase posteriors, and parameters. These vary by task and are described on the individual task pages.</p>
 <p>The seed of the session’s random generator is drawn when none is given and recorded in the manifest. Passing it back as <code class="docutils literal notranslate"><span class="pre">seed=</span></code> draws the same session again.</p>
 </section>
 <section id="languages">
@@ -415,7 +416,7 @@
 </section>
 <section id="confidence-scales">
 <h2>Confidence scales<a class="headerlink" href="#confidence-scales" title="Permalink to this heading">#</a></h2>
-<p>Confidence is rated on a <code class="docutils literal notranslate"><span class="pre">cardioception.scales.ConfidenceScale</span></code>. Four are shipped:</p>
+<p>Confidence ratings use a <code class="docutils literal notranslate"><span class="pre">cardioception.scales.ConfidenceScale</span></code> object. Four scales are included:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -450,7 +451,7 @@
 <span class="n">parameters</span> <span class="o">=</span> <span class="n">getParameters</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">confidenceScale</span><span class="o">=</span><span class="n">VAS_0_100</span><span class="o">.</span><span class="n">with_labels</span><span class="p">([</span><span class="s2">"Guess"</span><span class="p">,</span> <span class="s2">"Certain"</span><span class="p">]))</span>
 </pre></div>
 </div>
-<p>Every row of the results carries the rating on its own scale, the same rating on 0 to 1 as <code class="docutils literal notranslate"><span class="pre">ConfidenceUnit</span></code>, and the scale’s definition (<code class="docutils literal notranslate"><span class="pre">ConfidenceScale</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceLow</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceHigh</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceGranularity</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceLevels</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceSigned</span></code>), so sessions rated on different scales can be pooled without the parameters file.</p>
+<p>Each result row contains the original rating and a version rescaled to 0 to 1, <code class="docutils literal notranslate"><span class="pre">ConfidenceUnit</span></code>. It also records the scale definition in <code class="docutils literal notranslate"><span class="pre">ConfidenceScale</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceLow</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceHigh</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceGranularity</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfidenceLevels</span></code>, and <code class="docutils literal notranslate"><span class="pre">ConfidenceSigned</span></code>. These columns identify the scale used in each session without requiring the parameters file.</p>
 </section>
 <section id="a-windows-shortcut">
 <h2>A Windows shortcut<a class="headerlink" href="#a-windows-shortcut" title="Permalink to this heading">#</a></h2>

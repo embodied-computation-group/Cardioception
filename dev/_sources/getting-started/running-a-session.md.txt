@@ -7,7 +7,7 @@ myst:
 
 # Running a session
 
-Every task is run the same way. Its `parameters` submodule builds a dictionary from keyword arguments, and its `task` submodule runs the session from that dictionary. Each task page shows the call for its own task; this page covers what the tasks share.
+All four tasks use the same basic workflow: the `parameters` submodule builds a settings dictionary, and the `task` submodule uses it to run the session. This page covers the shared session settings and output structure. Each task page provides a complete example.
 
 ## The wrappers
 
@@ -46,11 +46,11 @@ data/sub-<participant>/ses-<session>/run-<YYYYMMDD-HHMMSS>/
   ...
 ```
 
-The timestamp makes the directory unique, so a repeated session never overwrites an earlier one, and every file name carries participant, session and run, so a file still identifies itself after being copied out.
+The timestamp distinguishes successive runs. File names also include the participant, session, and run identifiers, so files remain identifiable when copied out of their original directory.
 
-`manifest.json` is written when the parameters are built, before the first trial: the task and package version, the start time, the seed, the device, language and setup, the confidence scale and the recording device. An aborted session therefore still has a record of its settings. `session.log` holds the console messages with timestamps.
+The task writes `manifest.json` when it builds the parameters, before the first trial. The manifest records the task and package version, start time, random seed, response device, language, setup, confidence scale, and recording device. These settings remain available even if the session is aborted. `session.log` records console messages with timestamps.
 
-`*_final.txt` has one row per trial and is written when the task ends. The HRD, HBC and HSD also save the rows so far to `*_behaviour.txt` after every trial. The other files, the physiological recordings, the staircase posteriors and the parameters, differ by task and are listed on each task page.
+The task writes `*_final.txt` when the session ends, with one row per trial. The HRD, HBC, and HSD also save the accumulated trial rows to `*_behaviour.txt` after each trial. Additional files include physiological recordings, staircase posteriors, and parameters. These vary by task and are described on the individual task pages.
 
 The seed of the session's random generator is drawn when none is given and recorded in the manifest. Passing it back as `seed=` draws the same session again.
 
@@ -69,7 +69,7 @@ The instructions are shown in the language passed as `language`, which names a Y
 
 ## Confidence scales
 
-Confidence is rated on a `cardioception.scales.ConfidenceScale`. Four are shipped:
+Confidence ratings use a `cardioception.scales.ConfidenceScale` object. Four scales are included:
 
 | Scale | Kind | Range |
 |---|---|---|
@@ -86,7 +86,7 @@ from cardioception.scales import VAS_0_100
 parameters = getParameters(..., confidenceScale=VAS_0_100.with_labels(["Guess", "Certain"]))
 ```
 
-Every row of the results carries the rating on its own scale, the same rating on 0 to 1 as `ConfidenceUnit`, and the scale's definition (`ConfidenceScale`, `ConfidenceLow`, `ConfidenceHigh`, `ConfidenceGranularity`, `ConfidenceLevels`, `ConfidenceSigned`), so sessions rated on different scales can be pooled without the parameters file.
+Each result row contains the original rating and a version rescaled to 0 to 1, `ConfidenceUnit`. It also records the scale definition in `ConfidenceScale`, `ConfidenceLow`, `ConfidenceHigh`, `ConfidenceGranularity`, `ConfidenceLevels`, and `ConfidenceSigned`. These columns identify the scale used in each session without requiring the parameters file.
 
 ## A Windows shortcut
 

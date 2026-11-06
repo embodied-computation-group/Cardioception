@@ -7,7 +7,9 @@ myst:
 
 # Heartbeat Counting task
 
-The Heartbeat Counting task (HBC) {cite:p}`1981:schandry,1978:dale` compares the number of heartbeats a person reports over a fixed window with the number recorded. The score is usually taken to index interoceptive accuracy. The task is established, and the package keeps it because much of the literature rests on it. A good score can come from a plausible estimate of heart rate rather than from feeling beats; [what heartbeat counting can establish](theory.md#what-heartbeat-counting-can-establish) sets out the evidence.
+The Heartbeat Counting task (HBC) {cite:p}`1981:schandry,1978:dale` compares the number of heartbeats a participant reports during a fixed interval with the number recorded. It is an established task with a large literature, in which the score is commonly interpreted as interoceptive accuracy.
+
+A good score can also result from a plausible estimate of heart rate, without reliable perception of individual beats. [What heartbeat counting can establish](theory.md#what-heartbeat-counting-can-establish) reviews the evidence and its implications for interpreting a counting score.
 
 ## What a trial looks like
 
@@ -19,7 +21,9 @@ A tone marks the start of the window. The participant silently counts the heartb
 One HBC trial. The window lengths and the 1 to 7 confidence scale are the defaults.
 ```
 
-The default version, `taskVersion="Garfinkel"`, runs six counting windows of 25, 30, 35, 40, 45 and 50 s in random order. `taskVersion="Schandry"` runs three windows of 25, 35 and 45 s after a minute of rest, separated by 30 s rests, in that fixed order. With `runTutorial=True` the session starts with instruction screens, and in every version a 30 s rest with the pulse recorded precedes the first window. The default version takes about 4 minutes.
+The default version, `taskVersion="Garfinkel"`, presents six counting windows of 25, 30, 35, 40, 45, and 50 s in random order. The `taskVersion="Schandry"` version presents three windows of 25, 35, and 45 s in that order, following a minute of rest and separated by 30 s rest periods.
+
+With `runTutorial=True`, the session begins with instruction screens. Every version also records the pulse during a 30 s rest before the first window. The default version takes about 4 minutes.
 
 ## What you need
 
@@ -64,7 +68,7 @@ With an LSL device, pass `recorder=LSLRecorder(name="PLUX", channel="ECG2", sign
 | `seed` | drawn | Seeds the order of the windows; recorded in the manifest |
 | `triggers` | none | `{event: callable}` for `trialStart`, `listeningStart`, `listeningStop`, `confidenceStart`, `confidenceStop` and `trialStop` |
 
-The window lengths and conditions are `parameters["times"]` and `parameters["conditions"]` (`"Rest"` or `"Count"`); a custom schedule is set by editing them after `getParameters` returns.
+To define a custom schedule, edit `parameters["times"]` and `parameters["conditions"]` after `getParameters` returns. These contain the window lengths and the corresponding conditions (`"Rest"` or `"Count"`).
 
 ## What it saves
 
@@ -87,7 +91,7 @@ The columns of `*_final.txt`:
 | `Reported` | The number the participant typed |
 | `Confidence`, `ConfidenceRT` | The rating on the scale shown, and its response time. `ConfidenceUnit` holds the rating on 0 to 1, and the scale columns describe the scale |
 
-The task does not count the recorded beats. The true count of each window comes from its pulse file.
+The task saves the pulse recording without counting the beats. Obtain the recorded count for each window by detecting beats in its pulse file.
 
 ## Scoring
 

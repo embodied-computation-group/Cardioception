@@ -4,24 +4,24 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<meta content="The Whitehead two-alternative heartbeat synchrony task, coming to Cardioception." name="description" />
-<meta content="Whitehead, heartbeat detection, heartbeat synchrony, cardiac interoception, cardioception" name="keywords" />
-<meta property="og:title" content="Whitehead method" />
+<meta content="Heartbeat discrimination: judging whether stimuli at one of two fixed delays after each heartbeat are simultaneous with it. Coming to Cardioception." name="description" />
+<meta content="heartbeat discrimination, Whitehead, heartbeat detection, heartbeat synchrony, cardiac interoception, cardioception" name="keywords" />
+<meta property="og:title" content="Heartbeat discrimination" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/tasks/whitehead.html" />
+<meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/tasks/heartbeat-discrimination.html" />
 <meta property="og:site_name" content="Cardioception Toolbox" />
-<meta property="og:description" content="The two-alternative heartbeat synchrony task of Whitehead and colleagues[ Whitehead et al., 1977] is coming to Cardioception. Tones are presented at two delays from the ECG R-wave, and participants..." />
+<meta property="og:description" content="An implementation of heartbeat discrimination is planned for Cardioception. On each trial, a train of stimuli is presented at one of two fixed delays after each R-wave of the ECG, and the participa..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_whitehead_75e44276.png" />
-<meta property="og:image:alt" content="The two-alternative heartbeat synchrony task of Whitehead and colleagues[ Whitehead et al., 1977] is coming to Cardioception. Tones are presented at two dela..." />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_heartbeat-discrimination_ee3a5b84.png" />
+<meta property="og:image:alt" content="An implementation of heartbeat discrimination is planned for Cardioception. On each trial, a train of stimuli is presented at one of two fixed delays after e..." />
 <meta name="twitter:card" content="summary_large_image" />
 
-<meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Method of constant stimuli" href="constant-stimuli.html" /><link rel="prev" title="HSD design and validation" href="hsd/design.html" />
-        <link rel="canonical" href="https://www.the-ecg.org/Cardioception/dev/tasks/whitehead.html" />
+<meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Method of constant stimuli" href="constant-stimuli.html" /><link rel="prev" title="HSD validation and technical details" href="hsd/validation.html" />
+        <link rel="canonical" href="https://www.the-ecg.org/Cardioception/dev/tasks/heartbeat-discrimination.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Whitehead method - Cardioception Toolbox</title>
+        <title>Heartbeat discrimination - Cardioception Toolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -208,10 +208,11 @@
 <li class="toctree-l1"><a class="reference internal" href="hbc.html">Heartbeat Counting task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pat.html">Phase Adjustment Task</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="hsd/design.html">HSD design and validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hsd/design.html">HSD method and rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hsd/validation.html">HSD validation and technical details</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Whitehead method</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Heartbeat discrimination</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constant-stimuli.html">Method of constant stimuli</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
@@ -290,7 +291,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/embodied-computation-group/Cardioception/edit/main/docs/source/tasks/whitehead.md" title="Edit this page">
+  <a class="muted-link" href="https://github.com/embodied-computation-group/Cardioception/edit/main/docs/source/tasks/heartbeat-discrimination.md" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -312,10 +313,11 @@
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="whitehead-method">
-<h1>Whitehead method<a class="headerlink" href="#whitehead-method" title="Permalink to this heading">#</a></h1>
-<p>The two-alternative heartbeat synchrony task of Whitehead and colleagues <span id="id1">[<a class="reference internal" href="../reference/references.html#id19" title="William E. Whitehead, Vincent M. Drescher, Peggy Heiman, and Barry Blackwell. Relation of heart rate control to heartbeat perception. Biofeedback and Self-Regulation, 2:371–392, 1977. doi:10.1007/BF00998623.">Whitehead <em>et al.</em>, 1977</a>]</span> is coming to Cardioception. Tones are presented at two delays from the ECG R-wave, and participants judge which sequence is simultaneous with their heartbeat.</p>
-<p>A review of the literature behind it will follow. Until then, <a class="reference internal" href="theory.html#what-fixed-delay-synchrony-tasks-can-establish"><span class="std std-ref">what fixed-delay synchrony tasks can establish</span></a>, in Measuring cardiac interoception, describes the method.</p>
+          <section class="tex2jax_ignore mathjax_ignore" id="heartbeat-discrimination">
+<h1>Heartbeat discrimination<a class="headerlink" href="#heartbeat-discrimination" title="Permalink to this heading">#</a></h1>
+<p>An implementation of heartbeat discrimination is planned for Cardioception. On each trial, a train of stimuli is presented at one of two fixed delays after each R-wave of the ECG, and the participant judges whether the train was simultaneous with their heartbeat or delayed.</p>
+<p>The procedure was introduced by Whitehead and colleagues <span id="id1">[<a class="reference internal" href="../reference/references.html#id20" title="William E. Whitehead, Vincent M. Drescher, Peter Heiman, and Barry Blackwell. Relation of heart rate control to heartbeat perception. Biofeedback and Self-Regulation, 2:371–392, 1977. doi:10.1007/BF00998623.">Whitehead <em>et al.</em>, 1977</a>, <a class="reference internal" href="../reference/references.html#id19" title="William E. Whitehead, Vincent M. Drescher, and Barry Blackwell. Lack of relationship between autonomic perception questionnaire scores and actual sensitivity for perceiving one's heart beat. Psychophysiology, 13(2):177, 1976. Abstract, Fifteenth Annual Meeting of the Society for Psychophysiological Research, Toronto, October 1975. doi:10.1111/j.1469-8986.1976.tb00094.x.">Whitehead <em>et al.</em>, 1976</a>]</span>. In the original version a light flashed either 128 or 384 ms after each R-wave over 200 ten-second trials, the participant pressed one of two buttons after each trial, and discrimination was scored with d’. Later laboratories changed most of these parameters: tones replaced the light, the delays moved (for example to 200 and 500 ms), and the number of trials, the stimuli per trial and the scoring rule all varied. There is therefore no single heartbeat discrimination task, and the implementation will document each parameter it uses.</p>
+<p>A review of the literature will accompany the implementation. For an introduction to the method and its limitations, see <a class="reference internal" href="theory.html#what-fixed-delay-synchrony-tasks-can-establish"><span class="std std-ref">What fixed-delay synchrony tasks can establish</span></a>.</p>
 </section>
 
         </article>
@@ -332,14 +334,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="hsd/design.html">
+          <a class="prev-page" href="hsd/validation.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">HSD design and validation</div>
+                <div class="title">HSD validation and technical details</div>
                 
               </div>
             </a>

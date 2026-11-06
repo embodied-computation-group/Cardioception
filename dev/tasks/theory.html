@@ -10,11 +10,11 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/tasks/theory.html" />
 <meta property="og:site_name" content="Cardioception Toolbox" />
-<meta property="og:description" content="Author: Micah G. Allen Before you analyze an HRD dataset, you need to be clear about what the task can measure. Cardiac interoception is often described as the ability to perceive one’s heartbeat a..." />
+<meta property="og:description" content="Author: Micah G. Allen Cardiac interoception is often described as the ability to perceive one’s heartbeat accurately. In an experiment, however, accuracy depends on what participants are asked to ..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_theory_f93a774b.png" />
-<meta property="og:image:alt" content="Author: Micah G. Allen Before you analyze an HRD dataset, you need to be clear about what the task can measure. Cardiac interoception is often described as t..." />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_theory_c69dac7c.png" />
+<meta property="og:image:alt" content="Author: Micah G. Allen Cardiac interoception is often described as the ability to perceive one’s heartbeat accurately. In an experiment, however, accuracy de..." />
 <meta name="twitter:card" content="summary_large_image" />
 
 <meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Heart Rate Discrimination task" href="hrd/index.html" /><link rel="prev" title="The tasks" href="index.html" />
@@ -208,10 +208,11 @@
 <li class="toctree-l1"><a class="reference internal" href="hbc.html">Heartbeat Counting task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pat.html">Phase Adjustment Task</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="hsd/design.html">HSD design and validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hsd/design.html">HSD method and rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hsd/validation.html">HSD validation and technical details</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="heartbeat-discrimination.html">Heartbeat discrimination</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constant-stimuli.html">Method of constant stimuli</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
@@ -315,27 +316,28 @@
           <section class="tex2jax_ignore mathjax_ignore" id="measuring-cardiac-interoception">
 <h1>Measuring cardiac interoception<a class="headerlink" href="#measuring-cardiac-interoception" title="Permalink to this heading">#</a></h1>
 <p>Author: Micah G. Allen</p>
-<p>Before you analyze an HRD dataset, you need to be clear about what the task can
-measure. Cardiac interoception is often described as the ability to perceive
-one’s heartbeat accurately. That description sounds straightforward until we
-ask what an experimental score actually identifies.</p>
+<p>Cardiac interoception is often described as the ability to perceive one’s
+heartbeat accurately. In an experiment, however, accuracy depends on what
+participants are asked to judge and how their responses are scored. Understanding
+these choices is essential to interpreting an HRD dataset.</p>
 <p>We developed the Heart Rate Discrimination task to estimate three distinguishable
 features of cardiac judgement: perceptual bias, perceptual precision, and the
 relationship between confidence and performance. Together they describe a
 person’s beliefs about their heart rate under particular task conditions. This
 is a narrower claim than measuring a general interoceptive ability.</p>
-<p>This page explains that position and the evidence behind it. The practical
-tutorials build on these distinctions.</p>
+<p>This page reviews the measurement problems that motivated the HRD, then explains
+how to interpret its measures of bias, precision, and confidence. These
+distinctions provide the basis for the practical tutorials.</p>
 <section id="cardiac-interoception-as-a-measurement-problem">
 <h2>Cardiac interoception as a measurement problem<a class="headerlink" href="#cardiac-interoception-as-a-measurement-problem" title="Permalink to this heading">#</a></h2>
 <p>Interoception encompasses the processes by which the nervous system senses,
 interprets, and regulates the internal state of the body. Cardiac interoception
 is one part of that larger system. It has been studied extensively because the
-heartbeat is continuous, discrete, and easy to record, and because bodily
+heart beats continuously, produces discrete events that are easy to record, and because bodily
 signals are thought to contribute to emotion, cognition, and the sense of self
-<span id="id1">[<a class="reference internal" href="../reference/references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>, <a class="reference internal" href="../reference/references.html#id24" title="Sarah N. Garfinkel, André Schulz, and Manos Tsakiris. Addressing the need for new interoceptive methods. Biological Psychology, 170:108322, 2022. doi:10.1016/j.biopsycho.2022.108322.">Garfinkel <em>et al.</em>, 2022</a>]</span>.</p>
-<p>The experimental difficulty is that a heartbeat is an endogenous stimulus. In
-most laboratory studies we can record it, but we cannot set its intensity and
+<span id="id1">[<a class="reference internal" href="../reference/references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>, <a class="reference internal" href="../reference/references.html#id25" title="Sarah N. Garfinkel, André Schulz, and Manos Tsakiris. Addressing the need for new interoceptive methods. Biological Psychology, 170:108322, 2022. doi:10.1016/j.biopsycho.2022.108322.">Garfinkel <em>et al.</em>, 2022</a>]</span>.</p>
+<p>The experimental difficulty is that a heartbeat originates within the body. In
+most laboratory studies we can record it, but we cannot control its intensity and
 timing as freely as we would set the contrast of a visual stimulus. A participant’s
 response may therefore reflect several sources of information at once, including
 afferent cardiac signals, prior knowledge of heart rate, attention, decision
@@ -356,7 +358,7 @@ strongly prior knowledge contributes:</p>
 <ul class="simple">
 <li><p>In patients with cardiac pacemakers, actual rates of 61, 76, and 109 BPM
 produced reported rates of 52, 54, and 59 BPM. The reports changed very little
-as the heart rate changed <span id="id4">[<a class="reference internal" href="../reference/references.html#id21" title="Sabine Windmann, Othmar W. Schonecke, Gerd Fröhlig, and Gabriele Maldener. Dissociating beliefs about heart rates and actual heart rates in patients with cardiac pacemakers. Psychophysiology, 36(3):339–342, 1999. doi:10.1017/S0048577299980381.">Windmann <em>et al.</em>, 1999</a>]</span>.</p></li>
+as the heart rate changed <span id="id4">[<a class="reference internal" href="../reference/references.html#id22" title="Sabine Windmann, Othmar W. Schonecke, Gerd Fröhlig, and Gabriele Maldener. Dissociating beliefs about heart rates and actual heart rates in patients with cardiac pacemakers. Psychophysiology, 36(3):339–342, 1999. doi:10.1017/S0048577299980381.">Windmann <em>et al.</em>, 1999</a>]</span>.</p></li>
 <li><p>Counting scores tend to improve when participants lie down. In one study,
 reported rates were similar when supine and standing, at 50 and 48 BPM, while
 recorded rates differed substantially, at 70 and 86 BPM. The score improved
@@ -376,11 +378,15 @@ literature built with the task remains informative within that constraint
 </section>
 <section id="what-fixed-delay-synchrony-tasks-can-establish">
 <h3>What fixed-delay synchrony tasks can establish<a class="headerlink" href="#what-fixed-delay-synchrony-tasks-can-establish" title="Permalink to this heading">#</a></h3>
-<p>The other common approach is a two-alternative heartbeat synchrony task
-<span id="id9">[<a class="reference internal" href="../reference/references.html#id19" title="William E. Whitehead, Vincent M. Drescher, Peggy Heiman, and Barry Blackwell. Relation of heart rate control to heartbeat perception. Biofeedback and Self-Regulation, 2:371–392, 1977. doi:10.1007/BF00998623.">Whitehead <em>et al.</em>, 1977</a>]</span>. Tones or flashes are presented at two delays from the
-ECG R-wave, and participants judge which sequence is simultaneous with their
-heartbeat. Successful performance requires access to cardiac timing, which is a
-clear advantage over counting.</p>
+<p>The other common approach is heartbeat discrimination, introduced by Whitehead
+and colleagues <span id="id9">[<a class="reference internal" href="../reference/references.html#id20" title="William E. Whitehead, Vincent M. Drescher, Peter Heiman, and Barry Blackwell. Relation of heart rate control to heartbeat perception. Biofeedback and Self-Regulation, 2:371–392, 1977. doi:10.1007/BF00998623.">Whitehead <em>et al.</em>, 1977</a>, <a class="reference internal" href="../reference/references.html#id19" title="William E. Whitehead, Vincent M. Drescher, and Barry Blackwell. Lack of relationship between autonomic perception questionnaire scores and actual sensitivity for perceiving one's heart beat. Psychophysiology, 13(2):177, 1976. Abstract, Fifteenth Annual Meeting of the Society for Psychophysiological Research, Toronto, October 1975. doi:10.1111/j.1469-8986.1976.tb00094.x.">Whitehead <em>et al.</em>, 1976</a>]</span>. On each trial a train of
+stimuli, originally light flashes and in later versions usually tones, is
+presented at one of two fixed delays from the ECG R-wave, and the participant
+judges whether it was simultaneous with their heartbeat or delayed. Because both
+trains are locked to the participant’s own heartbeat, successful performance
+requires access to cardiac timing, which is a clear advantage over counting. The
+delays vary between laboratories, from the original 128 and 384 ms to pairs such
+as 200 and 500 ms.</p>
 <p>The usual implementation assumes that heartbeat sensations occur at similar
 latencies across people. Multi-interval studies show substantial individual
 variation, with preferred intervals distributed across approximately R+100 to
@@ -389,10 +395,10 @@ occurs at R+256 ms. Tones at R+128 and R+384 ms are equally distant from that
 sensation, so the participant may treat both as equally synchronous. Their poor
 discrimination would be compatible with a clearly perceived heartbeat at a
 latency the task did not sample.</p>
-<p>Fixed-delay tasks consequently risk false negatives. Only about one quarter of
-participants meet the conventional detector criterion in common versions of the
-task, and performance improves when stimulus delays better accommodate individual
-cardiac timing <span id="id11">[<a class="reference internal" href="../reference/references.html#id15" title="Jasper Brener and Christopher Ring. Towards a psychophysics of interoceptive processes: the measurement of heartbeat detection. Philosophical Transactions of the Royal Society B: Biological Sciences, 371(1708):20160015, 2016. doi:10.1098/rstb.2016.0015.">Brener and Ring, 2016</a>]</span>. A failure to discriminate two chosen delays
+<p>Fixed-delay tasks consequently risk false negatives. Across two-interval tasks,
+Brener and Ring estimate that about one in three or four people reliably
+discriminate, and performance improves when stimulus delays are set to each
+person’s preferred interval <span id="id11">[<a class="reference internal" href="../reference/references.html#id15" title="Jasper Brener and Christopher Ring. Towards a psychophysics of interoceptive processes: the measurement of heartbeat detection. Philosophical Transactions of the Royal Society B: Biological Sciences, 371(1708):20160015, 2016. doi:10.1098/rstb.2016.0015.">Brener and Ring, 2016</a>]</span>. A failure to discriminate two chosen delays
 does not uniquely identify an absence of heartbeat sensation.</p>
 </section>
 <section id="why-the-traditional-tasks-disagree">
@@ -401,10 +407,10 @@ does not uniquely identify an absence of heartbeat sensation.</p>
 same heading of interoceptive accuracy. If they measured the same ability, their
 scores should show a reasonably stable association. In practice, correlations
 are generally weak or absent <span id="id12">[<a class="reference internal" href="../reference/references.html#id15" title="Jasper Brener and Christopher Ring. Towards a psychophysics of interoceptive processes: the measurement of heartbeat detection. Philosophical Transactions of the Royal Society B: Biological Sciences, 371(1708):20160015, 2016. doi:10.1098/rstb.2016.0015.">Brener and Ring, 2016</a>]</span>.</p>
-<p>This disagreement is informative. Counting is vulnerable to good performance
-based on prior knowledge, while a fixed-delay task can miss participants whose
-sensation occurs at an unexpected latency. Combining both under a single label
-does not resolve either measurement problem.</p>
+<p>The weak association is consistent with the different limitations of these
+tasks. Prior knowledge can support a good counting score, while a fixed-delay
+task can miss participants whose heartbeat sensation occurs at an unexpected
+latency. The shared label therefore obscures differences in what the tasks measure.</p>
 </section>
 </section>
 <section id="a-dimensional-framework">
@@ -435,10 +441,10 @@ interoception <span id="id13">[<a class="reference internal" href="../reference/
 </tbody>
 </table>
 </div>
-<p>The framework prevents us from treating task performance, questionnaire scores,
-and metacognition as versions of the same variable. That was an important advance,
-and later work has extended the framework across bodily systems and additional
-dimensions <span id="id14">[<a class="reference internal" href="../reference/references.html#id24" title="Sarah N. Garfinkel, André Schulz, and Manos Tsakiris. Addressing the need for new interoceptive methods. Biological Psychology, 170:108322, 2022. doi:10.1016/j.biopsycho.2022.108322.">Garfinkel <em>et al.</em>, 2022</a>]</span>.</p>
+<p>This framework distinguishes task performance, questionnaire scores, and
+metacognition as separate objects of study. Later work has extended it across
+bodily systems and additional
+dimensions <span id="id14">[<a class="reference internal" href="../reference/references.html#id25" title="Sarah N. Garfinkel, André Schulz, and Manos Tsakiris. Addressing the need for new interoceptive methods. Biological Psychology, 170:108322, 2022. doi:10.1016/j.biopsycho.2022.108322.">Garfinkel <em>et al.</em>, 2022</a>]</span>.</p>
 <p>The label attached to a task does not establish its construct validity. Calling
 heartbeat counting and fixed-delay synchrony measures “interoceptive accuracy”
 still leaves their opposite biases and weak correspondence unexplained. Murphy
@@ -454,7 +460,7 @@ label.</p>
 <p>The method of constant stimuli offers an instructive comparison. It presents
 signals at several delays spanning the cardiac cycle, commonly from R+0 to
 R+500 ms, and asks whether each signal was simultaneous with a heartbeat
-sensation <span id="id16">[<a class="reference internal" href="../reference/references.html#id20" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">Brener <em>et al.</em>, 1993</a>]</span>.</p>
+sensation <span id="id16">[<a class="reference internal" href="../reference/references.html#id21" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">Brener <em>et al.</em>, 1993</a>]</span>.</p>
 <p>Sampling several delays allows the participant’s data to reveal two quantities.
 The preferred delay locates the heartbeat sensation within the cardiac cycle.
 The spread of preferred delays measures the temporal precision of detection.
@@ -479,16 +485,16 @@ and a computational account of interoception.</p>
 <p>Predictive processing models describe interoception as inference about bodily
 state. The nervous system combines visceral evidence with prior expectations,
 with their relative influence depending on estimated precision
-<span id="id19">[<a class="reference internal" href="../reference/references.html#id27" title="Micah Allen and Karl J. Friston. From cognitivism to autopoiesis: towards a computational framework for the embodied mind. Synthese, 195(6):2459–2482, 2018. doi:10.1007/s11229-016-1288-5.">Allen and Friston, 2018</a>, <a class="reference internal" href="../reference/references.html#id28" title="Micah Allen and Manos Tsakiris. The body as first prior: interoceptive predictive processing and the primacy of self-models. In The Interoceptive Mind: From Homeostasis to Awareness. Oxford University Press, 2018. doi:10.1093/oso/9780198811930.003.0002.">Allen and Tsakiris, 2018</a>, <a class="reference internal" href="../reference/references.html#id17" title="Frederike H. Petzschner, Sarah N. Garfinkel, Martin P. Paulus, Christof Koch, and Sahib S. Khalsa. Computational models of interoception and body regulation. Trends in Neurosciences, 44(1):63–76, 2021. doi:10.1016/j.tins.2020.09.012.">Petzschner <em>et al.</em>, 2021</a>]</span>. Affect, context,
+<span id="id19">[<a class="reference internal" href="../reference/references.html#id28" title="Micah Allen and Karl J. Friston. From cognitivism to autopoiesis: towards a computational framework for the embodied mind. Synthese, 195(6):2459–2482, 2018. doi:10.1007/s11229-016-1288-5.">Allen and Friston, 2018</a>, <a class="reference internal" href="../reference/references.html#id29" title="Micah Allen and Manos Tsakiris. The body as first prior: interoceptive predictive processing and the primacy of self-models. In The Interoceptive Mind: From Homeostasis to Awareness. Oxford University Press, 2018. doi:10.1093/oso/9780198811930.003.0002.">Allen and Tsakiris, 2018</a>, <a class="reference internal" href="../reference/references.html#id17" title="Frederike H. Petzschner, Sarah N. Garfinkel, Martin P. Paulus, Christof Koch, and Sahib S. Khalsa. Computational models of interoception and body regulation. Trends in Neurosciences, 44(1):63–76, 2021. doi:10.1016/j.tins.2020.09.012.">Petzschner <em>et al.</em>, 2021</a>]</span>. Affect, context,
 and anticipated physiological demands can also shape this process. Related work
 has developed these ideas as candidate mechanisms for psychiatric and
-psychosomatic symptoms <span id="id20">[<a class="reference internal" href="../reference/references.html#id29" title="Andrew P. Owens, Micah Allen, Sasha Ondobaka, and Karl J. Friston. Interoceptive inference: from computational neuroscience to clinic. Neuroscience &amp; Biobehavioral Reviews, 90:174–183, 2018. doi:10.1016/j.neubiorev.2018.04.017.">Owens <em>et al.</em>, 2018</a>]</span>.</p>
+psychosomatic symptoms <span id="id20">[<a class="reference internal" href="../reference/references.html#id30" title="Andrew P. Owens, Micah Allen, Sasha Ondobaka, and Karl J. Friston. Interoceptive inference: from computational neuroscience to clinic. Neuroscience &amp; Biobehavioral Reviews, 90:174–183, 2018. doi:10.1016/j.neubiorev.2018.04.017.">Owens <em>et al.</em>, 2018</a>]</span>.</p>
 <p>On this account, a report about the heart reflects an estimate formed from
 several sources of information. Prior beliefs are part of the perceptual process
 we want to understand. They cannot be treated only as contamination between an
 afferent signal and a verbal response.</p>
-<p>The measurement claim is behavioural. The HRD estimates the bias and precision
-expressed in repeated perceptual judgements. Identifying a neural prior or
+<p>The HRD estimates the bias and precision expressed in repeated behavioural
+judgements. Identifying a neural prior or
 afferent precision requires additional measurements and experimental
 manipulations. HRD parameters can be related to physiological, neural, or
 clinical variables when the study design supports that inference.</p>
@@ -497,7 +503,7 @@ clinical variables when the study design supports that inference.</p>
 <h3>From repeated judgements to a psychometric function<a class="headerlink" href="#from-repeated-judgements-to-a-psychometric-function" title="Permalink to this heading">#</a></h3>
 <p>Experimental work on heart-rate discrimination dates to the 1960s and includes
 studies of exercise, training, and heart-rate control
-<span id="id21">[<a class="reference internal" href="../reference/references.html#id19" title="William E. Whitehead, Vincent M. Drescher, Peggy Heiman, and Barry Blackwell. Relation of heart rate control to heartbeat perception. Biofeedback and Self-Regulation, 2:371–392, 1977. doi:10.1007/BF00998623.">Whitehead <em>et al.</em>, 1977</a>, <a class="reference internal" href="../reference/references.html#id31" title="George Mandler and Michael Kahn. Discrimination of changes in heart rate: two unsuccessful attempts. Journal of the Experimental Analysis of Behavior, 3(1):21–25, 1960. doi:10.1901/jeab.1960.3-21.">Mandler and Kahn, 1960</a>, <a class="reference internal" href="../reference/references.html#id32" title="Gary E. Jones and James G. Hollandsworth. Heart rate discrimination before and after exercise-induced augmented cardiac activity. Psychophysiology, 18(3):252–257, 1981. doi:10.1111/j.1469-8986.1981.tb03029.x.">Jones and Hollandsworth, 1981</a>, <a class="reference internal" href="../reference/references.html#id33" title="Lyn Grigg and Roderick Ashton. Heart rate discrimination viewed as a perceptual process: a replication and extension. Psychophysiology, 19(1):13–20, 1982. doi:10.1111/j.1469-8986.1982.tb02591.x.">Grigg and Ashton, 1982</a>]</span>. The HRD revisits this
+<span id="id21">[<a class="reference internal" href="../reference/references.html#id20" title="William E. Whitehead, Vincent M. Drescher, Peter Heiman, and Barry Blackwell. Relation of heart rate control to heartbeat perception. Biofeedback and Self-Regulation, 2:371–392, 1977. doi:10.1007/BF00998623.">Whitehead <em>et al.</em>, 1977</a>, <a class="reference internal" href="../reference/references.html#id32" title="George Mandler and Michael Kahn. Discrimination of changes in heart rate: two unsuccessful attempts. Journal of the Experimental Analysis of Behavior, 3(1):21–25, 1960. doi:10.1901/jeab.1960.3-21.">Mandler and Kahn, 1960</a>, <a class="reference internal" href="../reference/references.html#id33" title="Gary E. Jones and James G. Hollandsworth. Heart rate discrimination before and after exercise-induced augmented cardiac activity. Psychophysiology, 18(3):252–257, 1981. doi:10.1111/j.1469-8986.1981.tb03029.x.">Jones and Hollandsworth, 1981</a>, <a class="reference internal" href="../reference/references.html#id34" title="Lyn Grigg and Roderick Ashton. Heart rate discrimination viewed as a perceptual process: a replication and extension. Psychophysiology, 19(1):13–20, 1982. doi:10.1111/j.1469-8986.1982.tb02591.x.">Grigg and Ashton, 1982</a>]</span>. The HRD revisits this
 question with an adaptive psychophysical procedure <span id="id22">[<a class="reference internal" href="../reference/references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span>.</p>
 <p>On a cardiac trial, the participant attends to their heart and then hears a tone
 sequence. The tones are faster or slower than the heart rate measured during the
@@ -523,17 +529,19 @@ repeated point estimates, the HRD identifies the corresponding centre and spread
 from binary choices across stimulus intensities. A participant can show little
 bias and poor precision, or substantial bias and high precision. The psychometric
 function distinguishes these cases.</p>
-<p>The scientific model also includes a lapse rate. Lapses describe responses that
+<p>The psychometric model also includes a lapse rate. Lapses describe responses that
 are weakly related to stimulus intensity and prevent an occasional mistake at an
 easy intensity from distorting the estimated threshold or slope. Lapse rate is a
 feature of the response process, not a measure of interoceptive ability.</p>
 </section>
 <section id="confidence-adds-a-separate-measurement-problem">
 <h3>Confidence adds a separate measurement problem<a class="headerlink" href="#confidence-adds-a-separate-measurement-problem" title="Permalink to this heading">#</a></h3>
-<p>The HRD records confidence after each choice. These ratings support two distinct
-questions. Overall confidence describes metacognitive bias. In the ordered beta
-model, the difference in confidence between correct and incorrect trials describes
-metacognitive calibration.</p>
+<p>When confidence ratings are enabled, the HRD records confidence after each
+choice. The ratings address two questions: how confident is the participant
+overall, and does their confidence track performance? We refer to these as
+metacognitive bias and metacognitive calibration, respectively. The ordered beta
+model estimates calibration through the difference in confidence between correct
+and incorrect trials.</p>
 <p>We use calibration specifically for the <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code> coefficient and its interactions
 in this model. We reserve metacognitive sensitivity and efficiency for quantities
 derived from an SDT model, such as meta-<span class="math notranslate nohighlight">\(d'\)</span> and the M-ratio
@@ -554,10 +562,10 @@ previously heard tone rather than with their heart. The response mapping,
 adaptive procedure, and confidence scale are otherwise closely matched. This
 gives us a within-person comparison for general temporal discrimination,
 response selection, and confidence use.</p>
-<p>Treat this condition as a matched within-person comparator rather than a pure
-subtraction. Some nonspecific processes remain, but the comparison tells us
-whether a pattern is more pronounced for cardiac judgements than for a similar
-auditory judgement. In the original validation study of 223 participants,
+<p>The comparison shows whether a pattern is more pronounced for cardiac
+judgements than for a similar auditory judgement. It does not isolate cardiac
+perception completely, because the conditions also involve attention, memory,
+and decision processes. In the original validation study of 223 participants,
 cardiac judgements were more negatively biased and less precise. They also had
 a lower M-ratio under the metacognitive analysis used in that paper
 <span id="id25">[<a class="reference internal" href="../reference/references.html#id4" title="Nicolas Legrand, Niia Nikolova, Camile Correa, Malthe Brændholt, Anna Stuckert, Nanna Kildahl, Melina Vejlø, Francesca Fardo, and Micah Allen. The heart rate discrimination task: a psychophysical method to estimate the accuracy and precision of interoceptive beliefs. Biological Psychology, 168:108239, 2022. URL: https://www.sciencedirect.com/science/article/pii/S0301051121002325, doi:10.1016/j.biopsycho.2021.108239.">Legrand <em>et al.</em>, 2022</a>]</span>.</p>
@@ -605,7 +613,7 @@ can all affect an HRD session. A single session should not be assumed to reveal 
 stable trait, and an association with a clinical variable does not by itself
 identify a neural mechanism.</p>
 <p>For group inference, fit the trial-level responses with the hierarchical model
-described by Courtin and colleagues <span id="id26">[<a class="reference internal" href="../reference/references.html#id22" title="Arthur S. Courtin, Jesper Fischer Ehmsen, Leah Banellis, Francesca Fardo, and Micah G. Allen. Hierarchical bayesian modeling of interoceptive psychophysics. Behavior Research Methods, 58(9):260, 2026. doi:10.3758/s13428-026-03137-3.">Courtin <em>et al.</em>, 2026</a>]</span>. The online Psi
+described by Courtin and colleagues <span id="id26">[<a class="reference internal" href="../reference/references.html#id23" title="Arthur S. Courtin, Jesper Fischer Ehmsen, Leah Banellis, Francesca Fardo, and Micah G. Allen. Hierarchical bayesian modeling of interoceptive psychophysics. Behavior Research Methods, 58(9):260, 2026. doi:10.3758/s13428-026-03137-3.">Courtin <em>et al.</em>, 2026</a>]</span>. The online Psi
 estimates are useful for monitoring data collection, but they are not outcome
 variables for a group analysis.</p>
 </section>

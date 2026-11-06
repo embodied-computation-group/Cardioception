@@ -10,14 +10,14 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/tasks/hsd/index.html" />
 <meta property="og:site_name" content="Cardioception Toolbox" />
-<meta property="og:description" content="The HSD is an adaptive version of the heartbeat detection task of Brener, Liu and Ring[ Brener et al., 1993]. It estimates where in the cardiac cycle a person feels their heartbeat ( mu, in ms afte..." />
+<meta property="og:description" content="The HSD is an adaptive version of the heartbeat detection task of Brener, Liu and Ring[ Brener et al., 1993]. Participants judge whether tones presented at different delays after the R-wave feel sy..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_hsd_index_2714ea34.png" />
-<meta property="og:image:alt" content="The HSD is an adaptive version of the heartbeat detection task of Brener, Liu and Ring[ Brener et al., 1993]. It estimates where in the cardiac cycle a perso..." />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_hsd_index_17f445a3.png" />
+<meta property="og:image:alt" content="The HSD is an adaptive version of the heartbeat detection task of Brener, Liu and Ring[ Brener et al., 1993]. Participants judge whether tones presented at d..." />
 <meta name="twitter:card" content="summary_large_image" />
 
-<meta name="robots" content="noindex"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="HSD design and validation" href="design.html" /><link rel="prev" title="Phase Adjustment Task" href="../pat.html" />
+<meta name="robots" content="noindex"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="HSD method and rationale" href="design.html" /><link rel="prev" title="Phase Adjustment Task" href="../pat.html" />
         <link rel="canonical" href="https://www.the-ecg.org/Cardioception/dev/tasks/hsd/index.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
@@ -208,10 +208,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../hbc.html">Heartbeat Counting task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pat.html">Phase Adjustment Task</a></li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Heartbeat Synchrony Discrimination task</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="design.html">HSD design and validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="design.html">HSD method and rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validation.html">HSD validation and technical details</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../heartbeat-discrimination.html">Heartbeat discrimination</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../constant-stimuli.html">Method of constant stimuli</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
@@ -316,12 +317,14 @@
 <h1>Heartbeat Synchrony Discrimination task<a class="headerlink" href="#heartbeat-synchrony-discrimination-task" title="Permalink to this heading">#</a></h1>
 <div class="warning admonition">
 <p class="admonition-title">Beta</p>
-<p>The Heartbeat Synchrony Discrimination task (HSD) is close to feature complete and still being validated. Its stopping rule is provisional. The <a class="reference internal" href="design.html"><span class="std std-doc">design page</span></a> holds the method, the simulations and the hardware dry run.</p>
+<p>The Heartbeat Synchrony Discrimination task (HSD) is close to feature complete and still being validated. Its stopping rule is provisional. Read the <a class="reference internal" href="design.html"><span class="std std-doc">method and rationale</span></a> for the measurement approach and the <a class="reference internal" href="validation.html"><span class="std std-doc">validation page</span></a> for simulation results and hardware checks.</p>
 </div>
-<p>The HSD is an adaptive version of the heartbeat detection task of Brener, Liu and Ring <span id="id1">[<a class="reference internal" href="../../reference/references.html#id20" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">Brener <em>et al.</em>, 1993</a>]</span>. It estimates where in the cardiac cycle a person feels their heartbeat (<code class="docutils literal notranslate"><span class="pre">mu</span></code>, in ms after the R-wave), how sharply (<code class="docutils literal notranslate"><span class="pre">sigma</span></code>), and how much more often they answer “synchronous” there than away from it, which is the sensitivity measure. Confidence is rated on every trial.</p>
+<p>The HSD is an adaptive version of the heartbeat detection task of Brener, Liu and Ring <span id="id1">[<a class="reference internal" href="../../reference/references.html#id21" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">Brener <em>et al.</em>, 1993</a>]</span>. Participants judge whether tones presented at different delays after the R-wave feel synchronous with their heartbeat.</p>
+<p>The model estimates the location of the perceived heartbeat (<code class="docutils literal notranslate"><span class="pre">mu</span></code>, in milliseconds after the R-wave) and the width of the response pattern around it (<code class="docutils literal notranslate"><span class="pre">sigma</span></code>). Sensitivity is described by the increase in “synchronous” responses near that location compared with delays farther away. Participants also rate their confidence after each judgement.</p>
 <section id="what-a-trial-looks-like">
 <h2>What a trial looks like<a class="headerlink" href="#what-a-trial-looks-like" title="Permalink to this heading">#</a></h2>
-<p>Each trial plays five tones, each a chosen delay after an R-wave detected online in the ECG. The participant answers whether the tones felt synchronous with their heartbeat, UP for yes and DOWN for no, within 5 s, then rates their confidence in ten steps from “Guess” to “Certain” with the LEFT and RIGHT keys and confirms with DOWN. A trial without an answer shows “Too late” and does not count.</p>
+<p>Each trial presents five tones at a selected delay after successive R-waves detected in the ECG. The participant has 5 s to judge whether the tones felt synchronous with their heartbeat, pressing UP for yes or DOWN for no.</p>
+<p>They then rate their confidence in ten steps from “Guess” to “Certain”, using LEFT and RIGHT to select a rating and DOWN to confirm. If no decision is given in time, the task displays “Too late” and the trial does not update the estimate.</p>
 <figure class="align-default" id="id2">
 <img alt="Four screens of an HSD trial, a fixation cross; &quot;Listen&quot; while five tones play; the question &quot;Were the tones synchronous with your heartbeat?&quot; with UP for synchronous and DOWN for not; and a confidence scale from Guess to Certain." src="../../_images/hsd_trial.png" />
 <figcaption>
@@ -329,7 +332,43 @@
 </figcaption>
 </figure>
 <p>After each answer the next delay is chosen where it is most informative about <code class="docutils literal notranslate"><span class="pre">mu</span></code>, with one trial in ten drawn at random. The delay is set on one of two axes, chosen per session with <code class="docutils literal notranslate"><span class="pre">axis</span></code>. On the absolute axis, the default, candidates run from 80 to 600 ms after the R-wave in 20 ms steps; none below the 130 ms floor is played, so the shortest delay is 140 ms. On the phase axis the delay is a fraction of the anticipated interbeat interval, from 0.10 to 0.75 in steps of 0.025, so it scales with heart rate.</p>
-<p>The session stops once the 95 percent credible interval of <code class="docutils literal notranslate"><span class="pre">mu</span></code> is no wider than 100 ms (0.17 of the period on the phase axis), after at least 15 trials, and never later than 60. Expect most sessions to run to 60; the dry run did, in 7 minutes. A session starts with three instruction screens and three practice trials that do not update the estimate, and there is a break every 20 trials.</p>
+<p>The session stops once the 95 percent credible interval of <code class="docutils literal notranslate"><span class="pre">mu</span></code> is no wider than 100 ms (0.17 of the period on the phase axis), after at least 15 valid updates, and never later than 60 trials. The hardware demonstration reached 60 trials in 7 minutes. The stopping rule is provisional; the <a class="reference internal" href="validation.html#session-length"><span class="std std-ref">validation page</span></a> distinguishes the earlier simulation results from the current rule. A session starts with three instruction screens and three practice trials that do not update the estimate, and there is a break every 20 trials.</p>
+</section>
+<section id="the-psychometric-model">
+<h2>The psychometric model<a class="headerlink" href="#the-psychometric-model" title="Permalink to this heading">#</a></h2>
+<p>The model describes how the probability of a “synchronous” response changes with tone delay <span class="math notranslate nohighlight">\(d\)</span>. It uses a Gaussian response envelope:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[P(\text{synchronous} \mid d)
+= \mathrm{floor} + (\mathrm{peak} - \mathrm{floor})
+\exp\left[-\frac{1}{2}\left(\frac{d - \mu}{\sigma}\right)^2\right].\]</div>
+</div>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Interpretation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\mu\)</span> (<code class="docutils literal notranslate"><span class="pre">mu</span></code>)</p></td>
+<td><p>The delay at which “synchronous” responses are most likely</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\sigma\)</span> (<code class="docutils literal notranslate"><span class="pre">sigma</span></code>)</p></td>
+<td><p>The width of the response envelope; smaller values describe a narrower range of delays judged synchronous</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\mathrm{floor}\)</span> (<code class="docutils literal notranslate"><span class="pre">floor</span></code>)</p></td>
+<td><p>The baseline probability of a “synchronous” response far from <span class="math notranslate nohighlight">\(\mu\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\mathrm{peak}\)</span> (<code class="docutils literal notranslate"><span class="pre">peak</span></code>)</p></td>
+<td><p>The probability of a “synchronous” response at <span class="math notranslate nohighlight">\(\mu\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>On the absolute axis, <span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mu\)</span>, and <span class="math notranslate nohighlight">\(\sigma\)</span> are measured in milliseconds. On the phase axis, they are expressed as fractions of the cardiac period. The model constrains <span class="math notranslate nohighlight">\(0 \leq \mathrm{floor} \leq \mathrm{peak} \leq 1\)</span>, with <span class="math notranslate nohighlight">\(\sigma &gt; 0\)</span>.</p>
+<p>The difference <span class="math notranslate nohighlight">\(\mathrm{peak} - \mathrm{floor}\)</span> describes the strength of the response pattern. When the two are equal, responses do not depend on delay and cannot identify a preferred heartbeat timing. The width <span class="math notranslate nohighlight">\(\sigma\)</span> describes the observed judgements; timing jitter in the recording and audio system can broaden it.</p>
+<p>The task updates the parameter estimates after each valid response and uses them to select the next delay. See the <a class="reference internal" href="design.html#the-model"><span class="std std-ref">model specification</span></a> for the parameter grids, priors, and conditional estimates used by the stopping rule.</p>
 </section>
 <section id="what-you-need">
 <h2>What you need<a class="headerlink" href="#what-you-need" title="Permalink to this heading">#</a></h2>
@@ -388,7 +427,7 @@
 </table>
 </div>
 <p>When the dialog closes, the task opens the <code class="docutils literal notranslate"><span class="pre">HSD</span></code> marker stream. In LabRecorder, update the stream list, select the ECG stream and <code class="docutils literal notranslate"><span class="pre">HSD</span></code>, and start recording while the first instruction screen is up. The wrapper runs at most 60 trials (<code class="docutils literal notranslate"><span class="pre">nTrials=60</span></code>).</p>
-<p>The same in a script:</p>
+<p>To run the task from a Python script:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.devices</span><span class="w"> </span><span class="kn">import</span> <span class="n">LSLRecorder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HSD.parameters</span><span class="w"> </span><span class="kn">import</span> <span class="n">getParameters</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cardioception.HSD.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
@@ -405,7 +444,7 @@
 </pre></div>
 </div>
 <p>With <code class="docutils literal notranslate"><span class="pre">setup=&quot;behavioral&quot;</span></code> the beats are found online by <code class="docutils literal notranslate"><span class="pre">cardioception.devices.beat_source.LSLBeatSource</span></code> and the tones scheduled by <code class="docutils literal notranslate"><span class="pre">cardioception.devices.tone_player.TonePlayer</span></code>, both shared with the Phase Adjustment Task. There is no replay setup: <code class="docutils literal notranslate"><span class="pre">setup=&quot;test&quot;</span></code> needs a <code class="docutils literal notranslate"><span class="pre">beat_source=</span></code> and a <code class="docutils literal notranslate"><span class="pre">tone_player=</span></code> of your own, which is how the headless tests run.</p>
-<p>Escape ends the session with its files saved. The task also stops itself, saving first, after three trials in a row in which no tone could be delivered, which means the beat source has lost the heart.</p>
+<p>Escape ends the session and saves the files. The task also saves and stops after three consecutive trials with no tones delivered, indicating a problem with beat detection or tone delivery.</p>
 </section>
 <section id="the-main-settings">
 <h2>The main settings<a class="headerlink" href="#the-main-settings" title="Permalink to this heading">#</a></h2>
@@ -472,7 +511,7 @@
 </tbody>
 </table>
 </div>
-<p>The floor and the ceiling matter most. The ECG transport and the speaker add a roughly constant 30 to 70 ms that no recording can see, so every tone is scheduled <code class="docutils literal notranslate"><span class="pre">latencyBias</span></code> early and no delay below <code class="docutils literal notranslate"><span class="pre">minDelay</span></code> is played. Set <code class="docutils literal notranslate"><span class="pre">minDelay</span></code> from the lag your setup shows; the <a class="reference internal" href="design.html#realized-delays-and-per-trial-constraints"><span class="std std-ref">design page</span></a> has the measurements and what the floor costs in accuracy. The longest delay on a trial is limited to 0.675 of the current interbeat interval (0.75 less the 10 percent margin), so that a tone is not heard as belonging to the next beat; 600 ms is allowed only when the period is over 0.89 s. A beat whose period has shortened past the ceiling is skipped and a later one used, up to twice <code class="docutils literal notranslate"><span class="pre">nTones</span></code> beats per trial.</p>
+<p>The floor and the ceiling matter most. The ECG transport and the speaker add a roughly constant 30 to 70 ms that no recording can see, so every tone is scheduled <code class="docutils literal notranslate"><span class="pre">latencyBias</span></code> early and no delay below <code class="docutils literal notranslate"><span class="pre">minDelay</span></code> is played. Set <code class="docutils literal notranslate"><span class="pre">minDelay</span></code> from the lag your setup shows; the <a class="reference internal" href="validation.html#timing-measurements"><span class="std std-ref">timing measurements</span></a> explain the default correction, and the <a class="reference internal" href="validation.html#response-patterns-that-are-difficult-to-estimate"><span class="std std-ref">simulation results</span></a> show how the floor affects accuracy. The longest delay on a trial is limited to 0.675 of the current interbeat interval (0.75 less the 10 percent margin), so that a tone is not heard as belonging to the next beat; 600 ms is allowed only when the period is over 0.89 s. A beat whose period has shortened past the ceiling is skipped and a later one used, up to twice <code class="docutils literal notranslate"><span class="pre">nTones</span></code> beats per trial.</p>
 </section>
 <section id="what-it-saves">
 <h2>What it saves<a class="headerlink" href="#what-it-saves" title="Permalink to this heading">#</a></h2>
@@ -513,7 +552,7 @@
 </section>
 <section id="reading-the-results">
 <h2>Reading the results<a class="headerlink" href="#reading-the-results" title="Permalink to this heading">#</a></h2>
-<p>The practice trials are not in <code class="docutils literal notranslate"><span class="pre">*_final.txt</span></code>. The columns that matter:</p>
+<p>Practice trials are excluded from <code class="docutils literal notranslate"><span class="pre">*_final.txt</span></code>. The main columns are:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -567,7 +606,8 @@
 <section id="where-to-go-next">
 <h2>Where to go next<a class="headerlink" href="#where-to-go-next" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="design.html"><span class="std std-doc">HSD design and validation</span></a>: the model, the delay placement, the simulations, the hardware dry run and the roadmap.</p></li>
+<li><p><a class="reference internal" href="design.html"><span class="std std-doc">HSD method and rationale</span></a>: the model, adaptive delay selection, interpretation, and stopping rule.</p></li>
+<li><p><a class="reference internal" href="validation.html"><span class="std std-doc">HSD validation and technical details</span></a>: simulation results, the hardware demonstration, and remaining validation work.</p></li>
 <li><p><a class="reference internal" href="../../getting-started/recording-devices.html"><span class="std std-doc">Recording devices</span></a>: the PLUX bridge and LabRecorder.</p></li>
 <li><p><a class="reference internal" href="../../reference/api.html"><span class="std std-doc">API</span></a>: every field of <code class="docutils literal notranslate"><span class="pre">TaskConfig</span></code> and every argument of <code class="docutils literal notranslate"><span class="pre">getParameters</span></code>.</p></li>
 </ul>
@@ -586,7 +626,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">HSD design and validation</div>
+                <div class="title">HSD method and rationale</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -637,6 +677,7 @@
             <ul>
 <li><a class="reference internal" href="#">Heartbeat Synchrony Discrimination task</a><ul>
 <li><a class="reference internal" href="#what-a-trial-looks-like">What a trial looks like</a></li>
+<li><a class="reference internal" href="#the-psychometric-model">The psychometric model</a></li>
 <li><a class="reference internal" href="#what-you-need">What you need</a></li>
 <li><a class="reference internal" href="#running-it">Running it</a></li>
 <li><a class="reference internal" href="#the-main-settings">The main settings</a></li>
@@ -662,5 +703,7 @@
     <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/design-tabs.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

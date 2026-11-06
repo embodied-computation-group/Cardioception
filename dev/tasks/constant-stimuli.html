@@ -10,14 +10,14 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.the-ecg.org/Cardioception/dev/tasks/constant-stimuli.html" />
 <meta property="og:site_name" content="Cardioception Toolbox" />
-<meta property="og:description" content="The method of constant stimuli of Brener, Liu and Ring[ Brener et al., 1993] is coming to Cardioception. Tones are presented at several fixed delays spanning the cardiac cycle, commonly from R+0 to..." />
+<meta property="og:description" content="An implementation of the method of constant stimuli of Brener, Liu and Ring[ Brener et al., 1993] is planned for Cardioception. Tones are presented at several fixed delays spanning the cardiac cycl..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_constant-stimuli_37b6f66d.png" />
-<meta property="og:image:alt" content="The method of constant stimuli of Brener, Liu and Ring[ Brener et al., 1993] is coming to Cardioception. Tones are presented at several fixed delays spanning..." />
+<meta property="og:image" content="https://www.the-ecg.org/Cardioception/dev/_images/social_previews/summary_tasks_constant-stimuli_b5e166e5.png" />
+<meta property="og:image:alt" content="An implementation of the method of constant stimuli of Brener, Liu and Ring[ Brener et al., 1993] is planned for Cardioception. Tones are presented at severa..." />
 <meta name="twitter:card" content="summary_large_image" />
 
-<meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="API" href="../reference/api.html" /><link rel="prev" title="Whitehead method" href="whitehead.html" />
+<meta name="robots" content="noindex"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="API" href="../reference/api.html" /><link rel="prev" title="Heartbeat discrimination" href="heartbeat-discrimination.html" />
         <link rel="canonical" href="https://www.the-ecg.org/Cardioception/dev/tasks/constant-stimuli.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
@@ -208,10 +208,11 @@
 <li class="toctree-l1"><a class="reference internal" href="hbc.html">Heartbeat Counting task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pat.html">Phase Adjustment Task</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="hsd/index.html">Heartbeat Synchrony Discrimination task</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="hsd/design.html">HSD design and validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hsd/design.html">HSD method and rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hsd/validation.html">HSD validation and technical details</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="whitehead.html">Whitehead method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="heartbeat-discrimination.html">Heartbeat discrimination</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Method of constant stimuli</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
@@ -314,8 +315,8 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="method-of-constant-stimuli">
 <h1>Method of constant stimuli<a class="headerlink" href="#method-of-constant-stimuli" title="Permalink to this heading">#</a></h1>
-<p>The method of constant stimuli of Brener, Liu and Ring <span id="id1">[<a class="reference internal" href="../reference/references.html#id20" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">Brener <em>et al.</em>, 1993</a>]</span> is coming to Cardioception. Tones are presented at several fixed delays spanning the cardiac cycle, commonly from R+0 to R+500 ms, and participants judge whether each was simultaneous with a heartbeat sensation.</p>
-<p>A review of the literature behind it will follow. Until then, <a class="reference internal" href="theory.html#a-stronger-measure-of-heartbeat-timing"><span class="std std-ref">a stronger measure of heartbeat timing</span></a>, in Measuring cardiac interoception, describes the method.</p>
+<p>An implementation of the method of constant stimuli of Brener, Liu and Ring <span id="id1">[<a class="reference internal" href="../reference/references.html#id21" title="Jasper Brener, Xiaoping Liu, and Christopher Ring. A method of constant stimuli for examining heartbeat detection: comparison with the brener-kluvitse and whitehead methods. Psychophysiology, 30(6):657–665, 1993. doi:10.1111/j.1469-8986.1993.tb02091.x.">Brener <em>et al.</em>, 1993</a>]</span> is planned for Cardioception. Tones are presented at several fixed delays spanning the cardiac cycle, commonly from R+0 to R+500 ms. Participants judge whether each was simultaneous with a heartbeat sensation.</p>
+<p>A review of the literature will accompany the implementation. For an introduction, see <a class="reference internal" href="theory.html#a-stronger-measure-of-heartbeat-timing"><span class="std std-ref">A stronger measure of heartbeat timing</span></a>.</p>
 </section>
 
         </article>
@@ -332,14 +333,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="whitehead.html">
+          <a class="prev-page" href="heartbeat-discrimination.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Whitehead method</div>
+                <div class="title">Heartbeat discrimination</div>
                 
               </div>
             </a>
