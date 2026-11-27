@@ -15,6 +15,7 @@ The arrow keys move the marker and the accept key confirms, which is what
 ``RatingScale`` did with ``acceptKeys="down"``.
 """
 
+import sys
 from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -26,6 +27,12 @@ import numpy as np
 # the marker moves, then the slider's own light gray for the confirmation.
 MARKER_COLOR = "White"
 MARKER_CONFIRMED_COLOR = "LightGray"
+
+# PsychoPy's Slider asks for "Helvetica Bold" for its labels. Windows has no
+# such font, so every slider logged "No similar font found" and fell back to a
+# default. Arial is the Windows equivalent. Other platforms keep the PsychoPy
+# default, so the look on macOS does not change.
+SLIDER_FONT = "Arial" if sys.platform == "win32" else "Helvetica Bold"
 
 
 def keyboard_rating(
@@ -93,6 +100,7 @@ def keyboard_rating(
         style="rating",
         color="LightGray",
         markerColor=MARKER_COLOR,
+        font=SLIDER_FONT,
         flip=False,
         labelHeight=label_height,
     )

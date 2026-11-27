@@ -1229,7 +1229,12 @@ def confidenceRatingTask(
 
     from psychopy import core, visual
 
-    from .._rating import MARKER_COLOR, MARKER_CONFIRMED_COLOR, keyboard_rating
+    from .._rating import (
+        MARKER_COLOR,
+        MARKER_CONFIRMED_COLOR,
+        SLIDER_FONT,
+        keyboard_rating,
+    )
 
     print("...starting confidence rating.")
 
@@ -1299,6 +1304,7 @@ def confidenceRatingTask(
             style=("rating"),
             color="LightGray",
             markerColor=MARKER_COLOR,
+            font=SLIDER_FONT,
             flip=False,
             labelHeight=0.1 * 0.6,
         )
