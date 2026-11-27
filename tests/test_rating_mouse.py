@@ -31,14 +31,32 @@ class FakeClock:
 
 
 class FakeMarker:
+    """Records every colour the marker is given."""
+
     size = (0.0, 0.0)
-    color = "white"
+
+    def __init__(self, color: str):
+        self.colors = [color]
+
+    @property
+    def color(self) -> str:
+        return self.colors[-1]
+
+    @color.setter
+    def color(self, value: str) -> None:
+        self.colors.append(value)
 
 
 class FakeSlider:
+    # The last slider built, so a test can inspect it after the call returns.
+    last: "FakeSlider"
+
     def __init__(self, **kwargs):
-        self.marker = FakeMarker()
+        self.kwargs = kwargs
+        # PsychoPy's own default marker colour is red.
+        self.marker = FakeMarker(kwargs.get("markerColor", "Red"))
         self.markerPos = 0.0
+        FakeSlider.last = self
 
     def draw(self) -> None:
         pass
@@ -103,12 +121,17 @@ def fake_psychopy(monkeypatch):
     visual = types.ModuleType("psychopy.visual")
     visual.Slider = FakeSlider  # type: ignore[attr-defined]
     visual.TextStim = FakeTextStim  # type: ignore[attr-defined]
+    event = types.ModuleType("psychopy.event")
+    event.clearEvents = lambda eventType=None: None  # type: ignore[attr-defined]
+    event.getKeys = lambda keyList=None: []  # type: ignore[attr-defined]
     psychopy = types.ModuleType("psychopy")
     psychopy.core = core  # type: ignore[attr-defined]
     psychopy.visual = visual  # type: ignore[attr-defined]
+    psychopy.event = event  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "psychopy", psychopy)
     monkeypatch.setitem(sys.modules, "psychopy.core", core)
     monkeypatch.setitem(sys.modules, "psychopy.visual", visual)
+    monkeypatch.setitem(sys.modules, "psychopy.event", event)
     return psychopy
 
 
@@ -209,3 +232,44 @@ def test_timeout_returns_no_rating(fake_psychopy):
     assert confidence is None
     assert confidenceRT is None
     assert len(mouse.setPos_calls) == 1
+
+
+def test_mouse_marker_is_white_then_light_gray(fake_psychopy):
+    from cardioception.HRD.task import confidenceRatingTask
+
+    positions = [(0.0, 0.2)] * 8
+    pressed = [False] * 7 + [True]
+    mouse = ScriptedMouse(positions, pressed)
+
+    confidenceRatingTask(make_parameters(mouse))
+
+    # Not red while moving and not green on confirmation: those are the
+    # colours of the accuracy feedback.
+    assert FakeSlider.last.kwargs["markerColor"] == "White"
+    assert FakeSlider.last.marker.colors == ["White", "LightGray"]
+
+
+def test_keyboard_marker_is_white_then_light_gray(fake_psychopy):
+    from cardioception._rating import keyboard_rating
+
+    # Nothing on the first frames, then one step right and the accept key
+    # once min_time is over. The clock advances 0.1 s per read.
+    script = [[], [], [], ["right"], ["down"]]
+    fake_psychopy.event.getKeys = (  # type: ignore[attr-defined]
+        lambda keyList=None: script.pop(0) if script else []
+    )
+
+    confidence, _, provided = keyboard_rating(
+        win=FakeWindow(),
+        message=FakeTextStim(),
+        low=1,
+        high=7,
+        labels=["Guess", "Certain"],
+        marker_start=3,
+        min_time=0.1,
+    )
+
+    assert provided is True
+    assert confidence == 4
+    assert FakeSlider.last.kwargs["markerColor"] == "White"
+    assert FakeSlider.last.marker.colors == ["White", "LightGray"]

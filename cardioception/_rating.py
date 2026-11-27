@@ -19,6 +19,14 @@ from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
 
+# Marker colours for every confidence slider in the package. PsychoPy's Slider
+# draws the marker red by default, and the marker used to turn green on
+# confirmation: the colours of the "False" and "Correct" accuracy feedback, so
+# a participant could read a rating as feedback on the decision. White while
+# the marker moves, then the slider's own light gray for the confirmation.
+MARKER_COLOR = "White"
+MARKER_CONFIRMED_COLOR = "LightGray"
+
 
 def keyboard_rating(
     win,
@@ -84,6 +92,7 @@ def keyboard_rating(
         ticks=(low, high),
         style="rating",
         color="LightGray",
+        markerColor=MARKER_COLOR,
         flip=False,
         labelHeight=label_height,
     )
@@ -118,7 +127,7 @@ def keyboard_rating(
 
         if ratingProvided:
             # Confirm visibly before moving on, as the mouse branch does.
-            slider.marker.color = "green"
+            slider.marker.color = MARKER_CONFIRMED_COLOR
             slider.draw()
             message.draw()
             win.flip()

@@ -1229,7 +1229,7 @@ def confidenceRatingTask(
 
     from psychopy import core, visual
 
-    from .._rating import keyboard_rating
+    from .._rating import MARKER_COLOR, MARKER_CONFIRMED_COLOR, keyboard_rating
 
     print("...starting confidence rating.")
 
@@ -1298,6 +1298,7 @@ def confidenceRatingTask(
             ticks=(0, 100),
             style=("rating"),
             color="LightGray",
+            markerColor=MARKER_COLOR,
             flip=False,
             labelHeight=0.1 * 0.6,
         )
@@ -1337,7 +1338,7 @@ def confidenceRatingTask(
                         + f" with response time {round(confidenceRT, 2)} seconds"
                     )
                 # Change marker color after response provided
-                slider.marker.color = "green"
+                slider.marker.color = MARKER_CONFIRMED_COLOR
                 slider.draw()
                 message.draw()
                 parameters["win"].flip()
