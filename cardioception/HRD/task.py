@@ -1134,6 +1134,13 @@ def responseDecision(
         buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
         while True:
             buttons, decisionRT = parameters["myMouse"].getPressed(getTime=True)
+            # getPressed reports the buttons that are down now, and clickReset
+            # zeroes their times without releasing them. A button already down
+            # at onset (held over from the previous screen, or a release the
+            # window never received) therefore read as a click at 0.0 s and
+            # was accepted immediately. Count only presses made since
+            # clickReset, which are the ones with a non-zero time.
+            buttons = [int(b and t > 0) for b, t in zip(buttons, decisionRT)]
             trialdur = clock.getTime()
             parameters["oxiTask"].readInWaiting()
             if buttons == [1, 0, 0]:
@@ -1314,7 +1321,7 @@ def confidenceRatingTask(
 
         while True:
             trialdur = clock.getTime()
-            buttons = parameters["myMouse"].getPressed()
+            buttons, pressTimes = parameters["myMouse"].getPressed(getTime=True)
 
             # The marker follows the cursor over the slider's extent, in
             # height units. Only the marker is clamped, not the cursor.
@@ -1331,8 +1338,14 @@ def confidenceRatingTask(
 
             # A left click confirms the rating. Clicks before minRatingTime are
             # ignored, as in the keyboard branch, so a participant cannot
-            # confirm the random start value reflexively.
-            if buttons[0] and (trialdur > parameters["minRatingTime"]):
+            # confirm the random start value reflexively. A button that was
+            # already down when the scale appeared has a press time of 0.0
+            # and does not count, as in the decision above.
+            if (
+                buttons[0]
+                and pressTimes[0] > 0
+                and (trialdur > parameters["minRatingTime"])
+            ):
                 confidence, confidenceRT, ratingProvided = (
                     slider.markerPos,
                     clock.getTime(),
