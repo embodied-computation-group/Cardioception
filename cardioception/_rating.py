@@ -15,9 +15,24 @@ The arrow keys move the marker and the accept key confirms, which is what
 ``RatingScale`` did with ``acceptKeys="down"``.
 """
 
+import sys
 from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
+
+# Marker colours for every confidence slider in the package. PsychoPy's Slider
+# draws the marker red by default, and the marker used to turn green on
+# confirmation: the colours of the "False" and "Correct" accuracy feedback, so
+# a participant could read a rating as feedback on the decision. White while
+# the marker moves, then the slider's own light gray for the confirmation.
+MARKER_COLOR = "White"
+MARKER_CONFIRMED_COLOR = "LightGray"
+
+# PsychoPy's Slider asks for "Helvetica Bold" for its labels. Windows has no
+# such font, so every slider logged "No similar font found" and fell back to a
+# default. Arial is the Windows equivalent. Other platforms keep the PsychoPy
+# default, so the look on macOS does not change.
+SLIDER_FONT = "Arial" if sys.platform == "win32" else "Helvetica Bold"
 
 
 def keyboard_rating(
@@ -84,6 +99,8 @@ def keyboard_rating(
         ticks=(low, high),
         style="rating",
         color="LightGray",
+        markerColor=MARKER_COLOR,
+        font=SLIDER_FONT,
         flip=False,
         labelHeight=label_height,
     )
@@ -118,7 +135,7 @@ def keyboard_rating(
 
         if ratingProvided:
             # Confirm visibly before moving on, as the mouse branch does.
-            slider.marker.color = "green"
+            slider.marker.color = MARKER_CONFIRMED_COLOR
             slider.draw()
             message.draw()
             win.flip()

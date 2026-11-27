@@ -31,14 +31,32 @@ class FakeClock:
 
 
 class FakeMarker:
+    """Records every colour the marker is given."""
+
     size = (0.0, 0.0)
-    color = "white"
+
+    def __init__(self, color: str):
+        self.colors = [color]
+
+    @property
+    def color(self) -> str:
+        return self.colors[-1]
+
+    @color.setter
+    def color(self, value: str) -> None:
+        self.colors.append(value)
 
 
 class FakeSlider:
+    # The last slider built, so a test can inspect it after the call returns.
+    last: "FakeSlider"
+
     def __init__(self, **kwargs):
-        self.marker = FakeMarker()
+        self.kwargs = kwargs
+        # PsychoPy's own default marker colour is red.
+        self.marker = FakeMarker(kwargs.get("markerColor", "Red"))
         self.markerPos = 0.0
+        FakeSlider.last = self
 
     def draw(self) -> None:
         pass
@@ -62,18 +80,29 @@ class FakeWindow:
 
 
 class ScriptedMouse:
-    """Replays cursor positions and button states frame by frame."""
+    """Replays cursor positions and button states frame by frame.
+
+    Press times behave like PsychoPy's: a press records its time since the
+    last ``clickReset``, the time is kept after release, and ``clickReset``
+    zeroes it without releasing a button that is still down. With
+    ``held_at_onset`` the left button is already down before the first frame,
+    so it reads as pressed with a time of 0.0 until it is released and pressed
+    again.
+    """
 
     def __init__(
         self,
         positions: Sequence[Tuple[float, float]],
         pressed: Sequence[bool],
+        held_at_onset: bool = False,
     ):
         self.positions = list(positions)
         self.pressed = list(pressed)
         self.frame = 0
         self.setPos_calls: List[Tuple[float, float]] = []
         self.clickResets = 0
+        self.was_down = held_at_onset
+        self.times = [0.0, 0.0, 0.0]
 
     def _clamp(self, i: int, n: int) -> int:
         return min(i, n - 1)
@@ -84,15 +113,20 @@ class ScriptedMouse:
 
     def getPressed(self, getTime: bool = False):
         left = int(self.pressed[self._clamp(self.frame, len(self.pressed))])
+        if left and not self.was_down:
+            self.times[0] = 0.1 * (self.frame + 1)
+        self.was_down = bool(left)
         self.frame += 1
         buttons = [left, 0, 0]
-        return (buttons, [0.0, 0.0, 0.0]) if getTime else buttons
+        return (buttons, list(self.times)) if getTime else buttons
 
     def setPos(self, newPos) -> None:
         self.setPos_calls.append((float(newPos[0]), float(newPos[1])))
 
     def clickReset(self, buttons=(0, 1, 2)) -> None:
         self.clickResets += 1
+        for b in buttons:
+            self.times[b] = 0.0
 
 
 @pytest.fixture
@@ -103,12 +137,17 @@ def fake_psychopy(monkeypatch):
     visual = types.ModuleType("psychopy.visual")
     visual.Slider = FakeSlider  # type: ignore[attr-defined]
     visual.TextStim = FakeTextStim  # type: ignore[attr-defined]
+    event = types.ModuleType("psychopy.event")
+    event.clearEvents = lambda eventType=None: None  # type: ignore[attr-defined]
+    event.getKeys = lambda keyList=None: []  # type: ignore[attr-defined]
     psychopy = types.ModuleType("psychopy")
     psychopy.core = core  # type: ignore[attr-defined]
     psychopy.visual = visual  # type: ignore[attr-defined]
+    psychopy.event = event  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "psychopy", psychopy)
     monkeypatch.setitem(sys.modules, "psychopy.core", core)
     monkeypatch.setitem(sys.modules, "psychopy.visual", visual)
+    monkeypatch.setitem(sys.modules, "psychopy.event", event)
     return psychopy
 
 
@@ -209,3 +248,98 @@ def test_timeout_returns_no_rating(fake_psychopy):
     assert confidence is None
     assert confidenceRT is None
     assert len(mouse.setPos_calls) == 1
+
+
+def test_held_button_does_not_confirm_the_rating(fake_psychopy):
+    from cardioception.HRD.task import confidenceRatingTask
+
+    # The left button is still down from the decision click when the scale
+    # appears. It must not confirm the rating once minRatingTime has passed;
+    # only a fresh click after the release does.
+    positions = [(0.0, 0.2)] * 20
+    pressed = [True] * 10 + [False] * 5 + [True] * 5
+    mouse = ScriptedMouse(positions, pressed, held_at_onset=True)
+    parameters = make_parameters(mouse)
+
+    _, confidenceRT, provided, _ = confidenceRatingTask(parameters)
+
+    assert provided is True
+    assert mouse.frame == 16
+    assert confidenceRT > 1.0
+
+
+def test_mouse_marker_is_white_then_light_gray(fake_psychopy):
+    from cardioception.HRD.task import confidenceRatingTask
+
+    positions = [(0.0, 0.2)] * 8
+    pressed = [False] * 7 + [True]
+    mouse = ScriptedMouse(positions, pressed)
+
+    confidenceRatingTask(make_parameters(mouse))
+
+    # Not red while moving and not green on confirmation: those are the
+    # colours of the accuracy feedback.
+    assert FakeSlider.last.kwargs["markerColor"] == "White"
+    assert FakeSlider.last.marker.colors == ["White", "LightGray"]
+
+
+def test_keyboard_marker_is_white_then_light_gray(fake_psychopy):
+    from cardioception._rating import keyboard_rating
+
+    # Nothing on the first frames, then one step right and the accept key
+    # once min_time is over. The clock advances 0.1 s per read.
+    script = [[], [], [], ["right"], ["down"]]
+    fake_psychopy.event.getKeys = (  # type: ignore[attr-defined]
+        lambda keyList=None: script.pop(0) if script else []
+    )
+
+    confidence, _, provided = keyboard_rating(
+        win=FakeWindow(),
+        message=FakeTextStim(),
+        low=1,
+        high=7,
+        labels=["Guess", "Certain"],
+        marker_start=3,
+        min_time=0.1,
+    )
+
+    assert provided is True
+    assert confidence == 4
+    assert FakeSlider.last.kwargs["markerColor"] == "White"
+    assert FakeSlider.last.marker.colors == ["White", "LightGray"]
+
+
+class FakeSound:
+    def play(self) -> None:
+        pass
+
+    def stop(self) -> None:
+        pass
+
+
+class FakeRecorder:
+    def readInWaiting(self) -> None:
+        pass
+
+
+def test_held_button_is_not_a_decision(fake_psychopy):
+    from cardioception.HRD.task import responseDecision
+
+    # The left button is down before the decision phase starts. It used to be
+    # accepted on the first frame as "Less" with DecisionRT 0.0.
+    pressed = [True] * 5 + [False] * 3 + [True]
+    mouse = ScriptedMouse([(0.0, 0.2)] * 10, pressed, held_at_onset=True)
+    parameters = make_parameters(mouse)
+    parameters["texts"].update({"slower": "Slower", "faster": "Faster"})
+    parameters["oxiTask"] = FakeRecorder()
+    parameters["respMax"] = 5.0
+
+    _, _, provided, decision, decisionRT, _ = responseDecision(
+        FakeSound(), parameters, feedback=False, condition="Less"
+    )
+
+    assert provided is True
+    assert decision == "Less"
+    assert decisionRT is not None and decisionRT > 0
+    # Accepted on the fresh press, the ninth frame read, not on the first.
+    assert mouse.frame == 9
